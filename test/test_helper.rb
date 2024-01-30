@@ -28,6 +28,11 @@ ActiveSupport.on_load(:i18n) do
   I18n.load_path << File.expand_path('config/locale/en.yml', __dir__)
 end
 
+# Define dummy API controller
+module ActionController
+  class API; end
+end
+
 # This gem
 require 'jsapi'
 

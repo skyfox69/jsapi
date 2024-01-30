@@ -5,8 +5,8 @@ require 'test_helper'
 module Jsapi
   module Controller
     class MethodsTest < Minitest::Test
+      include DSL
       include Methods
-      extend DSL::ClassMethods
 
       attr_accessor :params
 

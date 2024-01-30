@@ -3,7 +3,7 @@
 module Jsapi
   module Controller
     class Base < ActionController::API
-      extend Dsl::ClassMethods
+      include DSL
       include Methods
     end
   end

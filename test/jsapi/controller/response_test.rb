@@ -3,8 +3,8 @@
 module Jsapi
   module Controller
     class ResponseTest < Minitest::Test
-      include Controller::Methods
-      extend DSL::ClassMethods
+      include DSL
+      include Methods
 
       # Serialization tests
 
