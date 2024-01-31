@@ -15,7 +15,7 @@ module Jsapi
           error = assert_raises ArgumentError do
             StringSchema.new(format: 'foo')
           end
-          assert_equal("Format not supported: 'foo'", error.message)
+          assert_equal("format not supported: 'foo'", error.message)
         end
 
         def test_max_length

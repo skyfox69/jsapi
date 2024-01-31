@@ -9,7 +9,7 @@ module Jsapi
         attr_writer :deprecated, :required
 
         def initialize(name, **options)
-          raise ArgumentError, "Parameter name can't be blank" if name.blank?
+          raise ArgumentError, "parameter name can't be blank" if name.blank?
 
           @name = name.to_s
           @location = options[:in]

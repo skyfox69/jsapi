@@ -4,7 +4,7 @@ module Jsapi
   module Validators
     class Minimum
       def initialize(minimum)
-        raise ArgumentError, "Invalid minimum: #{minimum}" unless minimum.respond_to?(:<)
+        raise ArgumentError, "invalid minimum: #{minimum}" unless minimum.respond_to?(:<)
 
         @minimum = minimum
       end

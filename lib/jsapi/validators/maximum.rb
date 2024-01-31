@@ -4,7 +4,7 @@ module Jsapi
   module Validators
     class Maximum
       def initialize(maximum)
-        raise ArgumentError, "Invalid maximum: #{maximum}" unless maximum.respond_to?(:>)
+        raise ArgumentError, "invalid maximum: #{maximum}" unless maximum.respond_to?(:>)
 
         @maximum = maximum
       end

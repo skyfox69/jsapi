@@ -7,7 +7,7 @@ module Jsapi
     class ReferenceErrorTest < Minitest::Test
       def test_message
         error = ReferenceError.new('foo')
-        assert_equal("Reference can't be resolved: 'foo'", error.message)
+        assert_equal("reference can't be resolved: 'foo'", error.message)
       end
     end
   end

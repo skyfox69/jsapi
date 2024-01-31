@@ -27,7 +27,7 @@ module Jsapi
           when 'string'
             StringSchema
           else
-            raise ArgumentError, "Invalid type: '#{type}'"
+            raise ArgumentError, "invalid type: '#{type}'"
           end.new(**options.except(:$ref))
         end
       end

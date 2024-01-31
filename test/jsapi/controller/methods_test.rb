@@ -55,14 +55,14 @@ module Jsapi
         error = assert_raises ArgumentError do
           api_operation(:foo) {}
         end
-        assert_equal("Operation not defined: 'foo'", error.message)
+        assert_equal("operation not defined: 'foo'", error.message)
       end
 
       def test_api_operation_on_invalid_status_code
         error = assert_raises ArgumentError do
           api_operation(:my_operation, status: 204) {}
         end
-        assert_equal("Status code not defined: '204'", error.message)
+        assert_equal("status code not defined: '204'", error.message)
       end
 
       # #api_parameters tests
@@ -76,7 +76,7 @@ module Jsapi
         error = assert_raises ArgumentError do
           api_params(:foo)
         end
-        assert_equal("Operation not defined: 'foo'", error.message)
+        assert_equal("operation not defined: 'foo'", error.message)
       end
 
       # #api_response tests
@@ -90,14 +90,14 @@ module Jsapi
         error = assert_raises ArgumentError do
           api_response('My response', :foo)
         end
-        assert_equal("Operation not defined: 'foo'", error.message)
+        assert_equal("operation not defined: 'foo'", error.message)
       end
 
       def test_api_response_on_invalid_status_code
         error = assert_raises ArgumentError do
           api_response('My response', :my_operation, status: 204)
         end
-        assert_equal("Status code not defined: '204'", error.message)
+        assert_equal("status code not defined: '204'", error.message)
       end
 
       private

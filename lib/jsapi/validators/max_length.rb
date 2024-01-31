@@ -4,7 +4,7 @@ module Jsapi
   module Validators
     class MaxLength
       def initialize(max_length)
-        raise ArgumentError, "Invalid max length: #{max_length}" unless max_length.respond_to?(:>)
+        raise ArgumentError, "invalid max length: #{max_length}" unless max_length.respond_to?(:>)
 
         @max_length = max_length
       end

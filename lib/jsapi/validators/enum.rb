@@ -4,7 +4,7 @@ module Jsapi
   module Validators
     class Enum
       def initialize(enum)
-        raise ArgumentError, "Invalid enum: #{enum}" unless enum.respond_to?(:include?)
+        raise ArgumentError, "invalid enum: #{enum}" unless enum.respond_to?(:include?)
 
         @enum = enum
       end

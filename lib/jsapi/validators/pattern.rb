@@ -4,7 +4,7 @@ module Jsapi
   module Validators
     class Pattern
       def initialize(pattern)
-        raise ArgumentError, "Invalid pattern: #{pattern}" unless pattern.is_a?(Regexp)
+        raise ArgumentError, "invalid pattern: #{pattern}" unless pattern.is_a?(Regexp)
 
         @pattern = pattern
       end

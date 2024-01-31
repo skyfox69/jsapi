@@ -10,7 +10,7 @@ module Jsapi
       end
 
       def add_operation(method, operation_id, **options)
-        raise ArgumentError, "Method can't be blank" if method.blank?
+        raise ArgumentError, "method can't be blank" if method.blank?
 
         operations[method.to_s] = Operation.new(operation_id, **options)
       end

@@ -47,7 +47,7 @@ module Jsapi
 
       def test_invalid_type
         error = assert_raises { Schema.new(type: 'foo') }
-        assert_equal("Invalid type: 'foo'", error.message)
+        assert_equal("invalid type: 'foo'", error.message)
       end
     end
   end

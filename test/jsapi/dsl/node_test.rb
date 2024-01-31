@@ -18,7 +18,7 @@ module Jsapi
         error = assert_raises Error do
           node.call { bar 'foo' }
         end
-        assert_equal("Unknown field: 'bar'", error.message)
+        assert_equal("unknown field: 'bar'", error.message)
       end
 
       def test_respond_to
@@ -44,7 +44,7 @@ module Jsapi
           end
         end
         assert_equal(
-          "Unknown field: 'bar' (at '/my_path'/get 'my_operation'" \
+          "unknown field: 'bar' (at '/my_path'/get 'my_operation'" \
           "/'my_parameter'/'my_property')",
           error.message
         )

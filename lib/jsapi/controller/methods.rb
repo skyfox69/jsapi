@@ -29,7 +29,7 @@ module Jsapi
       # Returns a +Parameters+ object that wraps the parameters returned by +params+.
       def api_params(operation_id)
         operation = api_definitions.operation(operation_id)
-        raise ArgumentError, "Operation not defined: '#{operation_id}'" if operation.nil?
+        raise ArgumentError, "operation not defined: '#{operation_id}'" if operation.nil?
 
         Parameters.new(params, operation, api_definitions)
       end
@@ -37,10 +37,10 @@ module Jsapi
       # Returns a +Response+ object that wraps +object+.
       def api_response(object, operation_id, status: nil)
         operation = api_definitions.operation(operation_id)
-        raise ArgumentError, "Operation not defined: '#{operation_id}'" if operation.nil?
+        raise ArgumentError, "operation not defined: '#{operation_id}'" if operation.nil?
 
         response = operation.response(status)
-        raise ArgumentError, "Status code not defined: '#{status}'" if response.nil?
+        raise ArgumentError, "status code not defined: '#{status}'" if response.nil?
 
         Response.new(object, response.schema, api_definitions)
       end

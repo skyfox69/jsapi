@@ -7,7 +7,7 @@ module Jsapi
     class ExclusiveMaximumTest < Minitest::Test
       def test_raises_argument_error
         error = assert_raises(ArgumentError) { ExclusiveMaximum.new(nil) }
-        assert_equal('Invalid exclusive maximum: ', error.message)
+        assert_equal('invalid exclusive maximum: ', error.message)
       end
 
       def test_validate_positive

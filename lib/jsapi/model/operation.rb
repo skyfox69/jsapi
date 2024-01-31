@@ -8,7 +8,7 @@ module Jsapi
       attr_writer :deprecated
 
       def initialize(operation_id, **options)
-        raise ArgumentError, "Operation id can't be blank" if operation_id.blank?
+        raise ArgumentError, "operation id can't be blank" if operation_id.blank?
 
         @operation_id = operation_id.to_s
         @tags = options[:tags]
@@ -20,7 +20,7 @@ module Jsapi
       end
 
       def add_parameter(name, **options)
-        raise ArgumentError, "Parameter name can't be blank" if name.blank?
+        raise ArgumentError, "parameter name can't be blank" if name.blank?
 
         parameters[name.to_s] = Parameter.new(name, **options)
       end

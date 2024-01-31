@@ -16,7 +16,7 @@ module Jsapi
 
           options.except(:type, :nullable).each do |key, value|
             method = "#{key}="
-            raise ArgumentError, "Invalid option: '#{key}'" unless respond_to?(method)
+            raise ArgumentError, "invalid option: '#{key}'" unless respond_to?(method)
 
             send(method, value)
           end

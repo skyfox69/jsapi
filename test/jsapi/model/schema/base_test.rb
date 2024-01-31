@@ -10,7 +10,7 @@ module Jsapi
           error = assert_raises ArgumentError do
             Base.new(foo: 'bar')
           end
-          assert_equal("Invalid option: 'foo'", error.message)
+          assert_equal("invalid option: 'foo'", error.message)
         end
 
         def test_add_validator

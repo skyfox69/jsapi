@@ -101,7 +101,7 @@ module Jsapi
         error = assert_raises RuntimeError do
           Response.new(nil, schema, api_definitions).serialize
         end
-        assert_equal("Response can't be nil", error.message)
+        assert_equal("response can't be nil", error.message)
       end
 
       def test_serialization_error_on_object

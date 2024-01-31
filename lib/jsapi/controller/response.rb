@@ -17,7 +17,7 @@ module Jsapi
 
       def serialize_recursively(object, schema, path = nil)
         return if object.nil? && schema.nullable?
-        raise "#{path || 'Response'} can't be nil" if object.nil?
+        raise "#{path || 'response'} can't be nil" if object.nil?
 
         case schema.type
         when 'array'

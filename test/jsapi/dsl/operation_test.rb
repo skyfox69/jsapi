@@ -63,7 +63,7 @@ module Jsapi
         error = assert_raises Error do
           Operation.new(operation_model).call { parameter 'my_parameter', type: 'foo' }
         end
-        assert_equal("Invalid type: 'foo' (at 'my_parameter')", error.message)
+        assert_equal("invalid type: 'foo' (at 'my_parameter')", error.message)
       end
 
       # Request body tests
@@ -122,7 +122,7 @@ module Jsapi
         error = assert_raises Error do
           Operation.new(operation_model).call { request_body type: 'foo' }
         end
-        assert_equal("Invalid type: 'foo' (at request body)", error.message)
+        assert_equal("invalid type: 'foo' (at request body)", error.message)
       end
 
       # Response tests
@@ -213,7 +213,7 @@ module Jsapi
         error = assert_raises Error do
           Operation.new(operation_model).call { response type: 'foo' }
         end
-        assert_equal("Invalid type: 'foo' (at response)", error.message)
+        assert_equal("invalid type: 'foo' (at response)", error.message)
       end
     end
   end
