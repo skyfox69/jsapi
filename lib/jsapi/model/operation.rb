@@ -4,13 +4,13 @@ module Jsapi
   module Model
     class Operation
       attr_accessor :description, :path, :request_body, :summary, :tags
-      attr_reader :operation_id, :parameters, :responses
+      attr_reader :name, :parameters, :responses
       attr_writer :deprecated, :method
 
-      def initialize(operation_id, **options)
-        raise ArgumentError, "operation id can't be blank" if operation_id.blank?
+      def initialize(name, **options)
+        raise ArgumentError, "operation name can't be blank" if name.blank?
 
-        @operation_id = operation_id.to_s
+        @name = name.to_s
         @method = options[:method]
         @path = options[:path]
         @tags = options[:tags]
@@ -48,7 +48,7 @@ module Jsapi
       # Returns the OpenAPI operation object as a +Hash+.
       def to_openapi_operation
         {
-          operationId: operation_id,
+          operationId: name,
           tags: tags,
           summary: summary,
           description: description,

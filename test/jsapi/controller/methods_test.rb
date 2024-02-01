@@ -49,7 +49,7 @@ module Jsapi
         assert_equal({ json: 'My response', status: nil }, @render_options)
       end
 
-      def test_api_operation_on_invalid_operation_id
+      def test_api_operation_on_invalid_name
         error = assert_raises ArgumentError do
           api_operation(:foo) {}
         end
@@ -70,7 +70,7 @@ module Jsapi
         assert_equal('my_value', api_params(:my_operation).my_parameter)
       end
 
-      def test_api_parameters_on_invalid_operation_id
+      def test_api_parameters_on_invalid_operation_name
         error = assert_raises ArgumentError do
           api_params(:foo)
         end
@@ -84,7 +84,7 @@ module Jsapi
         assert_equal('My response', response.serialize)
       end
 
-      def test_api_response_on_invalid_operation_id
+      def test_api_response_on_invalid_operation_name
         error = assert_raises ArgumentError do
           api_response('My response', :foo)
         end

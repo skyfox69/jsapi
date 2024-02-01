@@ -20,9 +20,9 @@ module Jsapi
       #   api_definitions do
       #     operation 'my_operation', method: 'get', path: '/my_path'
       #   end
-      def operation(operation_id, **options, &block)
-        wrap_error("'#{operation_id}'") do
-          operation_model = model.add_operation(operation_id, **options)
+      def operation(name, **options, &block)
+        wrap_error("'#{name}'") do
+          operation_model = model.add_operation(name, **options)
           Operation.new(operation_model).call(&block) if block.present?
         end
       end

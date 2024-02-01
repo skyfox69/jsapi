@@ -32,17 +32,17 @@ module Jsapi
         assert_equal("operation already defined: 'my_operation'", error.message)
       end
 
-      def test_operation
+      def test_get_operation
         @api_definitions.add_operation('my_operation')
-        assert_equal('my_operation', @api_definitions.operation('my_operation').operation_id)
+        assert_equal('my_operation', @api_definitions.operation('my_operation').name)
       end
 
-      def test_default_operation
+      def test_get_default_operation
         @api_definitions.add_operation('my_operation')
-        assert_equal('my_operation', @api_definitions.operation.operation_id)
+        assert_equal('my_operation', @api_definitions.operation.name)
       end
 
-      def test_operation_on_nil
+      def test_get_operation_on_nil
         assert_nil(@api_definitions.operation(nil))
       end
 
