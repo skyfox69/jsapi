@@ -48,7 +48,7 @@ module Jsapi
               .map(&:operations)
               .reduce(&:merge)
               .values
-              .group_by { operation.path || default_path }
+              .group_by { |operation| operation.path || default_path }
               .transform_values do |operations|
                 operations.index_by(&:method).transform_values(&:to_openapi_operation)
               end,
