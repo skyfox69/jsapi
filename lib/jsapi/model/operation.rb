@@ -3,14 +3,16 @@
 module Jsapi
   module Model
     class Operation
-      attr_accessor :description, :operation_id, :request_body, :summary, :tags
-      attr_reader :parameters, :responses
-      attr_writer :deprecated
+      attr_accessor :description, :path, :request_body, :summary, :tags
+      attr_reader :operation_id, :parameters, :responses
+      attr_writer :deprecated, :method
 
       def initialize(operation_id, **options)
         raise ArgumentError, "operation id can't be blank" if operation_id.blank?
 
         @operation_id = operation_id.to_s
+        @method = options[:method]
+        @path = options[:path]
         @tags = options[:tags]
         @summary = options[:summary]
         @description = options[:description]
@@ -31,6 +33,10 @@ module Jsapi
 
       def deprecated?
         @deprecated == true
+      end
+
+      def method
+        @method || 'get'
       end
 
       # Returns the response associated with the given status, or the default

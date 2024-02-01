@@ -20,6 +20,7 @@ require 'pry'
 # Active Support
 require 'active_support'
 require 'active_support/core_ext/object'
+require 'active_support/core_ext/enumerable'
 require 'active_support/core_ext/array'
 require 'active_support/core_ext/string'
 

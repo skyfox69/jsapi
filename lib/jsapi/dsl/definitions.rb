@@ -15,6 +15,18 @@ module Jsapi
         model.include(*classes.map(&:api_definitions))
       end
 
+      # Defines an API operation.
+      #
+      #   api_definitions do
+      #     operation 'my_operation', method: 'get', path: '/my_path'
+      #   end
+      def operation(operation_id, **options, &block)
+        wrap_error("'#{operation_id}'") do
+          operation_model = model.add_operation(operation_id, **options)
+          Operation.new(operation_model).call(&block) if block.present?
+        end
+      end
+
       # Defines a reusable parameter.
       #
       #   api_definitions do
@@ -24,19 +36,6 @@ module Jsapi
         wrap_error("'#{name}'") do
           parameter_model = model.add_parameter(name, **options)
           Parameter.new(parameter_model).call(&block) if block.present?
-        end
-      end
-
-      # Defines an API path.
-      #
-      #   api_definitions do
-      #     path '/my_path'
-      #   end
-      def path(path, &block)
-        wrap_error("'#{path}'") do
-          path_model = Model::Path.new
-          Path.new(path_model).call(&block) if block.present?
-          model.add_path(path, path_model)
         end
       end
 

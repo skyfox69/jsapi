@@ -20,15 +20,13 @@ module Jsapi
         include Foo
         info name: 'Bar API', version: '1.0'
 
-        path '/my_path' do
-          operation :get, 'my_operation' do
-            parameter 'request_id', '$ref': :request_id
-            parameter 'my_parameter', type: 'string', required: true
-            response do
-              property 'my_property', type: 'string'
-            end
-            response 400, '$ref': :ErrorResponse
+        operation 'my_operation', method: 'get', path: '/my_path' do
+          parameter 'request_id', '$ref': :request_id
+          parameter 'my_parameter', type: 'string', required: true
+          response do
+            property 'my_property', type: 'string'
           end
+          response 400, '$ref': :ErrorResponse
         end
       end
     end

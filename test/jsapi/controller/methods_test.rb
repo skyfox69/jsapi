@@ -8,15 +8,13 @@ module Jsapi
       include DSL
       include Methods
 
-      attr_accessor :params
-
-      api_path '/my_path' do
-        operation :get, 'my_operation' do
-          parameter :my_parameter, type: 'string'
-          response type: 'string', nullable: true
-          response 200, type: 'string'
-        end
+      api_operation 'my_operation' do
+        parameter :my_parameter, type: 'string'
+        response type: 'string', nullable: true
+        response 200, type: 'string'
       end
+
+      attr_accessor :params
 
       def setup
         self.params = {}

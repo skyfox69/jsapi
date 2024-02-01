@@ -9,9 +9,7 @@ module Jsapi
         public :api_definitions
 
         api_definitions do
-          path '/my_path' do
-            operation :get, 'my_operation'
-          end
+          operation 'my_operation'
         end
       end
 
@@ -19,7 +17,7 @@ module Jsapi
         controller = MyController.new
         api_definitions = controller.api_definitions
 
-        assert_predicate(api_definitions.path('/my_path'), :present?)
+        assert_predicate(api_definitions.operation('my_operation'), :present?)
       end
     end
   end

@@ -34,18 +34,15 @@ module Jsapi
       def test_error_message
         error = assert_raises Error do
           Definitions.new(Model::Definitions.new).call do
-            path '/my_path' do
-              operation :get, 'my_operation' do
-                parameter 'my_parameter', type: 'object' do
-                  property('my_property') { bar 'foo' }
-                end
+            operation 'my_operation' do
+              parameter 'my_parameter', type: 'object' do
+                property('my_property') { bar 'foo' }
               end
             end
           end
         end
         assert_equal(
-          "unknown field: 'bar' (at '/my_path'/get 'my_operation'" \
-          "/'my_parameter'/'my_property')",
+          "unknown field: 'bar' (at 'my_operation'/'my_parameter'/'my_property')",
           error.message
         )
       end

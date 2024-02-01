@@ -7,16 +7,16 @@ module Jsapi
     class ClassMethodsTest < Minitest::Test
       extend ClassMethods
 
+      api_operation 'my_operation'
       api_parameter 'my_parameter'
-      api_path '/my_path'
       api_schema 'my_schema'
+
+      def test_api_operation
+        assert_equal %w[my_operation], api_definitions.operations.keys
+      end
 
       def test_api_parameter
         assert_equal %w[my_parameter], api_definitions.parameters.keys
-      end
-
-      def test_api_path
-        assert_equal %w[/my_path], api_definitions.paths.keys
       end
 
       def test_api_schema

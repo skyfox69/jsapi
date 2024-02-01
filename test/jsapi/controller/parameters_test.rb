@@ -8,13 +8,11 @@ module Jsapi
       include DSL
       include Methods
 
-      attr_accessor :params
-
-      api_path '/my_path' do
-        operation :get, 'my_operation' do
-          parameter :my_parameter, type: 'integer', minimum: 0
-        end
+      api_operation 'my_operation' do
+        parameter :my_parameter, type: 'integer', minimum: 0
       end
+
+      attr_accessor :params
 
       def test_attribute_reader
         assert_equal(1, my_operation_parameters(1).my_parameter)

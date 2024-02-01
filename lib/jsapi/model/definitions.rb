@@ -3,59 +3,68 @@
 module Jsapi
   module Model
     class Definitions
-      attr_reader :operations, :parameters, :paths, :schemas
+      attr_reader :operations, :parameters, :schemas
 
-      def initialize
-        @included = []
-        @parameters = {}
-        @paths = {}
-        @openapi_root = nil
+      def initialize(owner = nil)
+        @owner = owner
         @operations = {}
+        @parameters = {}
         @schemas = {}
+        @openapi_root = nil
+        @self_and_included = [self]
+      end
 
-        # Cache
-        @_operations = nil
-        @_parameters = nil
-        @_schemas = nil
+      def add_operation(name = nil, **options)
+        name = default_operation_name unless name.present?
+        name = name.to_s
+        raise "operation already defined: '#{name}'" if @operations.key?(name)
+
+        @operations[name] = Operation.new(name, **options)
       end
 
       def add_parameter(name, **options)
-        @_parameters = nil
-        @parameters[name.to_s] = Model::Parameter.new(name, **options)
-      end
+        name = name.to_s
+        raise "parameter already defined: '#{name}'" if @parameters.key?(name)
 
-      def add_path(path, path_model)
-        @_operations = nil
-        @paths[path.to_s] = path_model
-
-        path_model.operations.each_value do |operation|
-          @operations[operation.operation_id.to_s] = operation
-        end
-        path
+        @parameters[name.to_s] = Parameter.new(name, **options)
       end
 
       def add_schema(name, **options)
-        @_schemas = nil
-        @schemas[name.to_s] = Model::Schema.new(**options)
+        name = name.to_s
+        raise "schema already defined: '#{name}'" if @schemas.key?(name)
+
+        @schemas[name.to_s] = Schema.new(**options)
       end
 
       def include(*definitions)
         # TODO: prevent circular references
-        @_operations = nil
-        @_parameters = nil
-        @_schemas = nil
-
-        @included += definitions.reverse
+        @self_and_included += definitions
       end
 
       def openapi_document
         openapi_root.to_openapi.merge(
-          paths: _paths.transform_values(&:to_openapi_path),
+          paths:
+            @self_and_included
+              .map(&:operations)
+              .reduce(&:merge)
+              .values
+              .group_by { operation.path || default_path }
+              .transform_values do |operations|
+                operations.index_by(&:method).transform_values(&:to_openapi_operation)
+              end,
           components: {
-            parameters: _parameters.transform_values do |parameter|
-              parameter.to_openapi_parameters.first
-            end.presence,
-            schemas: _schemas.transform_values(&:to_openapi_schema).presence
+            parameters:
+              @self_and_included
+                .map(&:parameters)
+                .reduce(&:merge)
+                .transform_values do |parameter|
+                  parameter.to_openapi_parameters.first
+                end.presence,
+            schemas:
+              @self_and_included
+                .map(&:schemas)
+                .reduce(&:merge)
+                .transform_values(&:to_openapi_schema).presence
           }.compact
         ).transform_values(&:presence).compact
       end
@@ -64,40 +73,39 @@ module Jsapi
         @openapi_root ||= Generic.new(openapi: '3.0.3')
       end
 
-      def operation(operation_id)
-        # TODO: raise error if nil?
-        _operations[operation_id.to_s]
-      end
-
-      def path(name)
-        _paths[name.to_s]
+      def operation(name = nil)
+        if (name = name.to_s).present?
+          @self_and_included.each do |definitions|
+            operation = definitions.operations[name]
+            return operation if operation.present?
+          end
+        elsif @operations.one?
+          # return the one and only operation
+          return @operations.values.first
+        end
+        nil
       end
 
       def parameter(name)
-        _parameters[name.to_s]
+        return unless (name = name.to_s).present?
+
+        definitions = @self_and_included.find { |d| d.parameters.key?(name) }
+        definitions.parameters[name] if definitions.present?
       end
 
       def schema(name)
-        _schemas[name.to_s]
+        return unless (name = name.to_s).present?
+
+        definitions = @self_and_included.find { |d| d.schemas.key?(name) }
+        return definitions.schemas[name] if definitions.present?
       end
 
       private
 
-      def _operations
-        @_operations ||= @included.map(&:operations).reduce({}, &:reverse_merge).merge(@operations)
+      def default_path
+        @default_path ||= @owner.to_s.demodulize.delete_suffix('Controller').underscore
       end
-
-      def _parameters
-        @_parameters ||= @included.map(&:parameters).reduce({}, &:merge).merge(@parameters)
-      end
-
-      def _paths
-        @included.map(&:paths).reduce({}, &:merge).merge(@paths)
-      end
-
-      def _schemas
-        @_schemas ||= @included.map(&:schemas).reduce({}, &:merge).merge(@schemas)
-      end
+      alias default_operation_name default_path
     end
   end
 end
