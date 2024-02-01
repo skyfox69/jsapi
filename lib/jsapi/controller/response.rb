@@ -9,20 +9,20 @@ module Jsapi
         @schema = schema.resolve(definitions)
       end
 
-      def serialize
-        serialize_recursively(@object, @schema)
+      def to_json(*)
+        serialize(@object, @schema).to_json
       end
 
       private
 
-      def serialize_recursively(object, schema, path = nil)
+      def serialize(object, schema, path = nil)
         return if object.nil? && schema.nullable?
         raise "#{path || 'response'} can't be nil" if object.nil?
 
         case schema.type
         when 'array'
           item_schema = schema.items.resolve(@definitions)
-          Array(object).map { |item| serialize_recursively(item, item_schema, path) }
+          Array(object).map { |item| serialize(item, item_schema, path) }
         when 'integer'
           object.to_i
         when 'number'
@@ -31,7 +31,7 @@ module Jsapi
           return if object.blank? # {}
 
           schema.properties(@definitions).transform_values do |property|
-            serialize_recursively(
+            serialize(
               object.public_send(property.source || property.name),
               property.schema.resolve(@definitions),
               path.nil? ? property.name : "#{path}.#{property.name}"

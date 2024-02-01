@@ -19,28 +19,28 @@ module Jsapi
       #   api_operation :my_operation do |api_params|
       #     Article.find_by(api_params.id)
       #   end
-      def api_operation(operation_name, status: nil, &block)
+      def api_operation(operation_name = nil, status: nil, &block)
         head(status) && return if block.nil?
 
         response = api_response(block.call(api_params(operation_name)), operation_name, status: status)
-        render(json: response.serialize, status: status)
+        render(json: response, status: status)
       end
 
       # Returns a +Parameters+ object that wraps the parameters returned by +params+.
-      def api_params(operation_name)
+      def api_params(operation_name = nil)
         operation = api_definitions.operation(operation_name)
-        raise ArgumentError, "operation not defined: '#{operation_name}'" if operation.nil?
+        raise "operation not defined: '#{operation_name}'" if operation.nil?
 
         Parameters.new(params, operation, api_definitions)
       end
 
       # Returns a +Response+ object that wraps +object+.
-      def api_response(object, operation_name, status: nil)
+      def api_response(object, operation_name = nil, status: nil)
         operation = api_definitions.operation(operation_name)
-        raise ArgumentError, "operation not defined: '#{operation_name}'" if operation.nil?
+        raise "operation not defined: '#{operation_name}'" if operation.nil?
 
         response = operation.response(status)
-        raise ArgumentError, "status code not defined: '#{status}'" if response.nil?
+        raise "status code not defined: '#{status}'" if response.nil?
 
         Response.new(object, response.schema, api_definitions)
       end

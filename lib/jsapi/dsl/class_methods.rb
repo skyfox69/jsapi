@@ -12,7 +12,7 @@ module Jsapi
       end
 
       # See +Definitions#operation+
-      def api_operation(name, &block)
+      def api_operation(name = nil, &block)
         api_definitions { operation(name, &block) }
       end
 

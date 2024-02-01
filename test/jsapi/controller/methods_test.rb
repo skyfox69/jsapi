@@ -39,25 +39,26 @@ module Jsapi
         api_operation :my_operation, status: 200 do |_api_params|
           'My response'
         end
-        assert_equal({ json: 'My response', status: 200 }, @render_options)
+        assert_equal(200, @render_options[:status])
+        assert_equal('"My response"', @render_options[:json].to_json)
       end
 
       def test_api_operation_default_response
         api_operation :my_operation do |_api_params|
           'My response'
         end
-        assert_equal({ json: 'My response', status: nil }, @render_options)
+        assert_nil(@render_options[:status])
       end
 
-      def test_api_operation_on_invalid_name
-        error = assert_raises ArgumentError do
+      def test_api_operation_on_undefined_name
+        error = assert_raises RuntimeError do
           api_operation(:foo) {}
         end
         assert_equal("operation not defined: 'foo'", error.message)
       end
 
-      def test_api_operation_on_invalid_status_code
-        error = assert_raises ArgumentError do
+      def test_api_operation_on_undefined_status_code
+        error = assert_raises RuntimeError do
           api_operation(:my_operation, status: 204) {}
         end
         assert_equal("status code not defined: '204'", error.message)
@@ -70,8 +71,8 @@ module Jsapi
         assert_equal('my_value', api_params(:my_operation).my_parameter)
       end
 
-      def test_api_parameters_on_invalid_operation_name
-        error = assert_raises ArgumentError do
+      def test_api_parameters_on_undefined_operation_name
+        error = assert_raises RuntimeError do
           api_params(:foo)
         end
         assert_equal("operation not defined: 'foo'", error.message)
@@ -81,18 +82,18 @@ module Jsapi
 
       def test_api_response
         response = api_response('My response', :my_operation)
-        assert_equal('My response', response.serialize)
+        assert_equal('"My response"', response.to_json)
       end
 
-      def test_api_response_on_invalid_operation_name
-        error = assert_raises ArgumentError do
+      def test_api_response_on_undefined_operation_name
+        error = assert_raises RuntimeError do
           api_response('My response', :foo)
         end
         assert_equal("operation not defined: 'foo'", error.message)
       end
 
-      def test_api_response_on_invalid_status_code
-        error = assert_raises ArgumentError do
+      def test_api_response_on_undefined_status_code
+        error = assert_raises RuntimeError do
           api_response('My response', :my_operation, status: 204)
         end
         assert_equal("status code not defined: '204'", error.message)
