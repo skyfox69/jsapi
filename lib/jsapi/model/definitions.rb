@@ -75,15 +75,12 @@ module Jsapi
 
       def operation(name = nil)
         if (name = name.to_s).present?
-          @self_and_included.each do |definitions|
-            operation = definitions.operations[name]
-            return operation if operation.present?
-          end
+          definitions = @self_and_included.find { |d| d.operations.key?(name) }
+          return definitions.operations[name] if definitions.present?
         elsif @operations.one?
           # return the one and only operation
-          return @operations.values.first
+          @operations.values.first
         end
-        nil
       end
 
       def parameter(name)
