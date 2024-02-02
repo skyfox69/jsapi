@@ -10,7 +10,7 @@ module Jsapi
       def initialize(**options)
         @description = options[:description]
         @example = options[:example]
-        @required = options[:required]
+        @required = options[:required] == true
         @schema = Schema.new(**options.except(:description, :example, :required))
       end
 

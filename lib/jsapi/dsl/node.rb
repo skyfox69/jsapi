@@ -18,7 +18,7 @@ module Jsapi
           if model.respond_to?(method = "#{args.first}=")
             model.public_send(method, args.second)
           else
-            raise "unknown field: '#{args.first}'"
+            raise "unknown or invalid field: '#{args.first}'"
           end
         end
       end

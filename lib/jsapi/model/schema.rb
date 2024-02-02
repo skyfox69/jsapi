@@ -12,8 +12,7 @@ module Jsapi
     module Schema
       class << self
         def new(**options)
-          ref = options[:$ref]
-          return Reference.new(ref) if ref.present?
+          return Reference.new(options[:$ref]) if options.key?(:$ref)
 
           case type = options[:type]&.to_s
           when 'array'
@@ -28,7 +27,7 @@ module Jsapi
             StringSchema
           else
             raise ArgumentError, "invalid type: '#{type}'"
-          end.new(**options.except(:$ref))
+          end.new(**options)
         end
       end
     end

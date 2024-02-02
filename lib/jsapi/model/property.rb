@@ -11,8 +11,8 @@ module Jsapi
 
       def initialize(name, **options)
         @name = name&.to_s
-        @deprecated = options[:deprecated]
-        @required = options[:required]
+        @deprecated = options[:deprecated] == true
+        @required = options[:required] == true
         @source = options[:source]
         @schema = Schema.new(**options.except(:deprecated, :required, :source))
       end

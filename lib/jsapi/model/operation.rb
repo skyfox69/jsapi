@@ -16,14 +16,12 @@ module Jsapi
         @tags = options[:tags]
         @summary = options[:summary]
         @description = options[:description]
-        @deprecated = options[:deprecated]
+        @deprecated = options[:deprecated] == true
         @parameters = {}
         @responses = {}
       end
 
       def add_parameter(name, **options)
-        raise ArgumentError, "parameter name can't be blank" if name.blank?
-
         parameters[name.to_s] = Parameter.new(name, **options)
       end
 

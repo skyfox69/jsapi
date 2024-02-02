@@ -8,8 +8,11 @@ module Jsapi
     module Parameter
       class << self
         def new(name, **options)
-          ref = options[:$ref]
-          ref.present? ? Reference.new(ref) : Base.new(name, **options.except(:$ref))
+          if options.key?(:$ref)
+            Reference.new(options[:$ref])
+          else
+            Base.new(name, **options)
+          end
         end
       end
     end

@@ -14,8 +14,8 @@ module Jsapi
           @name = name.to_s
           @location = options[:in]
           @description = options[:description]
-          @required = options[:required]
-          @deprecated = options[:deprecated]
+          @required = options[:required] == true
+          @deprecated = options[:deprecated] == true
           @example = options[:example]
           @schema = Schema.new(**options.except(:deprecated, :description, :example, :in, :required))
         end
