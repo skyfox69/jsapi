@@ -3,10 +3,10 @@
 module Jsapi
   module DOM
     class Object < BaseObject
-      def initialize(attribute_values, schema)
+      def initialize(attributes, schema)
         super(schema)
         @attributes = schema.properties.transform_values do |property|
-          DOM.wrap(attribute_values[property.name], property.schema)
+          DOM.wrap(attributes[property.name], property.schema)
         end
       end
 
