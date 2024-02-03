@@ -8,14 +8,20 @@ module Jsapi
         self << Error.new(type, **options)
       end
 
-      # Error messages as a +String+.
+      # The error messages as a +String+.
       def full_message
         full_messages.join('. ')
       end
 
-      # Error messages as an +Array+.
+      alias to_s full_message
+
+      # The error messages as an +Array+.
       def full_messages
-        each.map { |error| error.message&.upcase_first }
+        each.filter_map { |error| error.message&.upcase_first }
+      end
+
+      def to_json(*)
+        full_message
       end
     end
   end

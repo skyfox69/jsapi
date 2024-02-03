@@ -11,8 +11,7 @@ module Jsapi
       end
 
       def message
-        # TODO: 'api.errors.messages'
-        I18n.t(type, scope: 'errors.messages', **@options)
+        I18n.t(type, scope: 'errors.messages', **@options) if type.present?
       end
     end
   end

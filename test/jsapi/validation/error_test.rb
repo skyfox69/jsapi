@@ -14,6 +14,11 @@ module Jsapi
         error = Error.new(:greater_than, count: 0)
         assert_equal('must be greater than 0', error.message)
       end
+
+      def test_message_on_nil_message
+        error = Error.new(nil)
+        assert_nil(error.message)
+      end
     end
   end
 end

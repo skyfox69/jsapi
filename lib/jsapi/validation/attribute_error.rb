@@ -9,7 +9,7 @@ module Jsapi
       end
 
       def message
-        "#{@name} #{@error.message}"
+        "#{@name} #{@error.message}" if @error&.message.present?
       end
     end
   end

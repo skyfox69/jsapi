@@ -36,4 +36,5 @@ require 'jsapi'
 require 'pry'
 
 # Start Minitest
+require 'minitest/stub_any_instance'
 require 'minitest/autorun'
