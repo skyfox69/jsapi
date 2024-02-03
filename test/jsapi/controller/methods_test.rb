@@ -17,7 +17,7 @@ module Jsapi
       attr_accessor :params
 
       def setup
-        self.params = {}
+        self.params = ActionController::Parameters.new
       end
 
       # #api_operation tests
@@ -28,7 +28,7 @@ module Jsapi
       end
 
       def test_api_operation_parameters
-        self.params = { 'my_parameter' => 'my_value' }
+        params['my_parameter'] = 'my_value'
 
         api_operation :my_operation do |api_params|
           assert_equal('my_value', api_params.my_parameter)
@@ -67,7 +67,7 @@ module Jsapi
       # #api_parameters tests
 
       def test_api_parameters
-        self.params = { 'my_parameter' => 'my_value' }
+        params['my_parameter'] = 'my_value'
         assert_equal('my_value', api_params(:my_operation).my_parameter)
       end
 

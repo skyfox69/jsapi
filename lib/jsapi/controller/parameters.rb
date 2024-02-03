@@ -6,6 +6,8 @@ module Jsapi
       include Validation
 
       def initialize(params, operation, definitions)
+        params = params.permit(*operation.parameters.keys)
+
         @parameters = operation.parameters.transform_values do |model|
           model = model.resolve(definitions)
           DOM.wrap(params[model.name], model.schema)
@@ -32,7 +34,7 @@ module Jsapi
       end
 
       def respond_to_missing?(param1, _param2)
-        @parameters.key?(param1&.to_s) ? true : super
+        @parameters.key?(param1.to_s) ? true : super
       end
     end
   end

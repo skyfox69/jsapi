@@ -14,9 +14,6 @@ Minitest.after_run do
   SimpleCov.at_exit_behavior
 end
 
-# Pry
-require 'pry'
-
 # Active Support
 require 'active_support'
 require 'active_support/core_ext/object'
@@ -29,13 +26,14 @@ ActiveSupport.on_load(:i18n) do
   I18n.load_path << File.expand_path('config/locale/en.yml', __dir__)
 end
 
-# Define dummy API controller
-module ActionController
-  class API; end
-end
+# Dummies
+require 'dummies/action_controller'
 
 # This gem
 require 'jsapi'
+
+# Pry
+require 'pry'
 
 # Start Minitest
 require 'minitest/autorun'
