@@ -10,23 +10,32 @@ module Jsapi
         self.class.api_definitions
       end
 
-      # Performs an API operation by calling the given block. The parameters are
-      # passed as a +Parameters+ instance to the block. The object returned by the
-      # block is serialized by a +Response+ object.
+      # Performs an API operation by calling the given block. The request
+      # parameters are passed as a +Parameters+ instance to the block.
+      # The object returned by the block is serialized by a +Response+
+      # instance.
       #
       # Example:
       #
-      #   api_operation :my_operation do |api_params|
-      #     Article.find_by(api_params.id)
+      #   api_operation(:foo) do |api_params|
+      #     bar(api_params)
       #   end
+      #
       def api_operation(operation_name = nil, status: nil, &block)
         head(status) && return if block.nil?
 
-        response = api_response(block.call(api_params(operation_name)), operation_name, status: status)
+        response = api_response(block.call(api_params(operation_name)),
+                                operation_name, status: status)
         render(json: response, status: status)
       end
 
-      # Returns a +Parameters+ object that wraps the parameters returned by +params+.
+      # Returns a +Parameters+ instance to read the request parameters by
+      # named methods.
+      #
+      # Example:
+      #
+      #   api_params(:foo)
+      #
       def api_params(operation_name = nil)
         operation = api_definitions.operation(operation_name)
         raise "operation not defined: '#{operation_name}'" if operation.nil?
@@ -34,7 +43,13 @@ module Jsapi
         Parameters.new(params, operation, api_definitions)
       end
 
-      # Returns a +Response+ object that wraps +object+.
+      # Returns a +Response+ instance to serialize +object+ according to the
+      # response definition of the given API operation and status.
+      #
+      # Example:
+      #
+      #   render(json: api_response(bar, :foo, status: 200))
+      #
       def api_response(object, operation_name = nil, status: nil)
         operation = api_definitions.operation(operation_name)
         raise "operation not defined: '#{operation_name}'" if operation.nil?
