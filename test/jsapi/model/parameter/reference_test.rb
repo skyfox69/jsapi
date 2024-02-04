@@ -14,10 +14,20 @@ module Jsapi
           assert_equal(parameter, parameter_ref.resolve(api_definitions))
         end
 
+        def test_resolve_recursively
+          api_definitions = Definitions.new
+          parameter = api_definitions.add_parameter('foo')
+
+          api_definitions.add_parameter('foo_ref', '$ref': 'foo')
+
+          parameter_ref = Reference.new('foo_ref')
+          assert_equal(parameter, parameter_ref.resolve(api_definitions))
+        end
+
         def test_openapi_parameters
-          reference = Reference.new(:my_parameter)
+          reference = Reference.new(:foo)
           assert_equal(
-            [{ '$ref': '#/components/parameters/my_parameter' }],
+            [{ '$ref': '#/components/parameters/foo' }],
             reference.to_openapi_parameters
           )
         end

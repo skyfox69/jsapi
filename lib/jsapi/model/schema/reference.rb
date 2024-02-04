@@ -10,7 +10,8 @@ module Jsapi
           schema = definitions.schema(reference)
           raise ReferenceError, reference if schema.nil?
 
-          schema
+          # resolve reference recursively
+          schema.resolve(definitions)
         end
 
         # Returns the JSON schema as a +Hash+.

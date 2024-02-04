@@ -10,7 +10,8 @@ module Jsapi
           parameter = definitions.parameter(reference)
           raise ReferenceError, reference if parameter.nil?
 
-          parameter
+          # resolve reference recursively
+          parameter.resolve(definitions)
         end
 
         # Returns the OpenAPI reference object as an array containing a single hash.

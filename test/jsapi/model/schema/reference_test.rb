@@ -14,6 +14,16 @@ module Jsapi
           assert_equal(schema, schema_ref.resolve(api_definitions))
         end
 
+        def test_resolve_recursively
+          api_definitions = Definitions.new
+          schema = api_definitions.add_schema('foo')
+
+          api_definitions.add_schema('foo_ref', '$ref': 'foo')
+
+          schema_ref = Reference.new('foo_ref')
+          assert_equal(schema, schema_ref.resolve(api_definitions))
+        end
+
         def test_json_schema
           schema_ref = Reference.new('foo')
           assert_equal(
