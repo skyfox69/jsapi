@@ -5,12 +5,6 @@ require 'test_helper'
 module Jsapi
   module Controller
     class ParametersTest < Minitest::Test
-      def test_unpermitted_parameters
-        assert_raises(ActionController::UnpermittedParameters) do
-          parameters(foo: 'bar')
-        end
-      end
-
       # Attribute reader tests
 
       def test_bracket_operator
