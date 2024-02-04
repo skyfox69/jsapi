@@ -4,7 +4,7 @@ module Jsapi
   module DSL
     class DefinitionsTest < Minitest::Test
       class Foo
-        extend DSL::ClassMethods
+        extend ClassMethods
         api_definitions do
           schema 'foo', type: 'object'
         end

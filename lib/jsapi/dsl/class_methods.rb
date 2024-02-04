@@ -4,11 +4,15 @@ module Jsapi
   module DSL
     module ClassMethods
       # The API definitions of the current class.
-      # TODO: Describe block
       def api_definitions(&block)
         @api_definitions ||= Model::Definitions.new(self)
         Definitions.new(@api_definitions).call(&block) if block.present?
         @api_definitions
+      end
+
+      # See +Definitions#include+
+      def api_include(*classes)
+        api_definitions { include(*classes) }
       end
 
       # See +Definitions#operation+
