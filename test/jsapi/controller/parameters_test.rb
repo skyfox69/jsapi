@@ -5,6 +5,46 @@ require 'test_helper'
 module Jsapi
   module Controller
     class ParametersTest < Minitest::Test
+      # Initialization tests
+
+      def test_initialize_on_query_string_parameters
+        definitions = Model::Definitions.new
+        operation = definitions.add_operation('my_operation')
+        operation.add_parameter('my_parameter', type: 'string')
+
+        parameters = parameters(definitions, operation, my_parameter: 'foo')
+
+        assert_equal('foo', parameters['my_parameter'])
+      end
+
+      def test_initialize_on_request_body
+        definitions = Model::Definitions.new
+        operation = definitions.add_operation('my_operation')
+        request_body = operation.set_request_body(type: 'object')
+        request_body.schema.add_property('my_property', type: 'string')
+
+        parameters = parameters(definitions, operation, my_property: 'foo')
+
+        assert_equal('foo', parameters['my_property'])
+      end
+
+      def test_initialize_on_query_string_parameters_and_request_body
+        definitions = Model::Definitions.new
+        operation = definitions.add_operation('my_operation')
+        operation.add_parameter('my_parameter', type: 'string')
+        request_body = operation.set_request_body(type: 'object')
+        request_body.schema.add_property('my_property', type: 'string')
+
+        parameters = parameters(
+          definitions,
+          operation,
+          my_parameter: 'foo',
+          my_property: 'bar'
+        )
+        assert_equal('foo', parameters['my_parameter'])
+        assert_equal('bar', parameters['my_property'])
+      end
+
       # Attribute reader tests
 
       def test_bracket_operator
@@ -50,9 +90,12 @@ module Jsapi
         end
       end
 
-      def parameters(**args)
+      def parameters(definitions = nil, operation = nil, **args)
+        definitions = self.definitions unless definitions.present?
+        operation = definitions.operation unless operation.present?
+
         params = ActionController::Parameters.new(**args)
-        Parameters.new(params, definitions.operation, definitions)
+        Parameters.new(params, operation, definitions)
       end
     end
   end

@@ -3,8 +3,8 @@
 module Jsapi
   module Model
     class Operation
-      attr_accessor :description, :path, :request_body, :summary, :tags
-      attr_reader :name, :parameters, :responses
+      attr_accessor :description, :path, :summary, :tags
+      attr_reader :name, :parameters, :request_body, :responses
       attr_writer :deprecated, :method
 
       def initialize(name, **options)
@@ -45,6 +45,10 @@ module Jsapi
       # response if +status+ is +nil+.
       def response(status = nil)
         responses[status || 'default']
+      end
+
+      def set_request_body(**options)
+        @request_body = RequestBody.new(**options)
       end
 
       # Returns the OpenAPI operation object as a +Hash+.

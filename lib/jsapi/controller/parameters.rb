@@ -6,11 +6,17 @@ module Jsapi
       include Validation
 
       def initialize(params, operation, definitions)
-        @parameters = operation.parameters.to_h do |name, parameter|
-          # Resolve parameter and schema
-          schema = parameter.resolve(definitions).schema.resolve(definitions)
+        # Merge parameters and request body properties
+        models = operation.parameters.transform_values do |parameter|
+          parameter.resolve(definitions)
+        end
+        if (schema = operation.request_body&.schema).respond_to?(:properties)
+          models.merge!(schema.properties)
+        end
 
-          [name, DOM.wrap(params[name], schema)]
+        # Wrap params
+        @parameters = models.each_with_object({}) do |(name, model), p|
+          p[name] = DOM.wrap(params[name], model.schema.resolve(definitions))
         end
       end
 

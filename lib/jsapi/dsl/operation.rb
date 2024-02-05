@@ -18,8 +18,8 @@ module Jsapi
       # Defines the request body.
       def request_body(**options, &block)
         wrap_error 'request body' do
-          model.request_body = Model::RequestBody.new(**options)
-          RequestBody.new(model.request_body).call(&block) if block.present?
+          request_body = model.set_request_body(**options)
+          RequestBody.new(request_body).call(&block) if block.present?
         end
       end
 
