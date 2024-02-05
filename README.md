@@ -188,6 +188,7 @@ The following options are available for parameters, responses and schemas:
 - `min_length` (only 'string')
 - `max_length` (only 'string')
 - `pattern` (only 'string')
+- `schema`
 
 #### Annotations
 
@@ -207,10 +208,6 @@ For OpenAPI documentation only:
 - `summary`
 - `deprecated`
 
-### Additional Parameter Options
-
-- `$ref`
-
 For OpenAPI documentation only:
 
 - `in`: 'path' or 'query'
@@ -222,10 +219,6 @@ For OpenAPI documentation only:
 For OpenAPI documentation only:
 
 - `required`
-
-### Additional Schema Options
-
-- `$ref`
 
 ### Additional Property Options
 
