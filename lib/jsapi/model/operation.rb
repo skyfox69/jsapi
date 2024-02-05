@@ -25,6 +25,10 @@ module Jsapi
         parameters[name.to_s] = Parameter.new(name, **options)
       end
 
+      def add_parameter_reference(name)
+        parameters[name.to_s] = ParameterReference.new(name)
+      end
+
       def add_response(status = nil, **options)
         responses[status || 'default'] = Response.new(**options)
       end

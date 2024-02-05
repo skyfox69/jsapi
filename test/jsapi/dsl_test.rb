@@ -21,12 +21,12 @@ module Jsapi
         info name: 'Bar API', version: '1.0'
 
         operation 'my_operation', method: 'get', path: '/my_path' do
-          parameter 'request_id', '$ref': :request_id
+          parameter 'request_id'
           parameter 'my_parameter', type: 'string', required: true
           response do
             property 'my_property', type: 'string'
           end
-          response 400, '$ref': :ErrorResponse
+          response 400, schema: :ErrorResponse
         end
       end
     end

@@ -3,13 +3,15 @@
 module Jsapi
   module DSL
     class Operation < Node
-      # Additional fields: deprecated, description, summary
-
       # Defines a parameter.
       def parameter(name, **options, &block)
         wrap_error "'#{name}'" do
-          parameter_model = model.add_parameter(name, **options)
-          Parameter.new(parameter_model).call(&block) if block.present?
+          if options.any? || block.present?
+            parameter_model = model.add_parameter(name, **options)
+            Parameter.new(parameter_model).call(&block) if block.present?
+          else
+            model.add_parameter_reference(name)
+          end
         end
       end
 

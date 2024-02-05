@@ -1,18 +1,62 @@
 # frozen_string_literal: true
 
-require_relative 'parameter/base'
-require_relative 'parameter/reference'
-
 module Jsapi
   module Model
-    module Parameter
-      class << self
-        def new(name, **options)
-          if options.key?(:$ref)
-            Reference.new(options[:$ref])
-          else
-            Base.new(name, **options)
+    class Parameter
+      attr_accessor :description, :example, :location, :name
+      attr_reader :schema
+      attr_writer :deprecated, :required
+
+      def initialize(name, **options)
+        raise ArgumentError, "parameter name can't be blank" if name.blank?
+
+        @name = name.to_s
+        @location = options[:in]
+        @description = options[:description]
+        @required = options[:required] == true
+        @deprecated = options[:deprecated] == true
+        @example = options[:example]
+        @schema = Schema.new(**options.except(:deprecated, :description, :example, :in, :required))
+      end
+
+      def deprecated?
+        @deprecated == true
+      end
+
+      def required?
+        @required == true || location == 'path'
+      end
+
+      def resolve(_definitions)
+        self
+      end
+
+      # Returns the OpenAPI parameter objects as an array of hashes.
+      def to_openapi_parameters
+        if schema.respond_to?(:type) && schema.type == 'object'
+          schema.properties.map do |_key, property|
+            {
+              name: "#{name}[#{property.name}]",
+              in: location,
+              description: property.schema.description,
+              required: property.required?,
+              deprecated: property.deprecated?,
+              schema: property.schema.to_openapi_schema,
+              example: property.schema.example
+            }.compact
           end
+        else
+          [
+            {
+              name: name,
+              in: location,
+              description: description,
+              required: required?,
+              deprecated: deprecated?,
+              schema: schema.to_openapi_schema,
+              example: example
+            }.compact
+          ]
         end
       end
     end

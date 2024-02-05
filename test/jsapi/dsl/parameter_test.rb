@@ -4,7 +4,7 @@ module Jsapi
   module DSL
     class ParameterTest < Minitest::Test
       def test_annotations
-        parameter_model = Model::Parameter.new('my_parameter')
+        parameter_model = Model::Parameter.new('my_parameter', type: 'string')
         Parameter.new(parameter_model).call do
           description 'My description'
           deprecated true

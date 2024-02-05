@@ -6,8 +6,8 @@ module Jsapi
   module Model
     class SchemaTest < Minitest::Test
       def test_new_reference
-        schema = Schema.new('$ref': :my_schema)
-        assert_equal(:my_schema, schema.reference)
+        schema = Schema.new(schema: 'my_schema')
+        assert_equal('my_schema', schema.reference)
       end
 
       def test_new_schema

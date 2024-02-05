@@ -4,6 +4,7 @@ module Jsapi
   module DSL
     class Schema < Node
       COMMON_METHODS = %i[
+        all_of
         default
         enum
         exclusive_maximum

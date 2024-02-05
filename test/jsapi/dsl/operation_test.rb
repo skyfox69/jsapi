@@ -45,14 +45,37 @@ module Jsapi
         )
       end
 
-      def test_parameter_reference
+      def test_parameter_with_block
         operation_model = Model::Operation.new('my_operation')
         Operation.new(operation_model).call do
-          parameter 'my_parameter', '$ref': 'my_reusable_parameter'
+          parameter 'my_parameter' do
+            property 'my_property', type: 'string'
+          end
         end
 
         assert_equal(
-          [{ '$ref': '#/components/parameters/my_reusable_parameter' }],
+          [
+            {
+              name: 'my_parameter[my_property]',
+              required: false,
+              deprecated: false,
+              schema: {
+                type: 'string'
+              }
+            }
+          ],
+          operation_model.to_openapi_operation[:parameters]
+        )
+      end
+
+      def test_parameter_reference
+        operation_model = Model::Operation.new('my_operation')
+        Operation.new(operation_model).call do
+          parameter 'my_parameter'
+        end
+
+        assert_equal(
+          [{ '$ref': '#/components/parameters/my_parameter' }],
           operation_model.to_openapi_operation[:parameters]
         )
       end
@@ -100,7 +123,7 @@ module Jsapi
       def test_request_body_reference
         operation_model = Model::Operation.new('my_operation')
         Operation.new(operation_model).call do
-          request_body '$ref': 'my_request_body'
+          request_body schema: 'my_request_body'
         end
 
         assert_equal(
@@ -190,7 +213,7 @@ module Jsapi
       def test_response_reference
         operation_model = Model::Operation.new('my_operation')
         Operation.new(operation_model).call do
-          response '$ref': 'my_response'
+          response schema: 'my_response'
         end
 
         assert_equal(

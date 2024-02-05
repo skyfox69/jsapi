@@ -18,7 +18,7 @@ module Jsapi
           api_definitions = Definitions.new
           schema = api_definitions.add_schema('foo')
 
-          api_definitions.add_schema('foo_ref', '$ref': 'foo')
+          api_definitions.add_schema('foo_ref', schema: 'foo')
 
           schema_ref = Reference.new('foo_ref')
           assert_equal(schema, schema_ref.resolve(api_definitions))
