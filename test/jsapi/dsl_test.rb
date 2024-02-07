@@ -43,7 +43,6 @@ module Jsapi
             '/my_path' => {
               'get' => {
                 operationId: 'my_operation',
-                deprecated: false,
                 parameters: [
                   {
                     '$ref': '#/components/parameters/request_id'
@@ -51,7 +50,6 @@ module Jsapi
                   {
                     name: 'my_parameter',
                     required: true,
-                    deprecated: false,
                     schema: {
                       type: 'string'
                     }
@@ -65,7 +63,8 @@ module Jsapi
                           type: 'object',
                           properties: {
                             'my_property' => {
-                              type: 'string'
+                              type: 'string',
+                              nullable: true
                             }
                           },
                           required: []
@@ -91,9 +90,9 @@ module Jsapi
               'request_id' => {
                 name: 'request_id',
                 required: false,
-                deprecated: false,
                 schema: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 }
               }
             },
@@ -102,10 +101,12 @@ module Jsapi
                 type: 'object',
                 properties: {
                   'code' => {
-                    type: 'integer'
+                    type: 'integer',
+                    nullable: true
                   },
                   'detail' => {
-                    type: 'string'
+                    type: 'string',
+                    nullable: true
                   }
                 },
                 required: []

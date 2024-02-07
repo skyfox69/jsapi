@@ -3,23 +3,22 @@
 module Jsapi
   module DSL
     class OperationTest < Minitest::Test
-      def test_annotations
+      def test_summary
         operation_model = Model::Operation.new('my_operation')
-        Operation.new(operation_model).call do
-          summary 'My summary'
-          description 'My description'
-          deprecated true
-        end
+        Operation.new(operation_model).call { summary 'My summary' }
+        assert_equal('My summary', operation_model.summary)
+      end
 
-        assert_equal(
-          {
-            operationId: 'my_operation',
-            summary: 'My summary',
-            description: 'My description',
-            deprecated: true
-          },
-          operation_model.to_openapi_operation.except(:parameters, :responses)
-        )
+      def test_description
+        operation_model = Model::Operation.new('my_operation')
+        Operation.new(operation_model).call { description 'My description' }
+        assert_equal('My description', operation_model.description)
+      end
+
+      def test_deprecated
+        operation_model = Model::Operation.new('my_operation')
+        Operation.new(operation_model).call { deprecated true }
+        assert(operation_model.deprecated?)
       end
 
       # Parameter tests
@@ -35,9 +34,9 @@ module Jsapi
             {
               name: 'my_parameter',
               required: false,
-              deprecated: false,
               schema: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               }
             }
           ],
@@ -48,7 +47,7 @@ module Jsapi
       def test_parameter_with_block
         operation_model = Model::Operation.new('my_operation')
         Operation.new(operation_model).call do
-          parameter 'my_parameter' do
+          parameter 'my_parameter', type: 'object' do
             property 'my_property', type: 'string'
           end
         end
@@ -58,9 +57,9 @@ module Jsapi
             {
               name: 'my_parameter[my_property]',
               required: false,
-              deprecated: false,
               schema: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               }
             }
           ],
@@ -70,12 +69,12 @@ module Jsapi
 
       def test_parameter_reference
         operation_model = Model::Operation.new('my_operation')
-        Operation.new(operation_model).call do
-          parameter 'my_parameter'
-        end
+        Operation.new(operation_model).call { parameter 'my_parameter' }
 
         assert_equal(
-          [{ '$ref': '#/components/parameters/my_parameter' }],
+          [
+            { '$ref': '#/components/parameters/my_parameter' }
+          ],
           operation_model.to_openapi_operation[:parameters]
         )
       end
@@ -105,6 +104,7 @@ module Jsapi
               'application/json' => {
                 schema: {
                   type: 'object',
+                  nullable: true,
                   properties: {
                     'my_property' => {
                       type: 'string'
@@ -167,7 +167,8 @@ module Jsapi
                     type: 'object',
                     properties: {
                       'my_property' => {
-                        type: 'string'
+                        type: 'string',
+                        nullable: true
                       }
                     },
                     required: []
@@ -197,7 +198,8 @@ module Jsapi
                     type: 'object',
                     properties: {
                       'my_property' => {
-                        type: 'string'
+                        type: 'string',
+                        nullable: true
                       }
                     },
                     required: []

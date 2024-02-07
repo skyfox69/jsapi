@@ -20,40 +20,78 @@ module Jsapi
           assert_equal(%w[foo bar], properties.keys)
         end
 
-        %w[json openapi].each do |name|
-          define_method("test_minimal_#{name}_schema") do
-            schema = ObjectSchema.new
-            assert_equal(
-              {
-                type: 'object',
-                properties: {},
-                required: []
-              },
-              schema.public_send("to_#{name}_schema")
-            )
-          end
+        # JSON Schema tests
 
-          define_method("test_#{name}_schema") do
-            schema = ObjectSchema.new
-            schema.add_property('foo', type: 'string', required: true)
-            schema.add_property('bar', type: 'integer')
+        def test_json_schema
+          schema = ObjectSchema.new(nullable: true)
+          schema.add_property('foo', type: 'string', required: true)
+          schema.add_property('bar', type: 'integer')
 
-            assert_equal(
-              {
-                type: 'object',
-                properties: {
-                  'foo' => {
-                    type: 'string'
-                  },
-                  'bar' => {
-                    type: 'integer'
-                  }
+          assert_equal(
+            {
+              type: %w[object null],
+              properties: {
+                'foo' => {
+                  type: 'string'
                 },
-                required: %w[foo]
+                'bar' => {
+                  type: %w[integer null]
+                }
               },
-              schema.public_send("to_#{name}_schema")
-            )
-          end
+              required: %w[foo]
+            },
+            schema.to_json_schema
+          )
+        end
+
+        def test_minimal_json_schema
+          schema = ObjectSchema.new
+          assert_equal(
+            {
+              type: 'object',
+              properties: {},
+              required: []
+            },
+            schema.to_json_schema
+          )
+        end
+
+        # OpenAPI tests
+
+        def test_openapi_schema
+          schema = ObjectSchema.new(nullable: true)
+          schema.add_property('foo', type: 'string', required: true)
+          schema.add_property('bar', type: 'integer')
+
+          assert_equal(
+            {
+              type: 'object',
+              nullable: true,
+              properties: {
+                'foo' => {
+                  type: 'string'
+                },
+                'bar' => {
+                  type: 'integer',
+                  nullable: true
+                }
+              },
+              required: %w[foo]
+            },
+            schema.to_openapi_schema
+          )
+        end
+
+        def test_minimal_openapi_schema
+          schema = ObjectSchema.new
+          assert_equal(
+            {
+              type: 'object',
+              properties: {},
+              required: []
+            },
+            schema.to_openapi_schema
+          )
         end
       end
     end

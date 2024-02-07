@@ -13,9 +13,9 @@ module Jsapi
               name: 'my_parameter',
               in: 'query',
               required: false,
-              deprecated: false,
               schema: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               }
             }
           ],
@@ -34,7 +34,6 @@ module Jsapi
               name: 'my_parameter[property1]',
               in: 'query',
               required: true,
-              deprecated: false,
               schema: {
                 type: 'string'
               }
@@ -43,9 +42,9 @@ module Jsapi
               name: 'my_parameter[property2]',
               in: 'query',
               required: false,
-              deprecated: false,
               schema: {
-                type: 'integer'
+                type: 'integer',
+                nullable: true
               }
             }
           ],

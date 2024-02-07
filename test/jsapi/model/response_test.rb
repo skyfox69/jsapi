@@ -4,7 +4,7 @@ require 'test_helper'
 
 module Jsapi
   module Model
-    class ResponseBodyTest < Minitest::Test
+    class ResponseTest < Minitest::Test
       def test_minimal_response
         response = Response.new(type: 'string')
 

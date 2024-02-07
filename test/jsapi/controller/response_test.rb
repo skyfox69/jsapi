@@ -106,7 +106,7 @@ module Jsapi
 
       def test_serialization_error_on_object
         schema = Model::Schema.new(type: 'object')
-        schema.add_property(:my_property, type: 'string')
+        schema.add_property(:my_property, type: 'string', required: true)
 
         object = Object.new
         object.define_singleton_method(:my_property) { nil }
@@ -120,7 +120,7 @@ module Jsapi
       def test_serialization_error_on_nested_object
         schema = Model::Schema.new(type: 'object')
         nested_schema = schema.add_property(:nested, type: 'object').schema
-        nested_schema.add_property(:property, type: 'string')
+        nested_schema.add_property(:property, type: 'string', required: true)
 
         nested = Object.new
         nested.define_singleton_method(:property) { nil }

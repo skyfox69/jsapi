@@ -6,24 +6,57 @@ module Jsapi
   module Model
     module Schema
       class ArraySchemaTest < Minitest::Test
-        %w[json openapi].each do |name|
-          define_method("test_minimal_#{name}_schema") do
-            schema = ArraySchema.new
-            assert_equal({ type: 'array', items: {} }, schema.to_json_schema)
-          end
+        # JSON Schema tests
 
-          define_method("test_#{name}_schema") do
-            schema = ArraySchema.new(items: { type: 'string' })
-            assert_equal(
-              {
-                type: 'array',
-                items: {
-                  type: 'string'
-                }
-              },
-              schema.public_send("to_#{name}_schema")
-            )
-          end
+        def test_json_schema
+          schema = ArraySchema.new(items: { type: 'string' }, nullable: true)
+          assert_equal(
+            {
+              type: %w[array null],
+              items: {
+                type: 'string'
+              }
+            },
+            schema.to_json_schema
+          )
+        end
+
+        def test_minimal_json_schema
+          schema = ArraySchema.new
+          assert_equal(
+            {
+              type: 'array',
+              items: {}
+            },
+            schema.to_json_schema
+          )
+        end
+
+        # OpenAPI tests
+
+        def test_openapi_schema
+          schema = ArraySchema.new(items: { type: 'string' }, nullable: true)
+          assert_equal(
+            {
+              type: 'array',
+              nullable: true,
+              items: {
+                type: 'string'
+              }
+            },
+            schema.to_openapi_schema
+          )
+        end
+
+        def test_minimal_openapi_schema
+          schema = ArraySchema.new
+          assert_equal(
+            {
+              type: 'array',
+              items: {}
+            },
+            schema.to_openapi_schema
+          )
         end
       end
     end

@@ -13,7 +13,8 @@ module Jsapi
             content: {
               'application/json' => {
                 schema: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 }
               }
             },

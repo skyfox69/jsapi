@@ -6,8 +6,13 @@ module Jsapi
       def test_description
         schema = Model::Schema.new
         Schema.new(schema).call { description 'My description' }
-
         assert_equal('My description', schema.description)
+      end
+
+      def test_nullable
+        schema = Model::Schema.new
+        Schema.new(schema).call { nullable true }
+        assert(schema.nullable?)
       end
 
       def test_all_of
@@ -60,7 +65,8 @@ module Jsapi
             type: 'object',
             properties: {
               'my_property' => {
-                type: 'string'
+                type: 'string',
+                nullable: true
               }
             },
             required: []

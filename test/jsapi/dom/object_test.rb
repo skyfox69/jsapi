@@ -26,14 +26,6 @@ module Jsapi
         assert_equal('foo', object.foo)
       end
 
-      def test_validate_positive
-        assert_predicate(Object.new({ 'foo' => 'foo' }, schema), :valid?)
-      end
-
-      def test_validate_negative
-        assert_predicate(Object.new({ 'foo' => nil }, schema), :invalid?)
-      end
-
       def test_respond_to
         assert(Object.new({}, schema).respond_to?(:foo))
       end
@@ -42,12 +34,22 @@ module Jsapi
         assert(!Object.new({}, schema).respond_to?(:foo_bar))
       end
 
+      # Validation tests
+
+      def test_validate_positive
+        assert_predicate(Object.new({ 'foo' => 'foo', 'bar' => nil }, schema), :valid?)
+      end
+
+      def test_validate_negative
+        assert_predicate(Object.new({ 'foo' => nil }, schema), :invalid?)
+      end
+
       private
 
       def schema
         Model::Schema.new.tap do |schema|
-          schema.add_property('foo', type: 'string', nullable: false)
-          schema.add_property('bar', type: 'string', nullable: true)
+          schema.add_property('foo', type: 'string', required: true)
+          schema.add_property('bar', type: 'string')
         end
       end
     end

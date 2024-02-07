@@ -10,7 +10,7 @@ module Jsapi
 
       api_operation 'my_operation' do
         parameter :my_parameter, type: 'string'
-        response type: 'string', nullable: true
+        response type: 'string'
         response 200, type: 'string'
       end
 

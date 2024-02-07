@@ -58,7 +58,7 @@ module Jsapi
           tags: tags,
           summary: summary,
           description: description,
-          deprecated: deprecated?,
+          deprecated: (true if deprecated?),
           parameters: parameters.values.flat_map(&:to_openapi_parameters),
           request_body: request_body&.to_openapi_request_body,
           responses: responses.transform_values(&:to_openapi_response)

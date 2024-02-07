@@ -15,7 +15,6 @@ module Jsapi
         maximum
         min_length
         minimum
-        nullable
         pattern
         property
         validate

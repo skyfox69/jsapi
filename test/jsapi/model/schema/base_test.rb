@@ -38,11 +38,6 @@ module Jsapi
           schema = Base.new(nullable: true)
           assert schema.nullable?
         end
-
-        def test_not_nullable_by_default
-          schema = Base.new
-          assert !schema.nullable?
-        end
       end
     end
   end
