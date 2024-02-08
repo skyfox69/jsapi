@@ -4,16 +4,17 @@ module Jsapi
   module Model
     module Schema
       class Base
-        attr_accessor :default, :description, :example, :existence
+        include ExistenceAttribute
+
+        attr_accessor :default, :description, :example
         attr_reader :all_of, :enum, :type, :validators
 
         def initialize(**options)
-          @existence = Existence.from(options[:existence])
           @type = options[:type]
           @all_of = []
           @validators = {}
 
-          options.except(:existence, :type).each do |key, value|
+          options.except(:type).each do |key, value|
             method = "#{key}="
             raise ArgumentError, "invalid option: '#{key}'" unless respond_to?(method)
 

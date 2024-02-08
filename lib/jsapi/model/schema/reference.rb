@@ -4,11 +4,13 @@ module Jsapi
   module Model
     module Schema
       class Reference
-        attr_reader :existence, :reference
+        include ExistenceAttribute
 
-        def initialize(reference, existence = nil)
+        attr_reader :reference
+
+        def initialize(reference, existence: nil)
           @reference = reference
-          @existence = Existence.from(existence)
+          self.existence = existence unless existence.nil?
         end
 
         # Resolves the reference by looking up the reusable schema in +definitions+.

@@ -27,6 +27,8 @@ module Jsapi
       PRESENT = new(4)
 
       def self.from(value)
+        return value if value.is_a?(Existence)
+
         case value
         when :present, true
           PRESENT
@@ -34,8 +36,10 @@ module Jsapi
           ALLOW_EMPTY
         when :allow_nil
           ALLOW_NIL
-        else
+        when :allow_omitted, false
           ALLOW_OMITTED
+        else
+          raise ArgumentError, "invalid existence: #{value}"
         end
       end
 

@@ -1,10 +1,11 @@
 # frozen_string_literal: true
 
+require_relative 'schema/existence_attribute'
+require_relative 'schema/reference'
 require_relative 'schema/base'
 require_relative 'schema/array_schema'
 require_relative 'schema/numeric_schema'
 require_relative 'schema/object_schema'
-require_relative 'schema/reference'
 require_relative 'schema/string_schema'
 
 module Jsapi
@@ -12,7 +13,7 @@ module Jsapi
     module Schema
       class << self
         def new(**options)
-          return Reference.new(options[:schema], options[:existence]) if options.key?(:schema)
+          return Reference.new(options[:schema], existence: options[:existence]) if options.key?(:schema)
 
           case type = options[:type]&.to_s
           when 'array'

@@ -132,16 +132,15 @@ JSON API components:
 - `api_operation`: Defines a single API operation
 - `api_parameter`: Defines a reusable parameter
 - `api_schema`: Defines a reusable schema
-- `api_definitions`: Common API definitions
-- `api_include`: Include API definitions from other classes
+- `api_include`: Includes API definitions from other classes
 
-API operations, parameters and schemas can also be defined inside an
-`api_definitions` block, for example:
+API components can also be defined inside an `api_definitions` block,
+for example:
 
 ```ruby
   api_definitions do
     operation 'foo' do
-      parameter 'bar', '$ref': :bar
+      parameter 'bar'
       response schema: :FooResponse
     end
 
@@ -153,30 +152,29 @@ API operations, parameters and schemas can also be defined inside an
   end
 ```
 
-The names and types of operations, parameters, schemas and properties can be
-strings or symbols. All options except `type` can also be defined inside the
-block, for example:
+The names and types of API components can be strings or symbols. All options
+except `type` can also be defined inside a block, for example:
 
 ```ruby
-  parameter 'foo', type: 'string', min_length: 1
+  parameter 'foo', type: 'string', existence: true
 
   parameter 'bar', type: 'string' do
-    min_length 1
+    existence true
   end
 ```
 
-### The `existance` Option
+### The `existence` Option
 
-- `present` or `true`: The parameter or property value must be present or `false`.
-- `allow_empty`: The parameter or property value can be empty, for example `''`.
-- `allow_nil`: The parameter or property value can be `nil`.
-- `false`: The parameter or property can be omitted.
+- `:present` or `true`: The parameter or property value must be present or `false`.
+- `:allow_empty`: The parameter or property value can be empty, for example `''`.
+- `:allow_nil`: The parameter or property value can be `nil`.
+- `:allow_omitted`, `false`: The parameter or property can be omitted.
 
 ### Defining an API Operation
 
 ```ruby
   api_operation 'foo' do
-    parameter 'bar', type: 'string', required: false
+    parameter 'bar', type: 'string'
     request_body, type: 'object', existence: true do
       property 'foo', type: 'string'
     end
@@ -185,6 +183,14 @@ block, for example:
     end
   end
 ```
+
+Operation options (OpenAPI documentation only):
+
+- `method` (default: 'get')
+. `path`
+- `tags`
+- `summary`
+- `deprecated`
 
 ### Common Options
 
@@ -218,16 +224,6 @@ schemas:
 - `Description`
 - `Example` (all except operation)
 
-### Additional Operation Options
-
-For OpenAPI documentation only:
-
-- `method` (default: 'get')
-. `path`
-- `tags`
-- `summary`
-- `deprecated`
-
 For OpenAPI documentation only:
 
 - `in`: 'path' or 'query'
@@ -235,11 +231,11 @@ For OpenAPI documentation only:
 
 ### Additional Parameter Options
 
-- `required`
+- `existence`
 
 ### Additional Request Body Options
 
-- `required`
+- `existence`
 
 ### Additional Response Options
 
@@ -247,7 +243,7 @@ For OpenAPI documentation only:
 
 ### Additional Property Options
 
-- `required`
+- `existence`
 - `source`
 
 For OpenAPI documentation only:
@@ -256,7 +252,7 @@ For OpenAPI documentation only:
 
 ### Additional Schema Options
 
-- `nullable`
+- `existence`
 
 ## Controller Methods
 
