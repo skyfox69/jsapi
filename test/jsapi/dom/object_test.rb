@@ -48,7 +48,7 @@ module Jsapi
 
       def schema
         Model::Schema.new.tap do |schema|
-          schema.add_property('foo', type: 'string', required: true)
+          schema.add_property('foo', type: 'string', existence: true)
           schema.add_property('bar', type: 'string')
         end
       end

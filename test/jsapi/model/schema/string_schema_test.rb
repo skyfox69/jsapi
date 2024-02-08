@@ -37,7 +37,7 @@ module Jsapi
 
         def test_json_schema
           schema = StringSchema.new(
-            nullable: true,
+            existence: false,
             format: 'date',
             min_length: 10,
             max_length: 10,
@@ -56,7 +56,7 @@ module Jsapi
         end
 
         def test_minimal_json_schema
-          schema = StringSchema.new
+          schema = StringSchema.new(existence: true)
           assert_equal(
             {
               type: 'string'
@@ -69,7 +69,7 @@ module Jsapi
 
         def test_openapi_schema
           schema = StringSchema.new(
-            nullable: true,
+            existence: false,
             format: 'date',
             min_length: 10,
             max_length: 10,
@@ -89,7 +89,7 @@ module Jsapi
         end
 
         def test_minimal_openapi_schema
-          schema = StringSchema.new
+          schema = StringSchema.new(existence: true)
           assert_equal(
             {
               type: 'string'

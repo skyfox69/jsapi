@@ -6,7 +6,7 @@ module Jsapi
   module Model
     class ResponseTest < Minitest::Test
       def test_minimal_response
-        response = Response.new(type: 'string')
+        response = Response.new(type: 'string', existence: true)
 
         assert_equal(
           {

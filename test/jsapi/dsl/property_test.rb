@@ -21,12 +21,6 @@ module Jsapi
         assert(property_model.deprecated?)
       end
 
-      def test_required
-        property_model = Model::Property.new('my_property')
-        Property.new(property_model).call { required true }
-        assert(property_model.required?)
-      end
-
       def test_a_delegated_method
         property_model = Model::Property.new('my_property', type: 'string')
         Property.new(property_model).call { format 'date' }

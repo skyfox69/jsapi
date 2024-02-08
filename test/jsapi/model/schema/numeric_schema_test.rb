@@ -33,7 +33,7 @@ module Jsapi
         def test_json_schema
           schema = NumericSchema.new(
             type: 'integer',
-            nullable: true,
+            existence: false,
             minimum: 1,
             maximum: 2,
             exclusive_minimum: 0,
@@ -52,7 +52,7 @@ module Jsapi
         end
 
         def test_minimal_json_schema
-          schema = NumericSchema.new(type: 'integer')
+          schema = NumericSchema.new(type: 'integer', existence: true)
           assert_equal(
             {
               type: 'integer'
@@ -66,7 +66,7 @@ module Jsapi
         def test_openapi_schema
           schema = NumericSchema.new(
             type: 'integer',
-            nullable: true,
+            existence: false,
             minimum: 1,
             maximum: 2,
             exclusive_minimum: 0,
@@ -86,7 +86,7 @@ module Jsapi
         end
 
         def test_minimal_openapi_schema
-          schema = NumericSchema.new(type: 'integer')
+          schema = NumericSchema.new(type: 'integer', existence: true)
           assert_equal(
             {
               type: 'integer'

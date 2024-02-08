@@ -9,18 +9,11 @@ module Jsapi
       def initialize(**options)
         @description = options[:description]
         @example = options[:example]
-        @schema = Schema.new(**options.except(:description, :example, :required))
-
-        self.required = options[:required] == true
+        @schema = Schema.new(**options.except(:description, :example))
       end
 
       def required?
-        @required == true
-      end
-
-      def required=(required)
-        @required = required == true
-        @schema.nullable = !@required if @schema.respond_to?(:nullable=)
+        schema.existence > Existence::ALLOW_OMITTED
       end
 
       # Returns the OpenAPI request body object as a +Hash+.

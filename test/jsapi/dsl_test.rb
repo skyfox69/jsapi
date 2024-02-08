@@ -22,7 +22,7 @@ module Jsapi
 
         operation 'my_operation', method: 'get', path: '/my_path' do
           parameter 'request_id'
-          parameter 'my_parameter', type: 'string', required: true
+          parameter 'my_parameter', type: 'string', existence: true
           response do
             property 'my_property', type: 'string'
           end
@@ -61,6 +61,7 @@ module Jsapi
                       'application/json' => {
                         schema: {
                           type: 'object',
+                          nullable: true,
                           properties: {
                             'my_property' => {
                               type: 'string',
@@ -99,6 +100,7 @@ module Jsapi
             schemas: {
               'ErrorResponse' => {
                 type: 'object',
+                nullable: true,
                 properties: {
                   'code' => {
                     type: 'integer',

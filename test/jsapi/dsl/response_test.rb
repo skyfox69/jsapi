@@ -15,12 +15,6 @@ module Jsapi
         assert_equal('My example', response_model.example)
       end
 
-      def test_nullable
-        response_model = Model::Response.new
-        Response.new(response_model).call { nullable true }
-        assert(response_model.schema.nullable?)
-      end
-
       def test_a_delegated_method
         response_model = Model::Response.new(type: 'string')
         Response.new(response_model).call { format 'date' }

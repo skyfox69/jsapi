@@ -48,7 +48,7 @@ Define your API operation:
 ```ruby
   class EchoController < Jsapi::Controller::Base
     api_operation path: '/echo' do
-      parameter 'text', type: 'string', required: true
+      parameter 'text', type: 'string', existence: true
       response do
         property 'echo', type: 'string'
       end
@@ -142,7 +142,7 @@ API operations, parameters and schemas can also be defined inside an
   api_definitions do
     operation 'foo' do
       parameter 'bar', '$ref': :bar
-      response '$ref': :FooResponse
+      response schema: :FooResponse
     end
 
     parameter 'bar', type: 'string'
@@ -165,13 +165,33 @@ block, for example:
   end
 ```
 
+### The `existance` Option
+
+- `present` or `true`: The parameter or property value must be present or `false`.
+- `allow_empty`: The parameter or property value can be empty, for example `''`.
+- `allow_nil`: The parameter or property value can be `nil`.
+- `false`: The parameter or property can be omitted.
+
+### Defining an API Operation
+
+```ruby
+  api_operation 'foo' do
+    parameter 'bar', type: 'string', required: false
+    request_body, type: 'object', existence: true do
+      property 'foo', type: 'string'
+    end
+    response type: 'object' do
+      property 'foo', type: 'string'
+    end
+  end
+```
+
 ### Common Options
 
 The following options are available for parameters, responses, schemas and
 properties:
 
 - `type`: 'array', 'boolean', 'integer', 'number', 'object' or 'string'
-- `nullable`
 - `default`
 - `items` ('array' only)
 
@@ -211,23 +231,32 @@ For OpenAPI documentation only:
 For OpenAPI documentation only:
 
 - `in`: 'path' or 'query'
-- `required`
 - `deprecated`
+
+### Additional Parameter Options
+
+- `required`
 
 ### Additional Request Body Options
 
-For OpenAPI documentation only:
-
 - `required`
+
+### Additional Response Options
+
+- `nullable`
 
 ### Additional Property Options
 
+- `required`
 - `source`
 
 For OpenAPI documentation only:
 
-- `required`
 - `deprecated`
+
+### Additional Schema Options
+
+- `nullable`
 
 ## Controller Methods
 

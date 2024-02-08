@@ -9,12 +9,6 @@ module Jsapi
         assert_equal('My description', schema.description)
       end
 
-      def test_nullable
-        schema = Model::Schema.new
-        Schema.new(schema).call { nullable true }
-        assert(schema.nullable?)
-      end
-
       def test_all_of
         schema = Model::Schema.new
         Schema.new(schema).call { all_of :my_schema }
@@ -36,8 +30,10 @@ module Jsapi
         assert_equal(
           {
             type: 'array',
+            nullable: true,
             items: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             }
           },
           schema.to_openapi_schema
@@ -63,6 +59,7 @@ module Jsapi
         assert_equal(
           {
             type: 'object',
+            nullable: true,
             properties: {
               'my_property' => {
                 type: 'string',

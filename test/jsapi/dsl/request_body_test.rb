@@ -15,12 +15,6 @@ module Jsapi
         assert_equal('My example', request_body_model.example)
       end
 
-      def test_required
-        request_body_model = Model::RequestBody.new
-        RequestBody.new(request_body_model).call { required true }
-        assert(request_body_model.required?)
-      end
-
       def test_a_delegated_method
         request_body_model = Model::RequestBody.new(type: 'string')
         RequestBody.new(request_body_model).call { format 'date' }

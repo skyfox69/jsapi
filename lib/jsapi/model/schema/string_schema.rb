@@ -9,7 +9,7 @@ module Jsapi
         attr_reader :format, :max_length, :min_length, :pattern
 
         def initialize(**options)
-          super(**options.merge(type: 'string')) # Override type
+          super(**options.merge(type: 'string'))
         end
 
         def format=(format)

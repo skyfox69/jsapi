@@ -15,22 +15,17 @@ module Jsapi
         @description = options[:description]
         @deprecated = options[:deprecated] == true
         @example = options[:example]
-        @schema = Schema.new(**options.except(:deprecated, :description, :example, :in, :required))
-
-        self.required = options[:required] == true
+        @schema = Schema.new(**options.except(:deprecated, :description, :example, :in))
       end
 
       def deprecated?
         @deprecated == true
       end
 
+      # Returns +true+ if and only if the parameter is required as specified
+      # by JSON Schema.
       def required?
-        @required == true || location == 'path'
-      end
-
-      def required=(required)
-        @required = required == true
-        @schema.nullable = !required? if @schema.respond_to?(:nullable=)
+        schema.existence > Existence::ALLOW_OMITTED || location == 'path'
       end
 
       def resolve(_definitions)

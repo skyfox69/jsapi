@@ -9,12 +9,12 @@ module Jsapi
         # JSON Schema tests
 
         def test_json_schema
-          schema = ArraySchema.new(items: { type: 'string' }, nullable: true)
+          schema = ArraySchema.new(items: { type: 'string' }, existence: false)
           assert_equal(
             {
               type: %w[array null],
               items: {
-                type: 'string'
+                type: %w[string null]
               }
             },
             schema.to_json_schema
@@ -22,7 +22,7 @@ module Jsapi
         end
 
         def test_minimal_json_schema
-          schema = ArraySchema.new
+          schema = ArraySchema.new(existence: true)
           assert_equal(
             {
               type: 'array',
@@ -35,13 +35,14 @@ module Jsapi
         # OpenAPI tests
 
         def test_openapi_schema
-          schema = ArraySchema.new(items: { type: 'string' }, nullable: true)
+          schema = ArraySchema.new(items: { type: 'string' }, existence: false)
           assert_equal(
             {
               type: 'array',
               nullable: true,
               items: {
-                type: 'string'
+                type: 'string',
+                nullable: true
               }
             },
             schema.to_openapi_schema
@@ -49,7 +50,7 @@ module Jsapi
         end
 
         def test_minimal_openapi_schema
-          schema = ArraySchema.new
+          schema = ArraySchema.new(existence: true)
           assert_equal(
             {
               type: 'array',

@@ -21,12 +21,6 @@ module Jsapi
         assert(parameter_model.deprecated?)
       end
 
-      def test_required
-        parameter_model = Model::Parameter.new('my_parameter')
-        Parameter.new(parameter_model).call { required true }
-        assert(parameter_model.required?)
-      end
-
       def test_a_delegated_method
         parameter_model = Model::Parameter.new('my_parameter', type: 'string')
         Parameter.new(parameter_model).call { format 'date' }

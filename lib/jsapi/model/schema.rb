@@ -12,7 +12,7 @@ module Jsapi
     module Schema
       class << self
         def new(**options)
-          return Reference.new(options[:schema]) if options.key?(:schema)
+          return Reference.new(options[:schema], options[:existence]) if options.key?(:schema)
 
           case type = options[:type]&.to_s
           when 'array'

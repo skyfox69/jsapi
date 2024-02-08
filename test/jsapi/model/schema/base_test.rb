@@ -35,8 +35,30 @@ module Jsapi
         end
 
         def test_nullable
-          schema = Base.new(nullable: true)
+          schema = Base.new
           assert schema.nullable?
+        end
+
+        # Validation tests
+
+        def test_validate_present_positive
+          schema = StringSchema.new(type: 'string', existence: true)
+          assert(DOM.wrap('foo', schema).valid?)
+        end
+
+        def test_validate_present_negative
+          schema = StringSchema.new(type: 'string', existence: true)
+          assert(DOM.wrap('', schema).invalid?)
+        end
+
+        def test_validate_allow_empty_positive
+          schema = StringSchema.new(type: 'string', existence: :allow_empty)
+          assert(DOM.wrap('', schema).valid?)
+        end
+
+        def test_validate_allow_empty_negative
+          schema = StringSchema.new(type: 'string', existence: :allow_empty)
+          assert(DOM.wrap(nil, schema).invalid?)
         end
       end
     end

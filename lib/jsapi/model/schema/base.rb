@@ -4,17 +4,16 @@ module Jsapi
   module Model
     module Schema
       class Base
-        attr_accessor :default, :description, :example
+        attr_accessor :default, :description, :example, :existence
         attr_reader :all_of, :enum, :type, :validators
-        attr_writer :nullable
 
         def initialize(**options)
+          @existence = Existence.from(options[:existence])
           @type = options[:type]
-          @nullable = options[:nullable] == true
           @all_of = []
           @validators = {}
 
-          options.except(:type, :nullable).each do |key, value|
+          options.except(:existence, :type).each do |key, value|
             method = "#{key}="
             raise ArgumentError, "invalid option: '#{key}'" unless respond_to?(method)
 
@@ -35,8 +34,10 @@ module Jsapi
           register_validator(:enum, @enum = value)
         end
 
+        # Returns +true+ if and only if values can be +null+ as
+        # specified by JSON Schema.
         def nullable?
-          @nullable == true
+          existence <= Existence::ALLOW_NIL
         end
 
         def resolve(_definitions)
@@ -63,9 +64,18 @@ module Jsapi
         end
 
         def validate(object)
+          errors = object.errors
+          object = object.cast
+
+          case existence
+          when Existence::PRESENT
+            errors.add(:blank) && return if object.blank? && object != false
+          when Existence::ALLOW_EMPTY
+            errors.add(:blank) && return if object.nil?
+          end
           @validators.each_value do |validators|
             Array(validators).each do |validator|
-              validator.validate(object.cast, object.errors)
+              validator.validate(object, errors)
             end
           end
         end

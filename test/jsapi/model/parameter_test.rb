@@ -5,6 +5,23 @@ require 'test_helper'
 module Jsapi
   module Model
     class ParameterTest < Minitest::Test
+      def test_required
+        parameter = Parameter.new('my_parameter', existence: true)
+        assert(parameter.required?)
+      end
+
+      def test_required_on_path_parameter
+        parameter = Parameter.new('my_parameter', in: 'path')
+        assert(parameter.required?)
+      end
+
+      def test_not_required
+        parameter = Parameter.new('my_parameter', existence: false)
+        assert(!parameter.required?)
+      end
+
+      # OpenAPI parameters tests
+
       def test_openapi_parameters
         parameter = Parameter.new('my_parameter', type: 'string', in: 'query')
         assert_equal(
@@ -25,7 +42,7 @@ module Jsapi
 
       def test_openapi_parameters_on_query_object
         parameter = Parameter.new('my_parameter', type: 'object', in: 'query')
-        parameter.schema.add_property('property1', type: 'string', required: true)
+        parameter.schema.add_property('property1', type: 'string', existence: true)
         parameter.schema.add_property('property2', type: 'integer')
 
         assert_equal(

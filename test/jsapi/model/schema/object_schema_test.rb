@@ -23,9 +23,9 @@ module Jsapi
         # JSON Schema tests
 
         def test_json_schema
-          schema = ObjectSchema.new(nullable: true)
-          schema.add_property('foo', type: 'string', required: true)
-          schema.add_property('bar', type: 'integer')
+          schema = ObjectSchema.new
+          schema.add_property('foo', type: 'string', existence: true)
+          schema.add_property('bar', type: 'integer', existence: false)
 
           assert_equal(
             {
@@ -45,7 +45,7 @@ module Jsapi
         end
 
         def test_minimal_json_schema
-          schema = ObjectSchema.new
+          schema = ObjectSchema.new(existence: true)
           assert_equal(
             {
               type: 'object',
@@ -59,9 +59,9 @@ module Jsapi
         # OpenAPI tests
 
         def test_openapi_schema
-          schema = ObjectSchema.new(nullable: true)
-          schema.add_property('foo', type: 'string', required: true)
-          schema.add_property('bar', type: 'integer')
+          schema = ObjectSchema.new
+          schema.add_property('foo', type: 'string', existence: true)
+          schema.add_property('bar', type: 'integer', existence: false)
 
           assert_equal(
             {
@@ -83,7 +83,7 @@ module Jsapi
         end
 
         def test_minimal_openapi_schema
-          schema = ObjectSchema.new
+          schema = ObjectSchema.new(existence: true)
           assert_equal(
             {
               type: 'object',

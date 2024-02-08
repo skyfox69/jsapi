@@ -46,7 +46,7 @@ module Jsapi
       end
 
       def test_serialization_on_nullable_array
-        schema = Model::Schema.new(type: 'array', nullable: true, items: { type: 'string' })
+        schema = Model::Schema.new(type: 'array', items: { type: 'string' })
         response = Response.new(nil, schema, api_definitions)
 
         assert_equal('null', response.to_json)
@@ -80,14 +80,14 @@ module Jsapi
       end
 
       def test_serialization_on_empty_object
-        schema = Model::Schema.new(type: 'object', nullable: true)
+        schema = Model::Schema.new(type: 'object')
         response = Response.new({}, schema, api_definitions)
 
         assert_equal('null', response.to_json)
       end
 
       def test_serialization_on_nullable_object
-        schema = Model::Schema.new(type: 'object', nullable: true)
+        schema = Model::Schema.new(type: 'object')
         response = Response.new(nil, schema, api_definitions)
 
         assert_equal('null', response.to_json)
@@ -96,7 +96,7 @@ module Jsapi
       # Serialization error tests
 
       def test_serialization_error
-        schema = Model::Schema.new(type: 'string')
+        schema = Model::Schema.new(type: 'string', existence: true)
 
         error = assert_raises RuntimeError do
           Response.new(nil, schema, api_definitions).to_json
@@ -106,7 +106,7 @@ module Jsapi
 
       def test_serialization_error_on_object
         schema = Model::Schema.new(type: 'object')
-        schema.add_property(:my_property, type: 'string', required: true)
+        schema.add_property(:my_property, type: 'string', existence: true)
 
         object = Object.new
         object.define_singleton_method(:my_property) { nil }
@@ -120,7 +120,7 @@ module Jsapi
       def test_serialization_error_on_nested_object
         schema = Model::Schema.new(type: 'object')
         nested_schema = schema.add_property(:nested, type: 'object').schema
-        nested_schema.add_property(:property, type: 'string', required: true)
+        nested_schema.add_property(:property, type: 'string', existence: true)
 
         nested = Object.new
         nested.define_singleton_method(:property) { nil }

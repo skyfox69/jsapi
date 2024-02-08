@@ -94,7 +94,7 @@ module Jsapi
         operation_model = Model::Operation.new('my_operation')
         Operation.new(operation_model).call do
           request_body type: 'object' do
-            property 'my_property', type: 'string', required: true
+            property 'my_property', type: 'string', existence: true
           end
         end
 
@@ -165,6 +165,7 @@ module Jsapi
                 'application/json' => {
                   schema: {
                     type: 'object',
+                    nullable: true,
                     properties: {
                       'my_property' => {
                         type: 'string',
@@ -196,6 +197,7 @@ module Jsapi
                 'application/json' => {
                   schema: {
                     type: 'object',
+                    nullable: true,
                     properties: {
                       'my_property' => {
                         type: 'string',

@@ -10,12 +10,12 @@ module Jsapi
       end
 
       def test_validate_positive
-        null = Null.new(Model::Schema.new(nullable: true))
+        null = Null.new(Model::Schema.new(existence: false))
         assert_predicate(null, :valid?)
       end
 
       def test_validate_negative
-        null = Null.new(Model::Schema.new(nullable: false))
+        null = Null.new(Model::Schema.new(existence: true))
         assert_predicate(null.errors, :one?)
       end
     end

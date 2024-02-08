@@ -13,9 +13,7 @@ module Jsapi
         @name = name&.to_s
         @deprecated = options[:deprecated] == true
         @source = options[:source]
-        @schema = Schema.new(**options.except(:deprecated, :source, :required))
-
-        self.required = options[:required] == true
+        @schema = Schema.new(**options.except(:deprecated, :source))
       end
 
       def deprecated?
@@ -23,12 +21,7 @@ module Jsapi
       end
 
       def required?
-        @required == true
-      end
-
-      def required=(required)
-        @required = required == true
-        @schema.nullable = !@required if @schema.respond_to?(:nullable=)
+        schema.existence > Existence::ALLOW_OMITTED
       end
     end
   end
