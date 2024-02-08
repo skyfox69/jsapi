@@ -11,6 +11,8 @@ module Jsapi
         assert_equal(object, object.cast)
       end
 
+      # Attribute reader tests
+
       def test_bracket_operator
         object = Object.new({ 'foo' => 'foo' }, schema)
         assert_equal('foo', object[:foo])
@@ -42,6 +44,19 @@ module Jsapi
 
       def test_validate_negative
         assert_predicate(Object.new({ 'foo' => nil }, schema), :invalid?)
+      end
+
+      # Reference test
+
+      def test_property_as_reference
+        definitions = Model::Definitions.new
+        definitions.add_schema('Property', type: 'string')
+
+        schema = Model::Schema.new(type: 'object')
+        schema.add_property('property', schema: 'Property')
+
+        object = Object.new({ 'property' => 'foo' }, schema, definitions)
+        assert_equal('foo', object.property)
       end
 
       private

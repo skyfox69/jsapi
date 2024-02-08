@@ -7,9 +7,9 @@ module Jsapi
     class StringTest < Minitest::Test
       def test_cast
         schema = Model::Schema.new(type: 'string')
-        string = String.new('Hello world', schema)
+        string = String.new('foo', schema)
 
-        assert_equal('Hello world', string.cast)
+        assert_equal('foo', string.cast)
       end
 
       def test_cast_on_date

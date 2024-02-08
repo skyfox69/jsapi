@@ -12,24 +12,26 @@ require_relative 'dom/string'
 module Jsapi
   module DOM
     class << self
-      def wrap(object, schema)
+      def wrap(object, schema, definitions = nil)
+        schema = schema.resolve(definitions) unless definitions.nil?
+
         object = schema.default if object.nil?
         return Null.new(schema) if object.nil?
 
         case schema.type
         when 'array'
-          Array
+          Array.new(object, schema, definitions)
         when 'boolean'
-          Boolean
+          Boolean.new(object, schema)
         when 'integer'
-          Integer
+          Integer.new(object, schema)
         when 'number'
-          Number
+          Number.new(object, schema)
         when 'object'
-          Object
+          Object.new(object, schema, definitions)
         when 'string'
-          String
-        end&.new(object, schema)
+          String.new(object, schema)
+        end
       end
     end
   end

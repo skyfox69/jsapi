@@ -5,21 +5,43 @@ require 'test_helper'
 module Jsapi
   module DOM
     class ArrayTest < Minitest::Test
-      MODEL = Model::Schema.new(
-        type: 'array',
-        items: { type: 'string', max_length: 1 }
-      )
-
       def test_cast
-        assert_equal(%w[A B C], Array.new(%w[A B C], MODEL).cast)
+        schema = Model::Schema.new(
+          type: 'array',
+          items: { type: 'string' }
+        )
+        assert_equal(%w[foo bar], Array.new(%w[foo bar], schema).cast)
       end
 
-      def test_validate_positive
-        assert_predicate(Array.new(%w[A B C], MODEL), :valid?)
+      def test_validation
+        schema = Model::Schema.new(
+          type: 'array',
+          items: { type: 'string', existence: true }
+        )
+        assert_predicate(Array.new(%w[foo nbar], schema), :valid?)
+        assert_predicate(Array.new(['foo', nil, 'bar'], schema), :invalid?)
       end
 
-      def test_validate_negative
-        assert_equal(2, Array.new(%w[A AA B BB], MODEL).errors.count)
+      def test_items_as_reference
+        definitions = Model::Definitions.new
+        item_schema = definitions.add_schema('Item', type: 'object')
+        item_schema.add_property('property', type: 'string')
+
+        array_schema = Model::Schema.new(
+          type: 'array',
+          items: { schema: 'Item' }
+        )
+        ary = Array.new(
+          [
+            { 'property' => 'foo' },
+            { 'property' => 'bar' }
+          ],
+          array_schema,
+          definitions
+        ).cast
+
+        assert_equal('foo', ary.first.property)
+        assert_equal('bar', ary.second.property)
       end
     end
   end

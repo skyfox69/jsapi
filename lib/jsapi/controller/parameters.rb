@@ -16,7 +16,7 @@ module Jsapi
 
         # Wrap params
         @parameters = models.each_with_object({}) do |(name, model), p|
-          p[name] = DOM.wrap(params[name], model.schema.resolve(definitions))
+          p[name] = DOM.wrap(params[name], model.schema, definitions)
         end
       end
 

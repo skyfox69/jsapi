@@ -3,10 +3,10 @@
 module Jsapi
   module DOM
     class Array < BaseObject
-      def initialize(ary, schema)
+      def initialize(ary, schema, definitions = nil)
         super(schema)
         @ary = Array(ary).map do |item|
-          DOM.wrap(item, schema.items)
+          DOM.wrap(item, schema.items, definitions)
         end
       end
 
