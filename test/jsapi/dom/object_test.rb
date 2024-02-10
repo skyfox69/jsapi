@@ -5,9 +5,13 @@ require 'test_helper'
 module Jsapi
   module DOM
     class ObjectTest < Minitest::Test
+      def test_empty
+        assert_predicate(Object.new({}, schema), :empty?)
+        assert(!Object.new({ 'foo' => 'bar' }, schema).empty?)
+      end
+
       def test_cast
         object = Object.new({}, schema)
-
         assert_equal(object, object.cast)
       end
 

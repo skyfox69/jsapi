@@ -11,17 +11,6 @@ module Jsapi
         end
       end
 
-      def _validate
-        super
-        @attributes.each do |key, value|
-          next if value&.valid?
-
-          value.errors.each do |error|
-            errors << AttributeError.new(key, error)
-          end
-        end
-      end
-
       def [](key)
         @attributes[key&.to_s].cast
       end
@@ -34,6 +23,10 @@ module Jsapi
         self
       end
 
+      def empty?
+        @attributes.values.all?(&:blank?)
+      end
+
       def method_missing(*args)
         name = args.first.to_s
         @attributes.key?(name) ? self[name] : super
@@ -41,6 +34,19 @@ module Jsapi
 
       def respond_to_missing?(param1, _param2)
         @attributes.key?(param1.to_s) ? true : super
+      end
+
+      def _validate
+        super
+        return if invalid?
+
+        @attributes.each do |key, value|
+          next if value&.valid?
+
+          value.errors.each do |error|
+            errors << AttributeError.new(key, error)
+          end
+        end
       end
     end
   end

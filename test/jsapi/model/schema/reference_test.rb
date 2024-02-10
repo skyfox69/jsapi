@@ -6,37 +6,69 @@ module Jsapi
   module Model
     module Schema
       class ReferenceTest < Minitest::Test
-        def test_resolve
-          api_definitions = Definitions.new
-          schema = api_definitions.add_schema('foo')
+        def test_existence
+          reference = Reference.new('foo')
+          reference.existence = true
+          assert_equal(Existence::PRESENT, reference.existence)
+        end
 
-          schema_ref = Reference.new('foo')
-          assert_equal(schema, schema_ref.resolve(api_definitions))
+        def test_default_existence
+          schema = Base.new
+          assert_equal(Existence::ALLOW_OMITTED, schema.existence)
+        end
+
+        # #resolve tests
+
+        def test_resolve
+          definitions = Definitions.new
+          schema = definitions.add_schema('foo')
+
+          assert_equal(schema, Reference.new('foo').resolve(definitions))
         end
 
         def test_resolve_recursively
-          api_definitions = Definitions.new
-          schema = api_definitions.add_schema('foo')
+          definitions = Definitions.new
+          schema = definitions.add_schema('foo')
+          definitions.add_schema('foo_ref', schema: 'foo')
 
-          api_definitions.add_schema('foo_ref', schema: 'foo')
-
-          schema_ref = Reference.new('foo_ref')
-          assert_equal(schema, schema_ref.resolve(api_definitions))
+          assert_equal(schema, Reference.new('foo_ref').resolve(definitions))
         end
 
+        def test_resolve_with_higher_existence_level
+          definitions = Definitions.new
+          definitions.add_schema('foo', existence: :allow_empty)
+          reference = Reference.new('foo', existence: true)
+
+          resolved = reference.resolve(definitions)
+          assert_kind_of(Decorator, resolved)
+          assert_equal(Existence::PRESENT, resolved.existence)
+        end
+
+        def test_resolve_with_lower_existence_level
+          definitions = Definitions.new
+          definitions.add_schema('foo', existence: true)
+          reference = Reference.new('foo', existence: :allow_empty)
+
+          resolved = reference.resolve(definitions)
+          assert_kind_of(Decorator, resolved)
+          assert_equal(Existence::PRESENT, resolved.existence)
+        end
+
+        # JSON Schema and OpenAPI tests
+
         def test_json_schema
-          schema_ref = Reference.new('foo')
+          reference = Reference.new('foo')
           assert_equal(
             { '$ref': '#/definitions/foo' },
-            schema_ref.to_json_schema
+            reference.to_json_schema
           )
         end
 
         def test_openapi_schema
-          schema_ref = Reference.new('foo')
+          reference = Reference.new('foo')
           assert_equal(
             { '$ref': '#/components/schemas/foo' },
-            schema_ref.to_openapi_schema
+            reference.to_openapi_schema
           )
         end
       end

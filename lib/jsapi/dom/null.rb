@@ -3,12 +3,16 @@
 module Jsapi
   module DOM
     class Null < BaseObject
-      def _validate
-        errors.add(:blank) unless schema.nullable?
+      def null?
+        true
       end
 
       def cast
         nil
+      end
+
+      def empty?
+        true
       end
     end
   end

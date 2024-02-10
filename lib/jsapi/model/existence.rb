@@ -34,13 +34,17 @@ module Jsapi
           PRESENT
         when :allow_empty
           ALLOW_EMPTY
-        when :allow_nil
+        when :allow_nil, :allow_null
           ALLOW_NIL
-        when :allow_omitted, false
+        when :allow_omitted, false, nil
           ALLOW_OMITTED
         else
           raise ArgumentError, "invalid existence: #{value}"
         end
+      end
+
+      def ==(other)
+        other.is_a?(Existence) && level == other.level
       end
 
       def <=>(other)

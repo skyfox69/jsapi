@@ -4,17 +4,16 @@ module Jsapi
   module Model
     module Schema
       class Base
-        include ExistenceAttribute
-
         attr_accessor :default, :description, :example
-        attr_reader :all_of, :enum, :type, :validators
+        attr_reader :all_of, :enum, :existence, :type, :validators
 
         def initialize(**options)
+          @existence = Existence.from(options[:existence])
           @type = options[:type]
           @all_of = []
           @validators = {}
 
-          options.except(:type).each do |key, value|
+          options.except(:type, :existence).each do |key, value|
             method = "#{key}="
             raise ArgumentError, "invalid option: '#{key}'" unless respond_to?(method)
 
@@ -33,6 +32,10 @@ module Jsapi
 
         def enum=(value)
           register_validator(:enum, @enum = value)
+        end
+
+        def existence=(existence)
+          @existence = Existence.from(existence)
         end
 
         # Returns +true+ if and only if values can be +null+ as
@@ -66,17 +69,11 @@ module Jsapi
 
         def validate(object)
           errors = object.errors
-          object = object.cast
+          value = object.cast
 
-          case existence
-          when Existence::PRESENT
-            errors.add(:blank) && return if object.blank? && object != false
-          when Existence::ALLOW_EMPTY
-            errors.add(:blank) && return if object.nil?
-          end
           @validators.each_value do |validators|
             Array(validators).each do |validator|
-              validator.validate(object, errors)
+              validator.validate(value, errors)
             end
           end
         end

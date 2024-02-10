@@ -5,6 +5,12 @@ require 'test_helper'
 module Jsapi
   module DOM
     class StringTest < Minitest::Test
+      def test_empty
+        schema = Model::Schema.new(type: 'string')
+        assert_predicate(String.new('', schema), :empty?)
+        assert(!String.new('foo', schema).empty?)
+      end
+
       def test_cast
         schema = Model::Schema.new(type: 'string')
         string = String.new('foo', schema)

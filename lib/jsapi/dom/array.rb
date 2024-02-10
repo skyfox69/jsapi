@@ -14,6 +14,10 @@ module Jsapi
         @cast ||= @ary.map(&:cast)
       end
 
+      def empty?
+        @ary.empty?
+      end
+
       def errors
         @errors ||= @ary.flat_map(&:errors)
       end

@@ -7,9 +7,7 @@ module Jsapi
     module Schema
       class BaseTest < Minitest::Test
         def test_invalid_option
-          error = assert_raises ArgumentError do
-            Base.new(foo: 'bar')
-          end
+          error = assert_raises(ArgumentError) { Base.new(foo: 'bar') }
           assert_equal("invalid option: 'foo'", error.message)
         end
 
@@ -34,31 +32,20 @@ module Jsapi
           assert_predicate(schema.validators, :empty?)
         end
 
+        def test_existence
+          schema = Base.new
+          schema.existence = true
+          assert_equal(Existence::PRESENT, schema.existence)
+        end
+
+        def test_default_existence
+          schema = Base.new
+          assert_equal(Existence::ALLOW_OMITTED, schema.existence)
+        end
+
         def test_nullable
           schema = Base.new
           assert schema.nullable?
-        end
-
-        # Validation tests
-
-        def test_validate_present_positive
-          schema = StringSchema.new(type: 'string', existence: true)
-          assert(DOM.wrap('foo', schema).valid?)
-        end
-
-        def test_validate_present_negative
-          schema = StringSchema.new(type: 'string', existence: true)
-          assert(DOM.wrap('', schema).invalid?)
-        end
-
-        def test_validate_allow_empty_positive
-          schema = StringSchema.new(type: 'string', existence: :allow_empty)
-          assert(DOM.wrap('', schema).valid?)
-        end
-
-        def test_validate_allow_empty_negative
-          schema = StringSchema.new(type: 'string', existence: :allow_empty)
-          assert(DOM.wrap(nil, schema).invalid?)
         end
       end
     end

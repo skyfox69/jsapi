@@ -11,6 +11,10 @@ module Jsapi
         assert_equal(Existence::ALLOW_NIL, Existence.from(:allow_nil))
       end
 
+      def test_allow_null
+        assert_equal(Existence::ALLOW_NIL, Existence.from(:allow_null))
+      end
+
       def test_allow_empty
         assert_equal(Existence::ALLOW_EMPTY, Existence.from(:allow_empty))
       end

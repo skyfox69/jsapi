@@ -11,7 +11,23 @@ module Jsapi
         @schema = schema
       end
 
+      def null?
+        false
+      end
+
+      def empty?
+        false
+      end
+
       def _validate
+        case schema.existence
+        when Model::Existence::PRESENT
+          errors.add(:blank) if empty?
+        when Model::Existence::ALLOW_EMPTY
+          errors.add(:blank) if null?
+        end
+        return if invalid?
+
         schema.validate(self)
       end
     end

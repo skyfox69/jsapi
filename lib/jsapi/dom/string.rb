@@ -19,6 +19,10 @@ module Jsapi
             @str
           end
       end
+
+      def empty?
+        @str.blank?
+      end
     end
   end
 end
