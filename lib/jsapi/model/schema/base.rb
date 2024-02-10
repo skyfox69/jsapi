@@ -5,12 +5,11 @@ module Jsapi
     module Schema
       class Base
         attr_accessor :default, :description, :example
-        attr_reader :all_of, :enum, :existence, :type, :validators
+        attr_reader :enum, :existence, :type, :validators
 
         def initialize(**options)
           @existence = Existence.from(options[:existence])
           @type = options[:type]
-          @all_of = []
           @validators = {}
 
           options.except(:type, :existence).each do |key, value|
@@ -19,11 +18,6 @@ module Jsapi
 
             send(method, value)
           end
-        end
-
-        def add_all_of(schema_name)
-          # TODO: Prevent circular references
-          @all_of << Reference.new(schema_name) if schema_name.present?
         end
 
         def add_validator(validator)
@@ -44,6 +38,7 @@ module Jsapi
           existence <= Existence::ALLOW_NIL
         end
 
+        # Returns itself.
         def resolve(_definitions)
           self
         end
@@ -51,7 +46,6 @@ module Jsapi
         def to_json_schema(definitions = nil, include: [])
           {
             type: nullable? ? [type, 'null'] : type,
-            allOf: @all_of.map(&:to_json_schema).presence,
             definitions: definitions&.schemas&.slice(*include)&.transform_values(&:to_json_schema)
           }.merge(json_schema_options).compact
         end
@@ -61,7 +55,6 @@ module Jsapi
             type: type,
             nullable: (true if nullable?), # only 3.0.x
             description: description,
-            allOf: @all_of.map(&:to_openapi_schema).presence,
             default: default,
             example: example
           }.merge(json_schema_options).compact

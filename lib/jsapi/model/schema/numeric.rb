@@ -3,7 +3,7 @@
 module Jsapi
   module Model
     module Schema
-      class NumericSchema < Base
+      class Numeric < Base
         attr_reader :exclusive_maximum, :exclusive_minimum, :maximum, :minimum
 
         def exclusive_maximum=(value)

@@ -5,14 +5,14 @@ require 'test_helper'
 module Jsapi
   module Model
     module Schema
-      class ObjectSchemaTest < Minitest::Test
+      class ObjectTest < Minitest::Test
         def test_properties
           api_definitions = Definitions.new
 
           base_schema = api_definitions.add_schema('base_schema')
           base_schema.add_property('foo', type: 'string')
 
-          schema = ObjectSchema.new
+          schema = Object.new
           schema.add_all_of('base_schema')
           schema.add_property('bar', type: 'integer')
 
@@ -23,13 +23,17 @@ module Jsapi
         # JSON Schema tests
 
         def test_json_schema
-          schema = ObjectSchema.new
+          schema = Object.new
+          schema.add_all_of('Foo')
           schema.add_property('foo', type: 'string', existence: true)
           schema.add_property('bar', type: 'integer', existence: false)
 
           assert_equal(
             {
               type: %w[object null],
+              allOf: [
+                { '$ref': '#/definitions/Foo' }
+              ],
               properties: {
                 'foo' => {
                   type: 'string'
@@ -45,7 +49,7 @@ module Jsapi
         end
 
         def test_minimal_json_schema
-          schema = ObjectSchema.new(existence: true)
+          schema = Object.new(existence: true)
           assert_equal(
             {
               type: 'object',
@@ -59,7 +63,8 @@ module Jsapi
         # OpenAPI tests
 
         def test_openapi_schema
-          schema = ObjectSchema.new
+          schema = Object.new
+          schema.add_all_of('Foo')
           schema.add_property('foo', type: 'string', existence: true)
           schema.add_property('bar', type: 'integer', existence: false)
 
@@ -67,6 +72,9 @@ module Jsapi
             {
               type: 'object',
               nullable: true,
+              allOf: [
+                { '$ref': '#/components/schemas/Foo' }
+              ],
               properties: {
                 'foo' => {
                   type: 'string'
@@ -83,7 +91,7 @@ module Jsapi
         end
 
         def test_minimal_openapi_schema
-          schema = ObjectSchema.new(existence: true)
+          schema = Object.new(existence: true)
           assert_equal(
             {
               type: 'object',

@@ -5,33 +5,33 @@ require 'test_helper'
 module Jsapi
   module Model
     module Schema
-      class NumericSchemaTest < Minitest::Test
+      class NumericTest < Minitest::Test
         # Validation tests
 
         def test_exclusive_maximum
-          schema = NumericSchema.new(type: 'integer', exclusive_maximum: 0)
+          schema = Numeric.new(type: 'integer', exclusive_maximum: 0)
           assert_equal(0, schema.exclusive_maximum)
         end
 
         def test_exclusive_minimum
-          schema = NumericSchema.new(type: 'integer', exclusive_minimum: 0)
+          schema = Numeric.new(type: 'integer', exclusive_minimum: 0)
           assert_equal(0, schema.exclusive_minimum)
         end
 
         def test_maximum
-          schema = NumericSchema.new(type: 'integer', maximum: 0)
+          schema = Numeric.new(type: 'integer', maximum: 0)
           assert_equal(0, schema.maximum)
         end
 
         def test_minimum
-          schema = NumericSchema.new(type: 'integer', minimum: 0)
+          schema = Numeric.new(type: 'integer', minimum: 0)
           assert_equal(0, schema.minimum)
         end
 
         # JSON Schema tests
 
         def test_json_schema
-          schema = NumericSchema.new(
+          schema = Numeric.new(
             type: 'integer',
             existence: false,
             minimum: 1,
@@ -52,7 +52,7 @@ module Jsapi
         end
 
         def test_minimal_json_schema
-          schema = NumericSchema.new(type: 'integer', existence: true)
+          schema = Numeric.new(type: 'integer', existence: true)
           assert_equal(
             {
               type: 'integer'
@@ -64,7 +64,7 @@ module Jsapi
         # OpenAPI tests
 
         def test_openapi_schema
-          schema = NumericSchema.new(
+          schema = Numeric.new(
             type: 'integer',
             existence: false,
             minimum: 1,
@@ -86,7 +86,7 @@ module Jsapi
         end
 
         def test_minimal_openapi_schema
-          schema = NumericSchema.new(type: 'integer', existence: true)
+          schema = Numeric.new(type: 'integer', existence: true)
           assert_equal(
             {
               type: 'integer'

@@ -3,29 +3,29 @@
 require_relative 'schema/decorator'
 require_relative 'schema/reference'
 require_relative 'schema/base'
-require_relative 'schema/array_schema'
-require_relative 'schema/numeric_schema'
-require_relative 'schema/object_schema'
-require_relative 'schema/string_schema'
+require_relative 'schema/array'
+require_relative 'schema/numeric'
+require_relative 'schema/object'
+require_relative 'schema/string'
 
 module Jsapi
   module Model
     module Schema
       class << self
         def new(**options)
-          return Reference.new(options[:schema], existence: options[:existence]) if options.key?(:schema)
+          return Reference.new(**options) if options.key?(:schema)
 
           case type = options[:type]&.to_s
           when 'array'
-            ArraySchema
+            Array
           when 'boolean'
             Base
           when 'integer', 'number'
-            NumericSchema
+            Numeric
           when 'object', nil
-            ObjectSchema
+            Object
           when 'string'
-            StringSchema
+            String
           else
             raise ArgumentError, "invalid type: '#{type}'"
           end.new(**options)

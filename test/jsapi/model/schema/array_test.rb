@@ -5,11 +5,11 @@ require 'test_helper'
 module Jsapi
   module Model
     module Schema
-      class ArraySchemaTest < Minitest::Test
+      class ArrayTest < Minitest::Test
         # JSON Schema tests
 
         def test_json_schema
-          schema = ArraySchema.new(items: { type: 'string' }, existence: false)
+          schema = Array.new(items: { type: 'string' }, existence: false)
           assert_equal(
             {
               type: %w[array null],
@@ -22,7 +22,7 @@ module Jsapi
         end
 
         def test_minimal_json_schema
-          schema = ArraySchema.new(existence: true)
+          schema = Array.new(existence: true)
           assert_equal(
             {
               type: 'array',
@@ -35,7 +35,7 @@ module Jsapi
         # OpenAPI tests
 
         def test_openapi_schema
-          schema = ArraySchema.new(items: { type: 'string' }, existence: false)
+          schema = Array.new(items: { type: 'string' }, existence: false)
           assert_equal(
             {
               type: 'array',
@@ -50,7 +50,7 @@ module Jsapi
         end
 
         def test_minimal_openapi_schema
-          schema = ArraySchema.new(existence: true)
+          schema = Array.new(existence: true)
           assert_equal(
             {
               type: 'array',

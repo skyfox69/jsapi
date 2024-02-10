@@ -3,7 +3,7 @@
 module Jsapi
   module Model
     module Schema
-      class StringSchema < Base
+      class String < Base
         FORMATS = %w[date date-time].freeze
 
         attr_reader :format, :max_length, :min_length, :pattern

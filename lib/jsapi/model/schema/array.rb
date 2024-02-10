@@ -3,7 +3,7 @@
 module Jsapi
   module Model
     module Schema
-      class ArraySchema < Base
+      class Array < Base
         attr_reader :items
 
         def initialize(**options)

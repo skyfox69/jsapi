@@ -6,9 +6,9 @@ module Jsapi
       class Reference
         attr_reader :existence, :reference
 
-        def initialize(reference, existence: nil)
-          @reference = reference
-          @existence = Existence.from(existence)
+        def initialize(**options)
+          @reference = options[:schema]
+          @existence = Existence.from(options[:existence])
         end
 
         def existence=(existence)

@@ -7,13 +7,13 @@ module Jsapi
     module Schema
       class ReferenceTest < Minitest::Test
         def test_existence
-          reference = Reference.new('foo')
+          reference = Reference.new(schema: 'foo')
           reference.existence = true
           assert_equal(Existence::PRESENT, reference.existence)
         end
 
         def test_default_existence
-          schema = Base.new
+          schema = Reference.new(schema: 'foo')
           assert_equal(Existence::ALLOW_OMITTED, schema.existence)
         end
 
@@ -23,7 +23,7 @@ module Jsapi
           definitions = Definitions.new
           schema = definitions.add_schema('foo')
 
-          assert_equal(schema, Reference.new('foo').resolve(definitions))
+          assert_equal(schema, Reference.new(schema: 'foo').resolve(definitions))
         end
 
         def test_resolve_recursively
@@ -31,13 +31,13 @@ module Jsapi
           schema = definitions.add_schema('foo')
           definitions.add_schema('foo_ref', schema: 'foo')
 
-          assert_equal(schema, Reference.new('foo_ref').resolve(definitions))
+          assert_equal(schema, Reference.new(schema: 'foo_ref').resolve(definitions))
         end
 
         def test_resolve_with_higher_existence_level
           definitions = Definitions.new
           definitions.add_schema('foo', existence: :allow_empty)
-          reference = Reference.new('foo', existence: true)
+          reference = Reference.new(schema: 'foo', existence: true)
 
           resolved = reference.resolve(definitions)
           assert_kind_of(Decorator, resolved)
@@ -47,7 +47,7 @@ module Jsapi
         def test_resolve_with_lower_existence_level
           definitions = Definitions.new
           definitions.add_schema('foo', existence: true)
-          reference = Reference.new('foo', existence: :allow_empty)
+          reference = Reference.new(schema: 'foo', existence: :allow_empty)
 
           resolved = reference.resolve(definitions)
           assert_kind_of(Decorator, resolved)
@@ -57,7 +57,7 @@ module Jsapi
         # JSON Schema and OpenAPI tests
 
         def test_json_schema
-          reference = Reference.new('foo')
+          reference = Reference.new(schema: 'foo')
           assert_equal(
             { '$ref': '#/definitions/foo' },
             reference.to_json_schema
@@ -65,7 +65,7 @@ module Jsapi
         end
 
         def test_openapi_schema
-          reference = Reference.new('foo')
+          reference = Reference.new(schema: 'foo')
           assert_equal(
             { '$ref': '#/components/schemas/foo' },
             reference.to_openapi_schema
