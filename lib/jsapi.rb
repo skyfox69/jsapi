@@ -6,5 +6,3 @@ require 'jsapi/dom'
 require 'jsapi/dsl'
 require 'jsapi/controller'
 require 'jsapi/version'
-
-module Jsapi; end
