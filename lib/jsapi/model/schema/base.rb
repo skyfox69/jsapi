@@ -81,7 +81,7 @@ module Jsapi
           if value.nil?
             @validators.delete(key)
           else
-            class_name = "Jsapi::Validators::#{key.to_s.camelize(:upper)}"
+            class_name = "Jsapi::Model::Validators::#{key.to_s.camelize(:upper)}"
             @validators[key] = class_name.constantize.new(value)
           end
         end

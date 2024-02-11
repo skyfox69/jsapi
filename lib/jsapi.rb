@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'jsapi/validation'
-require 'jsapi/validators'
 require 'jsapi/model'
 require 'jsapi/dom'
 require 'jsapi/dsl'

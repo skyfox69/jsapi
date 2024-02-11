@@ -9,7 +9,3 @@ require_relative 'validators/maximum'
 require_relative 'validators/min_length'
 require_relative 'validators/minimum'
 require_relative 'validators/pattern'
-
-module Jsapi
-  module Validators; end
-end

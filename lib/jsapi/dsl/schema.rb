@@ -45,7 +45,7 @@ module Jsapi
       end
 
       def validate(&block)
-        model.add_validator(Validators::LambdaValidator.new(block))
+        model.add_validator(Model::Validators::LambdaValidator.new(block))
       end
     end
   end

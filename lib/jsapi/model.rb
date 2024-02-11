@@ -11,6 +11,7 @@ require_relative 'model/request_body'
 require_relative 'model/response'
 require_relative 'model/generic'
 require_relative 'model/definitions'
+require_relative 'model/validators'
 
 module Jsapi
   module Model; end
