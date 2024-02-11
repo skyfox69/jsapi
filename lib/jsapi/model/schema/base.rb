@@ -5,7 +5,7 @@ module Jsapi
     module Schema
       class Base
         attr_accessor :default, :description, :example
-        attr_reader :enum, :existence, :type, :validators
+        attr_reader :enum, :existence, :type
 
         def initialize(**options)
           @existence = Existence.from(options[:existence])
@@ -60,15 +60,8 @@ module Jsapi
           }.merge(json_schema_options).compact
         end
 
-        def validate(object)
-          errors = object.errors
-          value = object.cast
-
-          @validators.each_value do |validators|
-            Array(validators).each do |validator|
-              validator.validate(value, errors)
-            end
-          end
+        def validators
+          @validators.values.flatten
         end
 
         private

@@ -83,20 +83,9 @@ module Jsapi
       # Validate tests
 
       def test_validate
-        schema = Model::Schema.new(type: 'integer')
-        Schema.new(schema).call do
-          validate do
-            errors.add(:invalid) if odd?
-          end
-        end
-
-        i = DOM::Integer.new(2, schema)
-        schema.validate(i)
-        assert_predicate(i, :valid?)
-
-        i = DOM::Integer.new(1, schema)
-        schema.validate(i)
-        assert_predicate(i, :invalid?)
+        schema = Model::Schema.new
+        Schema.new(schema).call { validate {} }
+        assert_predicate(schema.validators, :one?)
       end
     end
   end

@@ -28,7 +28,9 @@ module Jsapi
         end
         return if invalid?
 
-        schema.validate(self)
+        schema.validators.each do |validator|
+          validator.validate(cast, errors)
+        end
       end
     end
   end
