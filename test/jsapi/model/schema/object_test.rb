@@ -7,17 +7,38 @@ module Jsapi
     module Schema
       class ObjectTest < Minitest::Test
         def test_properties
-          api_definitions = Definitions.new
+          schema = Object.new
+          schema.add_property('foo')
+          schema.add_property('bar')
 
-          base_schema = api_definitions.add_schema('base_schema')
-          base_schema.add_property('foo', type: 'string')
+          properties = schema.properties(Definitions.new)
+          assert_equal(%w[foo bar], properties.keys)
+        end
+
+        def test_properties_on_references
+          definitions = Definitions.new
+          definitions.add_schema('Foo').add_property('foo')
+          definitions.add_schema('Bar').add_property('bar')
 
           schema = Object.new
-          schema.add_all_of('base_schema')
-          schema.add_property('bar', type: 'integer')
+          schema.add_all_of('Foo')
+          schema.add_all_of('Bar')
+          schema.add_property('my_property')
 
-          properties = schema.properties(api_definitions)
-          assert_equal(%w[foo bar], properties.keys)
+          properties = schema.properties(definitions)
+          assert_equal(%w[foo bar my_property], properties.keys)
+        end
+
+        def test_properties_on_circular_reference
+          definitions = Definitions.new
+          definitions.add_schema('Foo').add_all_of('Bar')
+          definitions.add_schema('Bar').add_all_of('Foo')
+
+          schema = Object.new
+          schema.add_all_of('Foo')
+
+          error = assert_raises(RuntimeError) { schema.properties(definitions) }
+          assert_equal('circular reference: Foo', error.message)
         end
 
         # JSON Schema tests

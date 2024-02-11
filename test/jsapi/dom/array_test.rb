@@ -10,8 +10,11 @@ module Jsapi
           type: 'array',
           items: { type: 'string' }
         )
-        assert_predicate(Array.new([], schema), :empty?)
-        assert(!Array.new(%w[foo bar], schema).empty?)
+        array = Array.new([], schema, definitions)
+        assert_predicate(array, :empty?)
+
+        array = Array.new(%w[foo bar], schema, definitions)
+        assert(!array.empty?)
       end
 
       def test_cast
@@ -19,11 +22,11 @@ module Jsapi
           type: 'array',
           items: { type: 'string' }
         )
-        assert_equal(%w[foo bar], Array.new(%w[foo bar], schema).cast)
+        array = Array.new(%w[foo bar], schema, definitions)
+        assert_equal(%w[foo bar], array.cast)
       end
 
       def test_items_as_reference
-        definitions = Model::Definitions.new
         item_schema = definitions.add_schema('Item', type: 'object')
         item_schema.add_property('property', type: 'string')
 
@@ -31,7 +34,7 @@ module Jsapi
           type: 'array',
           items: { schema: 'Item' }
         )
-        ary = Array.new(
+        array = Array.new(
           [
             { 'property' => 'foo' },
             { 'property' => 'bar' }
@@ -40,8 +43,8 @@ module Jsapi
           definitions
         ).cast
 
-        assert_equal('foo', ary.first.property)
-        assert_equal('bar', ary.second.property)
+        assert_equal('foo', array.first.property)
+        assert_equal('bar', array.second.property)
       end
 
       def test_validation
@@ -49,8 +52,17 @@ module Jsapi
           type: 'array',
           items: { type: 'string', existence: true }
         )
-        assert_predicate(Array.new(%w[foo bar], schema), :valid?)
-        assert_predicate(Array.new(['foo', nil, 'bar'], schema), :invalid?)
+        array = Array.new(%w[foo bar], schema, definitions)
+        assert_predicate(array, :valid?)
+
+        array = Array.new(['foo', nil, 'bar'], schema, definitions)
+        assert_predicate(array, :invalid?)
+      end
+
+      private
+
+      def definitions
+        @definitions ||= Model::Definitions.new
       end
     end
   end

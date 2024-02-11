@@ -11,7 +11,7 @@ module Jsapi
           parameter.resolve(definitions)
         end
         if (schema = operation.request_body&.schema).respond_to?(:properties)
-          models.merge!(schema.properties)
+          models.merge!(schema.properties(definitions))
         end
 
         # Wrap params

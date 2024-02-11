@@ -12,8 +12,8 @@ module Jsapi
           @properties = {}
         end
 
-        def add_all_of(schema_name)
-          @all_of << Reference.new(schema: schema_name) if schema_name.present?
+        def add_all_of(name)
+          @all_of << Reference.new(schema: name) if name.present?
         end
 
         def add_property(name, **options)
@@ -21,11 +21,9 @@ module Jsapi
         end
 
         def properties(definitions = nil)
-          # TODO: Prevent circular references
-          all_of.map do |schema|
-            schema = schema.resolve(definitions) if definitions.present?
-            schema.properties(definitions)
-          end.reduce({}, &:merge).merge(@properties)
+          return @properties if definitions.nil?
+
+          merge_properties(definitions, [])
         end
 
         def to_json_schema(*)
@@ -42,6 +40,22 @@ module Jsapi
             properties: @properties.transform_values(&:to_openapi_schema),
             required: @properties.values.select(&:required?).map(&:name)
           ).compact
+        end
+
+        protected
+
+        def merge_properties(definitions, path)
+          return @properties unless @all_of.any?
+
+          {}.tap do |properties|
+            @all_of.each do |reference|
+              schema = reference.resolve(definitions)
+              raise "circular reference: #{reference.reference}" if schema.in?(path)
+
+              properties.merge!(schema.merge_properties(definitions, path + [self]))
+            end
+            properties.merge!(@properties)
+          end
         end
       end
     end
