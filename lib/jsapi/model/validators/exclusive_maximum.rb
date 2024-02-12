@@ -5,7 +5,9 @@ module Jsapi
     module Validators
       class ExclusiveMaximum
         def initialize(exclusive_maximum)
-          raise ArgumentError, "invalid exclusive maximum: #{exclusive_maximum}" unless exclusive_maximum.respond_to?(:>=)
+          unless exclusive_maximum.respond_to?(:>=)
+            raise ArgumentError, "invalid exclusive maximum: #{exclusive_maximum}"
+          end
 
           @exclusive_maximum = exclusive_maximum
         end
