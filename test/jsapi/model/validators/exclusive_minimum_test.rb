@@ -6,12 +6,12 @@ module Jsapi
   module Model
     module Validators
       class ExclusiveMinimumTest < Minitest::Test
-        def test_raises_argument_error
+        def test_argument_error
           error = assert_raises(ArgumentError) { ExclusiveMinimum.new(nil) }
           assert_equal('invalid exclusive minimum: ', error.message)
         end
 
-        def test_validate_positive
+        def test_positive_validation
           validator = ExclusiveMinimum.new(0)
           errors = Validation::Errors.new
 
@@ -19,7 +19,7 @@ module Jsapi
           assert_predicate(errors, :none?)
         end
 
-        def test_validate_negative
+        def test_negative_validation
           validator = ExclusiveMinimum.new(0)
           errors = Validation::Errors.new
 

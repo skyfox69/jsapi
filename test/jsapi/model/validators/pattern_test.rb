@@ -6,12 +6,12 @@ module Jsapi
   module Model
     module Validators
       class PatternTest < Minitest::Test
-        def test_raises_argument_error
+        def test_argument_error
           error = assert_raises(ArgumentError) { Pattern.new(nil) }
           assert_equal('invalid pattern: ', error.message)
         end
 
-        def test_validate_positive
+        def test_positive_validation
           validator = Pattern.new(/fo/)
           errors = Validation::Errors.new
 
@@ -19,7 +19,7 @@ module Jsapi
           assert_predicate(errors, :none?)
         end
 
-        def test_validate_negative
+        def test_negative_validation
           validator = Pattern.new(/fo/)
           errors = Validation::Errors.new
 

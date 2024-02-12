@@ -8,7 +8,7 @@ module Jsapi
       class LambdaValidatorTest < Minitest::Test
         LAMBDA = ->(_wrapper) { errors.add(:invalid) unless self == 'foo' }
 
-        def test_validate_positive
+        def test_positive_validation
           validator = LambdaValidator.new(LAMBDA)
           errors = Validation::Errors.new
 
@@ -16,7 +16,7 @@ module Jsapi
           assert_predicate(errors, :none?)
         end
 
-        def test_validate_negative
+        def test_negative_validation
           validator = LambdaValidator.new(LAMBDA)
           errors = Validation::Errors.new
 
@@ -24,7 +24,7 @@ module Jsapi
           assert_equal(['is invalid'], errors.map(&:message))
         end
 
-        def test_validate_skipped
+        def test_nil_validator
           validator = LambdaValidator.new(nil)
           errors = Validation::Errors.new
 
