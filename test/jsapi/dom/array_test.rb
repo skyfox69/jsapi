@@ -17,13 +17,13 @@ module Jsapi
         assert(!array.empty?)
       end
 
-      def test_cast
+      def test_value
         schema = Model::Schema.new(
           type: 'array',
           items: { type: 'string' }
         )
         array = Array.new(%w[foo bar], schema, definitions)
-        assert_equal(%w[foo bar], array.cast)
+        assert_equal(%w[foo bar], array.value)
       end
 
       def test_items_as_reference
@@ -41,7 +41,7 @@ module Jsapi
           ],
           array_schema,
           definitions
-        ).cast
+        ).value
 
         assert_equal('foo', array.first.property)
         assert_equal('bar', array.second.property)

@@ -10,16 +10,16 @@ module Jsapi
         end
       end
 
-      def cast
-        @cast ||= @ary.map(&:cast)
-      end
-
       def empty?
         @ary.empty?
       end
 
       def errors
         @errors ||= @ary.flat_map(&:errors)
+      end
+
+      def value
+        @value ||= @ary.map(&:value)
       end
     end
   end

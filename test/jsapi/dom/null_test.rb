@@ -13,8 +13,8 @@ module Jsapi
         assert_predicate(Null.new(Model::Schema.new), :empty?)
       end
 
-      def test_cast
-        assert_nil(Null.new(Model::Schema.new).cast)
+      def test_value
+        assert_nil(Null.new(Model::Schema.new).value)
       end
     end
   end

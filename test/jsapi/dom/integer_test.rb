@@ -9,8 +9,8 @@ module Jsapi
         assert(!Integer.new('0', Model::Schema.new).empty?)
       end
 
-      def test_cast
-        assert_equal(0, Integer.new('0', Model::Schema.new).cast)
+      def test_value
+        assert_equal(0, Integer.new('0', Model::Schema.new).value)
       end
     end
   end

@@ -21,7 +21,7 @@ module Jsapi
       end
 
       def[](key)
-        @parameters[key&.to_s]&.cast
+        @parameters[key&.to_s]&.value
       end
 
       def _validate

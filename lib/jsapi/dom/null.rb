@@ -3,16 +3,16 @@
 module Jsapi
   module DOM
     class Null < BaseObject
+      def empty?
+        true
+      end
+
       def null?
         true
       end
 
-      def cast
+      def value
         nil
-      end
-
-      def empty?
-        true
       end
     end
   end

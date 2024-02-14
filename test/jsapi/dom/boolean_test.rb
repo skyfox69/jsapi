@@ -13,12 +13,12 @@ module Jsapi
         assert(!Boolean.new('false', Model::Schema.new).empty?)
       end
 
-      def test_cast_true
-        assert(Boolean.new('true', Model::Schema.new).cast)
+      def test_value_on_true
+        assert(Boolean.new('true', Model::Schema.new).value)
       end
 
-      def test_cast_false
-        assert_equal(false, Boolean.new('false', Model::Schema.new).cast)
+      def test_value_on_false
+        assert_equal(false, Boolean.new('false', Model::Schema.new).value)
       end
     end
   end

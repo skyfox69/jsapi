@@ -12,19 +12,15 @@ module Jsapi
       end
 
       def [](key)
-        @attributes[key&.to_s].cast
+        @attributes[key&.to_s].value
       end
 
       def attributes
-        @attributes.transform_values(&:cast)
-      end
-
-      def cast
-        self
+        @attributes.transform_values(&:value)
       end
 
       def empty?
-        @attributes.values.all?(&:blank?)
+        @attributes.values.all?(&:empty?)
       end
 
       def method_missing(*args)
@@ -34,6 +30,10 @@ module Jsapi
 
       def respond_to_missing?(param1, _param2)
         @attributes.key?(param1.to_s) ? true : super
+      end
+
+      def value
+        self
       end
 
       def _validate

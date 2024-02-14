@@ -10,9 +10,9 @@ module Jsapi
         assert(!Object.new({ 'foo' => 'bar' }, schema, definitions).empty?)
       end
 
-      def test_cast
+      def test_value
         object = Object.new({}, schema, definitions)
-        assert_equal(object, object.cast)
+        assert_equal(object, object.value)
       end
 
       # Attribute reader tests

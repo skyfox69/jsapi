@@ -3,14 +3,12 @@
 module Jsapi
   module DOM
     class Boolean < BaseObject
+      attr_reader :value
+
       def initialize(value, schema)
         super(schema)
-        @value = value
-      end
-
-      def cast
-        @cast ||=
-          case @value
+        @value =
+          case value
           when true, 'true'
             true
           when false, 'false'

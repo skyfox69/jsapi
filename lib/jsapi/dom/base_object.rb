@@ -11,11 +11,11 @@ module Jsapi
         @schema = schema
       end
 
-      def null?
+      def empty?
         false
       end
 
-      def empty?
+      def null?
         false
       end
 
@@ -26,10 +26,10 @@ module Jsapi
         when Model::Existence::ALLOW_EMPTY
           errors.add(:blank) if null?
         end
-        return if invalid?
+        return if null? || invalid?
 
         schema.validators.each do |validator|
-          validator.validate(cast, errors)
+          validator.validate(value, errors)
         end
       end
     end

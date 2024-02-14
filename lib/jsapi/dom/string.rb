@@ -3,25 +3,23 @@
 module Jsapi
   module DOM
     class String < BaseObject
-      def initialize(str, schema)
-        super(schema)
-        @str = str.to_s
-      end
+      attr_reader :value
 
-      def cast
-        @cast ||=
+      def initialize(value, schema)
+        super(schema)
+        @value =
           case schema.format
           when 'date'
-            @str.to_date
+            value.to_date
           when 'date-time'
-            @str.to_datetime
+            value.to_datetime
           else
-            @str
+            value.to_s
           end
       end
 
       def empty?
-        @str.blank?
+        value.blank?
       end
     end
   end

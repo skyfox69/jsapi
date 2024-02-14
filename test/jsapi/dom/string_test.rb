@@ -11,25 +11,25 @@ module Jsapi
         assert(!String.new('foo', schema).empty?)
       end
 
-      def test_cast
+      def test_value
         schema = Model::Schema.new(type: 'string')
         string = String.new('foo', schema)
 
-        assert_equal('foo', string.cast)
+        assert_equal('foo', string.value)
       end
 
-      def test_cast_on_date
+      def test_value_on_date
         schema = Model::Schema.new(type: 'string', format: 'date')
         string = String.new('2099-12-31', schema)
 
-        assert_equal(Date.new(2099, 12, 31), string.cast)
+        assert_equal(Date.new(2099, 12, 31), string.value)
       end
 
-      def test_cast_on_date_time
+      def test_value_on_date_time
         schema = Model::Schema.new(type: 'string', format: 'date-time')
         string = String.new('2099-12-31', schema)
 
-        assert_equal(DateTime.new(2099, 12, 31), string.cast)
+        assert_equal(DateTime.new(2099, 12, 31), string.value)
       end
     end
   end
