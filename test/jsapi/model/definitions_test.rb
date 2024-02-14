@@ -12,12 +12,6 @@ module Jsapi
       end
 
       # Operations tests
-
-      def test_default_operation_name
-        @api_definitions.add_operation
-        assert_equal(%w[foo_bar], @api_definitions.operations.keys)
-      end
-
       def test_add_operation
         @api_definitions.add_operation('my_operation')
         assert(@api_definitions.operations.key?('my_operation'))
@@ -30,6 +24,16 @@ module Jsapi
           @api_definitions.add_operation('my_operation')
         end
         assert_equal("operation already defined: 'my_operation'", error.message)
+      end
+
+      def test_default_operation_name
+        @api_definitions.add_operation
+        assert_equal(%w[foo_bar], @api_definitions.operations.keys)
+      end
+
+      def test_default_operation_path
+        @api_definitions.add_operation
+        assert_equal('/foo_bar', @api_definitions.operation.path)
       end
 
       def test_get_operation

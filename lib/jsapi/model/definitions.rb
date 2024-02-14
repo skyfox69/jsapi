@@ -19,7 +19,7 @@ module Jsapi
         name = name.to_s
         raise "operation already defined: '#{name}'" if @operations.key?(name)
 
-        @operations[name] = Operation.new(name, **options)
+        @operations[name] = Operation.new(name, **options.reverse_merge(path: default_path))
       end
 
       def add_parameter(name, **options)
@@ -99,10 +99,13 @@ module Jsapi
 
       private
 
-      def default_path
-        @default_path ||= @owner.to_s.demodulize.delete_suffix('Controller').underscore
+      def default_operation_name
+        @default_operation_name ||= @owner.to_s.demodulize.delete_suffix('Controller').underscore
       end
-      alias default_operation_name default_path
+
+      def default_path
+        @default_path ||= "/#{default_operation_name}"
+      end
     end
   end
 end
