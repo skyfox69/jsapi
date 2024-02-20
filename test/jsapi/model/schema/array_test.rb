@@ -34,7 +34,31 @@ module Jsapi
 
         # OpenAPI tests
 
-        def test_openapi_schema
+        def test_openapi_schema_2_0
+          schema = Array.new(items: { type: 'string' }, existence: false)
+          assert_equal(
+            {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            },
+            schema.to_openapi_schema('2.0')
+          )
+        end
+
+        def test_minimal_openapi_schema_2_0
+          schema = Array.new(existence: false)
+          assert_equal(
+            {
+              type: 'array',
+              items: {}
+            },
+            schema.to_openapi_schema('2.0')
+          )
+        end
+
+        def test_openapi_schema_3_0
           schema = Array.new(items: { type: 'string' }, existence: false)
           assert_equal(
             {
@@ -45,18 +69,18 @@ module Jsapi
                 nullable: true
               }
             },
-            schema.to_openapi_schema
+            schema.to_openapi_schema('3.0.3')
           )
         end
 
-        def test_minimal_openapi_schema
+        def test_minimal_openapi_schema_3_0
           schema = Array.new(existence: true)
           assert_equal(
             {
               type: 'array',
               items: {}
             },
-            schema.to_openapi_schema
+            schema.to_openapi_schema('3.0.3')
           )
         end
       end

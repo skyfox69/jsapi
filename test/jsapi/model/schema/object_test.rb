@@ -83,7 +83,45 @@ module Jsapi
 
         # OpenAPI tests
 
-        def test_openapi_schema
+        def test_openapi_schema_2_0
+          schema = Object.new
+          schema.add_all_of('Foo')
+          schema.add_property('foo', type: 'string', existence: true)
+          schema.add_property('bar', type: 'integer', existence: false)
+
+          assert_equal(
+            {
+              type: 'object',
+              allOf: [
+                { '$ref': '#/definitions/Foo' }
+              ],
+              properties: {
+                'foo' => {
+                  type: 'string'
+                },
+                'bar' => {
+                  type: 'integer'
+                }
+              },
+              required: %w[foo]
+            },
+            schema.to_openapi_schema('2.0')
+          )
+        end
+
+        def test_minimal_openapi_schema_2_0
+          schema = Object.new(existence: true)
+          assert_equal(
+            {
+              type: 'object',
+              properties: {},
+              required: []
+            },
+            schema.to_openapi_schema('2.0')
+          )
+        end
+
+        def test_openapi_schema_3_0
           schema = Object.new
           schema.add_all_of('Foo')
           schema.add_property('foo', type: 'string', existence: true)
@@ -107,11 +145,11 @@ module Jsapi
               },
               required: %w[foo]
             },
-            schema.to_openapi_schema
+            schema.to_openapi_schema('3.0.3')
           )
         end
 
-        def test_minimal_openapi_schema
+        def test_minimal_openapi_schema_3_0
           schema = Object.new(existence: true)
           assert_equal(
             {
@@ -119,7 +157,7 @@ module Jsapi
               properties: {},
               required: []
             },
-            schema.to_openapi_schema
+            schema.to_openapi_schema('3.0.3')
           )
         end
       end

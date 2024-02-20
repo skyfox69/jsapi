@@ -22,6 +22,10 @@ Metrics/MethodLength:
 Metrics/PerceivedComplexity:
   Enabled: false
 
+Naming/VariableNumber:
+  Exclude:
+    - test/**/*.rb
+
 Style/Documentation:
   Enabled: false
 

@@ -13,11 +13,19 @@ module Jsapi
         assert_equal(parameter, parameter_ref.resolve(api_definitions))
       end
 
-      def test_openapi_parameters
+      def test_openapi_parameters_2_0
+        reference = ParameterReference.new(:foo)
+        assert_equal(
+          [{ '$ref': '#/parameters/foo' }],
+          reference.to_openapi_parameters('2.0')
+        )
+      end
+
+      def test_openapi_parameters_3_0
         reference = ParameterReference.new(:foo)
         assert_equal(
           [{ '$ref': '#/components/parameters/foo' }],
-          reference.to_openapi_parameters
+          reference.to_openapi_parameters('3.0.3')
         )
       end
     end

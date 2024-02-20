@@ -17,7 +17,7 @@ module Jsapi
           [
             { '$ref': '#/components/schemas/my_schema' }
           ],
-          schema.to_openapi_schema[:allOf]
+          schema.to_openapi_schema('3.0.3')[:allOf]
         )
       end
 
@@ -36,7 +36,7 @@ module Jsapi
               nullable: true
             }
           },
-          schema.to_openapi_schema
+          schema.to_openapi_schema('3.0.3')
         )
       end
 
@@ -68,7 +68,7 @@ module Jsapi
             },
             required: []
           },
-          schema.to_openapi_schema
+          schema.to_openapi_schema('3.0.3')
         )
       end
 

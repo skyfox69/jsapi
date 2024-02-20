@@ -18,7 +18,10 @@ module Jsapi
     class Bar < Foo
       api_definitions do
         include Foo
-        info name: 'Bar API', version: '1.0'
+
+        openapi '3.0.3' do
+          info name: 'Bar API', version: '1.0'
+        end
 
         operation 'my_operation', method: 'get', path: '/my_path' do
           parameter 'request_id'
@@ -116,7 +119,7 @@ module Jsapi
             }
           }
         },
-        Bar.api_definitions.openapi_document
+        Bar.api_definitions.openapi_document('3.0.3')
       )
     end
   end

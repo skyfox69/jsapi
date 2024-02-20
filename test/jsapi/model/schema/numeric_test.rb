@@ -81,7 +81,7 @@ module Jsapi
               exclusiveMinimum: 0,
               exclusiveMaximum: 3
             },
-            schema.to_openapi_schema
+            schema.to_openapi_schema('3.0.3')
           )
         end
 
@@ -91,7 +91,7 @@ module Jsapi
             {
               type: 'integer'
             },
-            schema.to_openapi_schema
+            schema.to_openapi_schema('3.0.3')
           )
         end
       end

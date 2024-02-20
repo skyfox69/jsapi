@@ -10,7 +10,7 @@ module Jsapi
         @operations = {}
         @parameters = {}
         @schemas = {}
-        @openapi_root = nil
+        @openapi_roots = {}
         @self_and_included = [self]
       end
 
@@ -41,36 +41,36 @@ module Jsapi
         @self_and_included += definitions
       end
 
-      def openapi_document
-        openapi_root.to_openapi.merge(
-          paths:
-            @self_and_included
-              .map(&:operations)
-              .reduce(&:merge)
-              .values
-              .group_by { |operation| operation.path || default_path }
-              .transform_values do |operations|
-                operations.index_by(&:method).transform_values(&:to_openapi_operation)
-              end,
-          components: {
-            parameters:
-              @self_and_included
-                .map(&:parameters)
-                .reduce(&:merge)
-                .transform_values do |parameter|
-                  parameter.to_openapi_parameters.first
-                end.presence,
-            schemas:
-              @self_and_included
-                .map(&:schemas)
-                .reduce(&:merge)
-                .transform_values(&:to_openapi_schema).presence
-          }.compact
-        ).transform_values(&:presence).compact
+      def openapi_document(version = '2.0')
+        openapi_root(version).to_h.tap do |root|
+          if version == '2.0'
+            root.merge!(
+              paths: openapi_paths(version),
+              parameters: openapi_parameters(version),
+              definitions: openapi_schemas(version)
+            )
+          else
+            root.merge!(
+              paths: openapi_paths(version),
+              components: {
+                parameters: openapi_parameters(version),
+                schemas: openapi_schemas(version)
+              }.compact.presence
+            )
+          end
+        end.compact
       end
 
-      def openapi_root
-        @openapi_root ||= Generic.new(openapi: '3.0.3')
+      def openapi_root(version = '2.0')
+        @openapi_roots[version] ||=
+          case version
+          when '2.0'
+            Generic.new(swagger: '2.0')
+          when '3.0.3'
+            Generic.new(openapi: '3.0.3')
+          else
+            raise ArgumentError, "unsupported OpenAPI version: #{version}"
+          end
       end
 
       def operation(name = nil)
@@ -105,6 +105,32 @@ module Jsapi
 
       def default_path
         @default_path ||= "/#{default_operation_name}"
+      end
+
+      def openapi_parameters(version)
+        @self_and_included
+          .map(&:parameters).reduce(&:merge)
+          .transform_values do |parameter|
+          parameter.to_openapi_parameters(version).first
+        end.presence
+      end
+
+      def openapi_paths(version)
+        @self_and_included
+          .map(&:operations).reduce(&:merge).values
+          .group_by { |operation| operation.path || default_path }
+          .transform_values do |operations|
+          operations.index_by(&:method).transform_values do |operation|
+            operation.to_openapi_operation(version)
+          end
+        end.presence
+      end
+
+      def openapi_schemas(version)
+        @self_and_included
+          .map(&:schemas).reduce(&:merge).transform_values do |schema|
+          schema.to_openapi_schema(version)
+        end.presence
       end
     end
   end

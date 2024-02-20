@@ -52,17 +52,30 @@ module Jsapi
       end
 
       # Returns the OpenAPI operation object as a +Hash+.
-      def to_openapi_operation
+      def to_openapi_operation(version)
         {
           operationId: name,
           tags: tags,
           summary: summary,
           description: description,
-          deprecated: (true if deprecated?),
-          parameters: parameters.values.flat_map(&:to_openapi_parameters),
-          request_body: request_body&.to_openapi_request_body,
-          responses: responses.transform_values(&:to_openapi_response)
-        }.compact
+          deprecated: (true if deprecated?)
+        }.tap do |hash|
+          # Parameters (and request body)
+          hash[:parameters] = parameters.values.flat_map do |parameter|
+            parameter.to_openapi_parameters(version)
+          end
+          if request_body.present?
+            if version == '2.0'
+              hash[:parameters] << request_body.to_openapi_parameter
+            else
+              hash[:request_body] = request_body.to_openapi_request_body
+            end
+          end
+          # Responses
+          hash[:responses] = responses.transform_values do |response|
+            response.to_openapi_response(version)
+          end
+        end.compact
       end
     end
   end

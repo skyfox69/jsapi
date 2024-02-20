@@ -34,10 +34,14 @@ module Jsapi
           ).compact
         end
 
-        def to_openapi_schema
+        def to_openapi_schema(version)
           super.merge(
-            allOf: @all_of.map(&:to_openapi_schema).presence,
-            properties: @properties.transform_values(&:to_openapi_schema),
+            allOf: @all_of.map do |schema|
+              schema.to_openapi_schema(version)
+            end.presence,
+            properties: @properties.transform_values do |property|
+              property.to_openapi_schema(version)
+            end,
             required: @properties.values.select(&:required?).map(&:name)
           ).compact
         end

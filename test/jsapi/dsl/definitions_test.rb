@@ -14,7 +14,9 @@ module Jsapi
         extend ClassMethods
         api_definitions do
           include Foo
-          info name: 'Bar API', version: '1.0'
+          openapi '3.0.3' do
+            info name: 'Bar API', version: '1.0'
+          end
         end
       end
 
@@ -25,7 +27,7 @@ module Jsapi
       def test_info
         assert_equal(
           { name: 'Bar API', version: '1.0' },
-          Bar.api_definitions.openapi_document[:info]
+          Bar.api_definitions.openapi_document('3.0.3')[:info]
         )
       end
     end

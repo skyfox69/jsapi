@@ -3,16 +3,14 @@
 module Jsapi
   module DSL
     class Definitions < Node
-      %i[info security server].each do |name|
-        define_method(name) do |**keywords, &block|
-          generic_model = model.openapi_root.add_child(name, **keywords)
-          Generic.new(generic_model).call(&block) if block.present?
-        end
-      end
-
       # Includes all of the API definitions from +classes+.
       def include(*classes)
         model.include(*classes.map(&:api_definitions))
+      end
+
+      def openapi(version = nil, &block)
+        openapi = model.openapi_root(version)
+        Generic.new(openapi).call(&block) if block.present?
       end
 
       # Defines an API operation.

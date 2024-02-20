@@ -33,18 +33,28 @@ module Jsapi
       end
 
       # Returns the OpenAPI parameter objects as an array of hashes.
-      def to_openapi_parameters
-        if schema.respond_to?(:type) && schema.type == 'object'
-          schema.properties.map do |_key, property|
-            {
-              name: "#{name}[#{property.name}]",
-              in: location,
-              description: property.schema.description,
-              required: property.required?,
-              deprecated: (true if property.deprecated?),
-              schema: property.schema.to_openapi_schema,
-              example: property.schema.example
-            }.compact
+      def to_openapi_parameters(version)
+        type = schema.respond_to?(:type) ? schema.type : nil
+
+        if version == '2.0'
+          if type == 'object'
+            schema.properties.values.map do |property|
+              {
+                name: "#{name}[#{property.name}]",
+                in: location,
+                description: property.schema.description,
+                required: required? && property.required?
+              }.merge(property.schema.to_openapi_schema(version)).compact
+            end
+          else
+            [
+              {
+                name: name,
+                in: location,
+                description: description,
+                required: required?
+              }.merge(schema.to_openapi_schema(version)).compact
+            ]
           end
         else
           [
@@ -54,7 +64,8 @@ module Jsapi
               description: description,
               required: required?,
               deprecated: (true if deprecated?),
-              schema: schema.to_openapi_schema,
+              schema: schema.to_openapi_schema(version),
+              explode: (true if %w[array object].include?(type)),
               example: example
             }.compact
           ]

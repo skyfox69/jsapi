@@ -40,11 +40,11 @@ module Jsapi
               }
             }
           ],
-          operation_model.to_openapi_operation[:parameters]
+          operation_model.to_openapi_operation('3.0.3')[:parameters]
         )
       end
 
-      def test_parameter_with_block
+      def test_parameters_with_block
         operation_model = Model::Operation.new('my_operation')
         Operation.new(operation_model).call do
           parameter 'my_parameter', type: 'object' do
@@ -55,15 +55,23 @@ module Jsapi
         assert_equal(
           [
             {
-              name: 'my_parameter[my_property]',
+              name: 'my_parameter',
               required: false,
               schema: {
-                type: 'string',
-                nullable: true
-              }
+                type: 'object',
+                nullable: true,
+                properties: {
+                  'my_property' => {
+                    type: 'string',
+                    nullable: true
+                  }
+                },
+                required: []
+              },
+              explode: true
             }
           ],
-          operation_model.to_openapi_operation[:parameters]
+          operation_model.to_openapi_operation('3.0.3')[:parameters]
         )
       end
 
@@ -75,7 +83,7 @@ module Jsapi
           [
             { '$ref': '#/components/parameters/my_parameter' }
           ],
-          operation_model.to_openapi_operation[:parameters]
+          operation_model.to_openapi_operation('3.0.3')[:parameters]
         )
       end
 
@@ -116,7 +124,7 @@ module Jsapi
             },
             required: false
           },
-          operation_model.to_openapi_operation[:request_body]
+          operation_model.to_openapi_operation('3.0.3')[:request_body]
         )
       end
 
@@ -135,7 +143,7 @@ module Jsapi
             },
             required: false
           },
-          operation_model.to_openapi_operation[:request_body]
+          operation_model.to_openapi_operation('3.0.3')[:request_body]
         )
       end
 
@@ -178,7 +186,7 @@ module Jsapi
               }
             }
           },
-          operation_model.to_openapi_operation[:responses]
+          operation_model.to_openapi_operation('3.0.3')[:responses]
         )
       end
 
@@ -210,7 +218,7 @@ module Jsapi
               }
             }
           },
-          operation_model.to_openapi_operation[:responses]
+          operation_model.to_openapi_operation('3.0.3')[:responses]
         )
       end
 
@@ -230,7 +238,7 @@ module Jsapi
               }
             }
           },
-          operation_model.to_openapi_operation[:responses]
+          operation_model.to_openapi_operation('3.0.3')[:responses]
         )
       end
 

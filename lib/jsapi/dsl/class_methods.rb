@@ -29,6 +29,11 @@ module Jsapi
       def api_schema(name, **options, &block)
         api_definitions { schema(name, **options, &block) }
       end
+
+      # See +Definitions#openapi+
+      def openapi(version = '2.0', &block)
+        api_definitions { openapi(version, &block) }
+      end
     end
   end
 end

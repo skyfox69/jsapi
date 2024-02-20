@@ -50,10 +50,10 @@ module Jsapi
           }.merge(json_schema_options).compact
         end
 
-        def to_openapi_schema
+        def to_openapi_schema(version)
           {
             type: type,
-            nullable: (true if nullable?), # only 3.0.x
+            nullable: (true if version == '3.0.3' && nullable?),
             description: description,
             default: default,
             example: example

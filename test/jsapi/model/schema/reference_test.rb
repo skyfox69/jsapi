@@ -54,7 +54,7 @@ module Jsapi
           assert_equal(Existence::PRESENT, resolved.existence)
         end
 
-        # JSON Schema and OpenAPI tests
+        # JSON Schema tests
 
         def test_json_schema
           reference = Reference.new(schema: 'foo')
@@ -64,11 +64,21 @@ module Jsapi
           )
         end
 
-        def test_openapi_schema
+        # OpenAPI tests
+
+        def test_openapi_schema_2_0
+          reference = Reference.new(schema: 'foo')
+          assert_equal(
+            { '$ref': '#/definitions/foo' },
+            reference.to_openapi_schema('2.0')
+          )
+        end
+
+        def test_openapi_schema_3_0
           reference = Reference.new(schema: 'foo')
           assert_equal(
             { '$ref': '#/components/schemas/foo' },
-            reference.to_openapi_schema
+            reference.to_openapi_schema('3.0.3')
           )
         end
       end

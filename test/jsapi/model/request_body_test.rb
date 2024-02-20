@@ -15,7 +15,9 @@ module Jsapi
         assert(!request_body.required?)
       end
 
-      def test_minimal_request_body
+      # OpenAPI tests
+
+      def test_openapi_request_body
         request_body = RequestBody.new(type: 'string')
 
         assert_equal(
@@ -31,6 +33,20 @@ module Jsapi
             required: false
           },
           request_body.to_openapi_request_body
+        )
+      end
+
+      def test_openapi_parameter
+        request_body = RequestBody.new(type: 'string')
+
+        assert_equal(
+          {
+            name: 'body',
+            in: 'body',
+            required: false,
+            type: 'string'
+          },
+          request_body.to_openapi_parameter
         )
       end
     end

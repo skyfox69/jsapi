@@ -18,8 +18,8 @@ module Jsapi
           super.merge(items: items&.to_json_schema || {})
         end
 
-        def to_openapi_schema
-          super.merge(items: items&.to_openapi_schema || {})
+        def to_openapi_schema(version)
+          super.merge(items: items&.to_openapi_schema(version) || {})
         end
       end
     end

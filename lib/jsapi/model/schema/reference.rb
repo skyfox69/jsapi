@@ -33,8 +33,10 @@ module Jsapi
         end
 
         # Returns the OpenAPI schema object as a +Hash+.
-        def to_openapi_schema
-          { '$ref': "#/components/schemas/#{@reference}" }
+        def to_openapi_schema(version)
+          path = version == '2.0' ? 'definitions' : 'components/schemas'
+
+          { '$ref': "#/#{path}/#{@reference}" }
         end
       end
     end

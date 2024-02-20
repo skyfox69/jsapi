@@ -17,6 +17,10 @@ module Jsapi
 
         api_include Foo
         api_operation 'my_operation'
+
+        openapi do
+          base_path '/api'
+        end
       end
 
       def test_api_include
@@ -34,6 +38,10 @@ module Jsapi
 
       def test_api_schema
         assert_equal(%w[my_schema], Foo.api_definitions.schemas.keys)
+      end
+
+      def test_openapi
+        assert_equal('/api', Bar.api_definitions.openapi_root['base_path'])
       end
     end
   end

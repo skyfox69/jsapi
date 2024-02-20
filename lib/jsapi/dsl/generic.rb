@@ -4,8 +4,13 @@ module Jsapi
   module DSL
     class Generic < Node
       def method_missing(*args, &block)
-        child_model = model.add_child(args.first, **(args.second || {}))
-        Generic.new(child_model).call(&block) if block.present?
+        if args.second.is_a?(Hash) || block.present?
+          options = args.second || {}
+          child_model = model.add_child(args.first, **options)
+          Generic.new(child_model).call(&block) if block.present?
+        else
+          model[args.first] = args.second
+        end
       end
 
       def respond_to_missing?(*)
