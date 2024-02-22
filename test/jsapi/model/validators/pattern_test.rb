@@ -2,29 +2,31 @@
 
 require 'test_helper'
 
+require_relative 'dummy'
+
 module Jsapi
   module Model
     module Validators
       class PatternTest < Minitest::Test
-        def test_argument_error
+        def test_invalid_pattern
           error = assert_raises(ArgumentError) { Pattern.new(nil) }
           assert_equal('invalid pattern: ', error.message)
         end
 
         def test_positive_validation
           validator = Pattern.new(/fo/)
-          errors = Validation::Errors.new
+          dummy = Dummy.new('foo')
 
-          validator.validate('foo', errors)
-          assert_predicate(errors, :none?)
+          validator.validate(dummy)
+          assert_predicate(dummy.errors, :none?)
         end
 
         def test_negative_validation
-          validator = Pattern.new(/fo/)
-          errors = Validation::Errors.new
+          validator = Pattern.new(/ba/)
+          dummy = Dummy.new('foo')
 
-          validator.validate('bar', errors)
-          assert_equal(['is invalid'], errors.map(&:message))
+          validator.validate(dummy)
+          assert_equal(['is invalid'], dummy.errors.map(&:message))
         end
       end
     end

@@ -29,7 +29,7 @@ module Jsapi
         return if null? || invalid?
 
         schema.validators.each do |validator|
-          validator.validate(value, errors)
+          validator.validate(self)
         end
       end
     end

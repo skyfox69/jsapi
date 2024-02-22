@@ -10,8 +10,8 @@ module Jsapi
           @enum = enum
         end
 
-        def validate(value, errors)
-          errors.add(:inclusion) unless @enum.include?(value)
+        def validate(object)
+          object.errors.add(:inclusion) unless @enum.include?(object.value)
         end
       end
     end

@@ -12,8 +12,10 @@ module Jsapi
           @exclusive_maximum = exclusive_maximum
         end
 
-        def validate(value, errors)
-          errors.add(:less_than, count: @exclusive_maximum) if value >= @exclusive_maximum
+        def validate(object)
+          if object.value >= @exclusive_maximum
+            object.errors.add(:less_than, count: @exclusive_maximum)
+          end
         end
       end
     end

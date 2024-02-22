@@ -28,7 +28,9 @@ module Jsapi
 
       def items(**options, &block)
         wrap_error do
-          raise "'items' isn't allowed for '#{model.type}'" unless model.respond_to?(:items=)
+          unless model.respond_to?(:items=)
+            raise "'items' isn't allowed for '#{model.type}'"
+          end
 
           model.items = options
           Schema.new(model.items).call(&block) if block.present?
@@ -37,7 +39,9 @@ module Jsapi
 
       def property(name, **options, &block)
         wrap_error "'#{name}'" do
-          raise "'property' isn't allowed for '#{model.type}'" unless model.respond_to?(:add_property)
+          unless model.respond_to?(:add_property)
+            raise "'property' isn't allowed for '#{model.type}'"
+          end
 
           property_model = model.add_property(name, **options)
           Property.new(property_model).call(&block) if block.present?
@@ -45,7 +49,7 @@ module Jsapi
       end
 
       def validate(&block)
-        model.add_validator(Model::Validators::LambdaValidator.new(block))
+        model.add_validator(:lambda, block)
       end
     end
   end

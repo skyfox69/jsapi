@@ -2,29 +2,31 @@
 
 require 'test_helper'
 
+require_relative 'dummy'
+
 module Jsapi
   module Model
     module Validators
       class ExclusiveMaximumTest < Minitest::Test
-        def test_argument_error
+        def test_invalid_exclusive_maximum
           error = assert_raises(ArgumentError) { ExclusiveMaximum.new(nil) }
           assert_equal('invalid exclusive maximum: ', error.message)
         end
 
         def test_positive_validation
           validator = ExclusiveMaximum.new(0)
-          errors = Validation::Errors.new
+          dummy = Dummy.new(-1)
 
-          validator.validate(-1, errors)
-          assert_predicate(errors, :none?)
+          validator.validate(dummy)
+          assert_predicate(dummy.errors, :none?)
         end
 
         def test_negative_validation
           validator = ExclusiveMaximum.new(0)
-          errors = Validation::Errors.new
+          dummy = Dummy.new(0)
 
-          validator.validate(0, errors)
-          assert_equal(['must be less than 0'], errors.map(&:message))
+          validator.validate(dummy)
+          assert_equal(['must be less than 0'], dummy.errors.map(&:message))
         end
       end
     end

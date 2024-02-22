@@ -13,21 +13,22 @@ module Jsapi
         end
 
         def format=(format)
-          raise ArgumentError, "format not supported: '#{format}'" unless FORMATS.include?(format)
+          raise ArgumentError, "format not supported: '#{format}'" unless format.in?(FORMATS)
+          raise 'format already defined' if instance_variable_defined?(:@format)
 
           @format = format
         end
 
         def max_length=(max_length)
-          register_validator(:max_length, @max_length = max_length)
+          set_json_schema_validation(:max_length, max_length)
         end
 
         def min_length=(min_length)
-          register_validator(:min_length, @min_length = min_length)
+          set_json_schema_validation(:min_length, min_length)
         end
 
         def pattern=(pattern)
-          register_validator(:pattern, @pattern = pattern)
+          set_json_schema_validation(:pattern, pattern)
         end
 
         private

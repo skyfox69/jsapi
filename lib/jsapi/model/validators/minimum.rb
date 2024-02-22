@@ -10,8 +10,10 @@ module Jsapi
           @minimum = minimum
         end
 
-        def validate(value, errors)
-          errors.add(:greater_than_or_equal_to, count: @minimum) if value < @minimum
+        def validate(object)
+          if object.value < @minimum
+            object.errors.add(:greater_than_or_equal_to, count: @minimum)
+          end
         end
       end
     end

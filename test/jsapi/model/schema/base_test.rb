@@ -6,16 +6,9 @@ module Jsapi
   module Model
     module Schema
       class BaseTest < Minitest::Test
-        def test_invalid_option
+        def test_raises_error_on_invalid_option
           error = assert_raises(ArgumentError) { Base.new(foo: 'bar') }
           assert_equal("invalid option: 'foo'", error.message)
-        end
-
-        def test_add_validator
-          schema = Base.new
-          schema.add_validator(Validators::Enum.new(%w[foo bar]))
-
-          assert_predicate(schema.validators, :one?)
         end
 
         def test_enum
@@ -24,12 +17,11 @@ module Jsapi
           assert_predicate(schema.validators, :one?)
         end
 
-        def test_reset_enum
+        def test_raises_error_on_double_enum
           schema = Base.new(enum: %w[foo bar])
-          schema.enum = nil
 
-          assert_nil(schema.enum)
-          assert_predicate(schema.validators, :empty?)
+          error = assert_raises { schema.enum = %w[foo bar] }
+          assert_equal('enum already defined', error.message)
         end
 
         def test_existence

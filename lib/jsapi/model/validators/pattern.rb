@@ -10,8 +10,8 @@ module Jsapi
           @pattern = pattern
         end
 
-        def validate(value, errors)
-          errors.add(:invalid) unless value.to_s.match?(@pattern)
+        def validate(object)
+          object.errors.add(:invalid) unless object.value.to_s.match?(@pattern)
         end
       end
     end

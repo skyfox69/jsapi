@@ -3,23 +3,23 @@
 module Jsapi
   module Model
     module Validators
-      class LambdaValidator
+      class Lambda
         def initialize(lambda)
           @lambda = lambda
         end
 
-        def validate(object, errors)
+        def validate(object)
           return if @lambda.nil?
 
-          Wrapper.new(object, errors).instance_eval(&@lambda)
+          Wrapper.new(object).instance_eval(&@lambda)
         end
 
         class Wrapper < SimpleDelegator
           attr_reader :errors
 
-          def initialize(object, errors)
-            super(object)
-            @errors = errors
+          def initialize(object)
+            super(object.value)
+            @errors = object.errors
           end
         end
       end

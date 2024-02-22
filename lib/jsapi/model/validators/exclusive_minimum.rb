@@ -12,8 +12,10 @@ module Jsapi
           @exclusive_minimum = exclusive_minimum
         end
 
-        def validate(value, errors)
-          errors.add(:greater_than, count: @exclusive_minimum) if value <= @exclusive_minimum
+        def validate(object)
+          if object.value <= @exclusive_minimum
+            object.errors.add(:greater_than, count: @exclusive_minimum)
+          end
         end
       end
     end

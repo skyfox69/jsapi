@@ -10,8 +10,8 @@ module Jsapi
           @maximum = maximum
         end
 
-        def validate(value, errors)
-          errors.add(:less_than_or_equal_to, count: @maximum) if value > @maximum
+        def validate(object)
+          object.errors.add(:less_than_or_equal_to, count: @maximum) if object.value > @maximum
         end
       end
     end

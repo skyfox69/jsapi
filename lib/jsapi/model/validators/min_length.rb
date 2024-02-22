@@ -5,13 +5,17 @@ module Jsapi
     module Validators
       class MinLength
         def initialize(min_length)
-          raise ArgumentError, "invalid min length: #{min_length}" unless min_length.respond_to?(:<)
+          unless min_length.respond_to?(:<)
+            raise ArgumentError, "invalid min length: #{min_length}"
+          end
 
           @min_length = min_length
         end
 
-        def validate(value, errors)
-          errors.add(:too_short, count: @min_length) if value.to_s.length < @min_length
+        def validate(object)
+          if object.value.to_s.length < @min_length
+            object.errors.add(:too_short, count: @min_length)
+          end
         end
       end
     end

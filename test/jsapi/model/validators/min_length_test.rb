@@ -2,31 +2,33 @@
 
 require 'test_helper'
 
+require_relative 'dummy'
+
 module Jsapi
   module Model
     module Validators
       class MinLengthTest < Minitest::Test
-        def test_argument_error
+        def test_invalid_min_length
           error = assert_raises(ArgumentError) { MinLength.new(nil) }
           assert_equal('invalid min length: ', error.message)
         end
 
         def test_positive_validation
           validator = MinLength.new(3)
-          errors = Validation::Errors.new
+          dummy = Dummy.new('foo')
 
-          validator.validate('foo', errors)
-          assert_predicate(errors, :none?)
+          validator.validate(dummy)
+          assert_predicate(dummy.errors, :none?)
         end
 
         def test_negative_validation
           validator = MinLength.new(4)
-          errors = Validation::Errors.new
+          dummy = Dummy.new('foo')
 
-          validator.validate('foo', errors)
+          validator.validate(dummy)
           assert_equal(
             ['is too short (minimum is 4 characters)'],
-            errors.map(&:message)
+            dummy.errors.map(&:message)
           )
         end
       end

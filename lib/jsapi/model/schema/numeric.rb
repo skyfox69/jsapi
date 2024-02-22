@@ -7,19 +7,19 @@ module Jsapi
         attr_reader :exclusive_maximum, :exclusive_minimum, :maximum, :minimum
 
         def exclusive_maximum=(value)
-          register_validator(:exclusive_maximum, @exclusive_maximum = value)
+          set_json_schema_validation(:exclusive_maximum, value)
         end
 
         def exclusive_minimum=(value)
-          register_validator(:exclusive_minimum, @exclusive_minimum = value)
+          set_json_schema_validation(:exclusive_minimum, value)
         end
 
         def maximum=(value)
-          register_validator(:maximum, @maximum = value)
+          set_json_schema_validation(:maximum, value)
         end
 
         def minimum=(value)
-          register_validator(:minimum, @minimum = value)
+          set_json_schema_validation(:minimum, value)
         end
 
         private
