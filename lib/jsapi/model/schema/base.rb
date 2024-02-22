@@ -4,8 +4,28 @@ module Jsapi
   module Model
     module Schema
       class Base
+        def self.json_schema_validation(*keywords)
+          keywords.each do |keyword|
+            attr_reader keyword
+
+            # attr writer
+            define_method("#{keyword}=") do |value|
+              variable_name = "@#{keyword}"
+
+              if instance_variable_defined?(variable_name)
+                raise "#{keyword} already defined"
+              end
+
+              add_validator(keyword, value)
+              instance_variable_set(variable_name, value)
+            end
+          end
+        end
+
         attr_accessor :default, :description, :example
-        attr_reader :enum, :existence, :type, :validators
+        attr_reader :existence, :type, :validators
+
+        json_schema_validation :enum
 
         def initialize(**options)
           @existence = Existence.from(options[:existence])
@@ -23,13 +43,6 @@ module Jsapi
         def add_validator(key, value)
           class_name = "Jsapi::Model::Validators::#{key.to_s.camelize(:upper)}"
           @validators << class_name.constantize.new(value)
-        end
-
-        def enum=(enum)
-          raise 'enum already defined' if instance_variable_defined?(:@enum)
-
-          add_validator(:enum, enum)
-          @enum = enum
         end
 
         def existence=(existence)
@@ -68,15 +81,7 @@ module Jsapi
         private
 
         def json_schema_options
-          { enum: enum }
-        end
-
-        def set_json_schema_validation(key, value)
-          var = "@#{key}"
-          raise "#{key} already defined" if instance_variable_defined?(var)
-
-          add_validator(key, value)
-          instance_variable_set(var, value)
+          enum.present? ? { enum: enum } : {}
         end
       end
     end

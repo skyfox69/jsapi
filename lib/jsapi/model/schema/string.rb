@@ -6,7 +6,9 @@ module Jsapi
       class String < Base
         FORMATS = %w[date date-time].freeze
 
-        attr_reader :format, :max_length, :min_length, :pattern
+        attr_reader :format
+
+        json_schema_validation :max_length, :min_length, :pattern
 
         def initialize(**options)
           super(**options.merge(type: 'string'))
@@ -19,18 +21,6 @@ module Jsapi
           @format = format
         end
 
-        def max_length=(max_length)
-          set_json_schema_validation(:max_length, max_length)
-        end
-
-        def min_length=(min_length)
-          set_json_schema_validation(:min_length, min_length)
-        end
-
-        def pattern=(pattern)
-          set_json_schema_validation(:pattern, pattern)
-        end
-
         private
 
         def json_schema_options
@@ -39,7 +29,7 @@ module Jsapi
             minLength: min_length,
             maxLength: max_length,
             pattern: pattern&.source
-          )
+          ).compact
         end
       end
     end

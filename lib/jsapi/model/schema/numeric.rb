@@ -4,23 +4,7 @@ module Jsapi
   module Model
     module Schema
       class Numeric < Base
-        attr_reader :exclusive_maximum, :exclusive_minimum, :maximum, :minimum
-
-        def exclusive_maximum=(value)
-          set_json_schema_validation(:exclusive_maximum, value)
-        end
-
-        def exclusive_minimum=(value)
-          set_json_schema_validation(:exclusive_minimum, value)
-        end
-
-        def maximum=(value)
-          set_json_schema_validation(:maximum, value)
-        end
-
-        def minimum=(value)
-          set_json_schema_validation(:minimum, value)
-        end
+        json_schema_validation :exclusive_maximum, :exclusive_minimum, :maximum, :minimum
 
         private
 
@@ -30,7 +14,7 @@ module Jsapi
             minimum: minimum,
             exclusiveMaximum: exclusive_maximum,
             maximum: maximum
-          )
+          ).compact
         end
       end
     end
