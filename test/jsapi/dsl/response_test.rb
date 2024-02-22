@@ -15,7 +15,7 @@ module Jsapi
         assert_equal('My example', response_model.example)
       end
 
-      def test_a_delegated_method
+      def test_delegated_method
         response_model = Model::Response.new(type: 'string')
         Response.new(response_model).call { format 'date' }
         assert_equal('date', response_model.schema.format)

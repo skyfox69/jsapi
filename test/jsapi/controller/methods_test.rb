@@ -50,14 +50,14 @@ module Jsapi
         assert_nil(@render_options[:status])
       end
 
-      def test_api_operation_on_undefined_name
+      def test_api_operation_raises_an_error_on_undefined_name
         error = assert_raises RuntimeError do
           api_operation(:foo) {}
         end
         assert_equal("operation not defined: 'foo'", error.message)
       end
 
-      def test_api_operation_on_undefined_status_code
+      def test_api_operation_raises_an_error_on_undefined_status_code
         error = assert_raises RuntimeError do
           api_operation(:my_operation, status: 204) {}
         end
@@ -71,7 +71,7 @@ module Jsapi
         assert_equal('my_value', api_params(:my_operation).my_parameter)
       end
 
-      def test_api_parameters_on_undefined_operation_name
+      def test_api_parameters_raises_an_error_on_undefined_operation_name
         error = assert_raises RuntimeError do
           api_params(:foo)
         end
@@ -85,14 +85,14 @@ module Jsapi
         assert_equal('"My response"', response.to_json)
       end
 
-      def test_api_response_on_undefined_operation_name
+      def test_api_response_raises_an_error_on_undefined_operation_name
         error = assert_raises RuntimeError do
           api_response('My response', :foo)
         end
         assert_equal("operation not defined: 'foo'", error.message)
       end
 
-      def test_api_response_on_undefined_status_code
+      def test_api_response_raises_an_error_on_undefined_status_code
         error = assert_raises RuntimeError do
           api_response('My response', :my_operation, status: 204)
         end

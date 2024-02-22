@@ -87,7 +87,7 @@ module Jsapi
         )
       end
 
-      def test_invalid_parameter_type
+      def test_raises_error_on_invalid_parameter_type
         operation_model = Model::Operation.new('my_operation')
 
         error = assert_raises Error do
@@ -147,7 +147,7 @@ module Jsapi
         )
       end
 
-      def test_invalid_request_body_type
+      def test_raises_error_on_invalid_request_body_type
         operation_model = Model::Operation.new('my_operation')
 
         error = assert_raises Error do
@@ -242,7 +242,7 @@ module Jsapi
         )
       end
 
-      def test_invalid_response_type
+      def test_raises_error_on_invalid_response_type
         operation_model = Model::Operation.new('my_operation')
 
         error = assert_raises Error do

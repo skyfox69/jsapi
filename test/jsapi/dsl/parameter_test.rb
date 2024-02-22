@@ -21,7 +21,7 @@ module Jsapi
         assert(parameter_model.deprecated?)
       end
 
-      def test_a_delegated_method
+      def test_delegated_method
         parameter_model = Model::Parameter.new('my_parameter', type: 'string')
         Parameter.new(parameter_model).call { format 'date' }
         assert_equal('date', parameter_model.schema.format)

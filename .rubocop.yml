@@ -34,3 +34,6 @@ Style/Documentation:
 
 Style/GuardClause:
   Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
