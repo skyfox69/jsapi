@@ -40,6 +40,12 @@ module Jsapi
           end
         end
 
+        %w[array boolean integer number object string].each do |type|
+          define_method "#{type}?" do
+            self.type == type
+          end
+        end
+
         def add_validator(key, value)
           class_name = "Jsapi::Model::Validators::#{key.to_s.camelize(:upper)}"
           @validators << class_name.constantize.new(value)

@@ -11,7 +11,7 @@ module Jsapi
         raise ArgumentError, "parameter name can't be blank" if name.blank?
 
         @name = name.to_s
-        @location = options[:in]
+        @location = options[:in] || 'query'
         @description = options[:description]
         @deprecated = options[:deprecated] == true
         @example = options[:example]
@@ -33,42 +33,74 @@ module Jsapi
       end
 
       # Returns the OpenAPI parameter objects as an array of hashes.
-      def to_openapi_parameters(version)
-        type = schema.respond_to?(:type) ? schema.type : nil
+      def to_openapi_parameters(version, definitions)
+        schema = self.schema.resolve(definitions)
 
-        if version == '2.0'
-          if type == 'object'
-            schema.properties.values.map do |property|
+        if schema.object?
+          explode_object_parameter(name, schema, version, definitions)
+        else
+          parameter_name = schema.array? ? "#{name}[]" : name
+          [
+            if version == '2.0'
               {
-                name: "#{name}[#{property.name}]",
-                in: location,
-                description: property.schema.description,
-                required: required? && property.required?
-              }.merge(property.schema.to_openapi_schema(version)).compact
-            end
-          else
-            [
-              {
-                name: name,
+                name: parameter_name,
                 in: location,
                 description: description,
-                required: required?
-              }.merge(schema.to_openapi_schema(version)).compact
+                required: required?.presence,
+                collectionFormat: ('multi' if schema.array?)
+              }.merge(schema.to_openapi_schema(version))
+            else
+              {
+                name: parameter_name,
+                in: location,
+                description: description,
+                required: required?.presence,
+                deprecated: deprecated?.presence,
+                explode: (true if schema.array?),
+                style: ('form' if schema.array?),
+                schema: schema.to_openapi_schema(version),
+                example: example
+              }
+            end.compact
+          ]
+        end
+      end
+
+      private
+
+      def explode_object_parameter(name, schema, version, definitions)
+        schema.properties(definitions).values.flat_map do |property|
+          property_schema = property.schema.resolve(definitions)
+          parameter_name = "#{name}[#{property.name}]"
+
+          if property_schema.object?
+            explode_object_parameter(parameter_name, property_schema, version, definitions)
+          else
+            parameter_name = "#{parameter_name}[]" if property_schema.array?
+            [
+              if version == '2.0'
+                {
+                  name: parameter_name,
+                  in: location,
+                  description: property_schema.description,
+                  required: property.required?.presence, # TODO
+                  collectionFormat: ('multi' if property_schema.array?)
+                }.merge(property_schema.to_openapi_schema(version))
+              else
+                {
+                  name: parameter_name,
+                  in: location,
+                  description: property_schema.description,
+                  required: property.required?.presence, # TODO
+                  explode: (true if property_schema.array?),
+                  style: ('form' if property_schema.array?),
+                  deprecated: deprecated?.presence, # TODO
+                  schema: property_schema.to_openapi_schema(version),
+                  example: property_schema.example
+                }
+              end.compact
             ]
           end
-        else
-          [
-            {
-              name: name,
-              in: location,
-              description: description,
-              required: required?,
-              deprecated: (true if deprecated?),
-              schema: schema.to_openapi_schema(version),
-              explode: (true if %w[array object].include?(type)),
-              example: example
-            }.compact
-          ]
         end
       end
     end

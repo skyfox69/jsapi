@@ -19,7 +19,7 @@ module Jsapi
       end
 
       # Returns the OpenAPI reference object as an +Array+ containing a single +Hash+.
-      def to_openapi_parameters(version)
+      def to_openapi_parameters(version, _definitions = nil)
         path = version == '2.0' ? 'parameters' : 'components/parameters'
 
         [{ '$ref': "#/#{path}/#{reference}" }]

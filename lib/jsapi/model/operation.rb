@@ -52,7 +52,7 @@ module Jsapi
       end
 
       # Returns the OpenAPI operation object as a +Hash+.
-      def to_openapi_operation(version)
+      def to_openapi_operation(version, definitions)
         {
           operationId: name,
           tags: tags,
@@ -62,7 +62,7 @@ module Jsapi
         }.tap do |hash|
           # Parameters (and request body)
           hash[:parameters] = parameters.values.flat_map do |parameter|
-            parameter.to_openapi_parameters(version)
+            parameter.to_openapi_parameters(version, definitions)
           end
           if request_body.present?
             if version == '2.0'

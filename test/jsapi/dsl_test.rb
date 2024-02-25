@@ -52,6 +52,7 @@ module Jsapi
                   },
                   {
                     name: 'my_parameter',
+                    in: 'query',
                     required: true,
                     schema: {
                       type: 'string'
@@ -93,7 +94,7 @@ module Jsapi
             parameters: {
               'request_id' => {
                 name: 'request_id',
-                required: false,
+                in: 'query',
                 schema: {
                   type: 'string',
                   nullable: true

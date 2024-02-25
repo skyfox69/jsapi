@@ -111,7 +111,7 @@ module Jsapi
         @self_and_included
           .map(&:parameters).reduce(&:merge)
           .transform_values do |parameter|
-          parameter.to_openapi_parameters(version).first
+          parameter.to_openapi_parameters(version, self).first
         end.presence
       end
 
@@ -121,7 +121,7 @@ module Jsapi
           .group_by { |operation| operation.path || default_path }
           .transform_values do |operations|
           operations.index_by(&:method).transform_values do |operation|
-            operation.to_openapi_operation(version)
+            operation.to_openapi_operation(version, self)
           end
         end.presence
       end

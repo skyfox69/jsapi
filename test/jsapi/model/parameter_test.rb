@@ -6,107 +6,243 @@ module Jsapi
   module Model
     class ParameterTest < Minitest::Test
       def test_required
-        parameter = Parameter.new('my_parameter', existence: true)
+        parameter = Parameter.new('foo', existence: true)
         assert(parameter.required?)
       end
 
       def test_required_on_path_parameter
-        parameter = Parameter.new('my_parameter', in: 'path')
+        parameter = Parameter.new('foo', in: 'path')
         assert(parameter.required?)
       end
 
       def test_not_required
-        parameter = Parameter.new('my_parameter', existence: false)
+        parameter = Parameter.new('foo', existence: false)
         assert(!parameter.required?)
       end
 
-      # OpenAPI parameters tests
+      # OpenAPI 2.0 parameter tests
 
-      def test_openapi_parameters_2_0
-        parameter = Parameter.new('my_parameter', type: 'string', in: 'query')
+      def test_openapi_2_0_path_parameter
+        parameter = Parameter.new('foo', type: 'string', in: 'path')
         assert_equal(
           [
             {
-              name: 'my_parameter',
-              in: 'query',
-              required: false,
-              type: 'string'
-            }
-          ],
-          parameter.to_openapi_parameters('2.0')
-        )
-      end
-
-      def test_openapi_parameters_2_0_on_query_object
-        parameter = Parameter.new('my_parameter', type: 'object', in: 'query', existence: true)
-        parameter.schema.add_property('property1', type: 'string', existence: true)
-        parameter.schema.add_property('property2', type: 'integer')
-
-        assert_equal(
-          [
-            {
-              name: 'my_parameter[property1]',
-              in: 'query',
+              name: 'foo',
+              in: 'path',
               required: true,
               type: 'string'
-            },
-            {
-              name: 'my_parameter[property2]',
-              in: 'query',
-              required: false,
-              type: 'integer'
             }
           ],
-          parameter.to_openapi_parameters('2.0')
+          parameter.to_openapi_parameters('2.0', Definitions.new)
         )
       end
 
-      def test_openapi_parameters_3_0
-        parameter = Parameter.new('my_parameter', type: 'string', in: 'query')
+      def test_openapi_2_0_query_parameter
+        parameter = Parameter.new('foo', type: 'string', in: 'query')
         assert_equal(
           [
             {
-              name: 'my_parameter',
+              name: 'foo',
               in: 'query',
-              required: false,
+              type: 'string'
+            }
+          ],
+          parameter.to_openapi_parameters('2.0', Definitions.new)
+        )
+      end
+
+      def test_openapi_2_0_array_parameter
+        parameter = Parameter.new('foo', type: 'array', items: { type: 'string' })
+        assert_equal(
+          [
+            {
+              name: 'foo[]',
+              in: 'query',
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              collectionFormat: 'multi'
+            }
+          ],
+          parameter.to_openapi_parameters('2.0', Definitions.new)
+        )
+      end
+
+      def test_openapi_2_0_object_parameter
+        parameter = Parameter.new('foo', type: 'object', in: 'query')
+        parameter.schema.add_property('bar', type: 'string')
+
+        assert_equal(
+          [
+            {
+              name: 'foo[bar]',
+              in: 'query',
+              type: 'string'
+            }
+          ],
+          parameter.to_openapi_parameters('2.0', Definitions.new)
+        )
+      end
+
+      def test_openapi_2_0_array_property
+        parameter = Parameter.new('foo', type: 'object', in: 'query')
+        parameter.schema.add_property('bar', type: 'array', items: { type: 'string' })
+
+        assert_equal(
+          [
+            {
+              name: 'foo[bar][]',
+              in: 'query',
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              collectionFormat: 'multi'
+            }
+          ],
+          parameter.to_openapi_parameters('2.0', Definitions.new)
+        )
+      end
+
+      def test_openapi_2_0_nested_object_parameter
+        parameter = Parameter.new('foo', type: 'object', in: 'query')
+        property = parameter.schema.add_property('bar', type: 'object')
+        property.schema.add_property('foo', type: 'string')
+
+        assert_equal(
+          [
+            {
+              name: 'foo[bar][foo]',
+              in: 'query',
+              type: 'string'
+            }
+          ],
+          parameter.to_openapi_parameters('2.0', Definitions.new)
+        )
+      end
+
+      # OpenAPI 3.0 parameter tests
+
+      def test_openapi_3_0_path_parameter
+        parameter = Parameter.new('foo', type: 'string', in: 'path')
+        assert_equal(
+          [
+            {
+              name: 'foo',
+              in: 'path',
+              required: true,
               schema: {
                 type: 'string',
                 nullable: true
               }
             }
           ],
-          parameter.to_openapi_parameters('3.0.3')
+          parameter.to_openapi_parameters('3.0.3', Definitions.new)
         )
       end
 
-      def test_openapi_parameters_3_0_on_query_object
-        parameter = Parameter.new('my_parameter', type: 'object', in: 'query', existence: true)
-        parameter.schema.add_property('property1', type: 'string', existence: true)
-        parameter.schema.add_property('property2', type: 'integer')
+      def test_openapi_3_0_query_parameter
+        parameter = Parameter.new('foo', type: 'string', in: 'query')
+        assert_equal(
+          [
+            {
+              name: 'foo',
+              in: 'query',
+              schema: {
+                type: 'string',
+                nullable: true
+              }
+            }
+          ],
+          parameter.to_openapi_parameters('3.0.3', Definitions.new)
+        )
+      end
+
+      def test_openapi_3_0_array_parameter
+        parameter = Parameter.new('foo', type: 'array', items: { type: 'string' })
+        assert_equal(
+          [
+            {
+              name: 'foo[]',
+              in: 'query',
+              schema: {
+                type: 'array',
+                nullable: true,
+                items: {
+                  type: 'string',
+                  nullable: true
+                }
+              },
+              explode: true,
+              style: 'form'
+            }
+          ],
+          parameter.to_openapi_parameters('3.0.3', Definitions.new)
+        )
+      end
+
+      def test_openapi_3_0_object_parameter
+        parameter = Parameter.new('foo', type: 'object', in: 'query')
+        parameter.schema.add_property('bar', type: 'string')
 
         assert_equal(
           [
             {
-              name: 'my_parameter',
+              name: 'foo[bar]',
               in: 'query',
-              required: true,
               schema: {
-                type: 'object',
-                properties: {
-                  'property1' => {
-                    type: 'string'
-                  },
-                  'property2' => {
-                    type: 'integer',
-                    nullable: true
-                  }
-                },
-                required: %w[property1]
-              },
-              explode: true
+                type: 'string',
+                nullable: true
+              }
             }
           ],
-          parameter.to_openapi_parameters('3.0.3')
+          parameter.to_openapi_parameters('3.0.3', Definitions.new)
+        )
+      end
+
+      def test_openapi_3_0_array_property
+        parameter = Parameter.new('foo', type: 'object', in: 'query')
+        parameter.schema.add_property('bar', type: 'array', items: { type: 'string' })
+
+        assert_equal(
+          [
+            {
+              name: 'foo[bar][]',
+              in: 'query',
+              schema: {
+                type: 'array',
+                nullable: true,
+                items: {
+                  type: 'string',
+                  nullable: true
+                }
+              },
+              explode: true,
+              style: 'form'
+            }
+          ],
+          parameter.to_openapi_parameters('3.0.3', Definitions.new)
+        )
+      end
+
+      def test_openapi_3_0_nested_object_parameter
+        parameter = Parameter.new('foo', type: 'object', in: 'query')
+        property = parameter.schema.add_property('bar', type: 'object')
+        property.schema.add_property('foo', type: 'string')
+
+        assert_equal(
+          [
+            {
+              name: 'foo[bar][foo]',
+              in: 'query',
+              schema: {
+                type: 'string',
+                nullable: true
+              }
+            }
+          ],
+          parameter.to_openapi_parameters('3.0.3', Definitions.new)
         )
       end
     end

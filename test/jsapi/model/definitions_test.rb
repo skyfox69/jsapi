@@ -131,8 +131,8 @@ module Jsapi
             parameters: {
               'my_parameter' => {
                 name: 'my_parameter',
-                type: 'string',
-                required: false
+                in: 'query',
+                type: 'string'
               }
             },
             definitions: {
@@ -172,11 +172,11 @@ module Jsapi
               parameters: {
                 'my_parameter' => {
                   name: 'my_parameter',
+                  in: 'query',
                   schema: {
                     type: 'string',
                     nullable: true
-                  },
-                  required: false
+                  }
                 }
               },
               schemas: {

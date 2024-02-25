@@ -33,14 +33,14 @@ module Jsapi
           [
             {
               name: 'my_parameter',
-              required: false,
+              in: 'query',
               schema: {
                 type: 'string',
                 nullable: true
               }
             }
           ],
-          operation_model.to_openapi_operation('3.0.3')[:parameters]
+          operation_model.to_openapi_operation('3.0.3', definitions)[:parameters]
         )
       end
 
@@ -55,23 +55,15 @@ module Jsapi
         assert_equal(
           [
             {
-              name: 'my_parameter',
-              required: false,
+              name: 'my_parameter[my_property]',
+              in: 'query',
               schema: {
-                type: 'object',
-                nullable: true,
-                properties: {
-                  'my_property' => {
-                    type: 'string',
-                    nullable: true
-                  }
-                },
-                required: []
-              },
-              explode: true
+                type: 'string',
+                nullable: true
+              }
             }
           ],
-          operation_model.to_openapi_operation('3.0.3')[:parameters]
+          operation_model.to_openapi_operation('3.0.3', definitions)[:parameters]
         )
       end
 
@@ -83,7 +75,7 @@ module Jsapi
           [
             { '$ref': '#/components/parameters/my_parameter' }
           ],
-          operation_model.to_openapi_operation('3.0.3')[:parameters]
+          operation_model.to_openapi_operation('3.0.3', definitions)[:parameters]
         )
       end
 
@@ -124,7 +116,7 @@ module Jsapi
             },
             required: false
           },
-          operation_model.to_openapi_operation('3.0.3')[:request_body]
+          operation_model.to_openapi_operation('3.0.3', definitions)[:request_body]
         )
       end
 
@@ -143,7 +135,7 @@ module Jsapi
             },
             required: false
           },
-          operation_model.to_openapi_operation('3.0.3')[:request_body]
+          operation_model.to_openapi_operation('3.0.3', definitions)[:request_body]
         )
       end
 
@@ -186,7 +178,7 @@ module Jsapi
               }
             }
           },
-          operation_model.to_openapi_operation('3.0.3')[:responses]
+          operation_model.to_openapi_operation('3.0.3', definitions)[:responses]
         )
       end
 
@@ -218,7 +210,7 @@ module Jsapi
               }
             }
           },
-          operation_model.to_openapi_operation('3.0.3')[:responses]
+          operation_model.to_openapi_operation('3.0.3', definitions)[:responses]
         )
       end
 
@@ -238,7 +230,7 @@ module Jsapi
               }
             }
           },
-          operation_model.to_openapi_operation('3.0.3')[:responses]
+          operation_model.to_openapi_operation('3.0.3', definitions)[:responses]
         )
       end
 
@@ -249,6 +241,12 @@ module Jsapi
           Operation.new(operation_model).call { response type: 'foo' }
         end
         assert_equal("invalid type: 'foo' (at response)", error.message)
+      end
+
+      private
+
+      def definitions
+        @definitions ||= Model::Definitions.new
       end
     end
   end

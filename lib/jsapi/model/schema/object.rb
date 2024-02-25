@@ -20,7 +20,7 @@ module Jsapi
           @properties[name.to_s] = Property.new(name, **options)
         end
 
-        def properties(definitions = nil)
+        def properties(definitions)
           return @properties if definitions.nil?
 
           merge_properties(definitions, [])
