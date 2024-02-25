@@ -5,14 +5,14 @@ module Jsapi
     class ResponseTest < Minitest::Test
       def test_description
         response_model = Model::Response.new
-        Response.new(response_model).call { description 'My description' }
-        assert_equal('My description', response_model.description)
+        Response.new(response_model).call { description 'Foo' }
+        assert_equal('Foo', response_model.description)
       end
 
       def test_example
         response_model = Model::Response.new
-        Response.new(response_model).call { example 'My example' }
-        assert_equal('My example', response_model.example)
+        Response.new(response_model).call { example 'Foo' }
+        assert_equal('Foo', response_model.example)
       end
 
       def test_delegated_method

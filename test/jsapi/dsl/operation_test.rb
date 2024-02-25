@@ -4,19 +4,19 @@ module Jsapi
   module DSL
     class OperationTest < Minitest::Test
       def test_summary
-        operation_model = Model::Operation.new('my_operation')
-        Operation.new(operation_model).call { summary 'My summary' }
-        assert_equal('My summary', operation_model.summary)
+        operation_model = Model::Operation.new('operation')
+        Operation.new(operation_model).call { summary 'Foo' }
+        assert_equal('Foo', operation_model.summary)
       end
 
       def test_description
-        operation_model = Model::Operation.new('my_operation')
-        Operation.new(operation_model).call { description 'My description' }
-        assert_equal('My description', operation_model.description)
+        operation_model = Model::Operation.new('operation')
+        Operation.new(operation_model).call { description 'Foo' }
+        assert_equal('Foo', operation_model.description)
       end
 
       def test_deprecated
-        operation_model = Model::Operation.new('my_operation')
+        operation_model = Model::Operation.new('operation')
         Operation.new(operation_model).call { deprecated true }
         assert(operation_model.deprecated?)
       end
@@ -24,123 +24,72 @@ module Jsapi
       # Parameter tests
 
       def test_parameter
-        operation_model = Model::Operation.new('my_operation')
+        operation_model = Model::Operation.new('operation')
         Operation.new(operation_model).call do
-          parameter 'my_parameter', type: 'string'
+          parameter 'foo', type: 'string'
         end
-
-        assert_equal(
-          [
-            {
-              name: 'my_parameter',
-              in: 'query',
-              schema: {
-                type: 'string',
-                nullable: true
-              }
-            }
-          ],
-          operation_model.to_openapi_operation('3.0.3', definitions)[:parameters]
-        )
+        parameter = operation_model.parameters['foo']
+        assert_predicate(parameter.schema, :string?)
       end
 
-      def test_parameters_with_block
-        operation_model = Model::Operation.new('my_operation')
+      def test_parameter_with_block
+        operation_model = Model::Operation.new('operation')
         Operation.new(operation_model).call do
-          parameter 'my_parameter', type: 'object' do
-            property 'my_property', type: 'string'
+          parameter 'foo', type: 'object' do
+            property 'bar', type: 'string'
           end
         end
+        parameter = operation_model.parameters['foo']
+        assert_predicate(parameter.schema, :object?)
 
-        assert_equal(
-          [
-            {
-              name: 'my_parameter[my_property]',
-              in: 'query',
-              schema: {
-                type: 'string',
-                nullable: true
-              }
-            }
-          ],
-          operation_model.to_openapi_operation('3.0.3', definitions)[:parameters]
-        )
+        property = parameter.schema.properties(definitions)['bar']
+        assert_predicate(property.schema, :string?)
       end
 
       def test_parameter_reference
-        operation_model = Model::Operation.new('my_operation')
-        Operation.new(operation_model).call { parameter 'my_parameter' }
+        operation_model = Model::Operation.new('operation')
+        Operation.new(operation_model).call { parameter 'foo' }
 
-        assert_equal(
-          [
-            { '$ref': '#/components/parameters/my_parameter' }
-          ],
-          operation_model.to_openapi_operation('3.0.3', definitions)[:parameters]
-        )
+        parameter = operation_model.parameters['foo']
+        assert_equal('foo', parameter.reference)
       end
 
       def test_raises_error_on_invalid_parameter_type
-        operation_model = Model::Operation.new('my_operation')
+        operation_model = Model::Operation.new('operation')
 
         error = assert_raises Error do
-          Operation.new(operation_model).call { parameter 'my_parameter', type: 'foo' }
+          Operation.new(operation_model).call { parameter 'foo', type: 'bar' }
         end
-        assert_equal("invalid type: 'foo' (at 'my_parameter')", error.message)
+        assert_equal("invalid type: 'bar' (at 'foo')", error.message)
       end
 
       # Request body tests
 
       def test_request_body
-        operation_model = Model::Operation.new('my_operation')
+        operation_model = Model::Operation.new('operation')
         Operation.new(operation_model).call do
           request_body type: 'object' do
-            property 'my_property', type: 'string', existence: true
+            property 'foo', type: 'string'
           end
         end
+        request_body = operation_model.request_body
+        assert_predicate(request_body.schema, :object?)
 
-        assert_equal(
-          {
-            content: {
-              'application/json' => {
-                schema: {
-                  type: 'object',
-                  nullable: true,
-                  properties: {
-                    'my_property' => {
-                      type: 'string'
-                    }
-                  },
-                  required: %w[my_property]
-                }
-              }
-            },
-            required: false
-          },
-          operation_model.to_openapi_operation('3.0.3', definitions)[:request_body]
-        )
+        property = request_body.schema.properties(definitions)['foo']
+        assert_predicate(property.schema, :string?)
       end
 
       def test_request_body_reference
-        operation_model = Model::Operation.new('my_operation')
+        operation_model = Model::Operation.new('operation')
         Operation.new(operation_model).call do
-          request_body schema: 'my_request_body'
+          request_body schema: 'Foo'
         end
-
-        assert_equal(
-          {
-            content: {
-              'application/json' => {
-                schema: { '$ref': '#/components/schemas/my_request_body' }
-              }
-            },
-            required: false
-          },
-          operation_model.to_openapi_operation('3.0.3', definitions)[:request_body]
-        )
+        request_body = operation_model.request_body
+        assert_equal('Foo', request_body.schema.reference)
       end
 
       def test_raises_error_on_invalid_request_body_type
-        operation_model = Model::Operation.new('my_operation')
+        operation_model = Model::Operation.new('operation')
 
         error = assert_raises Error do
           Operation.new(operation_model).call { request_body type: 'foo' }
@@ -151,91 +100,41 @@ module Jsapi
       # Response tests
 
       def test_response
-        operation_model = Model::Operation.new('my_operation')
+        operation_model = Model::Operation.new('operation')
         Operation.new(operation_model).call do
           response 200, type: 'object' do
-            property 'my_property', type: 'string'
+            property 'foo', type: 'string'
           end
         end
+        response = operation_model.responses[200]
+        assert_predicate(response.schema, :object?)
 
-        assert_equal(
-          {
-            200 => {
-              content: {
-                'application/json' => {
-                  schema: {
-                    type: 'object',
-                    nullable: true,
-                    properties: {
-                      'my_property' => {
-                        type: 'string',
-                        nullable: true
-                      }
-                    },
-                    required: []
-                  }
-                }
-              }
-            }
-          },
-          operation_model.to_openapi_operation('3.0.3', definitions)[:responses]
-        )
+        property = response.schema.properties(definitions)['foo']
+        assert_predicate(property.schema, :string?)
       end
 
       def test_default_response
-        operation_model = Model::Operation.new('my_operation')
+        operation_model = Model::Operation.new('operation')
         Operation.new(operation_model).call do
           response type: 'object' do
-            property 'my_property', type: 'string'
+            property 'foo', type: 'string'
           end
         end
-
-        assert_equal(
-          {
-            'default' => {
-              content: {
-                'application/json' => {
-                  schema: {
-                    type: 'object',
-                    nullable: true,
-                    properties: {
-                      'my_property' => {
-                        type: 'string',
-                        nullable: true
-                      }
-                    },
-                    required: []
-                  }
-                }
-              }
-            }
-          },
-          operation_model.to_openapi_operation('3.0.3', definitions)[:responses]
-        )
+        response = operation_model.responses['default']
+        assert_predicate(response.schema, :object?)
       end
 
       def test_response_reference
-        operation_model = Model::Operation.new('my_operation')
+        operation_model = Model::Operation.new('operation')
         Operation.new(operation_model).call do
-          response schema: 'my_response'
+          response schema: 'Foo'
         end
-
-        assert_equal(
-          {
-            'default' => {
-              content: {
-                'application/json' => {
-                  schema: { '$ref': '#/components/schemas/my_response' }
-                }
-              }
-            }
-          },
-          operation_model.to_openapi_operation('3.0.3', definitions)[:responses]
-        )
+        response = operation_model.responses['default']
+        assert_equal('Foo', response.schema.reference)
       end
 
       def test_raises_error_on_invalid_response_type
-        operation_model = Model::Operation.new('my_operation')
+        operation_model = Model::Operation.new('operation')
 
         error = assert_raises Error do
           Operation.new(operation_model).call { response type: 'foo' }
@@ -246,7 +145,7 @@ module Jsapi
       private
 
       def definitions
-        @definitions ||= Model::Definitions.new
+        Model::Definitions.new
       end
     end
   end

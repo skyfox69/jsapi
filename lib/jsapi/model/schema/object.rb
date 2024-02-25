@@ -21,8 +21,6 @@ module Jsapi
         end
 
         def properties(definitions)
-          return @properties if definitions.nil?
-
           merge_properties(definitions, [])
         end
 

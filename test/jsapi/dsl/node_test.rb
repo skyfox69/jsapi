@@ -8,13 +8,11 @@ module Jsapi
       def test_method_missing
         model = DummyModel.new
         Node.new(model).call { foo 'bar' }
-
         assert_equal('bar', model.foo)
       end
 
       def test_method_missing_on_unknown_field
         node = Node.new(DummyModel.new)
-
         error = assert_raises Error do
           node.call { bar 'foo' }
         end
@@ -34,15 +32,15 @@ module Jsapi
       def test_error_message
         error = assert_raises Error do
           Definitions.new(Model::Definitions.new).call do
-            operation 'my_operation' do
-              parameter 'my_parameter', type: 'object' do
-                property('my_property') { bar 'foo' }
+            operation 'operation' do
+              parameter 'parameter', type: 'object' do
+                property('property') { bar 'foo' }
               end
             end
           end
         end
         assert_equal(
-          "unknown or invalid field: 'bar' (at 'my_operation'/'my_parameter'/'my_property')",
+          "unknown or invalid field: 'bar' (at 'operation'/'parameter'/'property')",
           error.message
         )
       end

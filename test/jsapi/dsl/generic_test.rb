@@ -5,24 +5,14 @@ module Jsapi
     class GenericTest < Minitest::Test
       def test_generic_keyword
         generic_model = Model::Generic.new
-        Generic.new(generic_model).call do
-          my_keyword 'My value'
-        end
-        assert_equal(
-          { myKeyword: 'My value' },
-          generic_model.to_h
-        )
+        Generic.new(generic_model).call { foo 'bar' }
+        assert_equal({ foo: 'bar' }, generic_model.to_h)
       end
 
       def test_generic_child_node
         generic_model = Model::Generic.new
-        Generic.new(generic_model).call do
-          nested my_keyword: 'My value'
-        end
-        assert_equal(
-          { nested: { myKeyword: 'My value' } },
-          generic_model.to_h
-        )
+        Generic.new(generic_model).call { nested foo: 'bar' }
+        assert_equal({ nested: { foo: 'bar' } }, generic_model.to_h)
       end
 
       def test_respond_to
