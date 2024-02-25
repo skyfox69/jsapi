@@ -20,7 +20,8 @@ module Jsapi
               {
                 name: 'bar',
                 in: 'query',
-                type: 'string'
+                type: 'string',
+                allowEmptyValue: true
               },
               {
                 name: 'body',
@@ -57,7 +58,8 @@ module Jsapi
                 schema: {
                   type: 'string',
                   nullable: true
-                }
+                },
+                allowEmptyValue: true
               }
             ],
             request_body: {

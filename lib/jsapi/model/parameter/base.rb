@@ -19,6 +19,14 @@ module Jsapi
           @schema = Schema.new(**options.except(:deprecated, :description, :example, :in))
         end
 
+        # Returns +true+ if and only if empty values can be passed
+        # (see OpenAPI Specifications 2.0 and 3.x).
+        def allow_empty_value?
+          schema.existence <= Existence::ALLOW_EMPTY && location != 'path'
+        end
+
+        # Returns +true+ if and only if the parameter is deprecated
+        # (see OpenAPI Specifications 2.0 and 3.x).
         def deprecated?
           @deprecated == true
         end
@@ -55,6 +63,7 @@ module Jsapi
                   in: location,
                   description: description,
                   required: required?.presence,
+                  allowEmptyValue: allow_empty_value?.presence,
                   collectionFormat: ('multi' if schema.array?)
                 }.merge(schema.to_openapi_schema(version))
               else
@@ -63,6 +72,7 @@ module Jsapi
                   in: location,
                   description: description,
                   required: required?.presence,
+                  allowEmptyValue: allow_empty_value?.presence,
                   deprecated: deprecated?.presence,
                   schema: schema.to_openapi_schema(version),
                   example: example
@@ -99,6 +109,7 @@ module Jsapi
             else
               parameter_name = "#{parameter_name}[]" if property_schema.array?
               description = property_schema.description
+              allow_empty_value = property.schema.existence <= Existence::ALLOW_EMPTY
               [
                 if version == '2.0'
                   {
@@ -106,6 +117,7 @@ module Jsapi
                     in: location,
                     description: description,
                     required: required,
+                    allowEmptyValue: allow_empty_value.presence,
                     collectionFormat: ('multi' if property_schema.array?)
                   }.merge(property_schema.to_openapi_schema(version))
                 else
@@ -114,6 +126,7 @@ module Jsapi
                     in: location,
                     description: description,
                     required: required,
+                    allowEmptyValue: allow_empty_value.presence,
                     deprecated: deprecated,
                     schema: property_schema.to_openapi_schema(version),
                     example: property_schema.example

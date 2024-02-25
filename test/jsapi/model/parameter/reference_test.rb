@@ -36,7 +36,8 @@ module Jsapi
               {
                 name: 'foo[bar]',
                 in: 'query',
-                type: 'string'
+                type: 'string',
+                allowEmptyValue: true
               }
             ],
             reference.to_openapi_parameters('2.0', definitions)
@@ -70,7 +71,8 @@ module Jsapi
                 schema: {
                   type: 'string',
                   nullable: true
-                }
+                },
+                allowEmptyValue: true
               }
             ],
             reference.to_openapi_parameters('3.0.3', definitions)

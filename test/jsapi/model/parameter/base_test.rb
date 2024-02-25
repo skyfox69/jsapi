@@ -45,7 +45,8 @@ module Jsapi
               {
                 name: 'foo',
                 in: 'query',
-                type: 'string'
+                type: 'string',
+                allowEmptyValue: true
               }
             ],
             parameter.to_openapi_parameters('2.0', Definitions.new)
@@ -63,6 +64,7 @@ module Jsapi
                 items: {
                   type: 'string'
                 },
+                allowEmptyValue: true,
                 collectionFormat: 'multi'
               }
             ],
@@ -79,7 +81,8 @@ module Jsapi
               {
                 name: 'foo[bar]',
                 in: 'query',
-                type: 'string'
+                type: 'string',
+                allowEmptyValue: true
               }
             ],
             parameter.to_openapi_parameters('2.0', Definitions.new)
@@ -99,6 +102,7 @@ module Jsapi
                 items: {
                   type: 'string'
                 },
+                allowEmptyValue: true,
                 collectionFormat: 'multi'
               }
             ],
@@ -116,7 +120,8 @@ module Jsapi
               {
                 name: 'foo[bar][foo]',
                 in: 'query',
-                type: 'string'
+                type: 'string',
+                allowEmptyValue: true
               }
             ],
             parameter.to_openapi_parameters('2.0', Definitions.new)
@@ -153,7 +158,8 @@ module Jsapi
                 schema: {
                   type: 'string',
                   nullable: true
-                }
+                },
+                allowEmptyValue: true
               }
             ],
             parameter.to_openapi_parameters('3.0.3', Definitions.new)
@@ -174,7 +180,8 @@ module Jsapi
                     type: 'string',
                     nullable: true
                   }
-                }
+                },
+                allowEmptyValue: true
               }
             ],
             parameter.to_openapi_parameters('3.0.3', Definitions.new)
@@ -193,7 +200,8 @@ module Jsapi
                 schema: {
                   type: 'string',
                   nullable: true
-                }
+                },
+                allowEmptyValue: true
               }
             ],
             parameter.to_openapi_parameters('3.0.3', Definitions.new)
@@ -216,7 +224,8 @@ module Jsapi
                     type: 'string',
                     nullable: true
                   }
-                }
+                },
+                allowEmptyValue: true
               }
             ],
             parameter.to_openapi_parameters('3.0.3', Definitions.new)
@@ -236,7 +245,8 @@ module Jsapi
                 schema: {
                   type: 'string',
                   nullable: true
-                }
+                },
+                allowEmptyValue: true
               }
             ],
             parameter.to_openapi_parameters('3.0.3', Definitions.new)
