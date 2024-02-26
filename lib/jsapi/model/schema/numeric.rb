@@ -4,7 +4,13 @@ module Jsapi
   module Model
     module Schema
       class Numeric < Base
-        json_schema_validation :exclusive_maximum, :exclusive_minimum, :maximum, :minimum
+        json_schema_validation(
+          :exclusive_maximum,
+          :exclusive_minimum,
+          :maximum,
+          :minimum,
+          :multiple_of
+        )
 
         private
 
@@ -13,7 +19,8 @@ module Jsapi
             exclusiveMinimum: exclusive_minimum,
             minimum: minimum,
             exclusiveMaximum: exclusive_maximum,
-            maximum: maximum
+            maximum: maximum,
+            multipleOf: multiple_of
           ).compact
         end
       end

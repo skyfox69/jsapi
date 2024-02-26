@@ -170,6 +170,18 @@ except `type` can also be defined inside a block, for example:
 - `:allow_nil`: The parameter or property value can be `nil`.
 - `:allow_omitted`, `false`: The parameter or property can be omitted.
 
+### JSON Schema Validations
+
+- `enum`
+- `minimum` (only 'integer' and 'number')
+- `maximum` (only 'integer' and 'number')
+- `exclusive_minimum` (only 'integer' and 'number')
+- `exclusive_maximum` (only 'integer' and 'number')
+- `multiple_of` (only 'integer' and 'number')
+- `min_length` (only 'string')
+- `max_length` (only 'string')
+- `pattern` (only 'string')
+
 ### Defining an API Operation
 
 ```ruby
@@ -201,19 +213,9 @@ properties:
 - `default`
 - `items` ('array' only)
 
-#### JSON Schema Validations
-
 The following options are available for parameters, responses and schemas:
 
-- `enum`
-- `minimum` (only 'integer' and 'number')
-- `maximum` (only 'integer' and 'number')
-- `exclusive_minimum` (only 'integer' and 'number')
-- `exclusive_maximum` (only 'integer' and 'number')
 - `format`: `date` or `date-time` (only 'string')
-- `min_length` (only 'string')
-- `max_length` (only 'string')
-- `pattern` (only 'string')
 - `schema`
 
 #### Annotations
