@@ -7,6 +7,7 @@ require_relative 'schema/array'
 require_relative 'schema/numeric'
 require_relative 'schema/object'
 require_relative 'schema/string'
+require_relative 'schema/validators'
 
 module Jsapi
   module Model

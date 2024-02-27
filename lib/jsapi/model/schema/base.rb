@@ -47,7 +47,7 @@ module Jsapi
         end
 
         def add_validator(key, value)
-          class_name = "Jsapi::Model::Validators::#{key.to_s.camelize(:upper)}"
+          class_name = "Jsapi::Model::Schema::Validators::#{key.to_s.camelize(:upper)}"
           @validators << class_name.constantize.new(value)
         end
 
