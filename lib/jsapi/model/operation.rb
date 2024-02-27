@@ -58,7 +58,7 @@ module Jsapi
           tags: tags,
           summary: summary,
           description: description,
-          deprecated: (true if deprecated?)
+          deprecated: deprecated?.presence
         }.tap do |hash|
           # Parameters (and request body)
           hash[:parameters] = parameters.values.flat_map do |parameter|

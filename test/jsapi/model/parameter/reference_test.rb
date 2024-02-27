@@ -12,6 +12,12 @@ module Jsapi
           assert_equal(parameter, reference.resolve(definitions))
         end
 
+        def test_raises_error_on_invalid_reference
+          assert_raises(ReferenceError) do
+            Reference.new('foo').resolve(Definitions.new)
+          end
+        end
+
         # OpenAPI 2.0 tests
 
         def test_openapi_2_0_parameter

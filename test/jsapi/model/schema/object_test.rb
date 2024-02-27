@@ -6,6 +6,12 @@ module Jsapi
   module Model
     module Schema
       class ObjectTest < Minitest::Test
+        def test_add_all_on_nil
+          schema = Object.new
+          schema.add_all_of(nil)
+          assert_predicate(schema.all_of, :empty?)
+        end
+
         def test_properties
           schema = Object.new
           schema.add_property('foo')
@@ -29,7 +35,7 @@ module Jsapi
           assert_equal(%w[foo bar my_property], properties.keys)
         end
 
-        def test_properties_on_circular_reference
+        def test_properties_raises_an_error_on_circular_reference
           definitions = Definitions.new
           definitions.add_schema('Foo').add_all_of('Bar')
           definitions.add_schema('Bar').add_all_of('Foo')
@@ -44,6 +50,9 @@ module Jsapi
         # JSON Schema tests
 
         def test_json_schema
+          definitions = Definitions.new
+          definitions.add_schema('Foo')
+
           schema = Object.new
           schema.add_all_of('Foo')
           schema.add_property('foo', type: 'string', existence: true)
@@ -63,9 +72,16 @@ module Jsapi
                   type: %w[integer null]
                 }
               },
-              required: %w[foo]
+              required: %w[foo],
+              definitions: {
+                'Foo' => {
+                  type: %w[object null],
+                  properties: {},
+                  required: []
+                }
+              }
             },
-            schema.to_json_schema
+            schema.to_json_schema(definitions)
           )
         end
 

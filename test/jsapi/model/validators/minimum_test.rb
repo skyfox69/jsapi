@@ -8,7 +8,7 @@ module Jsapi
   module Model
     module Validators
       class MinimumTest < Minitest::Test
-        def test_invalid_minimum
+        def test_raises_error_on_invalid_minimum
           error = assert_raises(ArgumentError) { Minimum.new(nil) }
           assert_equal('invalid minimum: ', error.message)
         end

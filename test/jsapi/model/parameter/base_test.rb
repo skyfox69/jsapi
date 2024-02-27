@@ -6,6 +6,11 @@ module Jsapi
   module Model
     module Parameter
       class BaseTest < Minitest::Test
+        def test_raises_error_on_blank_parameter_name
+          error = assert_raises(ArgumentError) { Base.new('') }
+          assert_equal("parameter name can't be blank", error.message)
+        end
+
         def test_required
           parameter = Base.new('foo', existence: true)
           assert(parameter.required?)

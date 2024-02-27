@@ -8,7 +8,7 @@ module Jsapi
   module Model
     module Validators
       class MaxLengthTest < Minitest::Test
-        def test_invalid_max_length
+        def test_raises_error_on_invalid_max_length
           error = assert_raises(ArgumentError) { MaxLength.new(nil) }
           assert_equal('invalid max length: ', error.message)
         end

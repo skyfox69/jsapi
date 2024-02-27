@@ -54,6 +54,12 @@ module Jsapi
           assert_equal(Existence::PRESENT, resolved.existence)
         end
 
+        def test_raises_error_on_invalid_reference
+          assert_raises(ReferenceError) do
+            Reference.new(schema: 'foo').resolve(Definitions.new)
+          end
+        end
+
         # JSON Schema tests
 
         def test_json_schema

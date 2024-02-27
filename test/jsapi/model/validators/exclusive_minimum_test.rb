@@ -8,7 +8,7 @@ module Jsapi
   module Model
     module Validators
       class ExclusiveMinimumTest < Minitest::Test
-        def test_invalid_exclusive_minimum
+        def test_raises_error_on_invalid_exclusive_minimum
           error = assert_raises(ArgumentError) { ExclusiveMinimum.new(nil) }
           assert_equal('invalid exclusive minimum: ', error.message)
         end

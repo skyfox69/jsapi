@@ -5,6 +5,11 @@ require 'test_helper'
 module Jsapi
   module Model
     class OperationTest < Minitest::Test
+      def test_raises_error_on_blank_name
+        error = assert_raises(ArgumentError) { Operation.new('') }
+        assert_equal("operation name can't be blank", error.message)
+      end
+
       # OpenAPI tests
 
       def test_openapi_operation_2_0

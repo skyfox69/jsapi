@@ -10,7 +10,9 @@ module Jsapi
       delegate :to_json_schema, :to_openapi_schema, to: :schema
 
       def initialize(name, **options)
-        @name = name&.to_s
+        raise ArgumentError, "property name can't be blank" if name.blank?
+
+        @name = name.to_s
         @deprecated = options[:deprecated] == true
         @source = options[:source]
         @schema = Schema.new(**options.except(:deprecated, :source))

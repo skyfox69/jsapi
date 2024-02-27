@@ -66,11 +66,10 @@ module Jsapi
           self
         end
 
-        def to_json_schema(definitions = nil, include: [])
+        def to_json_schema(definitions = nil)
           {
             type: nullable? ? [type, 'null'] : type,
-            definitions: definitions&.schemas&.slice(*include)
-                                    &.transform_values(&:to_json_schema)
+            definitions: definitions&.schemas&.transform_values(&:to_json_schema)
           }.merge(json_schema_options).compact
         end
 

@@ -8,7 +8,7 @@ module Jsapi
   module Model
     module Validators
       class MultipleOfTest < Minitest::Test
-        def test_invalid_multiple_of
+        def test_raises_error_on_invalid_multiple_of
           error = assert_raises(ArgumentError) { MultipleOf.new(nil) }
           assert_equal('invalid multiple of: ', error.message)
         end

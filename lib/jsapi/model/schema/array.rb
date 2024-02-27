@@ -16,7 +16,7 @@ module Jsapi
           @items = Schema.new(**options)
         end
 
-        def to_json_schema(*)
+        def to_json_schema(definitions = nil)
           super.merge(items: items&.to_json_schema || {})
         end
 
