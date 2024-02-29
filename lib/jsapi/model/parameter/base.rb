@@ -4,7 +4,9 @@ module Jsapi
   module Model
     module Parameter
       class Base
-        attr_accessor :description, :example, :name
+        include Examples
+
+        attr_accessor :description, :name
         attr_reader :location, :schema
         attr_writer :deprecated
 
@@ -15,8 +17,9 @@ module Jsapi
           @location = options[:in] || 'query'
           @description = options[:description]
           @deprecated = options[:deprecated] == true
-          @example = options[:example]
           @schema = Schema.new(**options.except(:deprecated, :description, :example, :in))
+
+          add_example(value: options[:example]) if options.key?(:example)
         end
 
         # Returns +true+ if and only if empty values can be passed
@@ -75,7 +78,7 @@ module Jsapi
                   allowEmptyValue: allow_empty_value?.presence,
                   deprecated: deprecated?.presence,
                   schema: schema.to_openapi_schema(version),
-                  example: example
+                  examples: openapi_examples.presence
 
                   # NOTE: collectionFormat is replaced by style and explode.
                   #       The default values for query parameters are:
@@ -129,7 +132,7 @@ module Jsapi
                     allowEmptyValue: allow_empty_value.presence,
                     deprecated: deprecated,
                     schema: property_schema.to_openapi_schema(version),
-                    example: property_schema.example
+                    examples: property_schema.examples.presence
                   }
                 end.compact
               ]

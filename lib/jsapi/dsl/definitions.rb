@@ -9,8 +9,10 @@ module Jsapi
       end
 
       def openapi(version = nil, &block)
-        openapi = model.openapi_root(version)
-        Generic.new(openapi).call(&block) if block.present?
+        wrap_error("openapi #{version}") do
+          openapi = model.openapi_root(version)
+          Generic.new(openapi).call(&block) if block.present?
+        end
       end
 
       # Defines an API operation.

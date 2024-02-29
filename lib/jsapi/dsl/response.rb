@@ -3,6 +3,8 @@
 module Jsapi
   module DSL
     class Response < Node
+      include Example
+
       delegate(*Schema::COMMON_METHODS, to: :schema)
       delegate(:nullable, to: :schema)
 

@@ -11,8 +11,16 @@ module Jsapi
 
       def test_example
         parameter_model = Model::Parameter.new('parameter')
-        Parameter.new(parameter_model).call { example 'Foo' }
-        assert_equal('Foo', parameter_model.example)
+        Parameter.new(parameter_model).call { example value: 'foo' }
+        assert_equal('foo', parameter_model.examples['default'].value)
+      end
+
+      def test_example_with_block
+        parameter_model = Model::Parameter.new('parameter')
+        Parameter.new(parameter_model).call do
+          example { value 'foo' }
+        end
+        assert_equal('foo', parameter_model.examples['default'].value)
       end
 
       def test_deprecated

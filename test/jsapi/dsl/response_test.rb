@@ -11,8 +11,16 @@ module Jsapi
 
       def test_example
         response_model = Model::Response.new
-        Response.new(response_model).call { example 'Foo' }
-        assert_equal('Foo', response_model.example)
+        Response.new(response_model).call { example value: 'foo' }
+        assert_equal('foo', response_model.examples['default'].value)
+      end
+
+      def test_example_with_block
+        response_model = Model::Response.new
+        Response.new(response_model).call do
+          example { value 'foo' }
+        end
+        assert_equal('foo', response_model.examples['default'].value)
       end
 
       def test_delegated_method

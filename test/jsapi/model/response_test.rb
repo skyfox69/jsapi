@@ -5,6 +5,11 @@ require 'test_helper'
 module Jsapi
   module Model
     class ResponseTest < Minitest::Test
+      def test_example
+        response = Response.new(type: 'string', example: 'foo')
+        assert_equal('foo', response.examples['default'].value)
+      end
+
       def test_openapi_response_2_0
         response = Response.new(type: 'string', existence: false, example: 'foo')
 
@@ -13,7 +18,9 @@ module Jsapi
             schema: {
               type: 'string'
             },
-            examples: 'foo'
+            examples: {
+              'application/json' => 'foo'
+            }
           },
           response.to_openapi_response('2.0')
         )
@@ -42,10 +49,14 @@ module Jsapi
                 schema: {
                   type: 'string',
                   nullable: true
+                },
+                examples: {
+                  'default' => {
+                    value: 'foo'
+                  }
                 }
               }
-            },
-            example: 'foo'
+            }
           },
           response.to_openapi_response('3.0.3')
         )

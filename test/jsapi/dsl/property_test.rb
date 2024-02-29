@@ -11,8 +11,8 @@ module Jsapi
 
       def test_example
         property_model = Model::Property.new('property', type: 'string')
-        Property.new(property_model).call { example 'Foo' }
-        assert_equal('Foo', property_model.schema.example)
+        Property.new(property_model).call { example 'foo' }
+        assert_equal(%w[foo], property_model.schema.examples)
       end
 
       def test_deprecated

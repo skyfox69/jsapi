@@ -11,6 +11,12 @@ module Jsapi
           assert_equal("invalid option: 'foo'", error.message)
         end
 
+        def test_examples
+          schema = Schema.new(type: 'string', example: 'foo')
+          schema.add_example('bar')
+          assert_equal(%w[foo bar], schema.examples)
+        end
+
         def test_enum
           schema = Base.new(enum: %w[foo bar])
           assert_equal(%w[foo bar], schema.enum)
@@ -38,6 +44,111 @@ module Jsapi
         def test_nullable
           schema = Base.new
           assert schema.nullable?
+        end
+
+        # JSON Schema tests
+
+        def test_json_schema
+          schema = Schema.new(
+            type: 'string',
+            existence: true,
+            description: 'Foo',
+            default: 'foo',
+            example: 'bar'
+          )
+          assert_equal(
+            {
+              type: 'string',
+              description: 'Foo',
+              default: 'foo',
+              examples: %w[bar]
+            },
+            schema.to_json_schema
+          )
+        end
+
+        def test_json_schema_on_nullable
+          schema = Schema.new(type: 'string', existence: :allow_null)
+          assert_equal(
+            {
+              type: %w[string null]
+            },
+            schema.to_json_schema
+          )
+        end
+
+        def test_json_schema_on_enum
+          schema = Schema.new(type: 'string', enum: %w[foo bar])
+          assert_equal(
+            {
+              type: %w[string null],
+              enum: %w[foo bar]
+            },
+            schema.to_json_schema
+          )
+        end
+
+        # OpenAPI tests
+
+        def test_openapi_2_0_schema
+          schema = Schema.new(
+            type: 'string',
+            existence: true,
+            description: 'Foo',
+            default: 'foo',
+            example: 'bar'
+          )
+          assert_equal(
+            {
+              type: 'string',
+              description: 'Foo',
+              default: 'foo',
+              example: 'bar'
+            },
+            schema.to_openapi_schema('2.0')
+          )
+        end
+
+        def test_openapi_3_0_schema
+          schema = Schema.new(
+            type: 'string',
+            existence: true,
+            description: 'Foo',
+            default: 'foo',
+            example: 'bar'
+          )
+          assert_equal(
+            {
+              type: 'string',
+              description: 'Foo',
+              default: 'foo',
+              examples: %w[bar]
+            },
+            schema.to_openapi_schema('3.0.3')
+          )
+        end
+
+        def test_openapi_3_0_schema_on_nullable
+          schema = Schema.new(type: 'string', existence: :allow_null)
+          assert_equal(
+            {
+              type: 'string',
+              nullable: true
+            },
+            schema.to_openapi_schema('3.0.3')
+          )
+        end
+
+        def test_openapi_3_0_schema_on_enum
+          schema = Schema.new(type: 'string', enum: %w[foo bar])
+          assert_equal(
+            {
+              type: 'string',
+              nullable: true,
+              enum: %w[foo bar]
+            },
+            schema.to_openapi_schema('3.0.3')
+          )
         end
       end
     end

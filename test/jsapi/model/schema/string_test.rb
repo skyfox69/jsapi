@@ -77,17 +77,6 @@ module Jsapi
           )
         end
 
-        def test_json_schema_on_enum
-          schema = String.new(enum: %w[foo bar])
-          assert_equal(
-            {
-              type: %w[string null],
-              enum: %w[foo bar]
-            },
-            schema.to_json_schema
-          )
-        end
-
         def test_minimal_json_schema
           schema = String.new(existence: true)
           assert_equal(
@@ -116,18 +105,6 @@ module Jsapi
               minLength: 10,
               maxLength: 10,
               pattern: '$\d{4}-\d{2}-\d{2}^'
-            },
-            schema.to_openapi_schema('3.0.3')
-          )
-        end
-
-        def test_openapi_schema_on_enum
-          schema = String.new(enum: %w[foo bar])
-          assert_equal(
-            {
-              type: 'string',
-              nullable: true,
-              enum: %w[foo bar]
             },
             schema.to_openapi_schema('3.0.3')
           )

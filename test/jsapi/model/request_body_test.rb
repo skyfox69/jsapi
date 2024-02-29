@@ -5,6 +5,11 @@ require 'test_helper'
 module Jsapi
   module Model
     class RequestBodyTest < Minitest::Test
+      def test_example
+        request_body = RequestBody.new(type: 'string', example: 'foo')
+        assert_equal('foo', request_body.examples['default'].value)
+      end
+
       def test_required
         request_body = RequestBody.new(type: 'string', existence: true)
         assert(request_body.required?)

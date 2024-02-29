@@ -11,6 +11,11 @@ module Jsapi
           assert_equal("parameter name can't be blank", error.message)
         end
 
+        def test_example
+          parameter = Base.new('foo', example: 'bar')
+          assert_equal('bar', parameter.examples['default'].value)
+        end
+
         def test_required
           parameter = Base.new('foo', existence: true)
           assert(parameter.required?)

@@ -3,6 +3,8 @@
 module Jsapi
   module DSL
     class Parameter < Node
+      include Example
+
       delegate(*Schema::COMMON_METHODS, to: :schema)
 
       private

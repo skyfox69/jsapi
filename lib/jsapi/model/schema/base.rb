@@ -4,35 +4,40 @@ module Jsapi
   module Model
     module Schema
       class Base
-        def self.json_schema_validation(*keywords)
-          keywords.each do |keyword|
-            attr_reader keyword
+        class << self
+          private
 
-            # attr writer
-            define_method("#{keyword}=") do |value|
-              variable_name = "@#{keyword}"
+          def json_schema_validation(*keywords)
+            keywords.each do |keyword|
+              attr_reader keyword
 
-              if instance_variable_defined?(variable_name)
-                raise "#{keyword} already defined"
+              # attr writer
+              define_method("#{keyword}=") do |value|
+                variable_name = "@#{keyword}"
+
+                if instance_variable_defined?(variable_name)
+                  raise "#{keyword} already defined"
+                end
+
+                add_validator(keyword, value)
+                instance_variable_set(variable_name, value)
               end
-
-              add_validator(keyword, value)
-              instance_variable_set(variable_name, value)
             end
           end
         end
 
-        attr_accessor :default, :description, :example
-        attr_reader :existence, :type, :validators
+        attr_accessor :default, :description
+        attr_reader :examples, :existence, :type, :validators
 
         json_schema_validation :enum
 
         def initialize(**options)
+          @examples = options.key?(:example) ? [options[:example]] : []
           @existence = Existence.from(options[:existence])
           @type = options[:type]
           @validators = []
 
-          options.except(:type, :existence).each do |key, value|
+          options.except(:example, :existence, :type).each do |key, value|
             method = "#{key}="
             raise ArgumentError, "invalid option: '#{key}'" unless respond_to?(method)
 
@@ -44,6 +49,10 @@ module Jsapi
           define_method "#{type}?" do
             self.type == type
           end
+        end
+
+        def add_example(example)
+          @examples << example
         end
 
         def add_validator(key, value)
@@ -69,24 +78,35 @@ module Jsapi
         def to_json_schema(definitions = nil)
           {
             type: nullable? ? [type, 'null'] : type,
-            definitions: definitions&.schemas&.transform_values(&:to_json_schema)
+            definitions: definitions&.schemas&.transform_values(&:to_json_schema),
+            examples: examples.presence
           }.merge(json_schema_options).compact
         end
 
         def to_openapi_schema(version)
-          {
-            type: type,
-            nullable: (true if version == '3.0.3' && nullable?),
-            description: description,
-            default: default,
-            example: example
-          }.merge(json_schema_options).compact
+          case version
+          when '2.0'
+            {
+              type: type,
+              example: examples.first
+            }
+          when '3.0.3'
+            {
+              type: type,
+              nullable: nullable?.presence,
+              examples: examples.presence
+            }
+          end.merge(json_schema_options).compact
         end
 
         private
 
         def json_schema_options
-          enum.present? ? { enum: enum } : {}
+          {
+            default: default,
+            description: description,
+            enum: enum.presence
+          }
         end
       end
     end

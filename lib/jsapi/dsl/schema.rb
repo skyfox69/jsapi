@@ -26,6 +26,10 @@ module Jsapi
         end
       end
 
+      def example(example)
+        wrap_error { model.add_example(example) }
+      end
+
       def items(**options, &block)
         wrap_error do
           unless model.respond_to?(:items=)
@@ -49,7 +53,7 @@ module Jsapi
       end
 
       def validate(&block)
-        model.add_validator(:lambda, block)
+        wrap_error { model.add_validator(:lambda, block) }
       end
     end
   end

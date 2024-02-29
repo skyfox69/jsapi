@@ -3,13 +3,16 @@
 module Jsapi
   module Model
     class RequestBody
-      attr_accessor :description, :example
+      include Examples
+
+      attr_accessor :description
       attr_reader :schema
 
       def initialize(**options)
         @description = options[:description]
-        @example = options[:example]
         @schema = Schema.new(**options.except(:description, :example))
+
+        add_example(value: options[:example]) if options.key?(:example)
       end
 
       def required?
@@ -22,11 +25,11 @@ module Jsapi
           description: description,
           content: {
             'application/json' => {
-              schema: schema.to_openapi_schema('3.0.3')
-            }
+              schema: schema.to_openapi_schema('3.0.3'),
+              examples: openapi_examples.presence
+            }.compact
           },
-          required: required?,
-          example: example
+          required: required?
         }.compact
       end
 

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative 'model/reference_error'
+require_relative 'model/example'
+require_relative 'model/examples'
 require_relative 'model/existence'
 require_relative 'model/schema'
 require_relative 'model/operation'

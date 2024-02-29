@@ -9,6 +9,12 @@ module Jsapi
         assert_equal('Foo', schema.description)
       end
 
+      def test_example
+        schema = Model::Schema.new
+        Schema.new(schema).call { example 'foo' }
+        assert_equal(%w[foo], schema.examples)
+      end
+
       def test_all_of
         schema = Model::Schema.new
         Schema.new(schema).call { all_of 'Foo' }

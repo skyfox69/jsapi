@@ -11,8 +11,16 @@ module Jsapi
 
       def test_example
         request_body_model = Model::RequestBody.new
-        RequestBody.new(request_body_model).call { example 'Foo' }
-        assert_equal('Foo', request_body_model.example)
+        RequestBody.new(request_body_model).call { example value: 'foo' }
+        assert_equal('foo', request_body_model.examples['default'].value)
+      end
+
+      def test_example_with_block
+        request_body_model = Model::RequestBody.new
+        RequestBody.new(request_body_model).call do
+          example { value 'foo' }
+        end
+        assert_equal('foo', request_body_model.examples['default'].value)
       end
 
       def test_delegated_method
