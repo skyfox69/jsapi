@@ -36,9 +36,10 @@ module Jsapi
         @schemas[name.to_s] = Schema.new(**options)
       end
 
-      def include(*definitions)
-        # TODO: prevent circular references
-        @self_and_included += definitions
+      def include(definitions)
+        return if @self_and_included.include?(definitions)
+
+        @self_and_included << definitions
       end
 
       def openapi_document(version = '2.0')

@@ -21,6 +21,11 @@ module Jsapi
       end
 
       def test_openapi
+        Definitions.new(definitions).call { openapi('2.0') }
+        assert_equal({ swagger: '2.0' }, definitions.openapi_document('2.0'))
+      end
+
+      def test_openapi_with_block
         Definitions.new(definitions).call do
           openapi('2.0') { info name: 'Foo', version: '1' }
         end
@@ -32,6 +37,12 @@ module Jsapi
 
       def test_operation
         Definitions.new(definitions).call { operation 'foo' }
+        assert_predicate(definitions.operation('foo'), :present?)
+      end
+
+      def test_unnamed_operation
+        definitions = Model::Definitions.new('Foo')
+        Definitions.new(definitions).call { operation }
         assert_predicate(definitions.operation('foo'), :present?)
       end
 

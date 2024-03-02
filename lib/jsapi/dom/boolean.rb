@@ -3,17 +3,13 @@
 module Jsapi
   module DOM
     class Boolean < BaseObject
+      TRUTHY_VALUES = [true, 'True', 'true'].freeze
+
       attr_reader :value
 
       def initialize(value, schema)
         super(schema)
-        @value =
-          case value
-          when true, 'true'
-            true
-          when false, 'false'
-            false
-          end
+        @value = value.in?(TRUTHY_VALUES)
       end
     end
   end

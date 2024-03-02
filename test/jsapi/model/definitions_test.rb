@@ -11,20 +11,37 @@ module Jsapi
         @api_definitions = Definitions.new(FooBarController)
       end
 
+      # Include tests
+
+      def test_include
+        foo_definitions = Definitions.new
+        foo_definitions.add_schema('Foo')
+
+        bar_definitions = Definitions.new
+        bar_definitions.include(foo_definitions)
+
+        assert_predicate(bar_definitions.schema('Foo'), :present?)
+      end
+
+      def test_include_self
+        definitions = Definitions.new
+        definitions.include(definitions)
+      end
+
       # Operation tests
 
       def test_add_operation
-        @api_definitions.add_operation('my_operation')
-        assert(@api_definitions.operations.key?('my_operation'))
+        @api_definitions.add_operation('foo')
+        assert(@api_definitions.operations.key?('foo'))
       end
 
       def test_add_operation_on_double
-        @api_definitions.add_operation('my_operation')
+        @api_definitions.add_operation('foo')
 
         error = assert_raises(RuntimeError) do
-          @api_definitions.add_operation('my_operation')
+          @api_definitions.add_operation('foo')
         end
-        assert_equal("operation already defined: 'my_operation'", error.message)
+        assert_equal("operation already defined: 'foo'", error.message)
       end
 
       def test_default_operation_name
@@ -38,13 +55,13 @@ module Jsapi
       end
 
       def test_get_operation
-        @api_definitions.add_operation('my_operation')
-        assert_equal('my_operation', @api_definitions.operation('my_operation').name)
+        @api_definitions.add_operation('foo')
+        assert_equal('foo', @api_definitions.operation('foo').name)
       end
 
       def test_get_default_operation
-        @api_definitions.add_operation('my_operation')
-        assert_equal('my_operation', @api_definitions.operation.name)
+        @api_definitions.add_operation('foo')
+        assert_equal('foo', @api_definitions.operation.name)
       end
 
       def test_get_operation_on_nil
@@ -54,26 +71,26 @@ module Jsapi
       # Parameter tests
 
       def test_add_parameter
-        @api_definitions.add_parameter('my_parameter')
-        assert(@api_definitions.parameters.key?('my_parameter'))
+        @api_definitions.add_parameter('foo')
+        assert(@api_definitions.parameters.key?('foo'))
       end
 
       def test_add_parameter_on_double
-        @api_definitions.add_parameter('my_parameter')
+        @api_definitions.add_parameter('foo')
 
         error = assert_raises(RuntimeError) do
-          @api_definitions.add_parameter('my_parameter')
+          @api_definitions.add_parameter('foo')
         end
-        assert_equal("parameter already defined: 'my_parameter'", error.message)
+        assert_equal("parameter already defined: 'foo'", error.message)
       end
 
       def test_get_parameter
-        @api_definitions.add_parameter('my_parameter')
-        assert_equal('my_parameter', @api_definitions.parameter('my_parameter').name)
+        @api_definitions.add_parameter('foo')
+        assert_equal('foo', @api_definitions.parameter('foo').name)
       end
 
       def test_get_parameter_on_undefined_name
-        assert_nil(@api_definitions.parameter('my_parameter'))
+        assert_nil(@api_definitions.parameter('foo'))
       end
 
       def test_get_parameter_on_nil
@@ -83,26 +100,26 @@ module Jsapi
       # Schema tests
 
       def test_add_schema
-        @api_definitions.add_schema('my_schema')
-        assert(@api_definitions.schemas.key?('my_schema'))
+        @api_definitions.add_schema('Foo')
+        assert(@api_definitions.schemas.key?('Foo'))
       end
 
       def test_add_schema_on_double
-        @api_definitions.add_schema('my_schema')
+        @api_definitions.add_schema('Foo')
 
         error = assert_raises(RuntimeError) do
-          @api_definitions.add_schema('my_schema')
+          @api_definitions.add_schema('Foo')
         end
-        assert_equal("schema already defined: 'my_schema'", error.message)
+        assert_equal("schema already defined: 'Foo'", error.message)
       end
 
       def test_get_schema
-        @api_definitions.add_schema('my_schema')
-        assert_predicate(@api_definitions.schema('my_schema'), :present?)
+        @api_definitions.add_schema('Foo')
+        assert_predicate(@api_definitions.schema('Foo'), :present?)
       end
 
       def test_get_schema_on_undefined_name
-        assert_nil(@api_definitions.schema('my_schema'))
+        assert_nil(@api_definitions.schema('Foo'))
       end
 
       def test_get_schema_on_nil
@@ -112,9 +129,9 @@ module Jsapi
       # OpenAPI document tests
 
       def test_openapi_2_0_document
-        @api_definitions.add_operation('my_operation', path: '/foo')
-        @api_definitions.add_parameter('my_parameter', type: 'string')
-        @api_definitions.add_schema('my_schema')
+        @api_definitions.add_operation('operation', path: '/foo')
+        @api_definitions.add_parameter('parameter', type: 'string')
+        @api_definitions.add_schema('schema')
 
         assert_equal(
           {
@@ -122,22 +139,22 @@ module Jsapi
             paths: {
               '/foo' => {
                 'get' => {
-                  operationId: 'my_operation',
+                  operationId: 'operation',
                   parameters: [],
                   responses: {}
                 }
               }
             },
             parameters: {
-              'my_parameter' => {
-                name: 'my_parameter',
+              'parameter' => {
+                name: 'parameter',
                 in: 'query',
                 type: 'string',
                 allowEmptyValue: true
               }
             },
             definitions: {
-              'my_schema' => {
+              'schema' => {
                 type: 'object',
                 properties: {},
                 required: []
@@ -153,9 +170,9 @@ module Jsapi
       end
 
       def test_openapi_3_0_document
-        @api_definitions.add_operation('my_operation', path: '/foo')
-        @api_definitions.add_parameter('my_parameter', type: 'string')
-        @api_definitions.add_schema('my_schema')
+        @api_definitions.add_operation('operation', path: '/foo')
+        @api_definitions.add_parameter('parameter', type: 'string')
+        @api_definitions.add_schema('schema')
 
         assert_equal(
           {
@@ -163,7 +180,7 @@ module Jsapi
             paths: {
               '/foo' => {
                 'get' => {
-                  operationId: 'my_operation',
+                  operationId: 'operation',
                   parameters: [],
                   responses: {}
                 }
@@ -171,8 +188,8 @@ module Jsapi
             },
             components: {
               parameters: {
-                'my_parameter' => {
-                  name: 'my_parameter',
+                'parameter' => {
+                  name: 'parameter',
                   in: 'query',
                   schema: {
                     type: 'string',
@@ -182,7 +199,7 @@ module Jsapi
                 }
               },
               schemas: {
-                'my_schema' => {
+                'schema' => {
                   type: 'object',
                   nullable: true,
                   properties: {},

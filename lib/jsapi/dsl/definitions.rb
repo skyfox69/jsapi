@@ -5,7 +5,7 @@ module Jsapi
     class Definitions < Node
       # Includes all of the API definitions from +classes+.
       def include(*classes)
-        model.include(*classes.map(&:api_definitions))
+        classes.each { |c| model.include(c.api_definitions) }
       end
 
       def openapi(version = nil, &block)
