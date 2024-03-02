@@ -6,7 +6,6 @@ module Jsapi
       include Example
 
       delegate(*Schema::COMMON_METHODS, to: :schema)
-      delegate(:nullable, to: :schema)
 
       private
 

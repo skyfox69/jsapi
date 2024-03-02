@@ -4,24 +4,30 @@ module Jsapi
   module Model
     module Schema
       class Numeric < Base
-        json_schema_validation(
-          :exclusive_maximum,
-          :exclusive_minimum,
-          :maximum,
-          :minimum,
-          :multiple_of
-        )
+        def maximum=(value_or_options)
+          if value_or_options.is_a?(Hash)
+            value = value_or_options[:value]
+            exclusive = value_or_options[:exclusive] == true
+          else
+            value = value_or_options
+            exclusive = false
+          end
+          add_validation('maximum', Validation::Maximum.new(value, exclusive: exclusive))
+        end
 
-        private
+        def minimum=(value_or_options)
+          if value_or_options.is_a?(Hash)
+            value = value_or_options[:value]
+            exclusive = value_or_options[:exclusive] == true
+          else
+            value = value_or_options
+            exclusive = false
+          end
+          add_validation('minimum', Validation::Minimum.new(value, exclusive: exclusive))
+        end
 
-        def json_schema_options
-          super.merge(
-            exclusiveMinimum: exclusive_minimum,
-            minimum: minimum,
-            exclusiveMaximum: exclusive_maximum,
-            maximum: maximum,
-            multipleOf: multiple_of
-          ).compact
+        def multiple_of=(value)
+          add_validation('multiple_of', Validation::MultipleOf.new(value))
         end
       end
     end

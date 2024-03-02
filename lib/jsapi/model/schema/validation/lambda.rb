@@ -3,7 +3,7 @@
 module Jsapi
   module Model
     module Schema
-      module Validators
+      module Validation
         class Lambda
           def initialize(lambda)
             @lambda = lambda

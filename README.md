@@ -165,22 +165,43 @@ except `type` can also be defined inside a block, for example:
 
 ### The `existence` Option
 
+The `existence` options defines the level of presence of a parameter or property.
+Possible values are:
+
 - `:present` or `true`: The parameter or property value must be present or `false`.
 - `:allow_empty`: The parameter or property value can be empty, for example `''`.
-- `:allow_nil`: The parameter or property value can be `nil`.
-- `:allow_omitted`, `false`: The parameter or property can be omitted.
+- `:allow_nil` or `allow_null`: The parameter or property value can be `nil`.
+- `:allow_omitted` or `false`: The parameter or property can be omitted.
 
 ### JSON Schema Validations
 
+Jsapi supports the following JSON Schema validations:
+
+All objects:
+
 - `enum`
-- `minimum` (only 'integer' and 'number')
-- `maximum` (only 'integer' and 'number')
-- `exclusive_minimum` (only 'integer' and 'number')
-- `exclusive_maximum` (only 'integer' and 'number')
-- `multiple_of` (only 'integer' and 'number')
-- `min_length` (only 'string')
-- `max_length` (only 'string')
-- `pattern` (only 'string')
+
+Integers and number:
+
+- `minimum`
+- `maximum`
+- `multiple_of`
+
+Strings:
+
+- `min_length`
+- `max_length`
+- `pattern`
+
+Arrays:
+
+- `min_items`
+- `max_items`
+
+```ruby
+  parameter 'foo', type: 'integer', maximum: 9
+  parameter 'bar', type: 'integer', maximum: { value: 10, exclusive: true }
+```
 
 ### Defining an API Operation
 

@@ -7,7 +7,7 @@ require_relative 'dummy'
 module Jsapi
   module Model
     module Schema
-      module Validators
+      module Validation
         class LambdaTest < Minitest::Test
           def test_positive_validation
             validator = Lambda.new(

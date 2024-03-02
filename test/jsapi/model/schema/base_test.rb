@@ -19,8 +19,10 @@ module Jsapi
 
         def test_enum
           schema = Base.new(enum: %w[foo bar])
-          assert_equal(%w[foo bar], schema.enum)
-          assert_predicate(schema.validators, :one?)
+          enum = schema.validations['enum']
+
+          assert_predicate(enum, :present?)
+          assert_equal(%w[foo bar], enum.value)
         end
 
         def test_raises_error_on_double_enum
@@ -77,7 +79,7 @@ module Jsapi
           )
         end
 
-        def test_json_schema_on_enum
+        def test_json_schema_including_enum
           schema = Schema.new(type: 'string', enum: %w[foo bar])
           assert_equal(
             {
@@ -139,7 +141,7 @@ module Jsapi
           )
         end
 
-        def test_openapi_3_0_schema_on_enum
+        def test_openapi_3_0_schema_including_enum
           schema = Schema.new(type: 'string', enum: %w[foo bar])
           assert_equal(
             {

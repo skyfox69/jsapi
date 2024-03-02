@@ -36,13 +36,37 @@ module Jsapi
       end
 
       def test_parameter
-        Definitions.new(definitions).call { parameter 'foo' }
-        assert_predicate(definitions.parameter('foo'), :present?)
+        Definitions.new(definitions).call { parameter 'foo', type: 'string' }
+        parameter = definitions.parameter('foo')
+        assert_predicate(parameter, :present?)
+        assert_equal('string', parameter.schema.type)
+      end
+
+      def test_parameter_with_block
+        Definitions.new(definitions).call do
+          parameter 'foo' do
+            description 'Description of foo'
+          end
+        end
+        parameter = definitions.parameter('foo')
+        assert_predicate(parameter, :present?)
+        assert_equal('Description of foo', parameter.description)
       end
 
       def test_schema
         Definitions.new(definitions).call { schema 'Foo' }
         assert_predicate(definitions.schema('Foo'), :present?)
+      end
+
+      def test_schema_with_block
+        Definitions.new(definitions).call do
+          schema 'Foo' do
+            description 'Description of foo'
+          end
+        end
+        schema = definitions.schema('Foo')
+        assert_predicate(schema, :present?)
+        assert_equal('Description of foo', schema.description)
       end
 
       private

@@ -7,8 +7,6 @@ module Jsapi
         all_of
         default
         enum
-        exclusive_maximum
-        exclusive_minimum
         format
         items
         max_length
@@ -28,6 +26,11 @@ module Jsapi
 
       def example(example)
         wrap_error { model.add_example(example) }
+      end
+
+      def format(format)
+        # Override Kernel#format
+        method_missing(:format, format)
       end
 
       def items(**options, &block)
@@ -53,7 +56,7 @@ module Jsapi
       end
 
       def validate(&block)
-        wrap_error { model.add_validator(:lambda, block) }
+        wrap_error { model.add_lambda_validation(block) }
       end
     end
   end

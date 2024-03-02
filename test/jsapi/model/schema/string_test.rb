@@ -24,64 +24,46 @@ module Jsapi
 
         def test_max_length
           schema = String.new(max_length: 10)
-          assert_equal(10, schema.max_length)
-        end
+          max_length = schema.validations['max_length']
 
-        def test_raises_error_on_double_max_length
-          schema = String.new(max_length: 10)
-          error = assert_raises { schema.max_length = 5 }
-          assert_equal('max_length already defined', error.message)
+          assert_predicate(max_length, :present?)
+          assert_equal(10, max_length.value)
         end
 
         def test_min_length
           schema = String.new(min_length: 10)
-          assert_equal(10, schema.min_length)
-        end
+          min_length = schema.validations['min_length']
 
-        def test_raises_error_on_double_min_length
-          schema = String.new(min_length: 10)
-          error = assert_raises { schema.min_length = 5 }
-          assert_equal('min_length already defined', error.message)
+          assert_predicate(min_length, :present?)
+          assert_equal(10, min_length.value)
         end
 
         def test_pattern
           schema = String.new(pattern: /foo/)
-          assert_equal('foo', schema.pattern.source)
-        end
+          pattern = schema.validations['pattern']
 
-        def test_raises_error_on_double_pattern
-          schema = String.new(pattern: /foo/)
-          error = assert_raises { schema.pattern = /bar/ }
-          assert_equal('pattern already defined', error.message)
+          assert_predicate(pattern, :present?)
+          assert_equal('foo', pattern.value.source)
         end
 
         # JSON Schema tests
 
-        def test_json_schema
-          schema = String.new(
-            existence: false,
-            format: 'date',
-            min_length: 10,
-            max_length: 10,
-            pattern: /$\d{4}-\d{2}-\d{2}^/
-          )
+        def test_minimal_json_schema
+          schema = String.new
           assert_equal(
             {
-              type: %w[string null],
-              format: 'date',
-              minLength: 10,
-              maxLength: 10,
-              pattern: '$\d{4}-\d{2}-\d{2}^'
+              type: %w[string null]
             },
             schema.to_json_schema
           )
         end
 
-        def test_minimal_json_schema
-          schema = String.new(existence: true)
+        def test_json_schema
+          schema = String.new(format: 'date')
           assert_equal(
             {
-              type: 'string'
+              type: %w[string null],
+              format: 'date'
             },
             schema.to_json_schema
           )
@@ -89,32 +71,24 @@ module Jsapi
 
         # OpenAPI tests
 
-        def test_openapi_schema
-          schema = String.new(
-            existence: false,
-            format: 'date',
-            min_length: 10,
-            max_length: 10,
-            pattern: /$\d{4}-\d{2}-\d{2}^/
-          )
+        def test_minimal_openapi_3_0_schema
+          schema = String.new
           assert_equal(
             {
               type: 'string',
-              nullable: true,
-              format: 'date',
-              minLength: 10,
-              maxLength: 10,
-              pattern: '$\d{4}-\d{2}-\d{2}^'
+              nullable: true
             },
             schema.to_openapi_schema('3.0')
           )
         end
 
-        def test_minimal_openapi_schema
-          schema = String.new(existence: true)
+        def test_openapi_3_0_schema
+          schema = String.new(format: 'date')
           assert_equal(
             {
-              type: 'string'
+              type: 'string',
+              nullable: true,
+              format: 'date'
             },
             schema.to_openapi_schema('3.0')
           )

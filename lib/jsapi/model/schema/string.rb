@@ -8,8 +8,6 @@ module Jsapi
 
         attr_reader :format
 
-        json_schema_validation :max_length, :min_length, :pattern
-
         def initialize(**options)
           super(**options.merge(type: 'string'))
         end
@@ -21,15 +19,28 @@ module Jsapi
           @format = format
         end
 
-        private
+        def max_length=(value)
+          add_validation('max_length', Validation::MaxLength.new(value))
+        end
 
-        def json_schema_options
-          super.merge(
-            format: format,
-            minLength: min_length,
-            maxLength: max_length,
-            pattern: pattern&.source
-          ).compact
+        def min_length=(value)
+          add_validation('min_length', Validation::MinLength.new(value))
+        end
+
+        def pattern=(value)
+          add_validation('pattern', Validation::Pattern.new(value))
+        end
+
+        def to_json_schema(definitions = nil)
+          return super unless format.present?
+
+          super.merge(format: format)
+        end
+
+        def to_openapi_schema(_version)
+          return super unless format.present?
+
+          super.merge(format: format)
         end
       end
     end

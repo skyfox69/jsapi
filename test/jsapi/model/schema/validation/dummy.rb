@@ -5,13 +5,13 @@ require 'test_helper'
 module Jsapi
   module Model
     module Schema
-      module Validators
+      module Validation
         class Dummy
           attr_reader :errors, :value
 
           def initialize(value)
             @value = value
-            @errors = Validation::Errors.new
+            @errors = Jsapi::Validation::Errors.new
           end
         end
       end

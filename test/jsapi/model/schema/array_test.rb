@@ -12,6 +12,22 @@ module Jsapi
           assert_equal('items already defined', error.message)
         end
 
+        def test_max_items
+          schema = Array.new(items: { type: 'string' }, max_items: 3)
+          max_items = schema.validations['max_items']
+
+          assert_predicate(max_items, :present?)
+          assert_equal(3, max_items.value)
+        end
+
+        def test_min_items
+          schema = Array.new(items: { type: 'string' }, min_items: 3)
+          min_items = schema.validations['min_items']
+
+          assert_predicate(min_items, :present?)
+          assert_equal(3, min_items.value)
+        end
+
         # JSON Schema tests
 
         def test_json_schema

@@ -15,6 +15,12 @@ module Jsapi
         assert_equal(%w[foo], schema.examples)
       end
 
+      def test_format
+        schema = Model::Schema.new(type: 'string')
+        Schema.new(schema).call { format 'date' }
+        assert_equal('date', schema.format)
+      end
+
       def test_all_of
         schema = Model::Schema.new
         Schema.new(schema).call { all_of 'Foo' }
@@ -27,6 +33,16 @@ module Jsapi
         schema = Model::Schema.new(type: 'array')
         Schema.new(schema).call { items type: 'string' }
         assert_predicate(schema.items, :string?)
+      end
+
+      def test_items_with_block
+        schema = Model::Schema.new(type: 'array')
+        Schema.new(schema).call do
+          items type: 'string' do
+            format 'date'
+          end
+        end
+        assert_equal('date', schema.items.format)
       end
 
       def test_items_raises_an_error_on_other_type_than_array
@@ -61,7 +77,6 @@ module Jsapi
       def test_validate
         schema = Model::Schema.new
         Schema.new(schema).call { validate {} }
-        assert_predicate(schema.validators, :one?)
       end
 
       private

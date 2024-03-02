@@ -4,38 +4,15 @@ module Jsapi
   module Model
     module Schema
       class Base
-        class << self
-          private
-
-          def json_schema_validation(*keywords)
-            keywords.each do |keyword|
-              attr_reader keyword
-
-              # attr writer
-              define_method("#{keyword}=") do |value|
-                variable_name = "@#{keyword}"
-
-                if instance_variable_defined?(variable_name)
-                  raise "#{keyword} already defined"
-                end
-
-                add_validator(keyword, value)
-                instance_variable_set(variable_name, value)
-              end
-            end
-          end
-        end
-
         attr_accessor :default, :description
-        attr_reader :examples, :existence, :type, :validators
-
-        json_schema_validation :enum
+        attr_reader :examples, :existence, :type, :validations
 
         def initialize(**options)
           @examples = options.key?(:example) ? [options[:example]] : []
           @existence = Existence.from(options[:existence])
           @type = options[:type]
-          @validators = []
+          @validations = {}
+          @lambda_validations = []
 
           options.except(:example, :existence, :type).each do |key, value|
             method = "#{key}="
@@ -55,9 +32,12 @@ module Jsapi
           @examples << example
         end
 
-        def add_validator(key, value)
-          class_name = "Jsapi::Model::Schema::Validators::#{key.to_s.camelize(:upper)}"
-          @validators << class_name.constantize.new(value)
+        def add_lambda_validation(lambda)
+          @lambda_validations << Validation::Lambda.new(lambda)
+        end
+
+        def enum=(value)
+          add_validation('enum', Validation::Enum.new(value))
         end
 
         def existence=(existence)
@@ -78,9 +58,15 @@ module Jsapi
         def to_json_schema(definitions = nil)
           {
             type: nullable? ? [type, 'null'] : type,
-            definitions: definitions&.schemas&.transform_values(&:to_json_schema),
-            examples: examples.presence
-          }.merge(json_schema_options).compact
+            description: description,
+            default: default,
+            examples: examples.presence,
+            definitions: definitions&.schemas&.transform_values(&:to_json_schema)
+          }.tap do |hash|
+            validations.each_value do |validation|
+              hash.merge!(validation.to_json_schema_validation)
+            end
+          end.compact
         end
 
         def to_openapi_schema(version)
@@ -88,32 +74,45 @@ module Jsapi
           when '2.0'
             {
               type: type,
+              description: description,
+              default: default,
               example: examples.first
             }
           when '3.0'
             {
               type: type,
               nullable: nullable?.presence,
+              description: description,
+              default: default,
               examples: examples.presence
             }
           when '3.1'
             {
               type: nullable? ? [type, 'null'] : type,
+              description: description,
+              default: default,
               examples: examples.presence
             }
           else
             raise ArgumentError, "unsupported OpenAPI version: #{version}"
-          end.merge(json_schema_options).compact
+          end.tap do |hash|
+            validations.each_value do |validation|
+              hash.merge!(validation.to_openapi_validation(version))
+            end
+          end.compact
+        end
+
+        def validate(object)
+          validations.each_value { |validation| validation.validate(object) }
+          @lambda_validations.each { |validation| validation.validate(object) }
         end
 
         private
 
-        def json_schema_options
-          {
-            default: default,
-            description: description,
-            enum: enum.presence
-          }
+        def add_validation(keyword, validation)
+          raise "#{keyword} already defined" if validations.key?(keyword)
+
+          validations[keyword] = validation
         end
       end
     end

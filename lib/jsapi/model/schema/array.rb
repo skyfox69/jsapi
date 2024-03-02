@@ -16,6 +16,14 @@ module Jsapi
           @items = Schema.new(**options)
         end
 
+        def max_items=(value)
+          add_validation('max_items', Validation::MaxItems.new(value))
+        end
+
+        def min_items=(value)
+          add_validation('min_items', Validation::MinItems.new(value))
+        end
+
         def to_json_schema(definitions = nil)
           super.merge(items: items&.to_json_schema || {})
         end
