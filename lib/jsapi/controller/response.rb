@@ -37,6 +37,15 @@ module Jsapi
               path.nil? ? property.name : "#{path}.#{property.name}"
             )
           end
+        when 'string'
+          case schema.format
+          when 'date'
+            object.to_date
+          when 'date-time'
+            object.to_datetime
+          else
+            object.to_s
+          end
         else
           object
         end
