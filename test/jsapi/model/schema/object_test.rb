@@ -161,7 +161,7 @@ module Jsapi
               },
               required: %w[foo]
             },
-            schema.to_openapi_schema('3.0.3')
+            schema.to_openapi_schema('3.0')
           )
         end
 
@@ -173,7 +173,7 @@ module Jsapi
               properties: {},
               required: []
             },
-            schema.to_openapi_schema('3.0.3')
+            schema.to_openapi_schema('3.0')
           )
         end
       end

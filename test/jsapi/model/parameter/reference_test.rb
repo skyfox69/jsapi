@@ -60,7 +60,7 @@ module Jsapi
             [
               { '$ref': '#/components/parameters/foo' }
             ],
-            reference.to_openapi_parameters('3.0.3', definitions)
+            reference.to_openapi_parameters('3.0', definitions)
           )
         end
 
@@ -81,7 +81,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            reference.to_openapi_parameters('3.0.3', definitions)
+            reference.to_openapi_parameters('3.0', definitions)
           )
         end
 

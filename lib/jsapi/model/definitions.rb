@@ -66,8 +66,10 @@ module Jsapi
           case version
           when '2.0'
             Generic.new(swagger: '2.0')
-          when '3.0.3'
+          when '3.0'
             Generic.new(openapi: '3.0.3')
+          when '3.1'
+            Generic.new(openapi: '3.1.0')
           else
             raise ArgumentError, "unsupported OpenAPI version: #{version}"
           end

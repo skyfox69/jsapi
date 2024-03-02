@@ -3,10 +3,10 @@
 module Jsapi
   module Model
     class Response
-      include Examples
-
       attr_accessor :description
       attr_reader :schema
+
+      include Examples
 
       def initialize(**options)
         @description = options[:description]
@@ -28,7 +28,7 @@ module Jsapi
               end
             )
           }
-        when '3.0.3'
+        when '3.0', '3.1'
           {
             description: description,
             content: {
@@ -38,6 +38,8 @@ module Jsapi
               }.compact
             }
           }
+        else
+          raise ArgumentError, "unsupported OpenAPI version: #{version}"
         end.compact
       end
     end

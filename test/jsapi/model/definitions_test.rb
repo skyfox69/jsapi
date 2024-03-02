@@ -191,14 +191,14 @@ module Jsapi
               }
             }
           },
-          @api_definitions.openapi_document('3.0.3')
+          @api_definitions.openapi_document('3.0')
         )
       end
 
       def test_minimal_openapi_3_0_document
         assert_equal(
           { openapi: '3.0.3' },
-          @api_definitions.openapi_document('3.0.3')
+          @api_definitions.openapi_document('3.0')
         )
       end
 
@@ -211,10 +211,17 @@ module Jsapi
         )
       end
 
-      def test_openapi_root_on_3_0_3
+      def test_openapi_root_on_3_0
         assert_equal(
           { openapi: '3.0.3' },
-          @api_definitions.openapi_root('3.0.3').to_h
+          @api_definitions.openapi_root('3.0').to_h
+        )
+      end
+
+      def test_openapi_root_on_3_1
+        assert_equal(
+          { openapi: '3.1.0' },
+          @api_definitions.openapi_root('3.1').to_h
         )
       end
 

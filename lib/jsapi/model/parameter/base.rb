@@ -4,11 +4,11 @@ module Jsapi
   module Model
     module Parameter
       class Base
-        include Examples
-
         attr_accessor :description, :name
         attr_reader :location, :schema
         attr_writer :deprecated
+
+        include Examples
 
         def initialize(name, **options)
           raise ArgumentError, "parameter name can't be blank" if name.blank?

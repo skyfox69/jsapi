@@ -75,7 +75,7 @@ module Jsapi
                 nullable: true
               }
             },
-            schema.to_openapi_schema('3.0.3')
+            schema.to_openapi_schema('3.0')
           )
         end
 
@@ -86,7 +86,7 @@ module Jsapi
               type: 'array',
               items: {}
             },
-            schema.to_openapi_schema('3.0.3')
+            schema.to_openapi_schema('3.0')
           )
         end
       end

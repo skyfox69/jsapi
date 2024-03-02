@@ -154,7 +154,7 @@ module Jsapi
                 }
               }
             ],
-            parameter.to_openapi_parameters('3.0.3', Definitions.new)
+            parameter.to_openapi_parameters('3.0', Definitions.new)
           )
         end
 
@@ -172,7 +172,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('3.0.3', Definitions.new)
+            parameter.to_openapi_parameters('3.0', Definitions.new)
           )
         end
 
@@ -194,7 +194,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('3.0.3', Definitions.new)
+            parameter.to_openapi_parameters('3.0', Definitions.new)
           )
         end
 
@@ -214,7 +214,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('3.0.3', Definitions.new)
+            parameter.to_openapi_parameters('3.0', Definitions.new)
           )
         end
 
@@ -238,7 +238,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('3.0.3', Definitions.new)
+            parameter.to_openapi_parameters('3.0', Definitions.new)
           )
         end
 
@@ -259,7 +259,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('3.0.3', Definitions.new)
+            parameter.to_openapi_parameters('3.0', Definitions.new)
           )
         end
       end

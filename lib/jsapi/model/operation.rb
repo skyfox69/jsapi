@@ -68,7 +68,7 @@ module Jsapi
             if version == '2.0'
               hash[:parameters] << request_body.to_openapi_parameter
             else
-              hash[:request_body] = request_body.to_openapi_request_body
+              hash[:request_body] = request_body.to_openapi_request_body(version)
             end
           end
           # Responses

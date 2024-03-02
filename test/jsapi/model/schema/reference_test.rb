@@ -84,7 +84,7 @@ module Jsapi
           reference = Reference.new(schema: 'foo')
           assert_equal(
             { '$ref': '#/components/schemas/foo' },
-            reference.to_openapi_schema('3.0.3')
+            reference.to_openapi_schema('3.0')
           )
         end
       end

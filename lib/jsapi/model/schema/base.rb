@@ -90,12 +90,19 @@ module Jsapi
               type: type,
               example: examples.first
             }
-          when '3.0.3'
+          when '3.0'
             {
               type: type,
               nullable: nullable?.presence,
               examples: examples.presence
             }
+          when '3.1'
+            {
+              type: nullable? ? [type, 'null'] : type,
+              examples: examples.presence
+            }
+          else
+            raise ArgumentError, "unsupported OpenAPI version: #{version}"
           end.merge(json_schema_options).compact
         end
 

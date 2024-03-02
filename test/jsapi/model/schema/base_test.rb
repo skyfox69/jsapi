@@ -124,7 +124,7 @@ module Jsapi
               default: 'foo',
               examples: %w[bar]
             },
-            schema.to_openapi_schema('3.0.3')
+            schema.to_openapi_schema('3.0')
           )
         end
 
@@ -135,7 +135,7 @@ module Jsapi
               type: 'string',
               nullable: true
             },
-            schema.to_openapi_schema('3.0.3')
+            schema.to_openapi_schema('3.0')
           )
         end
 
@@ -147,8 +147,45 @@ module Jsapi
               nullable: true,
               enum: %w[foo bar]
             },
-            schema.to_openapi_schema('3.0.3')
+            schema.to_openapi_schema('3.0')
           )
+        end
+
+        def test_openapi_3_1_schema
+          schema = Schema.new(
+            type: 'string',
+            existence: true,
+            description: 'Foo',
+            default: 'foo',
+            example: 'bar'
+          )
+          assert_equal(
+            {
+              type: 'string',
+              description: 'Foo',
+              default: 'foo',
+              examples: %w[bar]
+            },
+            schema.to_openapi_schema('3.1')
+          )
+        end
+
+        def test_openapi_3_1_schema_on_nullable
+          schema = Schema.new(type: 'string', existence: :allow_null)
+          assert_equal(
+            {
+              type: %w[string null]
+            },
+            schema.to_openapi_schema('3.1')
+          )
+        end
+
+        def test_raises_error_on_unsupported_openapi_version
+          schema = Schema.new(type: 'string')
+          error = assert_raises(ArgumentError) do
+            schema.to_openapi_schema('foo')
+          end
+          assert_equal('unsupported OpenAPI version: foo', error.message)
         end
       end
     end

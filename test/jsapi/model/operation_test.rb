@@ -90,7 +90,7 @@ module Jsapi
               }
             }
           },
-          operation.to_openapi_operation('3.0.3', Definitions.new)
+          operation.to_openapi_operation('3.0', Definitions.new)
         )
       end
     end
