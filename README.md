@@ -245,14 +245,14 @@ Options:
 ```
 
 Options:
-- `type`: See [The type option](the-type-option)
-- `existence`: See [The existence option](the-existence-option)
+- `type`: See [The type option](#the-type-option)
+- `existence`: See [The existence option](#the-existence-option)
 - `items`
 - `in`: 'path' or 'query' (default: 'query')
 - `description`
-- `example`: See [Defining examples](defining-examples)
+- `example`: See [Defining examples](#defining-examples)
 - `deprecated`
-- All of [JSON Schema validation options](json-schema-validation-options)
+- All of [JSON Schema validation options](#json-schema-validation-options)
 
 ### Defining a request body
 
