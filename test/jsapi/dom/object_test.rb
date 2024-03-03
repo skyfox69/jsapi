@@ -22,6 +22,11 @@ module Jsapi
         assert_equal('foo', object[:foo])
       end
 
+      def test_bracket_operator_on_nil
+        object = Object.new({}, schema, definitions)
+        assert_nil(object[nil])
+      end
+
       def test_attributes
         object = Object.new({ 'foo' => 'foo' }, schema, definitions)
         assert_equal({ 'foo' => 'foo', 'bar' => nil }, object.attributes)
@@ -32,22 +37,40 @@ module Jsapi
         assert_equal('foo', object.foo)
       end
 
+      def test_raises_error_on_invalid_attribute_name
+        schema = Model::Schema.new(type: 'object')
+        object = Object.new({}, schema, definitions)
+        assert_raises(NoMethodError) { object.foo }
+      end
+
       def test_respond_to
         assert(Object.new({}, schema, definitions).respond_to?(:foo))
       end
 
-      def test_respond_to_on_invalid_name
-        assert(!Object.new({}, schema, definitions).respond_to?(:foo_bar))
+      def test_respond_to_on_invalid_attribute_name
+        schema = Model::Schema.new(type: 'object')
+        assert(!Object.new({}, schema, definitions).respond_to?(:foo))
       end
 
       # Validation tests
 
       def test_validation
-        object = Object.new({ 'foo' => 'foo', 'bar' => nil }, schema, definitions)
+        object = Object.new({ 'foo' => 'foo', 'bar' => 'bar' }, schema, definitions)
         assert_predicate(object, :valid?)
+      end
 
-        object = Object.new({ 'foo' => nil }, schema, definitions)
+      def test_validation_on_empty_object
+        object = Object.new({}, schema, definitions)
+
         assert_predicate(object, :invalid?)
+        assert_equal("Can't be blank", object.errors.full_message)
+      end
+
+      def test_validation_on_invalid_property
+        object = Object.new({ 'bar' => 'bar' }, schema, definitions)
+
+        assert_predicate(object, :invalid?)
+        assert_equal("Foo can't be blank", object.errors.full_message)
       end
 
       # Reference test
@@ -69,7 +92,7 @@ module Jsapi
       end
 
       def schema
-        Model::Schema.new.tap do |schema|
+        Model::Schema.new(existence: true).tap do |schema|
           schema.add_property('foo', type: 'string', existence: true)
           schema.add_property('bar', type: 'string')
         end

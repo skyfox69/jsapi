@@ -12,7 +12,7 @@ module Jsapi
       end
 
       def [](key)
-        @attributes[key&.to_s].value
+        @attributes[key&.to_s]&.value
       end
 
       def attributes
@@ -41,7 +41,7 @@ module Jsapi
         return if invalid?
 
         @attributes.each do |key, value|
-          next if value&.valid?
+          next if value.valid?
 
           value.errors.each do |error|
             errors << AttributeError.new(key, error)

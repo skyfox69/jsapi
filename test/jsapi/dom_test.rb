@@ -38,5 +38,12 @@ module Jsapi
       json_string = DOM.wrap('foo', Model::Schema.new(type: 'string'))
       assert_kind_of(DOM::String, json_string)
     end
+
+    def test_raises_error_on_invalid_type
+      error = Model::Schema::Base.stub_any_instance(:type, 'foo') do
+        assert_raises { DOM.wrap('foo', Model::Schema.new) }
+      end
+      assert_equal('invalid type: foo', error.message)
+    end
   end
 end

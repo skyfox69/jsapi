@@ -1,6 +1,7 @@
 en:
   errors:
     messages:
+      blank: "can't be blank"
       inclusion: "is not included in the list"
       invalid: "is invalid"
       greater_than: "must be greater than %{count}"

@@ -31,6 +31,8 @@ module Jsapi
           Object.new(object, schema, definitions)
         when 'string'
           String.new(object, schema)
+        else
+          raise "invalid type: #{schema.type}"
         end
       end
     end
