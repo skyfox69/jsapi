@@ -8,6 +8,8 @@ module Jsapi
 
         attr_reader :format
 
+        include Conversion
+
         def initialize(**options)
           super(**options.merge(type: 'string'))
         end

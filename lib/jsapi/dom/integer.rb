@@ -7,7 +7,7 @@ module Jsapi
 
       def initialize(value, schema)
         super(schema)
-        @value = value.to_i
+        @value = schema.convert(value.to_i)
       end
     end
   end

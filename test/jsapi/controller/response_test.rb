@@ -20,9 +20,21 @@ module Jsapi
         assert_equal('1', response.to_json)
       end
 
+      def test_serialization_on_converted_integer
+        schema = Model::Schema.new(type: 'integer', conversion: :abs)
+        response = Response.new(-1.0, schema, api_definitions)
+        assert_equal('1', response.to_json)
+      end
+
       def test_serialization_on_number
         schema = Model::Schema.new(type: 'number')
         response = Response.new(1, schema, api_definitions)
+        assert_equal('1.0', response.to_json)
+      end
+
+      def test_serialization_on_converted_number
+        schema = Model::Schema.new(type: 'number', conversion: :abs)
+        response = Response.new(-1, schema, api_definitions)
         assert_equal('1.0', response.to_json)
       end
 
@@ -32,6 +44,12 @@ module Jsapi
         schema = Model::Schema.new(type: 'string')
         response = Response.new('Foo', schema, api_definitions)
         assert_equal('"Foo"', response.to_json)
+      end
+
+      def test_serialization_on_converted_string
+        schema = Model::Schema.new(type: 'string', conversion: :upcase)
+        response = Response.new('Foo', schema, api_definitions)
+        assert_equal('"FOO"', response.to_json)
       end
 
       def test_serialization_on_date_formatted_string

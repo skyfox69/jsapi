@@ -24,9 +24,9 @@ module Jsapi
           item_schema = schema.items.resolve(@definitions)
           Array(object).map { |item| serialize(item, item_schema, path) }
         when 'integer'
-          object.to_i
+          schema.convert(object.to_i)
         when 'number'
-          object.to_f
+          schema.convert(object.to_f)
         when 'object'
           return if object.blank? # {}
 
@@ -38,14 +38,16 @@ module Jsapi
             )
           end
         when 'string'
-          case schema.format
-          when 'date'
-            object.to_date
-          when 'date-time'
-            object.to_datetime
-          else
-            object.to_s
-          end
+          schema.convert(
+            case schema.format
+            when 'date'
+              object.to_date
+            when 'date-time'
+              object.to_datetime
+            else
+              object.to_s
+            end
+          )
         else
           object
         end

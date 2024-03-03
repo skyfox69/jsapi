@@ -165,8 +165,8 @@ except `type` can also be defined inside a block, for example:
 
 ### The `type` option
 
-The `type` option defines the type of a parameter, request body, response,
-parameter or schema. Possible values are:
+The `type` option specifies the type of a parameter, request body, response,
+parameter or schema. The supported types correspond to JSON Schema:
 
 - `array`
 - `boolean`
@@ -177,21 +177,43 @@ parameter or schema. Possible values are:
 
 ### The `existence` option
 
-The `existence` option defines the level of presence of a parameter or property.
-Possible values are:
+The `existence` option combines the presence concepts of Rails and JSON Schema
+by four levels of existence:
 
-- `:present` or `true`: The parameter or property value must be present or `false`.
+- `:present` or `true`: The parameter or property value must not be empty.
 - `:allow_empty`: The parameter or property value can be empty, for example `''`.
 - `:allow_nil` or `allow_null`: The parameter or property value can be `nil`.
 - `:allow_omitted` or `false`: The parameter or property can be omitted.
 
-### Type-specific options
+Note that `existence: :present` slightly differs from Rails `present?` as it
+treats `false` to be present.
 
-Arrays:
+### The `conversion` option
 
-- `items`
+The `conversion` option can be used to convert an integer, number or string by
+a method or a `Proc`, for example:
 
-#### JSON Schema validation options
+```ruby
+  parameter 'foo', type: 'string', conversion: :upcase
+  parameter 'bar', type: 'number', conversion: ->(n) { n.round(2) }
+```
+
+### The `items` option
+
+The `items` options specifies the kind of items contained in an array,
+for example:
+
+```ruby
+  parameter 'foo', type: 'array', items: { type: 'string' }
+
+  parameter 'bar', type: 'array' do
+    items type: 'object' do
+      property 'foo_bar', type: 'string'
+    end
+  end
+```
+
+### JSON Schema validations
 
 _Jsapi_ supports the following JSON Schema validations:
 
@@ -258,11 +280,13 @@ Options:
 
 - `type`: See [The type option](#the-type-option)
 - `existence`: See [The existence option](#the-existence-option)
+- `conversion`: See [The conversion option](#the-conversion-option)
+- `items`: See [The items option](#the-items-option)
 - `in`: The location of the parameter, either `'path'` or `'query'` (default)
 - `description`: A description of the parameter
 - `example`: See [Defining examples](#defining-examples)
 - `deprecated`: `true` or `false` (default)
-- all of [Type-specific options](#type-specific-options)
+- all of [JSON Schema validations](#json-schema-validations)
 
 ### Defining request bodies
 
@@ -278,10 +302,12 @@ Options:
 
 - `type`: See [The type option](#the-type-option)
 - `existence`: See [The existence option](#the-existence-option)
+- `conversion`: See [The conversion option](#the-conversion-option)
+- `items`: See [The items option](#the-items-option)
 - `description`: A description of the request body
 - `example`: See [Defining examples](#defining-examples)
 - `deprecated`: `true` or `false` (default)
-- all of [Type-specific options](#type-specific-options)
+- all of [JSON Schema validations](#json-schema-validations)
 
 ### Defining responses
 
@@ -297,10 +323,12 @@ Options:
 
 - `type`: See [The type option](#the-type-option)
 - `existence`: See [The existence option](#the-existence-option)
+- `conversion`: See [The conversion option](#the-conversion-option)
+- `items`: See [The items option](#the-items-option)
 - `description`: A description of the response
 - `example`: See [Defining examples](#defining-examples)
 - `deprecated`: `true` or `false` (default)
-- all of [Type-specific options](#type-specific-options)
+- all of [JSON Schema validations](#json-schema-validations)
 
 ### Defining properties
 
@@ -314,11 +342,13 @@ Options:
 
 - `type`: See [The type option](#the-type-option)
 - `existence`: See [The existence option](#the-existence-option)
+- `conversion`: See [The conversion option](#the-conversion-option)
+- `items`: See [The items option](#the-items-option)
 - `source`
 - `description`: A description of the property
 - `example`: See [Defining examples](#defining-examples)
 - `deprecated`: `true` or `false` (default)
-- all of [Type-specific options](#type-specific-options)
+- all of [JSON Schema validations](#json-schema-validations)
 
 ### Defining and using reusable parameters
 

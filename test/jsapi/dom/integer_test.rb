@@ -6,11 +6,18 @@ module Jsapi
   module DOM
     class IntegerTest < Minitest::Test
       def test_empty_on_zero
-        assert(!Integer.new('0', Model::Schema.new).empty?)
+        schema = Model::Schema.new(type: 'integer')
+        assert(!Integer.new('0', schema).empty?)
       end
 
       def test_value
-        assert_equal(0, Integer.new('0', Model::Schema.new).value)
+        schema = Model::Schema.new(type: 'integer')
+        assert_equal(0, Integer.new('0', schema).value)
+      end
+
+      def test_conversion
+        schema = Model::Schema.new(type: 'integer', conversion: :abs)
+        assert_equal(1, Integer.new('-1', schema).value)
       end
     end
   end

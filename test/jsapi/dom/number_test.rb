@@ -6,11 +6,19 @@ module Jsapi
   module DOM
     class NumberTest < Minitest::Test
       def test_empty_on_zero
-        assert(!Number.new('0.0', Model::Schema.new).empty?)
+        schema = Model::Schema.new(type: 'number')
+        assert(!Number.new('0.0', schema).empty?)
       end
 
       def test_value
-        assert_equal(0.0, Number.new('0', Model::Schema.new).value)
+        schema = Model::Schema.new(type: 'number')
+        assert_equal(0.0, Number.new('0', schema).value)
+      end
+
+      def test_conversion
+        schema = Model::Schema.new(type: 'number')
+        schema.conversion = ->(n) { n.round(2) }
+        assert_equal(1.55, Number.new('1.554', schema).value)
       end
     end
   end

@@ -7,7 +7,7 @@ module Jsapi
 
       def initialize(value, schema)
         super(schema)
-        @value =
+        @value = schema.convert(
           case schema.format
           when 'date'
             value.to_date
@@ -16,6 +16,7 @@ module Jsapi
           else
             value.to_s
           end
+        )
       end
 
       def empty?

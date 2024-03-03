@@ -5,14 +5,20 @@ require 'test_helper'
 module Jsapi
   module DOM
     class ArrayTest < Minitest::Test
-      def test_empty
+      def test_empty_on_absence
         schema = Model::Schema.new(
           type: 'array',
           items: { type: 'string' }
         )
         array = Array.new([], schema, definitions)
         assert_predicate(array, :empty?)
+      end
 
+      def test_empty_on_presence
+        schema = Model::Schema.new(
+          type: 'array',
+          items: { type: 'string' }
+        )
         array = Array.new(%w[foo bar], schema, definitions)
         assert(!array.empty?)
       end

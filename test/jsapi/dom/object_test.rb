@@ -5,8 +5,11 @@ require 'test_helper'
 module Jsapi
   module DOM
     class ObjectTest < Minitest::Test
-      def test_empty
+      def test_empty_on_absence
         assert_predicate(Object.new({}, schema, definitions), :empty?)
+      end
+
+      def test_empty_on_presence
         assert(!Object.new({ 'foo' => 'bar' }, schema, definitions).empty?)
       end
 

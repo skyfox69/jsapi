@@ -4,6 +4,8 @@ module Jsapi
   module Model
     module Schema
       class Numeric < Base
+        include Conversion
+
         def maximum=(value_or_options)
           if value_or_options.is_a?(Hash)
             value = value_or_options[:value]
