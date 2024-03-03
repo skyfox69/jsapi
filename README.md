@@ -165,8 +165,8 @@ except `type` can also be defined inside a block, for example:
 
 ### The `type` option
 
-The `type` option defines the type of a parameter, request body, response or
-parameter. Possible values are:
+The `type` option defines the type of a parameter, request body, response,
+parameter or schema. Possible values are:
 
 - `array`
 - `boolean`
@@ -185,7 +185,13 @@ Possible values are:
 - `:allow_nil` or `allow_null`: The parameter or property value can be `nil`.
 - `:allow_omitted` or `false`: The parameter or property can be omitted.
 
-### JSON Schema validation options
+### Type-specific options
+
+Arrays:
+
+- `items`
+
+#### JSON Schema validation options
 
 _Jsapi_ supports the following JSON Schema validations:
 
@@ -215,7 +221,9 @@ Arrays:
 - `min_items`
 - `max_items`
 
-### Defining an API operation
+### Defining API operations
+
+Example:
 
 ```ruby
   api_operation 'foo' do
@@ -238,23 +246,27 @@ Options:
 - `description`
 - `deprecated`
 
-### Defining a parameter
+### Defining parameters
+
+Example:
 
 ```ruby
   parameter 'foo', type: 'string', in: 'path'
 ```
 
 Options:
+
 - `type`: See [The type option](#the-type-option)
 - `existence`: See [The existence option](#the-existence-option)
-- `items`
-- `in`: 'path' or 'query' (default: 'query')
-- `description`
+- `in`: The location of the parameter, either `'path'` or `'query'` (default)
+- `description`: A description of the parameter
 - `example`: See [Defining examples](#defining-examples)
-- `deprecated`
-- All of [JSON Schema validation options](#json-schema-validation-options)
+- `deprecated`: `true` or `false` (default)
+- all of [Type-specific options](#type-specific-options)
 
-### Defining a request body
+### Defining request bodies
+
+Example:
 
 ```ruby
   request_body type: 'object' do
@@ -264,15 +276,16 @@ Options:
 
 Options:
 
-- `type`
-- `existence`
-- `items`
-- `description`
-- `example`
-- `deprecated`
-- JSON Schema Validation Options
+- `type`: See [The type option](#the-type-option)
+- `existence`: See [The existence option](#the-existence-option)
+- `description`: A description of the request body
+- `example`: See [Defining examples](#defining-examples)
+- `deprecated`: `true` or `false` (default)
+- all of [Type-specific options](#type-specific-options)
 
-### Defining a response
+### Defining responses
+
+Example:
 
 ```ruby
   response type: 'object' do
@@ -282,30 +295,30 @@ Options:
 
 Options:
 
-- `type`
-- `existence`
-- `items`
-- `description`
-- `example`
-- `deprecated`
-- JSON Schema Validation Options
+- `type`: See [The type option](#the-type-option)
+- `existence`: See [The existence option](#the-existence-option)
+- `description`: A description of the response
+- `example`: See [Defining examples](#defining-examples)
+- `deprecated`: `true` or `false` (default)
+- all of [Type-specific options](#type-specific-options)
 
-### Defining a property
+### Defining properties
+
+Example:
 
 ```ruby
-  property 'foo', type: 'string'
+  property 'foo', type: 'string', source: :bar
 ```
 
 Options:
 
-- `type`
-- `existence`
-- `items`
+- `type`: See [The type option](#the-type-option)
+- `existence`: See [The existence option](#the-existence-option)
 - `source`
-- `description`
-- `example`
-- `deprecated`
-- JSON Schema Validation Options
+- `description`: A description of the property
+- `example`: See [Defining examples](#defining-examples)
+- `deprecated`: `true` or `false` (default)
+- all of [Type-specific options](#type-specific-options)
 
 ### Defining and using reusable parameters
 
