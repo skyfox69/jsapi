@@ -32,9 +32,7 @@ module Jsapi
       def wrap_error(*args, &block)
         block.call
       rescue Error => e
-        segment = args.compact.join(' ')
-        e.path.prepend(segment) if segment.present?
-        raise e
+        raise e.prepend_origin(args.compact.join(' '))
       rescue StandardError => e
         raise Error.new(e, args.compact.join(' ').presence)
       end

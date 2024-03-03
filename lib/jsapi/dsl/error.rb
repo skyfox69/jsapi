@@ -3,18 +3,21 @@
 module Jsapi
   module DSL
     class Error < StandardError
-      attr_reader :path
-
-      def initialize(error, name = nil)
-        @path = [name].compact
+      def initialize(error, origin = nil)
+        @path = origin.present? ? [origin] : []
         super(error.message)
       end
 
       def message
         message = super
-        return message if path.blank?
+        return message if @path.blank?
 
-        "#{message} (at #{path.join('/')})"
+        "#{message} (at #{@path.join('/')})"
+      end
+
+      def prepend_origin(origin)
+        @path.prepend(origin) if origin.present?
+        self
       end
     end
   end
