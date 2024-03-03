@@ -16,7 +16,7 @@ Add the following line to `Gemfile` and run `bundle install`.
   gem 'jsapi', git: 'https://github.com/dmgoeller/jsapi', branch: 'main'
 ```
 
-## Getting Started
+## Getting started
 
 ### Creating an API operation
 
@@ -163,9 +163,21 @@ except `type` can also be defined inside a block, for example:
   end
 ```
 
-### The `existence` Option
+### The `type` option
 
-The `existence` options defines the level of presence of a parameter or property.
+The `type` option defines the type of a parameter, request body, response or
+parameter. Possible values are:
+
+- `array`
+- `boolean`
+- `integer`
+- `number`
+- `object` (default)
+- `string`
+
+### The `existence` option
+
+The `existence` option defines the level of presence of a parameter or property.
 Possible values are:
 
 - `:present` or `true`: The parameter or property value must be present or `false`.
@@ -173,9 +185,9 @@ Possible values are:
 - `:allow_nil` or `allow_null`: The parameter or property value can be `nil`.
 - `:allow_omitted` or `false`: The parameter or property can be omitted.
 
-### JSON Schema Validations
+### JSON Schema validation options
 
-Jsapi supports the following JSON Schema validations:
+_Jsapi_ supports the following JSON Schema validations:
 
 All objects:
 
@@ -186,6 +198,11 @@ Integers and number:
 - `minimum`
 - `maximum`
 - `multiple_of`
+
+```ruby
+  parameter 'foo', type: 'integer', maximum: 9
+  parameter 'bar', type: 'integer', maximum: { value: 10, exclusive: true }
+```
 
 Strings:
 
@@ -198,12 +215,7 @@ Arrays:
 - `min_items`
 - `max_items`
 
-```ruby
-  parameter 'foo', type: 'integer', maximum: 9
-  parameter 'bar', type: 'integer', maximum: { value: 10, exclusive: true }
-```
-
-### Defining an API Operation
+### Defining an API operation
 
 ```ruby
   api_operation 'foo' do
@@ -217,67 +229,132 @@ Arrays:
   end
 ```
 
-Operation options (OpenAPI documentation only):
+Options:
 
 - `method` (default: 'get')
 . `path`
 - `tags`
 - `summary`
+- `description`
 - `deprecated`
 
-### Common Options
+### Defining a parameter
 
-The following options are available for parameters, responses, schemas and
-properties:
+```ruby
+  parameter 'foo', type: 'string', in: 'path'
+```
 
-- `type`: 'array', 'boolean', 'integer', 'number', 'object' or 'string'
-- `default`
-- `items` ('array' only)
-
-The following options are available for parameters, responses and schemas:
-
-- `format`: `date` or `date-time` (only 'string')
-- `schema`
-
-#### Annotations
-
-The following options are available for operations, parameters, responses and
-schemas:
-
-- `Description`
-- `Example` (all except operation)
-
-For OpenAPI documentation only:
-
-- `in`: 'path' or 'query'
+Options:
+- `type`: See [The type option](the-type-option)
+- `existence`: See [The existence option](the-existence-option)
+- `items`
+- `in`: 'path' or 'query' (default: 'query')
+- `description`
+- `example`: See [Defining examples](defining-examples)
 - `deprecated`
+- All of [JSON Schema validation options](json-schema-validation-options)
 
-### Additional Parameter Options
+### Defining a request body
 
+```ruby
+  request_body type: 'object' do
+    property 'foo', type: 'string'
+  end
+```
+
+Options:
+
+- `type`
 - `existence`
+- `items`
+- `description`
+- `example`
+- `deprecated`
+- JSON Schema Validation Options
 
-### Additional Request Body Options
+### Defining a response
 
+```ruby
+  response type: 'object' do
+    property 'foo', type: 'string'
+  end
+```
+
+Options:
+
+- `type`
 - `existence`
+- `items`
+- `description`
+- `example`
+- `deprecated`
+- JSON Schema Validation Options
 
-### Additional Response Options
+### Defining a property
 
-- `nullable`
+```ruby
+  property 'foo', type: 'string'
+```
 
-### Additional Property Options
+Options:
 
+- `type`
 - `existence`
+- `items`
 - `source`
-
-For OpenAPI documentation only:
-
+- `description`
+- `example`
 - `deprecated`
+- JSON Schema Validation Options
 
-### Additional Schema Options
+### Defining and using reusable parameters
 
-- `existence`
+```ruby
+  api_parameter 'foo', type: 'string'
+```
 
-## Controller Methods
+```ruby
+  api_operation do
+    parameter 'foo'
+  end
+```
+
+### Defining and using reusable schemas
+
+```ruby
+  api_schema 'Foo' do    
+    property 'foo', type: 'string'    
+  end
+```
+
+```ruby
+  api_schema 'Bar' do
+    all_of 'Foo'
+  end
+```
+
+```ruby
+  api_schema 'Bar' do
+    property 'foo', schema: 'Foo'
+  end
+```
+
+### Defining examples
+
+```ruby
+  property 'foo', type: 'string', example: 'bar'
+```
+
+```ruby
+  schema 'Foo', type: 'object' do
+    property 'foo', type: 'string'
+
+    example 'foo', value: { 'foo' => 'foo' }
+    example 'bar', value: { 'foo' => 'bar' }
+  end
+```
+
+## Controller methods
 
 The `Jsapi::Controller::Methods` module provides the following methods:
 
@@ -286,7 +363,7 @@ The `Jsapi::Controller::Methods` module provides the following methods:
 - api_operation
 - api_definitions
 
-### The api_params Method
+### The `api_params` method
 
 `api_params` can be used to read request parameters by objects providing a
 method for each parameter. The request parameters are casted according to the
@@ -304,7 +381,7 @@ The request parameters can be validated by `valid?` or `invalid?`.
   raise BadRequest, api_params.errors.full_message if api_params.invalid?
 ```
 
-### The api_response Method
+### The `api_response` method
 
 `api_response` can be used to serialize an object according to one of the
 `response` definitions of the specified API operation. The operation name can
@@ -317,7 +394,7 @@ be omitted if the controller handles one API operation only.
 If `status` is not not specified, the default response of the API operation
 is selected.
 
-### The api_operation Method
+### The `api_operation` method
 
 `api_operation` combines `api_params` and `api_response`. It yields the
 parameters returned by `api_params` to the specified block and implicitly
@@ -331,7 +408,7 @@ serializes the object returned by the block.
   end
 ```
 
-### The api_operation Method
+### The `api_operation` Method
 
 `api_definitions` returns the API definitions of the controller class. It can
 be used to render an OpenAPI document.
