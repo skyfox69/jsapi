@@ -21,7 +21,7 @@ module Jsapi
         assert(property_model.deprecated?)
       end
 
-      def test_delegated_method
+      def test_delegates_to_schema
         property_model = Model::Property.new('property', type: 'string')
         Property.new(property_model).call { format 'date' }
         assert_equal('date', property_model.schema.format)

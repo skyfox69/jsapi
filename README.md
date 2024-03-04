@@ -451,7 +451,7 @@ serializes the object returned by the block.
   end
 ```
 
-### The `api_operation` Method
+### The `api_operation` method
 
 `api_definitions` returns the API definitions of the controller class. It can
 be used to render an OpenAPI document.

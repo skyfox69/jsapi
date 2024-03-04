@@ -3,14 +3,9 @@
 module Jsapi
   module DSL
     class Property < Node
-      delegate(*Schema::COMMON_METHODS, to: :schema)
-      delegate(:description, :example, to: :schema)
+      include NestedSchema
 
-      private
-
-      def schema
-        @schema ||= Schema.new(model.schema)
-      end
+      delegate :description, :example, to: :schema
     end
   end
 end

@@ -5,13 +5,13 @@ module Jsapi
     class NodeTest < Minitest::Test
       DummyModel = Struct.new(:foo)
 
-      def test_method_missing
+      def test_generic_field
         model = DummyModel.new
         Node.new(model).call { foo 'bar' }
         assert_equal('bar', model.foo)
       end
 
-      def test_method_missing_on_unknown_field
+      def test_raises_error_on_unknown_field
         node = Node.new(DummyModel.new)
         error = assert_raises Error do
           node.call { bar 'foo' }
@@ -29,20 +29,13 @@ module Jsapi
         assert(!node.respond_to?(:bar))
       end
 
-      def test_error_message
+      def test_wrapped_error
         error = assert_raises Error do
-          Definitions.new(Model::Definitions.new).call do
-            operation 'operation' do
-              parameter 'parameter', type: 'object' do
-                property('property') { bar 'foo' }
-              end
-            end
+          Schema.new(Model::Schema.new).call do
+            property('foo') { bar 'bar' }
           end
         end
-        assert_equal(
-          "unknown or invalid field: 'bar' (at 'operation'/'parameter'/'property')",
-          error.message
-        )
+        assert_equal("unknown or invalid field: 'bar' (at 'foo')", error.message)
       end
     end
   end

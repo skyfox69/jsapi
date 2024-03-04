@@ -23,7 +23,7 @@ module Jsapi
         assert_equal('foo', request_body_model.examples['default'].value)
       end
 
-      def test_delegated_method
+      def test_delegates_to_schema
         request_body_model = Model::RequestBody.new(type: 'string')
         RequestBody.new(request_body_model).call { format 'date' }
         assert_equal('date', request_body_model.schema.format)

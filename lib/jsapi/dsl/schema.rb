@@ -3,21 +3,6 @@
 module Jsapi
   module DSL
     class Schema < Node
-      COMMON_METHODS = %i[
-        all_of
-        default
-        enum
-        format
-        items
-        max_length
-        maximum
-        min_length
-        minimum
-        pattern
-        property
-        validate
-      ].freeze
-
       def all_of(*schema_names)
         wrap_error do
           schema_names.each { |name| model.add_all_of(name) }
