@@ -77,7 +77,7 @@ module Jsapi
       private
 
       def definitions
-        @definitions ||= Model::Definitions.new
+        @definitions ||= Meta::Definitions.new
       end
 
       def operation

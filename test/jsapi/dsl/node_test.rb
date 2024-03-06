@@ -31,7 +31,7 @@ module Jsapi
 
       def test_wrapped_error
         error = assert_raises Error do
-          Schema.new(Model::Schema.new).call do
+          Schema.new(Meta::Schema.new).call do
             property('foo') { bar 'bar' }
           end
         end

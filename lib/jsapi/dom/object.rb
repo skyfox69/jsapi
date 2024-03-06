@@ -33,6 +33,7 @@ module Jsapi
       end
 
       def value
+        # @value ||= (schema.model || Model::Base).new(self)
         self
       end
 

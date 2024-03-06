@@ -6,13 +6,13 @@ module Jsapi
   module DOM
     class ArrayTest < Minitest::Test
       def test_value
-        schema = Model::Schema.new(type: 'array', items: { type: 'string' })
+        schema = Meta::Schema.new(type: 'array', items: { type: 'string' })
         array = Array.new(%w[foo bar], schema, definitions)
         assert_equal(%w[foo bar], array.value)
       end
 
       def test_emptiness
-        schema = Model::Schema.new(type: 'array', items: { type: 'string' })
+        schema = Meta::Schema.new(type: 'array', items: { type: 'string' })
 
         array = Array.new([], schema, definitions)
         assert_predicate(array, :empty?)
@@ -24,7 +24,7 @@ module Jsapi
       # Validation tests
 
       def test_validates_against_json_schema
-        schema = Model::Schema.new(
+        schema = Meta::Schema.new(
           type: 'array',
           items: { type: 'string' },
           max_items: 2
@@ -38,7 +38,7 @@ module Jsapi
       end
 
       def test_validates_items
-        schema = Model::Schema.new(
+        schema = Meta::Schema.new(
           type: 'array',
           items: { type: 'string', existence: true }
         )
@@ -53,7 +53,7 @@ module Jsapi
       private
 
       def definitions
-        @definitions ||= Model::Definitions.new
+        @definitions ||= Meta::Definitions.new
       end
     end
   end

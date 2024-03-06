@@ -6,13 +6,13 @@ module Jsapi
   module DOM
     class ObjectTest < Minitest::Test
       def test_value
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         object = Object.new({}, schema, definitions)
         assert_equal(object, object.value)
       end
 
       def test_emptiness
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
 
         assert_predicate(Object.new({}, schema, definitions), :empty?)
@@ -22,7 +22,7 @@ module Jsapi
       # Attribute reader tests
 
       def test_bracket_operator
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
 
         object = Object.new({ 'foo' => 'foo' }, schema, definitions)
@@ -30,13 +30,13 @@ module Jsapi
       end
 
       def test_bracket_operator_on_nil
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         object = Object.new({}, schema, definitions)
         assert_nil(object[nil])
       end
 
       def test_attributes
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
 
         object = Object.new({ 'foo' => 'bar' }, schema, definitions)
@@ -44,7 +44,7 @@ module Jsapi
       end
 
       def test_attribute_reader
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
 
         object = Object.new({ 'foo' => 'foo' }, schema, definitions)
@@ -52,26 +52,26 @@ module Jsapi
       end
 
       def test_raises_error_on_invalid_attribute_name
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         object = Object.new({}, schema, definitions)
         assert_raises(NoMethodError) { object.foo }
       end
 
       def test_respond_to
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
         assert(Object.new({}, schema, definitions).respond_to?(:foo))
       end
 
       def test_respond_to_on_invalid_attribute_name
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         assert(!Object.new({}, schema, definitions).respond_to?(:foo))
       end
 
       # Validation tests
 
       def test_validates_against_json_schema
-        schema = Model::Schema.new(type: 'object', existence: true)
+        schema = Meta::Schema.new(type: 'object', existence: true)
         schema.add_property('foo', type: 'string')
 
         object = Object.new({ 'foo' => 'foo' }, schema, definitions)
@@ -83,7 +83,7 @@ module Jsapi
       end
 
       def test_validates_attributes
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string', existence: true)
 
         object = Object.new({ 'foo' => 'foo' }, schema, definitions)
@@ -95,7 +95,7 @@ module Jsapi
       end
 
       def test_validates_nested_attributes
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         property = schema.add_property('foo', type: 'array', items: { type: 'object' })
         property.schema.items.add_property('bar', type: 'string', existence: true)
 
@@ -112,7 +112,7 @@ module Jsapi
       def test_property_as_reference
         definitions.add_schema('Foo', type: 'string')
 
-        schema = Model::Schema.new(type: 'object')
+        schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', schema: 'Foo')
 
         object = Object.new({ 'foo' => 'bar' }, schema, definitions)
@@ -122,7 +122,7 @@ module Jsapi
       private
 
       def definitions
-        @definitions ||= Model::Definitions.new
+        @definitions ||= Meta::Definitions.new
       end
     end
   end

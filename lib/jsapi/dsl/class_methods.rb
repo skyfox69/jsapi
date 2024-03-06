@@ -5,7 +5,7 @@ module Jsapi
     module ClassMethods
       # The API definitions of the current class.
       def api_definitions(&block)
-        @api_definitions ||= Model::Definitions.new(self)
+        @api_definitions ||= Meta::Definitions.new(self)
         Definitions.new(@api_definitions).call(&block) if block.present?
         @api_definitions
       end

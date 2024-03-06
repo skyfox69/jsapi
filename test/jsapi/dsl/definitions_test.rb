@@ -41,7 +41,7 @@ module Jsapi
       end
 
       def test_unnamed_operation
-        definitions = Model::Definitions.new('Foo')
+        definitions = Meta::Definitions.new('Foo')
         Definitions.new(definitions).call { operation }
         assert_predicate(definitions.operation('foo'), :present?)
       end
@@ -83,7 +83,7 @@ module Jsapi
       private
 
       def definitions
-        @definitions ||= Model::Definitions.new
+        @definitions ||= Meta::Definitions.new
       end
     end
   end

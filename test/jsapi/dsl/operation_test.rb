@@ -4,19 +4,19 @@ module Jsapi
   module DSL
     class OperationTest < Minitest::Test
       def test_summary
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
         Operation.new(operation_model).call { summary 'Foo' }
         assert_equal('Foo', operation_model.summary)
       end
 
       def test_description
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
         Operation.new(operation_model).call { description 'Foo' }
         assert_equal('Foo', operation_model.description)
       end
 
       def test_deprecated
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
         Operation.new(operation_model).call { deprecated true }
         assert(operation_model.deprecated?)
       end
@@ -24,7 +24,7 @@ module Jsapi
       # Parameter tests
 
       def test_parameter
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
         Operation.new(operation_model).call do
           parameter 'foo', type: 'string'
         end
@@ -33,7 +33,7 @@ module Jsapi
       end
 
       def test_parameter_with_block
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
         Operation.new(operation_model).call do
           parameter 'foo', type: 'object' do
             property 'bar', type: 'string'
@@ -47,7 +47,7 @@ module Jsapi
       end
 
       def test_parameter_reference
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
         Operation.new(operation_model).call { parameter 'foo' }
 
         parameter = operation_model.parameters['foo']
@@ -55,7 +55,7 @@ module Jsapi
       end
 
       def test_raises_error_on_invalid_parameter_type
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
 
         error = assert_raises Error do
           Operation.new(operation_model).call { parameter 'foo', type: 'bar' }
@@ -66,7 +66,7 @@ module Jsapi
       # Request body tests
 
       def test_request_body
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
         Operation.new(operation_model).call do
           request_body type: 'object' do
             property 'foo', type: 'string'
@@ -80,7 +80,7 @@ module Jsapi
       end
 
       def test_request_body_reference
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
         Operation.new(operation_model).call do
           request_body schema: 'Foo'
         end
@@ -89,7 +89,7 @@ module Jsapi
       end
 
       def test_raises_error_on_invalid_request_body_type
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
 
         error = assert_raises Error do
           Operation.new(operation_model).call { request_body type: 'foo' }
@@ -100,7 +100,7 @@ module Jsapi
       # Response tests
 
       def test_response
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
         Operation.new(operation_model).call do
           response 200, type: 'object' do
             property 'foo', type: 'string'
@@ -114,7 +114,7 @@ module Jsapi
       end
 
       def test_default_response
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
         Operation.new(operation_model).call do
           response type: 'object' do
             property 'foo', type: 'string'
@@ -125,7 +125,7 @@ module Jsapi
       end
 
       def test_response_reference
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
         Operation.new(operation_model).call do
           response schema: 'Foo'
         end
@@ -134,7 +134,7 @@ module Jsapi
       end
 
       def test_raises_error_on_invalid_response_type
-        operation_model = Model::Operation.new('operation')
+        operation_model = Meta::Operation.new('operation')
 
         error = assert_raises Error do
           Operation.new(operation_model).call { response type: 'foo' }
@@ -145,7 +145,7 @@ module Jsapi
       private
 
       def definitions
-        Model::Definitions.new
+        Meta::Definitions.new
       end
     end
   end
