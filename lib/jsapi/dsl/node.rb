@@ -3,10 +3,10 @@
 module Jsapi
   module DSL
     class Node
-      attr_reader :model
+      attr_reader :_meta_model
 
-      def initialize(model)
-        @model = model
+      def initialize(meta_model)
+        @_meta_model = meta_model
       end
 
       def call(&block)
@@ -15,8 +15,8 @@ module Jsapi
 
       def method_missing(*args)
         wrap_error do
-          if model.respond_to?(method = "#{args.first}=")
-            model.public_send(method, args.second)
+          if _meta_model.respond_to?(method = "#{args.first}=")
+            _meta_model.public_send(method, args.second)
           else
             raise "unknown or invalid field: '#{args.first}'"
           end
@@ -24,7 +24,7 @@ module Jsapi
       end
 
       def respond_to_missing?(param1, _param2)
-        model.respond_to?("#{param1}=")
+        _meta_model.respond_to?("#{param1}=")
       end
 
       private

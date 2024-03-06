@@ -6,10 +6,10 @@ module Jsapi
       def method_missing(*args, &block)
         if args.second.is_a?(Hash) || block.present?
           options = args.second || {}
-          child_model = model.add_child(args.first, **options)
+          child_model = _meta_model.add_child(args.first, **options)
           Generic.new(child_model).call(&block) if block.present?
         else
-          model[args.first] = args.second
+          _meta_model[args.first] = args.second
         end
       end
 

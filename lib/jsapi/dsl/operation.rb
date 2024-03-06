@@ -7,10 +7,10 @@ module Jsapi
       def parameter(name, **options, &block)
         wrap_error "'#{name}'" do
           if options.any? || block.present?
-            parameter_model = model.add_parameter(name, **options)
+            parameter_model = _meta_model.add_parameter(name, **options)
             Parameter.new(parameter_model).call(&block) if block.present?
           else
-            model.add_parameter_reference(name)
+            _meta_model.add_parameter_reference(name)
           end
         end
       end
@@ -18,7 +18,7 @@ module Jsapi
       # Defines the request body.
       def request_body(**options, &block)
         wrap_error 'request body' do
-          request_body = model.set_request_body(**options)
+          request_body = _meta_model.set_request_body(**options)
           RequestBody.new(request_body).call(&block) if block.present?
         end
       end
@@ -26,7 +26,7 @@ module Jsapi
       # Defines a response. Default code is +default+.
       def response(code = nil, **options, &block)
         wrap_error 'response', code, code do
-          response_model = model.add_response(code, **options)
+          response_model = _meta_model.add_response(code, **options)
           Response.new(response_model).call(&block) if block.present?
         end
       end

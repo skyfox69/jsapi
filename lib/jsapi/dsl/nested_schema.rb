@@ -27,7 +27,7 @@ module Jsapi
       private
 
       def schema
-        @schema ||= Schema.new(model.schema)
+        @schema ||= Schema.new(_meta_model.schema)
       end
     end
   end
