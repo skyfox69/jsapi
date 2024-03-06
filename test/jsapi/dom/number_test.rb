@@ -5,14 +5,14 @@ require 'test_helper'
 module Jsapi
   module DOM
     class NumberTest < Minitest::Test
-      def test_empty_on_zero
-        schema = Model::Schema.new(type: 'number')
-        assert(!Number.new('0.0', schema).empty?)
-      end
-
       def test_value
         schema = Model::Schema.new(type: 'number')
         assert_equal(0.0, Number.new('0', schema).value)
+      end
+
+      def test_is_not_empty
+        schema = Model::Schema.new(type: 'number')
+        assert(!Number.new('0.0', schema).empty?)
       end
 
       def test_conversion

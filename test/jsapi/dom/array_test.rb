@@ -5,55 +5,39 @@ require 'test_helper'
 module Jsapi
   module DOM
     class ArrayTest < Minitest::Test
-      def test_empty_on_absence
-        schema = Model::Schema.new(
-          type: 'array',
-          items: { type: 'string' }
-        )
-        array = Array.new([], schema, definitions)
-        assert_predicate(array, :empty?)
-      end
-
-      def test_empty_on_presence
-        schema = Model::Schema.new(
-          type: 'array',
-          items: { type: 'string' }
-        )
-        array = Array.new(%w[foo bar], schema, definitions)
-        assert(!array.empty?)
-      end
-
       def test_value
-        schema = Model::Schema.new(
-          type: 'array',
-          items: { type: 'string' }
-        )
+        schema = Model::Schema.new(type: 'array', items: { type: 'string' })
         array = Array.new(%w[foo bar], schema, definitions)
         assert_equal(%w[foo bar], array.value)
       end
 
-      def test_items_as_reference
-        item_schema = definitions.add_schema('Item', type: 'object')
-        item_schema.add_property('property', type: 'string')
+      def test_emptiness
+        schema = Model::Schema.new(type: 'array', items: { type: 'string' })
 
-        array_schema = Model::Schema.new(
-          type: 'array',
-          items: { schema: 'Item' }
-        )
-        array = Array.new(
-          [
-            { 'property' => 'foo' },
-            { 'property' => 'bar' }
-          ],
-          array_schema,
-          definitions
-        ).value
+        array = Array.new([], schema, definitions)
+        assert_predicate(array, :empty?)
 
-        assert_equal('foo', array.first.property)
-        assert_equal('bar', array.second.property)
+        array = Array.new(%w[foo bar], schema, definitions)
+        assert(!array.empty?)
       end
 
-      def test_validation
+      # Validation tests
+
+      def test_validates_against_json_schema
+        schema = Model::Schema.new(
+          type: 'array',
+          items: { type: 'string' },
+          max_items: 2
+        )
+        array = Array.new(%w[foo bar], schema, definitions)
+        assert_predicate(array, :valid?)
+
+        array = Array.new(%w[foo bar foo], schema, definitions)
+        assert_predicate(array, :invalid?)
+        assert_equal('Is invalid', array.errors.full_message)
+      end
+
+      def test_validates_items
         schema = Model::Schema.new(
           type: 'array',
           items: { type: 'string', existence: true }
@@ -61,8 +45,9 @@ module Jsapi
         array = Array.new(%w[foo bar], schema, definitions)
         assert_predicate(array, :valid?)
 
-        array = Array.new(['foo', nil, 'bar'], schema, definitions)
+        array = Array.new(['foo', nil], schema, definitions)
         assert_predicate(array, :invalid?)
+        assert_equal("Can't be blank", array.errors.full_message)
       end
 
       private

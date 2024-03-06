@@ -14,30 +14,24 @@ module Jsapi
             assert_equal('invalid max items: ', error.message)
           end
 
-          def test_positive_validation
+          def test_validates_max_items
             max_items = MaxItems.new(2)
-            dummy = Dummy.new(%w[foo bar])
 
-            max_items.validate(dummy)
+            max_items.validate(dummy = Dummy.new(%w[foo bar]))
             assert_predicate(dummy.errors, :none?)
-          end
 
-          def test_negative_validation
-            max_items = MaxItems.new(2)
-            dummy = Dummy.new(%w[foo bar foo])
-
-            max_items.validate(dummy)
+            max_items.validate(dummy = Dummy.new(%w[foo bar foo]))
             assert_equal(['is invalid'], dummy.errors.map(&:message))
           end
 
-          def test_json_schema_validation
+          def test_to_json_schema_validation
             assert_equal(
               { maxItems: 2 },
               MaxItems.new(2).to_json_schema_validation
             )
           end
 
-          def test_openapi_validation
+          def test_to_openapi_validation
             assert_equal(
               { maxItems: 2 },
               MaxItems.new(2).to_openapi_validation

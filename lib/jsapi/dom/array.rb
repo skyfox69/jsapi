@@ -14,12 +14,19 @@ module Jsapi
         @ary.empty?
       end
 
-      def errors
-        @errors ||= @ary.flat_map(&:errors)
-      end
-
       def value
         @value ||= @ary.map(&:value)
+      end
+
+      def _validate
+        super
+        return if invalid?
+
+        @ary.each do |item|
+          next if item.valid?
+
+          item.errors.each { |error| errors << error }
+        end
       end
     end
   end

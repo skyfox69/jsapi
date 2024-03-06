@@ -5,20 +5,14 @@ require 'test_helper'
 module Jsapi
   module DOM
     class BooleanTest < Minitest::Test
-      def test_empty_on_true
-        assert(!Boolean.new('true', Model::Schema.new).empty?)
-      end
-
-      def test_empty_on_false
-        assert(!Boolean.new('false', Model::Schema.new).empty?)
-      end
-
-      def test_value_on_true
+      def test_value
         assert(Boolean.new('true', Model::Schema.new).value)
+        assert_equal(false, Boolean.new('false', Model::Schema.new).value)
       end
 
-      def test_value_on_false
-        assert_equal(false, Boolean.new('false', Model::Schema.new).value)
+      def test_is_not_empty
+        assert(!Boolean.new('true', Model::Schema.new).empty?)
+        assert(!Boolean.new('false', Model::Schema.new).empty?)
       end
     end
   end

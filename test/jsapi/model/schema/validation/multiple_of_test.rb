@@ -14,30 +14,24 @@ module Jsapi
             assert_equal('invalid multiple of: ', error.message)
           end
 
-          def test_positive_validation
+          def test_validates_multiple_of
             multiple_of = MultipleOf.new(2)
-            dummy = Dummy.new(4)
 
-            multiple_of.validate(dummy)
+            multiple_of.validate(dummy = Dummy.new(4))
             assert_predicate(dummy.errors, :none?)
-          end
 
-          def test_negative_validation
-            multiple_of = MultipleOf.new(2)
-            dummy = Dummy.new(3)
-
-            multiple_of.validate(dummy)
+            multiple_of.validate(dummy = Dummy.new(3))
             assert_equal(['is invalid'], dummy.errors.map(&:message))
           end
 
-          def test_json_schema_validation
+          def test_to_json_schema_validation
             assert_equal(
               { multipleOf: 2 },
               MultipleOf.new(2).to_json_schema_validation
             )
           end
 
-          def test_openapi_validation
+          def test_to_openapi_validation
             assert_equal(
               { multipleOf: 2 },
               MultipleOf.new(2).to_openapi_validation

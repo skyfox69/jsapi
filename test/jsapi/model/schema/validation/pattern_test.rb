@@ -14,30 +14,24 @@ module Jsapi
             assert_equal('invalid pattern: ', error.message)
           end
 
-          def test_positive_validation
+          def test_validates_pattern
             pattern = Pattern.new(/fo/)
-            dummy = Dummy.new('foo')
 
-            pattern.validate(dummy)
+            pattern.validate(dummy = Dummy.new('foo'))
             assert_predicate(dummy.errors, :none?)
-          end
 
-          def test_negative_validation
-            pattern = Pattern.new(/ba/)
-            dummy = Dummy.new('foo')
-
-            pattern.validate(dummy)
+            pattern.validate(dummy = Dummy.new('bar'))
             assert_equal(['is invalid'], dummy.errors.map(&:message))
           end
 
-          def test_json_schema_validation
+          def test_to_json_schema_validation
             assert_equal(
               { pattern: 'foo\.bar' },
               Pattern.new(/foo\.bar/).to_json_schema_validation
             )
           end
 
-          def test_openapi_validation
+          def test_to_openapi_validation
             assert_equal(
               { pattern: 'foo\.bar' },
               Pattern.new(/foo\.bar/).to_openapi_validation

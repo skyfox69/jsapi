@@ -14,33 +14,27 @@ module Jsapi
             assert_equal('invalid max length: ', error.message)
           end
 
-          def test_positive_validation
+          def test_validates_max_length
             max_length = MaxLength.new(3)
-            dummy = Dummy.new('foo')
 
-            max_length.validate(dummy)
+            max_length.validate(dummy = Dummy.new('foo'))
             assert_predicate(dummy.errors, :none?)
-          end
 
-          def test_negative_validation
-            max_length = MaxLength.new(2)
-            dummy = Dummy.new('foo')
-
-            max_length.validate(dummy)
+            max_length.validate(dummy = Dummy.new('foo bar'))
             assert_equal(
-              ['is too long (maximum is 2 characters)'],
+              ['is too long (maximum is 3 characters)'],
               dummy.errors.map(&:message)
             )
           end
 
-          def test_json_schema_validation
+          def test_to_json_schema_validation
             assert_equal(
               { maxLength: 2 },
               MaxLength.new(2).to_json_schema_validation
             )
           end
 
-          def test_openapi_validation
+          def test_to_openapi_validation
             assert_equal(
               { maxLength: 2 },
               MaxLength.new(2).to_openapi_validation

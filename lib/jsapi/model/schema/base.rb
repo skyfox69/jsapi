@@ -103,6 +103,14 @@ module Jsapi
         end
 
         def validate(object)
+          case existence
+          when Existence::PRESENT
+            object.errors.add(:blank) if object.empty?
+          when Existence::ALLOW_EMPTY
+            object.errors.add(:blank) if object.null?
+          end
+          return if object.null? || object.invalid?
+
           validations.each_value { |validation| validation.validate(object) }
           @lambda_validations.each { |validation| validation.validate(object) }
         end
