@@ -6,13 +6,18 @@ module Jsapi
       module Validation
         class MaxItems < Base
           def initialize(value)
-            raise ArgumentError, "invalid max items: #{value}" unless value.respond_to?(:<=)
+            unless value.respond_to?(:<=)
+              raise ArgumentError, "invalid max items: #{value}"
+            end
 
             super
           end
 
-          def validate(object)
-            object.errors.add(:invalid) unless object.value.size <= value
+          def validate(value, errors)
+            return true if value.size <= self.value
+
+            errors.add(:base, :invalid)
+            false
           end
         end
       end

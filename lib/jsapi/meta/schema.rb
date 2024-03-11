@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'schema/conversion'
-require_relative 'schema/decorator'
+require_relative 'schema/delegator'
 require_relative 'schema/reference'
 require_relative 'schema/base'
 require_relative 'schema/array'

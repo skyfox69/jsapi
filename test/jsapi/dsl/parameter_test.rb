@@ -4,35 +4,35 @@ module Jsapi
   module DSL
     class ParameterTest < Minitest::Test
       def test_description
-        parameter_model = Meta::Parameter.new('parameter')
-        Parameter.new(parameter_model).call { description 'Foo' }
-        assert_equal('Foo', parameter_model.description)
+        parameter = Meta::Parameter.new('parameter')
+        Parameter.new(parameter).call { description 'Foo' }
+        assert_equal('Foo', parameter.description)
       end
 
       def test_example
-        parameter_model = Meta::Parameter.new('parameter')
-        Parameter.new(parameter_model).call { example value: 'foo' }
-        assert_equal('foo', parameter_model.examples['default'].value)
+        parameter = Meta::Parameter.new('parameter')
+        Parameter.new(parameter).call { example value: 'foo' }
+        assert_equal('foo', parameter.examples['default'].value)
       end
 
       def test_example_with_block
-        parameter_model = Meta::Parameter.new('parameter')
-        Parameter.new(parameter_model).call do
+        parameter = Meta::Parameter.new('parameter')
+        Parameter.new(parameter).call do
           example { value 'foo' }
         end
-        assert_equal('foo', parameter_model.examples['default'].value)
+        assert_equal('foo', parameter.examples['default'].value)
       end
 
       def test_deprecated
-        parameter_model = Meta::Parameter.new('parameter')
-        Parameter.new(parameter_model).call { deprecated true }
-        assert(parameter_model.deprecated?)
+        parameter = Meta::Parameter.new('parameter')
+        Parameter.new(parameter).call { deprecated true }
+        assert(parameter.deprecated?)
       end
 
       def test_delegates_to_schema
-        parameter_model = Meta::Parameter.new('parameter', type: 'string')
-        Parameter.new(parameter_model).call { format 'date' }
-        assert_equal('date', parameter_model.schema.format)
+        parameter = Meta::Parameter.new('parameter', type: 'string')
+        Parameter.new(parameter).call { format 'date' }
+        assert_equal('date', parameter.schema.format)
       end
     end
   end

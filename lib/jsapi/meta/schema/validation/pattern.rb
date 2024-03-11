@@ -6,13 +6,18 @@ module Jsapi
       module Validation
         class Pattern < Base
           def initialize(value)
-            raise ArgumentError, "invalid pattern: #{value}" unless value.is_a?(Regexp)
+            unless value.is_a?(Regexp)
+              raise ArgumentError, "invalid pattern: #{value}"
+            end
 
             super
           end
 
-          def validate(object)
-            object.errors.add(:invalid) unless object.value.to_s.match?(value)
+          def validate(value, errors)
+            return true if value.to_s.match?(self.value)
+
+            errors.add(:base, :invalid)
+            false
           end
 
           def to_json_schema_validation

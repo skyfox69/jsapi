@@ -6,13 +6,18 @@ module Jsapi
       module Validation
         class Enum < Base
           def initialize(value)
-            raise ArgumentError, "invalid enum: #{value}" unless value.respond_to?(:include?)
+            unless value.respond_to?(:include?)
+              raise ArgumentError, "invalid enum: #{value}"
+            end
 
             super
           end
 
-          def validate(object)
-            object.errors.add(:inclusion) unless value.include?(object.value)
+          def validate(value, errors)
+            return true if self.value.include?(value)
+
+            errors.add(:base, :inclusion)
+            false
           end
         end
       end

@@ -11,8 +11,11 @@ module Jsapi
             super
           end
 
-          def validate(object)
-            object.errors.add(:invalid) unless (object.value % value).zero?
+          def validate(value, errors)
+            return true if (value % self.value).zero?
+
+            errors.add(:base, :invalid)
+            false
           end
         end
       end

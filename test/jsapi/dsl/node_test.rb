@@ -6,14 +6,14 @@ module Jsapi
       DummyModel = Struct.new(:foo)
 
       def test_generic_field
-        model = DummyModel.new
-        Node.new(model).call { foo 'bar' }
-        assert_equal('bar', model.foo)
+        dummy = DummyModel.new
+        Node.new(dummy).call { foo 'bar' }
+        assert_equal('bar', dummy.foo)
       end
 
       def test_raises_error_on_unknown_field
         node = Node.new(DummyModel.new)
-        error = assert_raises Error do
+        error = assert_raises do
           node.call { bar 'foo' }
         end
         assert_equal("unknown or invalid field: 'bar'", error.message)

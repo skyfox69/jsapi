@@ -10,7 +10,7 @@ module Jsapi
         assert_equal(0, Integer.new('0', schema).value)
       end
 
-      def test_is_not_empty
+      def test_empty_predicate
         schema = Meta::Schema.new(type: 'integer')
         assert(!Integer.new('0', schema).empty?)
       end

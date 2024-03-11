@@ -18,12 +18,17 @@ module Jsapi
             @exclusive = exclusive
           end
 
-          def validate(object)
+          def validate(value, errors)
             if exclusive
-              object.errors.add(:greater_than, count: value) unless object.value > value
+              return true if value > self.value
+
+              errors.add(:base, :greater_than, count: self.value)
             else
-              object.errors.add(:greater_than_or_equal_to, count: value) unless object.value >= value
+              return true if value >= self.value
+
+              errors.add(:base, :greater_than_or_equal_to, count: self.value)
             end
+            false
           end
 
           def to_json_schema_validation

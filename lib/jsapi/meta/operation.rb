@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     class Operation
-      attr_accessor :description, :path, :summary, :tags
+      attr_accessor :description, :model, :path, :summary, :tags
       attr_reader :name, :parameters, :request_body, :responses
       attr_writer :deprecated, :method
 

@@ -3,6 +3,14 @@
 module Jsapi
   module DSL
     class Operation < Node
+      def model(klass = nil, &block)
+        if block.present?
+          klass = Class.new(klass || Model::Base)
+          klass.class_eval(&block)
+        end
+        _meta_model.model = klass
+      end
+
       # Defines a parameter.
       def parameter(name, **options, &block)
         wrap_error "'#{name}'" do

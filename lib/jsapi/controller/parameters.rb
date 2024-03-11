@@ -3,44 +3,27 @@
 module Jsapi
   module Controller
     class Parameters
-      include Validation
+      include Model::Nestable
 
       def initialize(params, operation, definitions)
+        @attributes = {}
+
         # Merge parameters and request body properties
-        models = operation.parameters.transform_values do |parameter|
+        meta_models = operation.parameters.transform_values do |parameter|
           parameter.resolve(definitions)
         end
         if (schema = operation.request_body&.schema).respond_to?(:properties)
-          models.merge!(schema.properties(definitions))
+          meta_models.merge!(schema.properties(definitions))
         end
 
         # Wrap params
-        @parameters = models.each_with_object({}) do |(name, model), p|
-          p[name] = DOM.wrap(params[name], model.schema, definitions)
+        meta_models.each do |name, meta_model|
+          @attributes[name] = DOM.wrap(params[name], meta_model.schema, definitions)
         end
       end
 
-      def[](key)
-        @parameters[key&.to_s]&.value
-      end
-
-      def _validate
-        @parameters.each do |key, parameter|
-          next if parameter.valid?
-
-          parameter.errors.each do |error|
-            errors << AttributeError.new(key, error)
-          end
-        end
-      end
-
-      def method_missing(*args)
-        name = args.first.to_s
-        @parameters.key?(name) ? self[name] : super
-      end
-
-      def respond_to_missing?(param1, _param2)
-        @parameters.key?(param1.to_s) ? true : super
+      def validate(errors)
+        validate_attributes(errors)
       end
     end
   end

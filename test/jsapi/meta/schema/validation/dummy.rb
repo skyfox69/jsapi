@@ -7,12 +7,11 @@ module Jsapi
     module Schema
       module Validation
         class Dummy
-          include Jsapi::Validation
-
-          attr_reader :value
+          attr_reader :errors, :value
 
           def initialize(value)
             @value = value
+            @errors = DOM::Validation::Errors.new
           end
 
           def empty?

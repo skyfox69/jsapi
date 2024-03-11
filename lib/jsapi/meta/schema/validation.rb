@@ -2,7 +2,6 @@
 
 require_relative 'validation/base'
 require_relative 'validation/enum'
-require_relative 'validation/lambda'
 require_relative 'validation/max_items'
 require_relative 'validation/max_length'
 require_relative 'validation/maximum'

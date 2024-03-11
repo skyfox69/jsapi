@@ -17,11 +17,13 @@ module Jsapi
           def test_validates_max_items
             max_items = MaxItems.new(2)
 
-            max_items.validate(dummy = Dummy.new(%w[foo bar]))
-            assert_predicate(dummy.errors, :none?)
+            errors = Model::Errors.new
+            assert(max_items.validate(%w[foo bar], errors))
+            assert_predicate(errors, :none?)
 
-            max_items.validate(dummy = Dummy.new(%w[foo bar foo]))
-            assert_equal(['is invalid'], dummy.errors.map(&:message))
+            errors = Model::Errors.new
+            assert(!max_items.validate(%w[foo bar foo], errors))
+            assert(errors.added?(:base, 'is invalid'))
           end
 
           def test_to_json_schema_validation

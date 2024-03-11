@@ -10,7 +10,7 @@ module Jsapi
         assert_equal(false, Boolean.new('false', Meta::Schema.new).value)
       end
 
-      def test_is_not_empty
+      def test_empty_predicate
         assert(!Boolean.new('true', Meta::Schema.new).empty?)
         assert(!Boolean.new('false', Meta::Schema.new).empty?)
       end

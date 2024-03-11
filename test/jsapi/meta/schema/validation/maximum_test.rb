@@ -22,24 +22,25 @@ module Jsapi
           def test_validates_maximum
             maximum = Maximum.new(0)
 
-            maximum.validate(dummy = Dummy.new(0))
-            assert_predicate(dummy.errors, :none?)
+            errors = Model::Errors.new
+            assert(maximum.validate(0, errors))
+            assert_predicate(errors, :none?)
 
-            maximum.validate(dummy = Dummy.new(1))
-            assert_equal(
-              ['must be less than or equal to 0'],
-              dummy.errors.map(&:message)
-            )
+            errors = Model::Errors.new
+            assert(!maximum.validate(1, errors))
+            assert(errors.added?(:base, 'must be less than or equal to 0'))
           end
 
           def test_validates_exclusive_maximum
             exclusive_maximum = Maximum.new(0, exclusive: true)
 
-            exclusive_maximum.validate(dummy = Dummy.new(-1))
-            assert_predicate(dummy.errors, :none?)
+            errors = Model::Errors.new
+            assert(exclusive_maximum.validate(-1, errors))
+            assert_predicate(errors, :empty?)
 
-            exclusive_maximum.validate(dummy = Dummy.new(0))
-            assert_equal(['must be less than 0'], dummy.errors.map(&:message))
+            errors = Model::Errors.new
+            assert(!exclusive_maximum.validate(0, errors))
+            assert(errors.added?(:base, 'must be less than 0'))
           end
 
           # JSON Schema tests

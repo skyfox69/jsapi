@@ -53,6 +53,52 @@ module Jsapi
         assert_equal("'items' isn't allowed for 'object'", error.message)
       end
 
+      # Model tests
+
+      def test_model
+        foo = Class.new(Model::Base)
+        schema = Meta::Schema.new(type: 'object')
+        Schema.new(schema).call { model foo }
+        assert_equal(foo, schema.model)
+      end
+
+      def test_model_with_block
+        schema = Meta::Schema.new(type: 'object')
+        Schema.new(schema).call do
+          model do
+            def foo
+              'bar'
+            end
+          end
+        end
+        bar = schema.model.new({})
+        assert_kind_of(Model::Base, bar)
+        assert_equal('bar', bar.foo)
+      end
+
+      def test_model_with_class_and_block
+        foo = Class.new(Model::Base)
+        schema = Meta::Schema.new(type: 'object')
+        Schema.new(schema).call do
+          model foo do
+            def foo
+              'bar'
+            end
+          end
+        end
+        bar = schema.model.new({})
+        assert_kind_of(foo, bar)
+        assert_equal('bar', bar.foo)
+      end
+
+      def test_model_raises_an_error_on_other_type_than_object
+        schema = Meta::Schema.new(type: 'array')
+        error = assert_raises Error do
+          Schema.new(schema).call { model {} }
+        end
+        assert_equal("'model' isn't allowed for 'array'", error.message)
+      end
+
       # Property tests
 
       def test_property
@@ -70,13 +116,6 @@ module Jsapi
           Schema.new(schema).call { property 'foo' }
         end
         assert_equal("'property' isn't allowed for 'array' (at 'foo')", error.message)
-      end
-
-      # Validate tests
-
-      def test_validate
-        schema = Meta::Schema.new
-        Schema.new(schema).call { validate {} }
       end
 
       private

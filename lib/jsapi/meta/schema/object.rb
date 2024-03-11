@@ -4,11 +4,13 @@ module Jsapi
   module Meta
     module Schema
       class Object < Base
+        attr_accessor :model
         attr_reader :all_of
 
         def initialize(**options)
           super(**options.merge(type: 'object'))
           @all_of = []
+          @model = nil
           @properties = {}
         end
 

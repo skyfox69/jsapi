@@ -24,7 +24,7 @@ module Jsapi
           schema = schema.resolve(definitions)
           return schema if existence < Existence::ALLOW_EMPTY
 
-          Decorator.new(schema, [existence, schema.existence].max)
+          Delegator.new(schema, [existence, schema.existence].max)
         end
 
         # Returns the JSON schema as a +Hash+.

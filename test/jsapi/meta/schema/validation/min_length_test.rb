@@ -17,14 +17,13 @@ module Jsapi
           def test_validates_min_length
             min_length = MinLength.new(3)
 
-            min_length.validate(dummy = Dummy.new('foo'))
-            assert_predicate(dummy.errors, :none?)
+            errors = Model::Errors.new
+            assert(min_length.validate('foo', errors))
+            assert_predicate(errors, :empty?)
 
-            min_length.validate(dummy = Dummy.new('fo'))
-            assert_equal(
-              ['is too short (minimum is 3 characters)'],
-              dummy.errors.map(&:message)
-            )
+            errors = Model::Errors.new
+            assert(!min_length.validate('fo', errors))
+            assert(errors.added?(:base, 'is too short (minimum is 3 characters)'))
           end
 
           def test_to_json_schema_validation

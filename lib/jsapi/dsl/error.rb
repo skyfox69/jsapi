@@ -3,9 +3,15 @@
 module Jsapi
   module DSL
     class Error < StandardError
-      def initialize(error, origin = nil)
+      def initialize(error_or_message, origin = nil)
         @path = origin.present? ? [origin] : []
-        super(error.message)
+        super(
+          if error_or_message.respond_to?(:message)
+            error_or_message.message
+          else
+            error_or_message
+          end
+        )
       end
 
       def message

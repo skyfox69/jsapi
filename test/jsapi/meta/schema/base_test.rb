@@ -48,54 +48,6 @@ module Jsapi
           assert schema.nullable?
         end
 
-        # Validation tests
-
-        def test_validates_presence
-          schema = Meta::Schema.new(type: 'string', existence: true)
-
-          schema.validate(dummy = Validation::Dummy.new('foo'))
-          assert_predicate(dummy, :valid?)
-
-          schema.validate(dummy = Validation::Dummy.new(''))
-          assert_predicate(dummy, :invalid?)
-          assert_equal("Can't be blank", dummy.errors.full_message)
-        end
-
-        def test_validates_allow_empty
-          schema = Meta::Schema.new(type: 'string', existence: :allow_empty)
-
-          schema.validate(dummy = Validation::Dummy.new(''))
-          assert_predicate(dummy, :valid?)
-
-          schema.validate(dummy = Validation::Dummy.new(nil))
-          assert_predicate(dummy, :invalid?)
-          assert_equal("Can't be blank", dummy.errors.full_message)
-        end
-
-        def test_validates_against_json_schema
-          schema = Meta::Schema.new(type: 'string', pattern: /fo/)
-
-          schema.validate(dummy = Validation::Dummy.new('foo'))
-          assert_predicate(dummy, :valid?)
-
-          schema.validate(dummy = Validation::Dummy.new('bar'))
-          assert_predicate(dummy, :invalid?)
-          assert_equal('Is invalid', dummy.errors.full_message)
-        end
-
-        def test_validates_against_lambda
-          schema = Meta::Schema.new(type: 'string')
-          schema.add_lambda_validation(
-            ->(s) { s.errors.add(:invalid) unless s == 'foo' }
-          )
-          schema.validate(dummy = Validation::Dummy.new('foo'))
-          assert_predicate(dummy, :valid?)
-
-          schema.validate(dummy = Validation::Dummy.new('bar'))
-          assert_predicate(dummy, :invalid?)
-          assert_equal('Is invalid', dummy.errors.full_message)
-        end
-
         # JSON Schema tests
 
         def test_json_schema

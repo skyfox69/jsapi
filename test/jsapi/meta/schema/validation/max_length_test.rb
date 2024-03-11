@@ -17,14 +17,13 @@ module Jsapi
           def test_validates_max_length
             max_length = MaxLength.new(3)
 
-            max_length.validate(dummy = Dummy.new('foo'))
-            assert_predicate(dummy.errors, :none?)
+            errors = Model::Errors.new
+            assert(max_length.validate('foo', errors))
+            assert_predicate(errors, :empty?)
 
-            max_length.validate(dummy = Dummy.new('foo bar'))
-            assert_equal(
-              ['is too long (maximum is 3 characters)'],
-              dummy.errors.map(&:message)
-            )
+            errors = Model::Errors.new
+            assert(!max_length.validate('foo bar', errors))
+            assert(errors.added?(:base, 'is too long (maximum is 3 characters)'))
           end
 
           def test_to_json_schema_validation

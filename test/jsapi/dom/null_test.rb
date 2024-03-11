@@ -9,11 +9,11 @@ module Jsapi
         assert_nil(Null.new(Meta::Schema.new).value)
       end
 
-      def test_is_null
+      def test_null_predicate
         assert_predicate(Null.new(Meta::Schema.new), :null?)
       end
 
-      def test_is_empty
+      def test_empty_predicate
         assert_predicate(Null.new(Meta::Schema.new), :empty?)
       end
     end

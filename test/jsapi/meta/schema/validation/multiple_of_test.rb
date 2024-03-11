@@ -17,11 +17,13 @@ module Jsapi
           def test_validates_multiple_of
             multiple_of = MultipleOf.new(2)
 
-            multiple_of.validate(dummy = Dummy.new(4))
-            assert_predicate(dummy.errors, :none?)
+            errors = Model::Errors.new
+            assert(multiple_of.validate(4, errors))
+            assert_predicate(errors, :empty?)
 
-            multiple_of.validate(dummy = Dummy.new(3))
-            assert_equal(['is invalid'], dummy.errors.map(&:message))
+            errors = Model::Errors.new
+            assert(!multiple_of.validate(3, errors))
+            assert(errors.added?(:base, 'is invalid'))
           end
 
           def test_to_json_schema_validation

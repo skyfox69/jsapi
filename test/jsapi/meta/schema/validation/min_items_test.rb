@@ -17,11 +17,13 @@ module Jsapi
           def test_validates_min_items
             min_items = MinItems.new(2)
 
-            min_items.validate(dummy = Dummy.new(%w[foo bar]))
-            assert_predicate(dummy.errors, :none?)
+            errors = Model::Errors.new
+            assert(min_items.validate(%w[foo bar], errors))
+            assert_predicate(errors, :empty?)
 
-            min_items.validate(dummy = Dummy.new(%w[foo]))
-            assert_equal(['is invalid'], dummy.errors.map(&:message))
+            errors = Model::Errors.new
+            assert(!min_items.validate(%w[foo], errors))
+            assert(errors.added?(:base, 'is invalid'))
           end
 
           def test_to_json_schema_validation

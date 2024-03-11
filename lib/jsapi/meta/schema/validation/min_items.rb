@@ -6,13 +6,18 @@ module Jsapi
       module Validation
         class MinItems < Base
           def initialize(value)
-            raise ArgumentError, "invalid min items: #{value}" unless value.respond_to?(:>=)
+            unless value.respond_to?(:>=)
+              raise ArgumentError, "invalid min items: #{value}"
+            end
 
             super
           end
 
-          def validate(object)
-            object.errors.add(:invalid) unless object.value.size >= value
+          def validate(value, errors)
+            return true if value.size >= self.value
+
+            errors.add(:base, :invalid)
+            false
           end
         end
       end

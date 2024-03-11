@@ -4,27 +4,27 @@ module Jsapi
   module DSL
     class PropertyTest < Minitest::Test
       def test_description
-        property_model = Meta::Property.new('property', type: 'string')
-        Property.new(property_model).call { description 'Foo' }
-        assert_equal('Foo', property_model.schema.description)
+        property = Meta::Property.new('property', type: 'string')
+        Property.new(property).call { description 'Foo' }
+        assert_equal('Foo', property.schema.description)
       end
 
       def test_example
-        property_model = Meta::Property.new('property', type: 'string')
-        Property.new(property_model).call { example 'foo' }
-        assert_equal(%w[foo], property_model.schema.examples)
+        property = Meta::Property.new('property', type: 'string')
+        Property.new(property).call { example 'foo' }
+        assert_equal(%w[foo], property.schema.examples)
       end
 
       def test_deprecated
-        property_model = Meta::Property.new('property')
-        Property.new(property_model).call { deprecated true }
-        assert(property_model.deprecated?)
+        property = Meta::Property.new('property')
+        Property.new(property).call { deprecated true }
+        assert(property.deprecated?)
       end
 
       def test_delegates_to_schema
-        property_model = Meta::Property.new('property', type: 'string')
-        Property.new(property_model).call { format 'date' }
-        assert_equal('date', property_model.schema.format)
+        property = Meta::Property.new('property', type: 'string')
+        Property.new(property).call { format 'date' }
+        assert_equal('date', property.schema.format)
       end
     end
   end

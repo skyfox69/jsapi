@@ -3,30 +3,25 @@
 module Jsapi
   module DOM
     class Array < BaseObject
-      def initialize(ary, schema, definitions)
+      def initialize(array, schema, definitions)
         super(schema)
-        @ary = Array(ary).map do |item|
+        @array = Array(array).map do |item|
           DOM.wrap(item, schema.items, definitions)
         end
       end
 
       def empty?
-        @ary.empty?
+        @array.empty?
+      end
+
+      def validate(errors)
+        return false unless super
+
+        @array.map { |item| item.validate(errors) }.all?
       end
 
       def value
-        @value ||= @ary.map(&:value)
-      end
-
-      def _validate
-        super
-        return if invalid?
-
-        @ary.each do |item|
-          next if item.valid?
-
-          item.errors.each { |error| errors << error }
-        end
+        @value ||= @array.map(&:value)
       end
     end
   end

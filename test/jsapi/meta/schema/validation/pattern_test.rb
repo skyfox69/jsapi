@@ -17,11 +17,13 @@ module Jsapi
           def test_validates_pattern
             pattern = Pattern.new(/fo/)
 
-            pattern.validate(dummy = Dummy.new('foo'))
-            assert_predicate(dummy.errors, :none?)
+            errors = Model::Errors.new
+            assert(pattern.validate('foo', errors))
+            assert_predicate(errors, :empty?)
 
-            pattern.validate(dummy = Dummy.new('bar'))
-            assert_equal(['is invalid'], dummy.errors.map(&:message))
+            errors = Model::Errors.new
+            assert(!pattern.validate('bar', errors))
+            assert(errors.added?(:base, 'is invalid'))
           end
 
           def test_to_json_schema_validation

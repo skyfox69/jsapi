@@ -40,7 +40,7 @@ module Jsapi
           reference = Reference.new(schema: 'foo', existence: true)
 
           resolved = reference.resolve(definitions)
-          assert_kind_of(Decorator, resolved)
+          assert_kind_of(Delegator, resolved)
           assert_equal(Existence::PRESENT, resolved.existence)
         end
 
@@ -50,7 +50,7 @@ module Jsapi
           reference = Reference.new(schema: 'foo', existence: :allow_empty)
 
           resolved = reference.resolve(definitions)
-          assert_kind_of(Decorator, resolved)
+          assert_kind_of(Delegator, resolved)
           assert_equal(Existence::PRESENT, resolved.existence)
         end
 

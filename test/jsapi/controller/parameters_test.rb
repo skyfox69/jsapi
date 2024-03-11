@@ -20,9 +20,9 @@ module Jsapi
         parameter.schema.add_all_of('Foo')
         parameter.schema.add_property('bar', type: 'string')
 
-        attributes = { 'foo' => 'foo', 'bar' => 'bar' }
-        parameters = parameters(bar: attributes)
-        assert_equal(attributes, parameters['bar'].attributes)
+        parameters = parameters(bar: { 'foo' => 'FOO', 'bar' => 'BAR' })
+        assert_equal('FOO', parameters['bar'].foo)
+        assert_equal('BAR', parameters['bar'].bar)
       end
 
       def test_initialize_on_request_body
@@ -37,41 +37,54 @@ module Jsapi
         assert_equal('bar', parameters['bar'])
       end
 
-      # Attribute reader tests
+      # Attributes tests
 
       def test_bracket_operator
-        operation.add_parameter('foo', type: 'integer')
-        assert_equal(1, parameters(foo: 1)['foo'])
-      end
-
-      def test_bracket_operator_on_nil
+        operation.add_parameter('foo', type: 'string')
+        assert_equal('bar', parameters(foo: 'bar')['foo'])
         assert_nil(parameters[nil])
       end
 
-      def test_attr_reader
-        operation.add_parameter('foo', type: 'integer')
-        assert_equal(1, parameters(foo: 1).foo)
+      def test_attribute_predicate
+        operation.add_parameter('foo', type: 'string')
+        parameters = parameters(foo: nil)
+
+        assert(parameters.attribute?(:foo))
+        assert(!parameters.attribute?(:bar))
+        assert(!parameters.attribute?(nil))
       end
 
-      def test_attr_reader_on_invalid_name
-        assert_raises(NoMethodError) { parameters.foo }
-      end
-
-      def test_respond_to
-        operation.add_parameter('foo')
-        assert(parameters.respond_to?(:foo))
-      end
-
-      def test_respond_to_on_invalid_name
-        assert(!parameters.respond_to?(:foo))
+      def test_attributes
+        operation.add_parameter('foo', type: 'string')
+        parameters = parameters(foo: 'bar')
+        assert_equal({ 'foo' => 'bar' }, parameters.attributes)
       end
 
       # Validation tests
 
-      def test_validation
-        operation.add_parameter('foo', type: 'integer', minimum: 1)
-        assert_predicate(parameters(foo: 1), :valid?)
-        assert_predicate(parameters(foo: 0), :invalid?)
+      def test_validates_parameters_against_schema
+        operation.add_parameter('foo', type: 'string', existence: true)
+
+        errors = Model::Errors.new
+        assert(parameters(foo: 'bar').validate(errors))
+        assert_predicate(errors, :empty?)
+
+        errors = Model::Errors.new
+        assert(!parameters(foo: '').validate(errors))
+        assert(errors.added?(:foo, "can't be blank"))
+      end
+
+      def test_validates_nested_parameters_against_model
+        parameter = operation.add_parameter('foo', type: 'object')
+        parameter.schema.add_property('bar', type: 'string', existence: true)
+
+        errors = Model::Errors.new
+        assert(parameters(foo: { 'bar' => 'Bar' }).validate(errors))
+        assert_predicate(errors, :empty?)
+
+        errors = Model::Errors.new
+        assert(!parameters(foo: {}).validate(errors))
+        assert(errors.added?(:'foo.bar', "can't be blank"))
       end
 
       private

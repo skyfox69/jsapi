@@ -24,7 +24,7 @@ module Jsapi
         assert_equal(DateTime.new(2099, 12, 31), string.value)
       end
 
-      def test_emptiness
+      def test_empty_predicate
         schema = Meta::Schema.new(type: 'string')
         assert_predicate(String.new('', schema), :empty?)
         assert(!String.new('foo', schema).empty?)

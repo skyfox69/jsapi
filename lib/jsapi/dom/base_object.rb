@@ -3,12 +3,11 @@
 module Jsapi
   module DOM
     class BaseObject
-      include Validation
-
       attr_reader :schema
 
       def initialize(schema)
         @schema = schema
+        @errors = nil
       end
 
       def empty?
@@ -19,8 +18,17 @@ module Jsapi
         false
       end
 
-      def _validate
-        schema.validate(self)
+      def validate(errors)
+        if (schema.existence >= Meta::Existence::ALLOW_EMPTY && null?) ||
+           (schema.existence == Meta::Existence::PRESENT && empty?)
+          errors.add(:base, :blank)
+          return false
+        end
+        return true if null?
+
+        schema.validations.each_value.map do |validation|
+          validation.validate(value, errors)
+        end.all?
       end
     end
   end

@@ -3,6 +3,8 @@
 module Jsapi
   module DOM
     class Object < BaseObject
+      include Model::Nestable
+
       def initialize(attributes, schema, definitions)
         super(schema)
 
@@ -11,43 +13,20 @@ module Jsapi
         end
       end
 
-      def [](key)
-        @attributes[key&.to_s]&.value
-      end
-
-      def attributes
-        @attributes.transform_values(&:value)
-      end
-
       def empty?
         @attributes.values.all?(&:empty?)
       end
 
-      def method_missing(*args)
-        name = args.first.to_s
-        @attributes.key?(name) ? self[name] : super
+      def model
+        @model ||= (schema.model || Model::Base).new(self)
       end
 
-      def respond_to_missing?(param1, _param2)
-        @attributes.key?(param1.to_s) ? true : super
-      end
+      alias value model
 
-      def value
-        # @value ||= (schema.model || Model::Base).new(self)
-        self
-      end
+      def validate(errors)
+        return false unless super
 
-      def _validate
-        super
-        return if invalid?
-
-        @attributes.each do |key, value|
-          next if value.valid?
-
-          value.errors.each do |error|
-            errors << AttributeError.new(key, error)
-          end
-        end
+        validate_attributes(errors)
       end
     end
   end

@@ -6,13 +6,18 @@ module Jsapi
       module Validation
         class MaxLength < Base
           def initialize(value)
-            raise ArgumentError, "invalid max length: #{value}" unless value.respond_to?(:<=)
+            unless value.respond_to?(:<=)
+              raise ArgumentError, "invalid max length: #{value}"
+            end
 
             super
           end
 
-          def validate(object)
-            object.errors.add(:too_long, count: value) unless object.value.to_s.length <= value
+          def validate(value, errors)
+            return true if value.to_s.length <= self.value
+
+            errors.add(:base, :too_long, count: self.value)
+            false
           end
         end
       end

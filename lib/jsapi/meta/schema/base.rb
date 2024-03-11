@@ -12,7 +12,6 @@ module Jsapi
           @existence = Existence.from(options[:existence])
           @type = options[:type]
           @validations = {}
-          @lambda_validations = []
 
           options.except(:example, :existence, :type).each do |key, value|
             method = "#{key}="
@@ -30,10 +29,6 @@ module Jsapi
 
         def add_example(example)
           @examples << example
-        end
-
-        def add_lambda_validation(lambda)
-          @lambda_validations << Validation::Lambda.new(lambda)
         end
 
         def enum=(value)
@@ -100,19 +95,6 @@ module Jsapi
               hash.merge!(validation.to_openapi_validation(version))
             end
           end.compact
-        end
-
-        def validate(object)
-          case existence
-          when Existence::PRESENT
-            object.errors.add(:blank) if object.empty?
-          when Existence::ALLOW_EMPTY
-            object.errors.add(:blank) if object.null?
-          end
-          return if object.null? || object.invalid?
-
-          validations.each_value { |validation| validation.validate(object) }
-          @lambda_validations.each { |validation| validation.validate(object) }
         end
 
         private

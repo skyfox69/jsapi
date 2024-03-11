@@ -11,7 +11,7 @@ module Jsapi
         assert_equal(%w[foo bar], array.value)
       end
 
-      def test_emptiness
+      def test_empty_predicate
         schema = Meta::Schema.new(type: 'array', items: { type: 'string' })
 
         array = Array.new([], schema, definitions)
@@ -23,31 +23,37 @@ module Jsapi
 
       # Validation tests
 
-      def test_validates_against_json_schema
+      def test_validates_self_against_schema
         schema = Meta::Schema.new(
           type: 'array',
           items: { type: 'string' },
           max_items: 2
         )
-        array = Array.new(%w[foo bar], schema, definitions)
-        assert_predicate(array, :valid?)
+        errors = Model::Errors.new
+        assert(Array.new(%w[foo bar], schema, definitions).validate(errors))
+        assert_predicate(errors, :empty?)
 
-        array = Array.new(%w[foo bar foo], schema, definitions)
-        assert_predicate(array, :invalid?)
-        assert_equal('Is invalid', array.errors.full_message)
+        errors = Model::Errors.new
+        assert(!Array.new(%w[foo bar foo], schema, definitions).validate(errors))
+        assert(errors.added?(:base, 'is invalid'))
       end
 
-      def test_validates_items
+      def test_validates_items_against_items_schema
         schema = Meta::Schema.new(
           type: 'array',
           items: { type: 'string', existence: true }
         )
-        array = Array.new(%w[foo bar], schema, definitions)
-        assert_predicate(array, :valid?)
+        errors = Model::Errors.new
+        assert(Array.new([], schema, definitions).validate(errors))
+        assert_predicate(errors, :empty?)
 
-        array = Array.new(['foo', nil], schema, definitions)
-        assert_predicate(array, :invalid?)
-        assert_equal("Can't be blank", array.errors.full_message)
+        errors = Model::Errors.new
+        assert(Array.new(%w[foo bar], schema, definitions).validate(errors))
+        assert_predicate(errors, :empty?)
+
+        errors = Model::Errors.new
+        assert(!Array.new(['foo', nil], schema, definitions).validate(errors))
+        assert(errors.added?(:base, "can't be blank"))
       end
 
       private

@@ -14,12 +14,10 @@ module Jsapi
       end
 
       def method_missing(*args)
-        wrap_error do
-          if _meta_model.respond_to?(method = "#{args.first}=")
-            _meta_model.public_send(method, args.second)
-          else
-            raise "unknown or invalid field: '#{args.first}'"
-          end
+        if _meta_model.respond_to?(method = "#{args.first}=")
+          _meta_model.public_send(method, args.second)
+        else
+          raise "unknown or invalid field: '#{args.first}'"
         end
       end
 

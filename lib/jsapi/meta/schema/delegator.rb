@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Schema
-      class Decorator
+      class Delegator
         attr_reader :existence
 
         delegate_missing_to :@schema

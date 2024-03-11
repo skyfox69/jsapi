@@ -40,7 +40,9 @@ module Jsapi
         operation = api_definitions.operation(operation_name)
         raise "operation not defined: '#{operation_name}'" if operation.nil?
 
-        Parameters.new(params, operation, api_definitions)
+        (operation.model || Model::Base).new(
+          Parameters.new(params, operation, api_definitions)
+        )
       end
 
       # Returns a +Response+ instance to serialize +object+ according to the

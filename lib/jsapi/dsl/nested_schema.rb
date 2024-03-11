@@ -18,6 +18,7 @@ module Jsapi
           :min_items,
           :min_length,
           :minimum,
+          :model,
           :pattern,
           :property,
           to: :schema
