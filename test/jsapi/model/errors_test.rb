@@ -15,8 +15,8 @@ module Jsapi
         errors.add(:foo, :greater_than, count: 0)
         assert(errors.added?(:foo, :greater_than, { count: 0 }))
 
-        errors.add(:foo, ->(_, _options) { 'bar' })
-        assert(errors.added?(:foo, 'bar'))
+        errors.add(:foo, ->(_, _options) { 'foo message' })
+        assert(errors.added?(:foo, 'foo message'))
       end
 
       def test_context

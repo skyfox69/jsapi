@@ -26,7 +26,7 @@ module Jsapi
 
         model = Base.new(DOM.wrap({ 'foo' => '' }, schema))
         assert_predicate(model, :invalid?)
-        assert_equal(["foo can't be blank"], model.errors.full_messages)
+        assert_equal(["'foo' can't be blank"], model.errors.full_messages)
       end
 
       def test_validates_nested_attributes_against_nested_property_schemas
@@ -39,7 +39,7 @@ module Jsapi
 
         model = Base.new(DOM.wrap({ 'foo' => {} }, schema))
         assert_predicate(model, :invalid?)
-        assert_equal(["foo.bar can't be blank"], model.errors.full_messages)
+        assert_equal(["'foo.bar' can't be blank"], model.errors.full_messages)
       end
     end
   end
