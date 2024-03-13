@@ -5,38 +5,41 @@ module Jsapi
     class Errors < ActiveModel::Errors
       def initialize(base = nil)
         @base = base
-        @context = []
+        @path = []
         super
       end
 
       def add(attribute, type = :invalid, **options)
-        attribute = full_attribute(attribute)
         type = type.call(@base, options) if type.respond_to?(:call)
 
-        errors << Error.new(@base, attribute, type, **options)
-      end
-
-      def context(attribute, &block)
-        @context.push(attribute.to_sym)
-        block.call if block.present?
-      ensure
-        @context.pop
+        errors << wrap(Error.new(@base, attribute.to_sym, type, **options))
       end
 
       def import(error, options = {})
-        attribute = full_attribute(options[:attribute] || error.attribute)
-        type = options[:type] || error.raw_type
+        if (options = options.slice(:attribute, :type)).any?
+          attribute = (options[:attribute] || error.attribute).to_sym
+          type = options[:type] || error.raw_type
+          error = Error.new(error.base, attribute, type, **error.options)
+        end
+        errors << wrap(error)
+      end
 
-        errors << Error.new(@base, attribute, type, **error.options)
+      def nested(attribute, &block)
+        @path.push(attribute.to_sym)
+        block&.call
+      ensure
+        @path.pop
       end
 
       private
 
-      def full_attribute(attribute)
-        if @context.present?
-          attribute = (attribute == :base ? @context : @context + [attribute]).join('.')
+      def wrap(error)
+        return error if @path.empty?
+
+        @path.reverse_each do |attribute|
+          error = NestedError.new(attribute, error)
         end
-        attribute.to_sym
+        error
       end
     end
   end

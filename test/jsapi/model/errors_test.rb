@@ -19,15 +19,6 @@ module Jsapi
         assert(errors.added?(:foo, 'foo message'))
       end
 
-      def test_context
-        # with block
-        errors.context(:foo) { errors.add(:bar) }
-        assert(errors.added?(:'foo.bar'))
-
-        # without block
-        errors.context(:foo)
-      end
-
       def test_import
         error = Error.new(self, :foo)
 
@@ -41,6 +32,15 @@ module Jsapi
         errors.clear
         errors.import(error, type: :blank)
         assert(errors.added?(:foo, :blank))
+      end
+
+      def test_nested
+        # with block
+        errors.nested(:foo) { errors.add(:bar) }
+        assert(errors.added?(:foo, "'bar' is invalid"))
+
+        # without block
+        errors.nested(:foo)
       end
 
       private

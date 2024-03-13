@@ -3,6 +3,8 @@
 module Jsapi
   module Model
     class Base
+      extend Naming
+
       include Attributes
       include Validations
 

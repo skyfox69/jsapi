@@ -11,8 +11,9 @@ module Jsapi
         validate :nested_validity
       end
 
+      # Overrides +ActiveModel::Validations#errors+.
       def errors
-        @errors ||= Errors.new
+        @errors ||= Errors.new(self)
       end
 
       private

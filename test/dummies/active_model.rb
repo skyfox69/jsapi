@@ -30,6 +30,12 @@ module ActiveModel
       true
     end
 
+    def message
+      return type unless type.is_a?(Symbol)
+
+      I18n.t(type, scope: 'errors.messages', **options)
+    end
+
     def strict_match?(attribute, type = nil, **options)
       (@attribute == attribute) &&
         (!type || @type == type) &&
@@ -89,6 +95,21 @@ module ActiveModel
     end
   end
 
+  class Name
+    attr_reader :klass, :namespace
+
+    def initialize(klass, namespace)
+      @klass = klass
+      @namespace = namespace
+    end
+  end
+
+  module Naming
+  end
+
+  module Translation
+  end
+
   module Validations
     extend ActiveSupport::Concern
 
@@ -101,6 +122,8 @@ module ActiveModel
         @validations ||= []
       end
     end
+
+    alias read_attribute_for_validation send
 
     def valid?(_context = nil)
       errors.clear

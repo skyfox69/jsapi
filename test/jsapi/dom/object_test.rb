@@ -95,7 +95,7 @@ module Jsapi
         object = Object.new({ 'foo' => { 'bar' => nil } }, schema, definitions)
         errors = Model::Errors.new
         assert(!object.validate(errors))
-        assert(errors.added?(:'foo.bar', "can't be blank"))
+        assert(errors.added?(:foo, "'bar' can't be blank"))
       end
 
       # Reference test

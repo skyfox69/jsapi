@@ -84,7 +84,7 @@ module Jsapi
 
         errors = Model::Errors.new
         assert(!parameters(foo: {}).validate(errors))
-        assert(errors.added?(:'foo.bar', "can't be blank"))
+        assert(errors.added?(:foo, "'bar' can't be blank"))
       end
 
       private

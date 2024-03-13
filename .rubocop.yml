@@ -29,6 +29,9 @@ Naming/VariableNumber:
   Exclude:
     - test/**/*.rb
 
+Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
 Style/Documentation:
   Enabled: false
 

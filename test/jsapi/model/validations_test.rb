@@ -26,7 +26,7 @@ module Jsapi
 
         model = Base.new(DOM.wrap({ 'foo' => '' }, schema))
         assert_predicate(model, :invalid?)
-        assert_equal(["'foo' can't be blank"], model.errors.full_messages)
+        assert(model.errors.added?(:foo, "can't be blank"))
       end
 
       def test_validates_nested_attributes_against_nested_property_schemas
@@ -34,12 +34,12 @@ module Jsapi
         property = schema.add_property('foo', type: 'object')
         property.schema.add_property('bar', type: 'string', existence: true)
 
-        model = Base.new(DOM.wrap({ 'foo' => { 'bar' => 'Foo Bar' } }, schema))
+        model = Base.new(DOM.wrap({ 'foo' => { 'bar' => 'Foo bar' } }, schema))
         assert_predicate(model, :valid?)
 
         model = Base.new(DOM.wrap({ 'foo' => {} }, schema))
         assert_predicate(model, :invalid?)
-        assert_equal(["'foo.bar' can't be blank"], model.errors.full_messages)
+        assert(model.errors.added?(:foo, "'bar' can't be blank"))
       end
     end
   end

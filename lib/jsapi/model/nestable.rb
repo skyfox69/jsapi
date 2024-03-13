@@ -19,7 +19,7 @@ module Jsapi
 
       def validate_attributes(errors)
         @attributes.map do |key, value|
-          errors.context(key) do
+          errors.nested(key) do
             next value.validate(errors) unless value.respond_to?(:model)
             next true if (model = value.model).valid?
 

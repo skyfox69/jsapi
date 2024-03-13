@@ -8,12 +8,6 @@ module Jsapi
 
         "'#{attribute}' #{message}".rstrip
       end
-
-      def message
-        return type unless type.is_a?(Symbol)
-
-        I18n.t(type, scope: 'errors.messages', **options)
-      end
     end
   end
 end
