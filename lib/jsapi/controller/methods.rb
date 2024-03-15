@@ -10,10 +10,9 @@ module Jsapi
         self.class.api_definitions
       end
 
-      # Performs an API operation by calling the given block. The request
-      # parameters are passed as a +Parameters+ instance to the block.
-      # The object returned by the block is serialized by a +Response+
-      # instance.
+      # Performs an API operation by calling the given block. The request parameters
+      # are passed as an instance of the operation's model to the block. The object
+      # returned by the block is serialized by a +Response+ instance.
       #
       # Example:
       #
@@ -22,15 +21,38 @@ module Jsapi
       #   end
       #
       def api_operation(operation_name = nil, status: nil, &block)
-        head(status) && return if block.nil?
+        params = api_params(operation_name)
+        status_codes = api_status_codes(status)
 
-        response = api_response(block.call(api_params(operation_name)),
-                                operation_name, status: status)
-        render(json: response, status: status)
+        if status_codes.invalid && params.invalid?
+          status_code = status_codes.invalid
+          render(
+            json: api_response(
+              BadRequestError.new(params.errors, status: status_code),
+              operation_name,
+              status: status_code
+            ),
+            status: status_code
+          )
+          return
+        end
+
+        status_code = status_codes.default
+        if block
+          render(
+            json: api_response(
+              block.call(params),
+              operation_name,
+              status: status_code
+            ),
+            status: status_code
+          )
+        else
+          head(status_code)
+        end
       end
 
-      # Returns a +Parameters+ instance to read the request parameters by
-      # named methods.
+      # Returns the request parameters as an instance of the operations's model.
       #
       # Example:
       #
@@ -59,7 +81,18 @@ module Jsapi
         response = operation.response(status)
         raise "status code not defined: '#{status}'" if response.nil?
 
-        Response.new(object, response.schema, api_definitions)
+        Response.new(object, response, api_definitions)
+      end
+
+      def api_status_codes(status_codes)
+        case status_codes
+        when StatusCodes
+          status_codes
+        when Hash
+          StatusCodes.new(**status_codes)
+        else
+          StatusCodes.new(default: status_codes)
+        end
       end
     end
   end

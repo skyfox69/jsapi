@@ -21,8 +21,9 @@ require 'active_support/core_ext/enumerable'
 require 'active_support/core_ext/array'
 require 'active_support/core_ext/string'
 
-# Load locale to test error messages
+# Locales
 ActiveSupport.on_load(:i18n) do
+  I18n.load_path << File.expand_path('config/locale/de.yml', __dir__)
   I18n.load_path << File.expand_path('config/locale/en.yml', __dir__)
 end
 

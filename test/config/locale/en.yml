@@ -1,4 +1,5 @@
 en:
+  hello_world: "Hello world"
   errors:
     messages:
       blank: "can't be blank"

@@ -325,6 +325,7 @@ Options:
 - `existence`: See [The existence option](#the-existence-option)
 - `conversion`: See [The conversion option](#the-conversion-option)
 - `items`: See [The items option](#the-items-option)
+- `locale`
 - `description`: A description of the response
 - `example`: See [Defining examples](#defining-examples)
 - `deprecated`: `true` or `false` (default)

@@ -3,14 +3,21 @@
 module Jsapi
   module Controller
     class Response
-      def initialize(object, schema, definitions)
+      def initialize(object, response, definitions)
         @object = object
+        @response = response
         @definitions = definitions
-        @schema = schema.resolve(definitions)
       end
 
       def to_json(*)
-        serialize(@object, @schema).to_json
+        schema = @response.schema.resolve(@definitions)
+        if @response.locale
+          I18n.with_locale(@response.locale) do
+            serialize(@object, schema)
+          end
+        else
+          serialize(@object, schema)
+        end.to_json
       end
 
       private

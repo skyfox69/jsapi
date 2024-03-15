@@ -3,14 +3,15 @@
 module Jsapi
   module Meta
     class Response
-      attr_accessor :description
+      attr_accessor :description, :locale
       attr_reader :schema
 
       include Examples
 
       def initialize(**options)
         @description = options[:description]
-        @schema = Schema.new(**options.except(:description, :example))
+        @locale = options[:locale]
+        @schema = Schema.new(**options.except(:description, :example, :locale))
 
         add_example(value: options[:example]) if options.key?(:example)
       end
