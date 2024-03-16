@@ -30,6 +30,11 @@ module Jsapi
         api_definitions { rescue_from(*klasses, with: with) }
       end
 
+      # See +Definitions#response+
+      def api_response(name, **options, &block)
+        api_definitions { response(name, **options, &block) }
+      end
+
       # See +Definitions#schema+
       def api_schema(name, **options, &block)
         api_definitions { schema(name, **options, &block) }

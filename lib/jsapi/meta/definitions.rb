@@ -3,12 +3,13 @@
 module Jsapi
   module Meta
     class Definitions
-      attr_reader :operations, :parameters, :rescue_handlers, :schemas
+      attr_reader :operations, :parameters, :rescue_handlers, :responses, :schemas
 
       def initialize(owner = nil)
         @owner = owner
         @operations = {}
         @parameters = {}
+        @responses = {}
         @schemas = {}
         @openapi_roots = {}
         @rescue_handlers = []
@@ -27,18 +28,25 @@ module Jsapi
         name = name.to_s
         raise "parameter already defined: '#{name}'" if @parameters.key?(name)
 
-        @parameters[name.to_s] = Parameter.new(name, **options)
+        @parameters[name] = Parameter.new(name, **options)
       end
 
       def add_rescue_handler(klass, status: nil)
         @rescue_handlers << RescueHandler.new(klass, status: status)
       end
 
+      def add_response(name, **options)
+        name = name.to_s
+        raise "response already defined: '#{name}'" if @responses.key?(name)
+
+        @responses[name] = Response.new(**options)
+      end
+
       def add_schema(name, **options)
         name = name.to_s
         raise "schema already defined: '#{name}'" if @schemas.key?(name)
 
-        @schemas[name.to_s] = Schema.new(**options)
+        @schemas[name] = Schema.new(**options)
       end
 
       def include(definitions)
@@ -52,15 +60,17 @@ module Jsapi
           if version == '2.0'
             root.merge!(
               paths: openapi_paths(version),
+              definitions: openapi_schemas(version),
               parameters: openapi_parameters(version),
-              definitions: openapi_schemas(version)
+              responses: openapi_responses(version)
             )
           else
             root.merge!(
               paths: openapi_paths(version),
               components: {
+                schemas: openapi_schemas(version),
                 parameters: openapi_parameters(version),
-                schemas: openapi_schemas(version)
+                responses: openapi_responses(version)
               }.compact.presence
             )
           end
@@ -107,6 +117,13 @@ module Jsapi
         nil
       end
 
+      def response(name)
+        return unless (name = name.to_s).present?
+
+        definitions = @self_and_included.find { |d| d.responses.key?(name) }
+        return definitions.responses[name] if definitions.present?
+      end
+
       def schema(name)
         return unless (name = name.to_s).present?
 
@@ -140,6 +157,13 @@ module Jsapi
           operations.index_by(&:method).transform_values do |operation|
             operation.to_openapi_operation(version, self)
           end
+        end.presence
+      end
+
+      def openapi_responses(version)
+        @self_and_included
+          .map(&:responses).reduce(&:merge).transform_values do |response|
+          response.to_openapi_response(version)
         end.presence
       end
 

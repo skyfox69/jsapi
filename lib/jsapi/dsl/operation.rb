@@ -31,11 +31,15 @@ module Jsapi
         end
       end
 
-      # Defines a response. Default code is +default+.
-      def response(code = nil, **options, &block)
-        wrap_error 'response', code, code do
-          response_model = _meta_model.add_response(code, **options)
-          Response.new(response_model).call(&block) if block.present?
+      # Defines a response. Default status is +default+.
+      def response(status = nil, name = nil, **options, &block)
+        wrap_error 'response', status do
+          if name.nil?
+            response_model = _meta_model.add_response(status, **options)
+            Response.new(response_model).call(&block) if block.present?
+          else
+            _meta_model.add_response_reference(status, name)
+          end
         end
       end
     end

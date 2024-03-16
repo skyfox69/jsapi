@@ -40,7 +40,7 @@ module Jsapi
           schema.existence > Existence::ALLOW_OMITTED || location == 'path'
         end
 
-        def resolve(_definitions)
+        def resolve(*)
           self
         end
 

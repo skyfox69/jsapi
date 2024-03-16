@@ -33,6 +33,10 @@ module Jsapi
         responses[status || 'default'] = Response.new(**options)
       end
 
+      def add_response_reference(status, name)
+        responses[status || 'default'] = Response.reference(name)
+      end
+
       def deprecated?
         @deprecated == true
       end

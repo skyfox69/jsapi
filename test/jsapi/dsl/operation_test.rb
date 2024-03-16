@@ -163,6 +163,14 @@ module Jsapi
 
       def test_response_reference
         operation = Meta::Operation.new('operation')
+        Operation.new(operation).call { response 200, 'Foo' }
+
+        response = operation.response(200)
+        assert_equal('Foo', response.reference)
+      end
+
+      def test_response_with_schema_reference
+        operation = Meta::Operation.new('operation')
         Operation.new(operation).call do
           response schema: 'Foo'
         end

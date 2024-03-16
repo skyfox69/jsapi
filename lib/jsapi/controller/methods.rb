@@ -46,8 +46,9 @@ module Jsapi
       #   render(json: api_response(bar, :foo, status: 200))
       #
       def api_response(object, operation_name = nil, status: nil)
-        operation = _api_operation(operation_name, api_definitions)
-        response = _api_response(operation, status)
+        definitions = api_definitions
+        operation = _api_operation(operation_name, definitions)
+        response = _api_response(operation, status, definitions)
 
         Response.new(object, response, api_definitions)
       end
@@ -67,9 +68,9 @@ module Jsapi
         )
       end
 
-      def _api_response(operation, status)
+      def _api_response(operation, status, definitions)
         response = operation.response(status)
-        return response if response.present?
+        return response.resolve(definitions) if response.present?
 
         raise ArgumentError, "status code not defined: '#{status}'"
       end
@@ -77,7 +78,7 @@ module Jsapi
       def _perform_api_operation(operation_name, bang:, status:, &block)
         definitions = api_definitions
         operation = _api_operation(operation_name, definitions)
-        response = _api_response(operation, status)
+        response = _api_response(operation, status, definitions)
 
         if block
           payload = begin
@@ -90,7 +91,7 @@ module Jsapi
             raise e if rescue_handler.nil?
 
             status = rescue_handler.status
-            response = _api_response(operation, status)
+            response = _api_response(operation, status, definitions)
             NestedError.new(e, status: status)
           end
           render(json: Response.new(payload, response, definitions), status: status)

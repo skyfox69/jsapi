@@ -33,10 +33,6 @@ module Jsapi
       def test_add_operation
         @api_definitions.add_operation('foo')
         assert(@api_definitions.operations.key?('foo'))
-      end
-
-      def test_add_operation_on_double
-        @api_definitions.add_operation('foo')
 
         error = assert_raises(RuntimeError) do
           @api_definitions.add_operation('foo')
@@ -54,18 +50,12 @@ module Jsapi
         assert_equal('/foo_bar', @api_definitions.operation.path)
       end
 
-      def test_get_operation
-        @api_definitions.add_operation('foo')
-        assert_equal('foo', @api_definitions.operation('foo').name)
-      end
+      def test_operation
+        assert_nil(@api_definitions.operation(nil))
 
-      def test_get_default_operation
         @api_definitions.add_operation('foo')
         assert_equal('foo', @api_definitions.operation.name)
-      end
-
-      def test_get_operation_on_nil
-        assert_nil(@api_definitions.operation(nil))
+        assert_equal('foo', @api_definitions.operation('foo').name)
       end
 
       # Parameter tests
@@ -73,10 +63,6 @@ module Jsapi
       def test_add_parameter
         @api_definitions.add_parameter('foo')
         assert(@api_definitions.parameters.key?('foo'))
-      end
-
-      def test_add_parameter_on_double
-        @api_definitions.add_parameter('foo')
 
         error = assert_raises(RuntimeError) do
           @api_definitions.add_parameter('foo')
@@ -84,17 +70,12 @@ module Jsapi
         assert_equal("parameter already defined: 'foo'", error.message)
       end
 
-      def test_get_parameter
+      def test_parameter
+        assert_nil(@api_definitions.parameter(nil))
+        assert_nil(@api_definitions.parameter('foo'))
+
         @api_definitions.add_parameter('foo')
         assert_equal('foo', @api_definitions.parameter('foo').name)
-      end
-
-      def test_get_parameter_on_undefined_name
-        assert_nil(@api_definitions.parameter('foo'))
-      end
-
-      def test_get_parameter_on_nil
-        assert_nil(@api_definitions.parameter(nil))
       end
 
       # Rescue handlers tests
@@ -113,15 +94,31 @@ module Jsapi
         assert_nil(@api_definitions.rescue_handler_for(error))
       end
 
+      # Response tests
+
+      def test_add_response
+        @api_definitions.add_response('Foo')
+        assert(@api_definitions.responses.key?('Foo'))
+
+        error = assert_raises(RuntimeError) do
+          @api_definitions.add_response('Foo')
+        end
+        assert_equal("response already defined: 'Foo'", error.message)
+      end
+
+      def test_response
+        assert_nil(@api_definitions.response(nil))
+        assert_nil(@api_definitions.response('Foo'))
+
+        @api_definitions.add_response('Foo')
+        assert_predicate(@api_definitions.response('Foo'), :present?)
+      end
+
       # Schema tests
 
       def test_add_schema
         @api_definitions.add_schema('Foo')
         assert(@api_definitions.schemas.key?('Foo'))
-      end
-
-      def test_add_schema_on_double
-        @api_definitions.add_schema('Foo')
 
         error = assert_raises(RuntimeError) do
           @api_definitions.add_schema('Foo')
@@ -129,17 +126,12 @@ module Jsapi
         assert_equal("schema already defined: 'Foo'", error.message)
       end
 
-      def test_get_schema
+      def test_schema
+        assert_nil(@api_definitions.schema(nil))
+        assert_nil(@api_definitions.schema('Foo'))
+
         @api_definitions.add_schema('Foo')
         assert_predicate(@api_definitions.schema('Foo'), :present?)
-      end
-
-      def test_get_schema_on_undefined_name
-        assert_nil(@api_definitions.schema('Foo'))
-      end
-
-      def test_get_schema_on_nil
-        assert_nil(@api_definitions.schema(nil))
       end
 
       # OpenAPI document tests
@@ -147,6 +139,7 @@ module Jsapi
       def test_openapi_2_0_document
         @api_definitions.add_operation('operation', path: '/foo')
         @api_definitions.add_parameter('parameter', type: 'string')
+        @api_definitions.add_response('response', type: 'string')
         @api_definitions.add_schema('schema')
 
         assert_equal(
@@ -161,6 +154,13 @@ module Jsapi
                 }
               }
             },
+            definitions: {
+              'schema' => {
+                type: 'object',
+                properties: {},
+                required: []
+              }
+            },
             parameters: {
               'parameter' => {
                 name: 'parameter',
@@ -169,11 +169,11 @@ module Jsapi
                 allowEmptyValue: true
               }
             },
-            definitions: {
-              'schema' => {
-                type: 'object',
-                properties: {},
-                required: []
+            responses: {
+              'response' => {
+                schema: {
+                  type: 'string'
+                }
               }
             }
           },
@@ -188,6 +188,7 @@ module Jsapi
       def test_openapi_3_0_document
         @api_definitions.add_operation('operation', path: '/foo')
         @api_definitions.add_parameter('parameter', type: 'string')
+        @api_definitions.add_response('response', type: 'string')
         @api_definitions.add_schema('schema')
 
         assert_equal(
@@ -203,6 +204,14 @@ module Jsapi
               }
             },
             components: {
+              schemas: {
+                'schema' => {
+                  type: 'object',
+                  nullable: true,
+                  properties: {},
+                  required: []
+                }
+              },
               parameters: {
                 'parameter' => {
                   name: 'parameter',
@@ -214,12 +223,16 @@ module Jsapi
                   allowEmptyValue: true
                 }
               },
-              schemas: {
-                'schema' => {
-                  type: 'object',
-                  nullable: true,
-                  properties: {},
-                  required: []
+              responses: {
+                'response' => {
+                  content: {
+                    'application/json' => {
+                      schema: {
+                        type: 'string',
+                        nullable: true
+                      }
+                    }
+                  }
                 }
               }
             }

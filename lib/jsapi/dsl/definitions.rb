@@ -46,6 +46,18 @@ module Jsapi
         end
       end
 
+      # Defines a reusable response.
+      #
+      #   api_definitions do
+      #     response 'my_response', type: 'object'
+      #  end
+      def response(name, **options, &block)
+        wrap_error("'#{name}'") do
+          response_model = _meta_model.add_response(name, **options)
+          Response.new(response_model).call(&block) if block.present?
+        end
+      end
+
       # Defines a reusable schema.
       #
       #   api_definitions do

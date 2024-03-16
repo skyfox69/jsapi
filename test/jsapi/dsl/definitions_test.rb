@@ -72,6 +72,22 @@ module Jsapi
         assert_equal([500], rescue_handlers.map(&:status))
       end
 
+      def test_response
+        Definitions.new(definitions).call { response 'Foo' }
+        assert_predicate(definitions.response('Foo'), :present?)
+      end
+
+      def test_response_with_block
+        Definitions.new(definitions).call do
+          response 'Foo' do
+            description 'Description of foo'
+          end
+        end
+        response = definitions.response('Foo')
+        assert_predicate(response, :present?)
+        assert_equal('Description of foo', response.description)
+      end
+
       def test_schema
         Definitions.new(definitions).call { schema 'Foo' }
         assert_predicate(definitions.schema('Foo'), :present?)
