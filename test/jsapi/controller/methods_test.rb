@@ -63,7 +63,7 @@ module Jsapi
       end
 
       def test_api_operation_bang_method_raises_an_error_on_invalid_parameters
-        assert_raises InvalidParamsError do
+        assert_raises ParametersInvalid do
           api_operation!(:operation, status: 200) {}
         end
       end

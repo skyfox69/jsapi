@@ -1,8 +1,8 @@
-## frozen_string_literal: true
+# frozen_string_literal: true
 
 module Jsapi
   module Controller
-    class InvalidParamsError < StandardError
+    class ParametersInvalid < StandardError
       attr_reader :params
 
       def initialize(params)

@@ -83,7 +83,7 @@ module Jsapi
         if block
           payload = begin
             params = _api_params(operation)
-            raise InvalidParamsError.new(params) if bang && params.invalid?
+            raise ParametersInvalid.new(params) if bang && params.invalid?
 
             block.call(params)
           rescue StandardError => e

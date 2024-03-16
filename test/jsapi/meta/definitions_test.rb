@@ -81,10 +81,10 @@ module Jsapi
       # Rescue handlers tests
 
       def test_rescue_handler_for
-        @api_definitions.add_rescue_handler(Controller::InvalidParamsError, status: 400)
+        @api_definitions.add_rescue_handler(Controller::ParametersInvalid, status: 400)
         @api_definitions.add_rescue_handler(StandardError, status: 500)
 
-        error = Controller::InvalidParamsError.new(Model::Base.new({}))
+        error = Controller::ParametersInvalid.new(Model::Base.new({}))
         assert_equal(400, @api_definitions.rescue_handler_for(error).status)
 
         error = StandardError.new
