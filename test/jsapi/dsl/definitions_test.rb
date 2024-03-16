@@ -64,6 +64,14 @@ module Jsapi
         assert_equal('Description of foo', parameter.description)
       end
 
+      def test_recue_from
+        Definitions.new(definitions).call do
+          rescue_from StandardError, with: 500
+        end
+        rescue_handlers = definitions.rescue_handlers
+        assert_equal([500], rescue_handlers.map(&:status))
+      end
+
       def test_schema
         Definitions.new(definitions).call { schema 'Foo' }
         assert_predicate(definitions.schema('Foo'), :present?)

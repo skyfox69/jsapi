@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     class Definitions
-      attr_reader :operations, :parameters, :schemas
+      attr_reader :operations, :parameters, :rescue_handlers, :schemas
 
       def initialize(owner = nil)
         @owner = owner
@@ -11,6 +11,7 @@ module Jsapi
         @parameters = {}
         @schemas = {}
         @openapi_roots = {}
+        @rescue_handlers = []
         @self_and_included = [self]
       end
 
@@ -27,6 +28,10 @@ module Jsapi
         raise "parameter already defined: '#{name}'" if @parameters.key?(name)
 
         @parameters[name.to_s] = Parameter.new(name, **options)
+      end
+
+      def add_rescue_handler(klass, status: nil)
+        @rescue_handlers << RescueHandler.new(klass, status: status)
       end
 
       def add_schema(name, **options)
@@ -91,6 +96,15 @@ module Jsapi
 
         definitions = @self_and_included.find { |d| d.parameters.key?(name) }
         definitions.parameters[name] if definitions.present?
+      end
+
+      def rescue_handler_for(exception)
+        @self_and_included.each do |definitions|
+          definitions.rescue_handlers.each do |rescue_handler|
+            return rescue_handler if rescue_handler.match?(exception)
+          end
+        end
+        nil
       end
 
       def schema(name)

@@ -39,6 +39,13 @@ module Jsapi
         end
       end
 
+      # Associates one or more excpetion classes with a status code.
+      def rescue_from(*klasses, with: nil)
+        klasses.each do |klass|
+          _meta_model.add_rescue_handler(klass, status: with)
+        end
+      end
+
       # Defines a reusable schema.
       #
       #   api_definitions do

@@ -8,11 +8,15 @@ module Jsapi
       include DSL
       include Methods
 
-      api_operation 'operation' do
-        parameter :foo, type: 'string', existence: true
-        response type: 'string'
-        response 200, type: 'string'
-        response 400, type: 'string'
+      api_definitions do
+        rescue_from RuntimeError, with: 500
+
+        operation 'operation' do
+          parameter :foo, type: 'string', existence: true
+          response 200, type: 'string'
+          response 400, type: 'string'
+          response 500, type: 'string'
+        end
       end
 
       attr_accessor :params
@@ -24,51 +28,55 @@ module Jsapi
       # api_operation tests
 
       def test_api_operation
-        api_operation(:operation, status: 200) { 'bar' }
+        params['foo'] = 'bar'
+        api_operation(:operation, status: 200, &:foo)
+
         assert_equal(200, @render_options[:status])
         assert_equal('"bar"', @render_options[:json].to_json)
       end
 
       def test_api_operation_without_block
-        api_operation(:operation, status: 204)
-        assert_equal([204], @head_arguments)
+        api_operation(:operation, status: 200)
+        assert_equal([200], @head_arguments)
       end
 
-      def test_api_operation_parameters
-        params['foo'] = 'bar'
-        api_operation :operation do |api_params|
-          assert_equal('bar', api_params.foo)
+      def test_api_operation_renders_an_error_response
+        api_operation :operation, status: 200 do
+          raise 'bar'
         end
-      end
-
-      def test_api_operation_invalid_parameters
-        api_operation :operation, status: { invalid: 400 }
-        assert_equal(400, @render_options[:status])
+        assert_equal(500, @render_options[:status])
+        assert_equal('"bar"', @render_options[:json].to_json)
       end
 
       def test_api_operation_raises_an_error_on_undefined_name
-        error = assert_raises RuntimeError do
+        error = assert_raises ArgumentError do
           api_operation(:foo) {}
         end
         assert_equal("operation not defined: 'foo'", error.message)
       end
 
       def test_api_operation_raises_an_error_on_undefined_status_code
-        error = assert_raises RuntimeError do
+        error = assert_raises ArgumentError do
           api_operation(:operation, status: 204) {}
         end
         assert_equal("status code not defined: '204'", error.message)
       end
 
+      def test_api_operation_bang_method_raises_an_error_on_invalid_parameters
+        assert_raises InvalidParamsError do
+          api_operation!(:operation, status: 200) {}
+        end
+      end
+
       # api_parameters tests
 
       def test_api_parameters
-        params['foo'] = 'my_value'
-        assert_equal('my_value', api_params(:operation).foo)
+        params['foo'] = 'bar'
+        assert_equal('bar', api_params(:operation).foo)
       end
 
       def test_api_parameters_raises_an_error_on_undefined_operation_name
-        error = assert_raises RuntimeError do
+        error = assert_raises ArgumentError do
           api_params(:foo)
         end
         assert_equal("operation not defined: 'foo'", error.message)
@@ -77,38 +85,22 @@ module Jsapi
       # api_response tests
 
       def test_api_response
-        response = api_response('My response', :operation)
-        assert_equal('"My response"', response.to_json)
+        response = api_response('foo', :operation, status: 200)
+        assert_equal('"foo"', response.to_json)
       end
 
       def test_api_response_raises_an_error_on_undefined_operation_name
-        error = assert_raises RuntimeError do
-          api_response('My response', :foo)
+        error = assert_raises ArgumentError do
+          api_response('bar', :foo)
         end
         assert_equal("operation not defined: 'foo'", error.message)
       end
 
       def test_api_response_raises_an_error_on_undefined_status_code
-        error = assert_raises RuntimeError do
-          api_response('My response', :operation, status: 204)
+        error = assert_raises ArgumentError do
+          api_response('foo', :operation, status: 204)
         end
         assert_equal("status code not defined: '204'", error.message)
-      end
-
-      # api_status_code tests
-
-      def test_api_status_codes
-        status_codes = api_status_codes(200)
-        assert_equal(200, status_codes.default)
-        assert_nil(status_codes.invalid)
-
-        status_codes = api_status_codes({ default: 200, invalid: 400 })
-        assert_equal(200, status_codes.default)
-        assert_equal(400, status_codes.invalid)
-
-        status_codes = api_status_codes(status_codes)
-        assert_equal(200, status_codes.default)
-        assert_equal(400, status_codes.invalid)
       end
 
       private

@@ -43,3 +43,6 @@ Style/GuardClause:
 
 Style/IfUnlessModifier:
   Enabled: false
+
+Style/RaiseArgs:
+  Enabled: false

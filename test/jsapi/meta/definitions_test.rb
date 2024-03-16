@@ -97,6 +97,22 @@ module Jsapi
         assert_nil(@api_definitions.parameter(nil))
       end
 
+      # Rescue handlers tests
+
+      def test_rescue_handler_for
+        @api_definitions.add_rescue_handler(Controller::InvalidParamsError, status: 400)
+        @api_definitions.add_rescue_handler(StandardError, status: 500)
+
+        error = Controller::InvalidParamsError.new(Model::Base.new({}))
+        assert_equal(400, @api_definitions.rescue_handler_for(error).status)
+
+        error = StandardError.new
+        assert_equal(500, @api_definitions.rescue_handler_for(error).status)
+
+        error = Exception.new
+        assert_nil(@api_definitions.rescue_handler_for(error))
+      end
+
       # Schema tests
 
       def test_add_schema
