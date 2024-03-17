@@ -5,7 +5,7 @@ module Jsapi
     module Methods
       private
 
-      # Returns the API definitions of the current class.
+      # Returns the API definitions of the caller's class.
       def api_definitions
         self.class.api_definitions
       end
@@ -14,8 +14,6 @@ module Jsapi
       # are passed as an instance of the operation's model class to the block. The
       # object returned by the block is serialized by a +Response+.
       #
-      # Raises an +ArgumentError+ if the operation or status is not defined.
-      #
       # Example:
       #
       #   api_operation(:foo) do |api_params|
@@ -23,23 +21,22 @@ module Jsapi
       #   end
       #
       def api_operation(operation_name = nil, status: nil, &block)
-        _perform_api_operation(operation_name, bang: false, status: status, &block)
+        _perform_api_operation(operation_name, false, status: status, &block)
       end
 
-      # Analogous to +api_operation+. Raises an +InvalidParametersError+ if parameters
-      # are invalid.
-      #
+      # Like +api_operation+, except that a +ParametersInvalid+ exception is raised
+      # if parameters are invalid.
       def api_operation!(operation_name = nil, status: nil, &block)
-        _perform_api_operation(operation_name, bang: true, status: status, &block)
+        _perform_api_operation(operation_name, true, status: status, &block)
       end
 
       # Returns the request parameters as an instance of the operations's model class.
       def api_params(operation_name = nil)
-        _api_params(_api_operation(operation_name, api_definitions))
+        definitions = api_definitions
+        _api_params(_api_operation(operation_name, definitions), definitions)
       end
 
-      # Returns a +Response+ instance to serialize +object+ according to the response
-      # definition of the given API operation and status.
+      # Returns a +Response+ to serialize +object+.
       #
       # Example:
       #
@@ -53,36 +50,34 @@ module Jsapi
         Response.new(object, response, api_definitions)
       end
 
-      # Internal methods
-
       def _api_operation(operation_name, definitions)
         operation = definitions.operation(operation_name)
-        return operation if operation.present?
+        return operation if operation
 
-        raise ArgumentError, "operation not defined: '#{operation_name}'"
+        raise "operation not defined: #{operation_name}"
       end
 
-      def _api_params(operation)
+      def _api_params(operation, definitions)
         (operation.model || Model::Base).new(
-          Parameters.new(params, operation, api_definitions)
+          Parameters.new(params, operation, definitions)
         )
       end
 
       def _api_response(operation, status, definitions)
         response = operation.response(status)
-        return response.resolve(definitions) if response.present?
+        return response.resolve(definitions) if response
 
-        raise ArgumentError, "status code not defined: '#{status}'"
+        raise "status code not defined: #{status}"
       end
 
-      def _perform_api_operation(operation_name, bang:, status:, &block)
+      def _perform_api_operation(operation_name, bang, status:, &block)
         definitions = api_definitions
         operation = _api_operation(operation_name, definitions)
         response = _api_response(operation, status, definitions)
 
         if block
-          payload = begin
-            params = _api_params(operation)
+          params = _api_params(operation, definitions)
+          object = begin
             raise ParametersInvalid.new(params) if bang && params.invalid?
 
             block.call(params)
@@ -94,7 +89,7 @@ module Jsapi
             response = _api_response(operation, status, definitions)
             NestedError.new(e, status: status)
           end
-          render(json: Response.new(payload, response, definitions), status: status)
+          render(json: Response.new(object, response, definitions), status: status)
         else
           head(status)
         end

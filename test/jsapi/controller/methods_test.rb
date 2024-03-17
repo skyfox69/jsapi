@@ -49,17 +49,17 @@ module Jsapi
       end
 
       def test_api_operation_raises_an_error_on_undefined_name
-        error = assert_raises ArgumentError do
+        error = assert_raises RuntimeError do
           api_operation(:foo) {}
         end
-        assert_equal("operation not defined: 'foo'", error.message)
+        assert_equal('operation not defined: foo', error.message)
       end
 
       def test_api_operation_raises_an_error_on_undefined_status_code
-        error = assert_raises ArgumentError do
+        error = assert_raises RuntimeError do
           api_operation(:operation, status: 204) {}
         end
-        assert_equal("status code not defined: '204'", error.message)
+        assert_equal('status code not defined: 204', error.message)
       end
 
       def test_api_operation_bang_method_raises_an_error_on_invalid_parameters
@@ -76,10 +76,10 @@ module Jsapi
       end
 
       def test_api_parameters_raises_an_error_on_undefined_operation_name
-        error = assert_raises ArgumentError do
+        error = assert_raises RuntimeError do
           api_params(:foo)
         end
-        assert_equal("operation not defined: 'foo'", error.message)
+        assert_equal('operation not defined: foo', error.message)
       end
 
       # api_response tests
@@ -90,17 +90,17 @@ module Jsapi
       end
 
       def test_api_response_raises_an_error_on_undefined_operation_name
-        error = assert_raises ArgumentError do
+        error = assert_raises RuntimeError do
           api_response('bar', :foo)
         end
-        assert_equal("operation not defined: 'foo'", error.message)
+        assert_equal('operation not defined: foo', error.message)
       end
 
       def test_api_response_raises_an_error_on_undefined_status_code
-        error = assert_raises ArgumentError do
+        error = assert_raises RuntimeError do
           api_response('foo', :operation, status: 204)
         end
-        assert_equal("status code not defined: '204'", error.message)
+        assert_equal('status code not defined: 204', error.message)
       end
 
       private
