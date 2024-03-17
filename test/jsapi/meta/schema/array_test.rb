@@ -6,12 +6,6 @@ module Jsapi
   module Meta
     module Schema
       class ArrayTest < Minitest::Test
-        def test_raises_error_on_double_items
-          schema = Array.new(items: { type: 'string' })
-          error = assert_raises { schema.items = { type: 'integer' } }
-          assert_equal('items already defined', error.message)
-        end
-
         def test_max_items
           schema = Array.new(items: { type: 'string' }, max_items: 3)
           max_items = schema.validations['max_items']

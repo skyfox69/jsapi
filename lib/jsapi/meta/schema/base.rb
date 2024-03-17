@@ -15,7 +15,7 @@ module Jsapi
 
           options.except(:example, :existence, :type).each do |key, value|
             method = "#{key}="
-            raise ArgumentError, "invalid option: '#{key}'" unless respond_to?(method)
+            raise ArgumentError, "invalid option: #{key}" unless respond_to?(method)
 
             send(method, value)
           end
@@ -100,8 +100,6 @@ module Jsapi
         private
 
         def add_validation(keyword, validation)
-          raise "#{keyword} already defined" if validations.key?(keyword)
-
           validations[keyword] = validation
         end
       end

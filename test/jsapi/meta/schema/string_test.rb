@@ -16,12 +16,6 @@ module Jsapi
           assert_equal("format not supported: 'foo'", error.message)
         end
 
-        def test_raises_error_on_double_format
-          schema = String.new(format: 'date')
-          error = assert_raises { schema.format = 'date-time' }
-          assert_equal('format already defined', error.message)
-        end
-
         def test_max_length
           schema = String.new(max_length: 10)
           max_length = schema.validations['max_length']

@@ -7,7 +7,7 @@ module Jsapi
         class MaxItems < Base
           def initialize(value)
             unless value.respond_to?(:<=)
-              raise ArgumentError, "invalid max items: #{value}"
+              raise ArgumentError, "invalid max items: #{value.inspect}"
             end
 
             super

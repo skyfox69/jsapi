@@ -33,11 +33,6 @@ module Jsapi
       def test_add_operation
         @api_definitions.add_operation('foo')
         assert(@api_definitions.operations.key?('foo'))
-
-        error = assert_raises(RuntimeError) do
-          @api_definitions.add_operation('foo')
-        end
-        assert_equal("operation already defined: 'foo'", error.message)
       end
 
       def test_default_operation_name
@@ -63,11 +58,6 @@ module Jsapi
       def test_add_parameter
         @api_definitions.add_parameter('foo')
         assert(@api_definitions.parameters.key?('foo'))
-
-        error = assert_raises(RuntimeError) do
-          @api_definitions.add_parameter('foo')
-        end
-        assert_equal("parameter already defined: 'foo'", error.message)
       end
 
       def test_parameter
@@ -99,11 +89,6 @@ module Jsapi
       def test_add_response
         @api_definitions.add_response('Foo')
         assert(@api_definitions.responses.key?('Foo'))
-
-        error = assert_raises(RuntimeError) do
-          @api_definitions.add_response('Foo')
-        end
-        assert_equal("response already defined: 'Foo'", error.message)
       end
 
       def test_response
@@ -119,11 +104,6 @@ module Jsapi
       def test_add_schema
         @api_definitions.add_schema('Foo')
         assert(@api_definitions.schemas.key?('Foo'))
-
-        error = assert_raises(RuntimeError) do
-          @api_definitions.add_schema('Foo')
-        end
-        assert_equal("schema already defined: 'Foo'", error.message)
       end
 
       def test_schema

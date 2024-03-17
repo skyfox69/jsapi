@@ -7,7 +7,7 @@ module Jsapi
         class MinItems < Base
           def initialize(value)
             unless value.respond_to?(:>=)
-              raise ArgumentError, "invalid min items: #{value}"
+              raise ArgumentError, "invalid min items: #{value.inspect}"
             end
 
             super

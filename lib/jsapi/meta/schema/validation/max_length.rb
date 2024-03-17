@@ -7,7 +7,7 @@ module Jsapi
         class MaxLength < Base
           def initialize(value)
             unless value.respond_to?(:<=)
-              raise ArgumentError, "invalid max length: #{value}"
+              raise ArgumentError, "invalid max length: #{value.inspect}"
             end
 
             super

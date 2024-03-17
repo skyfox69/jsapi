@@ -16,7 +16,6 @@ module Jsapi
 
         def format=(format)
           raise ArgumentError, "format not supported: '#{format}'" unless format.in?(FORMATS)
-          raise 'format already defined' if instance_variable_defined?(:@format)
 
           @format = format
         end

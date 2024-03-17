@@ -17,17 +17,12 @@ module Jsapi
       end
 
       def add_operation(name = nil, **options)
-        name = default_operation_name unless name.present?
-        name = name.to_s
-        raise "operation already defined: '#{name}'" if @operations.key?(name)
-
+        name = name.nil? ? default_operation_name : name.to_s
         @operations[name] = Operation.new(name, **options.reverse_merge(path: default_path))
       end
 
       def add_parameter(name, **options)
         name = name.to_s
-        raise "parameter already defined: '#{name}'" if @parameters.key?(name)
-
         @parameters[name] = Parameter.new(name, **options)
       end
 
@@ -37,15 +32,11 @@ module Jsapi
 
       def add_response(name, **options)
         name = name.to_s
-        raise "response already defined: '#{name}'" if @responses.key?(name)
-
         @responses[name] = Response.new(**options)
       end
 
       def add_schema(name, **options)
         name = name.to_s
-        raise "schema already defined: '#{name}'" if @schemas.key?(name)
-
         @schemas[name] = Schema.new(**options)
       end
 

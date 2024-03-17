@@ -6,7 +6,7 @@ module Jsapi
       module Validation
         class MultipleOf < Base
           def initialize(value)
-            raise ArgumentError, "invalid multiple of: #{value}" unless value.respond_to?(:%)
+            raise ArgumentError, "invalid multiple of: #{value.inspect}" unless value.respond_to?(:%)
 
             super
           end

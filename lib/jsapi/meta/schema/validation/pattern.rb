@@ -7,7 +7,7 @@ module Jsapi
         class Pattern < Base
           def initialize(value)
             unless value.is_a?(Regexp)
-              raise ArgumentError, "invalid pattern: #{value}"
+              raise ArgumentError, "invalid pattern: #{value.inspect}"
             end
 
             super

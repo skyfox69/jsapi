@@ -6,22 +6,11 @@ module Jsapi
   module Meta
     module Schema
       class ObjectTest < Minitest::Test
-        def test_add_all_on_nil
+        def test_add_all
           schema = Object.new
           schema.add_all_of(nil)
           assert_predicate(schema.all_of, :empty?)
-        end
 
-        def test_properties
-          schema = Object.new
-          schema.add_property('foo')
-          schema.add_property('bar')
-
-          properties = schema.properties(Definitions.new)
-          assert_equal(%w[foo bar], properties.keys)
-        end
-
-        def test_properties_on_references
           definitions = Definitions.new
           definitions.add_schema('Foo').add_property('foo')
           definitions.add_schema('Bar').add_property('bar')
@@ -33,6 +22,15 @@ module Jsapi
 
           properties = schema.properties(definitions)
           assert_equal(%w[foo bar my_property], properties.keys)
+        end
+
+        def test_properties
+          schema = Object.new
+          schema.add_property('foo')
+          schema.add_property('bar')
+
+          properties = schema.properties(Definitions.new)
+          assert_equal(%w[foo bar], properties.keys)
         end
 
         def test_properties_raises_an_error_on_circular_reference

@@ -11,7 +11,7 @@ module Jsapi
         class MaxItemsTest < Minitest::Test
           def test_raises_error_on_invalid_max_length
             error = assert_raises(ArgumentError) { MaxItems.new(nil) }
-            assert_equal('invalid max items: ', error.message)
+            assert_equal('invalid max items: nil', error.message)
           end
 
           def test_validates_max_items

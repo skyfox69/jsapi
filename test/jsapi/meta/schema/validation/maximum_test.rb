@@ -11,12 +11,12 @@ module Jsapi
         class MaximumTest < Minitest::Test
           def test_raises_error_on_invalid_maximum
             error = assert_raises(ArgumentError) { Maximum.new(nil) }
-            assert_equal('invalid maximum: ', error.message)
+            assert_equal('invalid maximum: nil', error.message)
           end
 
           def test_raises_error_on_invalid_exclusive_maximum
             error = assert_raises(ArgumentError) { Maximum.new(nil, exclusive: true) }
-            assert_equal('invalid exclusive maximum: ', error.message)
+            assert_equal('invalid exclusive maximum: nil', error.message)
           end
 
           def test_validates_maximum

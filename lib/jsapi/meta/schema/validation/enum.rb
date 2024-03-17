@@ -7,7 +7,7 @@ module Jsapi
         class Enum < Base
           def initialize(value)
             unless value.respond_to?(:include?)
-              raise ArgumentError, "invalid enum: #{value}"
+              raise ArgumentError, "invalid enum: #{value.inspect}"
             end
 
             super

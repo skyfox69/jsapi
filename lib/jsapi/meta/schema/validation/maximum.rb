@@ -9,9 +9,9 @@ module Jsapi
 
           def initialize(value, exclusive: false)
             if exclusive
-              raise ArgumentError, "invalid exclusive maximum: #{value}" unless value.respond_to?(:<)
+              raise ArgumentError, "invalid exclusive maximum: #{value.inspect}" unless value.respond_to?(:<)
             else
-              raise ArgumentError, "invalid maximum: #{value}" unless value.respond_to?(:<=)
+              raise ArgumentError, "invalid maximum: #{value.inspect}" unless value.respond_to?(:<=)
             end
 
             super(value)

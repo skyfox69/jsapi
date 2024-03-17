@@ -11,7 +11,7 @@ module Jsapi
         class MinItemsTest < Minitest::Test
           def test_raises_error_on_invalid_min_length
             error = assert_raises(ArgumentError) { MinItems.new(nil) }
-            assert_equal('invalid min items: ', error.message)
+            assert_equal('invalid min items: nil', error.message)
           end
 
           def test_validates_min_items

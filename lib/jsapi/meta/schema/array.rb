@@ -11,8 +11,6 @@ module Jsapi
         end
 
         def items=(options)
-          raise 'items already defined' if instance_variable_defined?(:@items)
-
           @items = Schema.new(**options)
         end
 

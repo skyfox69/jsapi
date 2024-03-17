@@ -11,7 +11,7 @@ module Jsapi
         class EnumTest < Minitest::Test
           def test_raises_error_on_invalid_enum
             error = assert_raises(ArgumentError) { Enum.new(nil) }
-            assert_equal('invalid enum: ', error.message)
+            assert_equal('invalid enum: nil', error.message)
           end
 
           def test_validates_enum

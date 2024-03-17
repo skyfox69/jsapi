@@ -7,7 +7,7 @@ module Jsapi
         class MinLength < Base
           def initialize(value)
             unless value.respond_to?(:>=)
-              raise ArgumentError, "invalid min length: #{value}"
+              raise ArgumentError, "invalid min length: #{value.inspect}"
             end
 
             super
