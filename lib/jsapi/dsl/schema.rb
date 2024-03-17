@@ -22,7 +22,7 @@ module Jsapi
         end
 
         _meta_model.items = options
-        Schema.new(_meta_model.items).call(&block) if block.present?
+        Schema.new(_meta_model.items).call(&block) if block
       end
 
       def model(klass = nil, &block)
@@ -30,7 +30,7 @@ module Jsapi
           raise Error, "'model' isn't allowed for '#{_meta_model.type}'"
         end
 
-        if block.present?
+        if block
           klass = Class.new(klass || Model::Base)
           klass.class_eval(&block)
         end
@@ -44,7 +44,7 @@ module Jsapi
           end
 
           property_model = _meta_model.add_property(name, **options)
-          Property.new(property_model).call(&block) if block.present?
+          Property.new(property_model).call(&block) if block
         end
       end
     end

@@ -11,7 +11,7 @@ module Jsapi
       def openapi(version = nil, &block)
         wrap_error("openapi #{version}") do
           openapi = _meta_model.openapi_root(version)
-          Generic.new(openapi).call(&block) if block.present?
+          Generic.new(openapi).call(&block) if block
         end
       end
 
@@ -23,7 +23,7 @@ module Jsapi
       def operation(name = nil, **options, &block)
         wrap_error(name.nil? ? '' : "'#{name}'") do
           operation_model = _meta_model.add_operation(name, **options)
-          Operation.new(operation_model).call(&block) if block.present?
+          Operation.new(operation_model).call(&block) if block
         end
       end
 
@@ -35,7 +35,7 @@ module Jsapi
       def parameter(name, **options, &block)
         wrap_error("'#{name}'") do
           parameter_model = _meta_model.add_parameter(name, **options)
-          Parameter.new(parameter_model).call(&block) if block.present?
+          Parameter.new(parameter_model).call(&block) if block
         end
       end
 
@@ -54,7 +54,7 @@ module Jsapi
       def response(name, **options, &block)
         wrap_error("'#{name}'") do
           response_model = _meta_model.add_response(name, **options)
-          Response.new(response_model).call(&block) if block.present?
+          Response.new(response_model).call(&block) if block
         end
       end
 
@@ -66,7 +66,7 @@ module Jsapi
       def schema(name, **options, &block)
         wrap_error("'#{name}'") do
           schema_model = _meta_model.add_schema(name, **options)
-          Schema.new(schema_model).call(&block) if block.present?
+          Schema.new(schema_model).call(&block) if block
         end
       end
     end

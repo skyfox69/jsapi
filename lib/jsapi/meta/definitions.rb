@@ -94,7 +94,7 @@ module Jsapi
       def operation(name = nil)
         if (name = name.to_s).present?
           definitions = @self_and_included.find { |d| d.operations.key?(name) }
-          return definitions.operations[name] if definitions.present?
+          return definitions.operations[name] if definitions
         elsif @operations.one?
           # return the one and only operation
           @operations.values.first
@@ -105,7 +105,7 @@ module Jsapi
         return unless (name = name.to_s).present?
 
         definitions = @self_and_included.find { |d| d.parameters.key?(name) }
-        definitions.parameters[name] if definitions.present?
+        definitions.parameters[name] if definitions
       end
 
       def rescue_handler_for(exception)
@@ -121,14 +121,14 @@ module Jsapi
         return unless (name = name.to_s).present?
 
         definitions = @self_and_included.find { |d| d.responses.key?(name) }
-        return definitions.responses[name] if definitions.present?
+        return definitions.responses[name] if definitions
       end
 
       def schema(name)
         return unless (name = name.to_s).present?
 
         definitions = @self_and_included.find { |d| d.schemas.key?(name) }
-        return definitions.schemas[name] if definitions.present?
+        return definitions.schemas[name] if definitions
       end
 
       private

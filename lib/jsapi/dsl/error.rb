@@ -16,7 +16,7 @@ module Jsapi
 
       def message
         message = super
-        return message if @path.blank?
+        return message if @path.empty?
 
         "#{message} (at #{@path.join('/')})"
       end

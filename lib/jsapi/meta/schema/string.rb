@@ -34,15 +34,11 @@ module Jsapi
         end
 
         def to_json_schema(definitions = nil)
-          return super unless format.present?
-
-          super.merge(format: format)
+          format ? super.merge(format: format) : super
         end
 
         def to_openapi_schema(_version)
-          return super unless format.present?
-
-          super.merge(format: format)
+          format ? super.merge(format: format) : super
         end
       end
     end

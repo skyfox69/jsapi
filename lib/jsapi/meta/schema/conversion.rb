@@ -13,7 +13,7 @@ module Jsapi
         end
 
         def convert(object)
-          return object unless conversion.present?
+          return object if conversion.nil?
 
           if conversion.respond_to?(:call)
             conversion.call(object)

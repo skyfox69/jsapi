@@ -68,7 +68,7 @@ module Jsapi
           hash[:parameters] = parameters.values.flat_map do |parameter|
             parameter.to_openapi_parameters(version, definitions)
           end
-          if request_body.present?
+          if request_body
             if version == '2.0'
               hash[:parameters] << request_body.to_openapi_parameter
             else
