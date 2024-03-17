@@ -46,6 +46,20 @@ module Jsapi
         @self_and_included << definitions
       end
 
+      # Returns the JSON Schema document for the given schema as a +Hash+.
+      def json_schema_document(name)
+        schema(name)&.to_json_schema&.tap do |hash|
+          definitions =
+            @self_and_included
+            .map(&:schemas)
+            .reduce(&:merge)
+            .except(name.to_s)
+            .transform_values(&:to_json_schema)
+
+          hash[:definitions] = definitions if definitions.any?
+        end
+      end
+
       def openapi_document(version = '2.0')
         openapi_root(version).to_h.tap do |root|
           if version == '2.0'

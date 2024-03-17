@@ -114,6 +114,83 @@ module Jsapi
         assert_predicate(@api_definitions.schema('Foo'), :present?)
       end
 
+      # JSON Schema documents tests
+
+      def test_json_schema_document
+        @api_definitions.add_schema('Foo').add_property('bar', type: 'string')
+        @api_definitions.add_schema('Bar').add_property('foo', schema: 'Foo')
+
+        # 'Foo'
+        assert_equal(
+          {
+            type: %w[object null],
+            properties: {
+              'bar' => {
+                type: %w[string null]
+              }
+            },
+            required: [],
+            definitions: {
+              'Bar' => {
+                type: %w[object null],
+                properties: {
+                  'foo' => {
+                    '$ref': '#/definitions/Foo'
+                  }
+                },
+                required: []
+              }
+            }
+          },
+          @api_definitions.json_schema_document('Foo')
+        )
+
+        # 'Bar'
+        assert_equal(
+          {
+            type: %w[object null],
+            properties: {
+              'foo' => {
+                '$ref': '#/definitions/Foo'
+              }
+            },
+            required: [],
+            definitions: {
+              'Foo' => {
+                type: %w[object null],
+                properties: {
+                  'bar' => {
+                    type: %w[string null]
+                  }
+                },
+                required: []
+              }
+            }
+          },
+          @api_definitions.json_schema_document('Bar')
+        )
+
+        # Others
+        assert_nil(@api_definitions.json_schema_document('FooBar'))
+      end
+
+      def test_json_schema_document_without_definitions
+        @api_definitions.add_schema('Foo').add_property('bar', type: 'string')
+
+        assert_equal(
+          {
+            type: %w[object null],
+            properties: {
+              'bar' => {
+                type: %w[string null]
+              }
+            },
+            required: []
+          },
+          @api_definitions.json_schema_document('Foo')
+        )
+      end
+
       # OpenAPI document tests
 
       def test_openapi_2_0_document

@@ -32,7 +32,7 @@ module Jsapi
           add_validation('pattern', Validation::Pattern.new(value))
         end
 
-        def to_json_schema(definitions = nil)
+        def to_json_schema
           format ? super.merge(format: format) : super
         end
 

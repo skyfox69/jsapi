@@ -22,7 +22,7 @@ module Jsapi
           add_validation('min_items', Validation::MinItems.new(value))
         end
 
-        def to_json_schema(definitions = nil)
+        def to_json_schema
           super.merge(items: items&.to_json_schema || {})
         end
 

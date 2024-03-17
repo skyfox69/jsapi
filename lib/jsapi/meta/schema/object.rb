@@ -26,7 +26,7 @@ module Jsapi
           merge_properties(definitions, [])
         end
 
-        def to_json_schema(definitions = nil)
+        def to_json_schema
           super.merge(
             allOf: @all_of.map(&:to_json_schema).presence,
             properties: @properties.transform_values(&:to_json_schema),

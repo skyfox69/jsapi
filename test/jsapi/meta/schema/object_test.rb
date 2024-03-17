@@ -48,9 +48,6 @@ module Jsapi
         # JSON Schema tests
 
         def test_json_schema
-          definitions = Definitions.new
-          definitions.add_schema('Foo')
-
           schema = Object.new
           schema.add_all_of('Foo')
           schema.add_property('foo', type: 'string', existence: true)
@@ -70,16 +67,9 @@ module Jsapi
                   type: %w[integer null]
                 }
               },
-              required: %w[foo],
-              definitions: {
-                'Foo' => {
-                  type: %w[object null],
-                  properties: {},
-                  required: []
-                }
-              }
+              required: %w[foo]
             },
-            schema.to_json_schema(definitions)
+            schema.to_json_schema
           )
         end
 

@@ -28,7 +28,7 @@ module Jsapi
         end
 
         # Returns the JSON schema as a +Hash+.
-        def to_json_schema(*)
+        def to_json_schema
           { '$ref': "#/definitions/#{@reference}" }
         end
 

@@ -50,13 +50,12 @@ module Jsapi
           self
         end
 
-        def to_json_schema(definitions = nil)
+        def to_json_schema
           {
             type: nullable? ? [type, 'null'] : type,
             description: description,
             default: default,
-            examples: examples.presence,
-            definitions: definitions&.schemas&.transform_values(&:to_json_schema)
+            examples: examples.presence
           }.tap do |hash|
             validations.each_value do |validation|
               hash.merge!(validation.to_json_schema_validation)
