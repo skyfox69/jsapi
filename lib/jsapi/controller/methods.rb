@@ -115,7 +115,7 @@ module Jsapi
             response = operation.response(status)&.resolve(definitions)
             raise e if response.nil?
 
-            Error.new(e, status: status)
+            ErrorResult.new(e, status: status)
           end
           render(json: Response.new(result, response, definitions), status: status)
         else
