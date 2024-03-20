@@ -9,8 +9,13 @@ module Jsapi
       end
 
       # Performs an API operation by calling the given block. The request parameters
-      # are passed as an instance of the operation's model class to the block. The
-      # object returned by the block is serialized by a +Response+.
+      # are passed as an instance of the operation's model class to the block. This
+      # method implicitly renders the JSON representation of the object returned by
+      # the block according to the +response+ definition of the operation and HTTP
+      # status code.
+      #
+      # +operation_name+ can be +nil+ or omitted if the controller handles one API
+      # operation only.
       #
       # Example:
       #
@@ -18,11 +23,11 @@ module Jsapi
       #     # ...
       #   end
       #
-      def api_operation(operation_name = nil, status: nil, &block)
+      def api_operation(operation_name = nil, status: :default, &block)
         _perform_api_operation(operation_name, false, status: status, &block)
       end
 
-      # Like +api_operation+, except that a +ParametersInvalid+ exception is raised
+      # Like +api_operation+, except that a ParametersInvalid exception is raised
       # if the request parameters are invalid.
       #
       # Example:
@@ -31,12 +36,13 @@ module Jsapi
       #     # ...
       #   end
       #
-      def api_operation!(operation_name = nil, status: nil, &block)
+      def api_operation!(operation_name = nil, status: :default, &block)
         _perform_api_operation(operation_name, true, status: status, &block)
       end
 
-      # Returns the request parameters as an instance of the given operation's model
-      # class. The operation name can be omitted if the controller handles one API
+      # Returns the request parameters as an instance of the operation's model class.
+      #
+      # +operation_name+ can be +nil+ or omitted if the controller handles one API
       # operation only.
       #
       # Example:
@@ -48,14 +54,17 @@ module Jsapi
         _api_params(_api_operation(operation_name, definitions), definitions)
       end
 
-      # Returns a +Response+ to serialize +result+ according to the +response+
-      # definition associated with the given operation and status.
+      # Returns a Response to serialize the JSON representation of +result+ according
+      # to the +response+ definition of the operation and HTTP status code.
+      #
+      # +operation_name+ can be +nil+ or omitted if the controller handles one API
+      # operation only.
       #
       # Example:
       #
       #   render(json: api_response(bar, 'foo', status: 200))
       #
-      def api_response(result, operation_name = nil, status: nil)
+      def api_response(result, operation_name = nil, status: :default)
         definitions = api_definitions
         operation = _api_operation(operation_name, definitions)
         response = _api_response(operation, status, definitions)
@@ -97,11 +106,15 @@ module Jsapi
 
             block.call(params)
           rescue StandardError => e
+            # Lookup a rescue handler
             rescue_handler = definitions.rescue_handler_for(e)
             raise e if rescue_handler.nil?
 
+            # Change the HTTP status code and response schema
             status = rescue_handler.status
-            response = _api_response(operation, status, definitions)
+            response = operation.response(status)&.resolve(definitions)
+            raise e if response.nil?
+
             Error.new(e, status: status)
           end
           render(json: Response.new(result, response, definitions), status: status)

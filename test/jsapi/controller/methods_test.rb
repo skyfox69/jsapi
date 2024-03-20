@@ -8,7 +8,11 @@ module Jsapi
       include DSL
       include Methods
 
+      # To test that an exception is reraised
+      class DocumentNotFound < StandardError; end
+
       api_definitions do
+        rescue_from DocumentNotFound, with: 404
         rescue_from RuntimeError, with: 500
 
         operation 'operation' do
@@ -60,6 +64,14 @@ module Jsapi
           api_operation(:operation, status: 204) {}
         end
         assert_equal('status code not defined: 204', error.message)
+      end
+
+      def test_api_operation_reraises_an_error
+        assert_raises DocumentNotFound do
+          api_operation :operation, status: 200 do
+            raise DocumentNotFound
+          end
+        end
       end
 
       def test_api_operation_bang_method_raises_an_error_on_invalid_parameters
