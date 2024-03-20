@@ -2,7 +2,8 @@
 
 module Jsapi
   module Controller
-    class NestedError
+    # Used by +api_operation!+ to produce an error response.
+    class Error
       attr_reader :status
 
       delegate :message, :to_s, to: :@exception

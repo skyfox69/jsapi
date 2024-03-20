@@ -3,8 +3,6 @@
 module Jsapi
   module Controller
     module Methods
-      private
-
       # Returns the API definitions of the caller's class.
       def api_definitions
         self.class.api_definitions
@@ -16,8 +14,8 @@ module Jsapi
       #
       # Example:
       #
-      #   api_operation(:foo) do |api_params|
-      #     bar(api_params)
+      #   api_operation('foo') do |api_params|
+      #     # ...
       #   end
       #
       def api_operation(operation_name = nil, status: nil, &block)
@@ -25,30 +23,47 @@ module Jsapi
       end
 
       # Like +api_operation+, except that a +ParametersInvalid+ exception is raised
-      # if parameters are invalid.
+      # if the request parameters are invalid.
+      #
+      # Example:
+      #
+      #   api_operation!('foo') do |api_params|
+      #     # ...
+      #   end
+      #
       def api_operation!(operation_name = nil, status: nil, &block)
         _perform_api_operation(operation_name, true, status: status, &block)
       end
 
-      # Returns the request parameters as an instance of the operations's model class.
+      # Returns the request parameters as an instance of the given operation's model
+      # class. The operation name can be omitted if the controller handles one API
+      # operation only.
+      #
+      # Example:
+      #
+      #   params = api_params('foo')
+      #
       def api_params(operation_name = nil)
         definitions = api_definitions
         _api_params(_api_operation(operation_name, definitions), definitions)
       end
 
-      # Returns a +Response+ to serialize +object+.
+      # Returns a +Response+ to serialize +result+ according to the +response+
+      # definition associated with the given operation and status.
       #
       # Example:
       #
-      #   render(json: api_response(bar, :foo, status: 200))
+      #   render(json: api_response(bar, 'foo', status: 200))
       #
-      def api_response(object, operation_name = nil, status: nil)
+      def api_response(result, operation_name = nil, status: nil)
         definitions = api_definitions
         operation = _api_operation(operation_name, definitions)
         response = _api_response(operation, status, definitions)
 
-        Response.new(object, response, api_definitions)
+        Response.new(result, response, api_definitions)
       end
+
+      private
 
       def _api_operation(operation_name, definitions)
         operation = definitions.operation(operation_name)
@@ -77,7 +92,7 @@ module Jsapi
 
         if block
           params = _api_params(operation, definitions)
-          object = begin
+          result = begin
             raise ParametersInvalid.new(params) if bang && params.invalid?
 
             block.call(params)
@@ -87,9 +102,9 @@ module Jsapi
 
             status = rescue_handler.status
             response = _api_response(operation, status, definitions)
-            NestedError.new(e, status: status)
+            Error.new(e, status: status)
           end
-          render(json: Response.new(object, response, definitions), status: status)
+          render(json: Response.new(result, response, definitions), status: status)
         else
           head(status)
         end
