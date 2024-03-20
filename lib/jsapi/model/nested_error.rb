@@ -2,6 +2,7 @@
 
 module Jsapi
   module Model
+    # Wraps an error related to a nested model.
     class NestedError
       attr_reader :attribute, :error
 
@@ -12,7 +13,7 @@ module Jsapi
         @error = error
       end
 
-      def ==(other)
+      def ==(other) # :nodoc:
         other.is_a?(self.class) &&
           @attribute == other.attribute &&
           @error == other.error

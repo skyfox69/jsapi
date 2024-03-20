@@ -2,7 +2,7 @@
 
 Provides a DSL to define JSON APIs in Rails.
 
-The key features of _Jsapi_ are:
+Key features:
 
 - Reading request parameters by generic model classes
 - Serializing objects
@@ -140,15 +140,17 @@ Create the controller:
 
 ## Jsapi DSL
 
-The `Jsapi::DSL` module provides the following class methods to define
-API components:
+_Jsapi_ provides the following class methods to define API components:
 
-- `api_operation` - Defines a single API operation
-- `api_parameter` - Defines a reusable parameter
-- `api_response` - Defines a reusable response
-- `api_schema` - Defines a reusable schema
-- `api_rescue_from` - Defines a rescue handler
-- `api_include` - Includes API definitions from other classes
+- [api_operation](#defining-api-operations) - Defines a single API operation.
+- [api_parameter](#defining-reusable-parameters) - Defines a reusable parameter.
+- [api_response](#definining-reusable-responses) - Defines a reusable response.
+- [api_schema](#definining-reusable-schemas) - Defines a reusable schema.
+- api_rescue_from - Defines a rescue handler.
+- api_include - Includes API definitions from other classes.
+
+These methods can be integrated by inheriting from `Jsapi::Controller::Base`
+or including `Jsapi::DSL`.
 
 API components can also be defined inside an `api_definitions` block,
 for example:
@@ -183,52 +185,65 @@ except `type` can also be defined inside a block, for example:
 
 ### Defining API operations
 
-Example:
+An API operation can be defined as below:
 
 ```ruby
   api_operation 'foo' do
     parameter 'bar', type: 'string'
     request_body, type: 'object', existence: true do
-      property 'foo', type: 'string'
+      property 'foo_bar', type: 'string'
     end
     response type: 'object' do
-      property 'foo', type: 'string'
+      property 'foo_bar', type: 'string'
     end
   end
 ```
 
-Options:
+The first argument passed to `api_operation` specifies the operation name. The
+operation name must be unique for a particalur controller. It can be omitted,
+if the controller handles one API operation only.
 
-- `model`: See [API models](#api-models)
-- `method` (default: 'get')
-. `path`
-- `tags`
-- `summary`
-- `description`
-- `deprecated`
+#### Options
+
+- `model` - See [API models](#api-models).
+- `method` - The HTTP verb of the operation.
+- `path` - The relative path of the operation.
+- `tags` - One or more tags to group operations.
+- `summary` - A short summary of the operation.
+- `description` - A desciption of the operation.
+- `deprecated` - if true, the operation is declared as deprecated.
+
+All options except `model` are used to generate a meaningful API documentation
+only. The default method is `get`.
 
 ### Defining parameters
 
-Example:
+A parameter of an API operation can be defined as below:
 
 ```ruby
-  parameter 'foo', type: 'string', in: 'path'
+  api_operation 'foo' do
+    parameter 'bar', type: 'string', in: 'path'
+  end
 ```
 
-Options:
+#### Options
 
-- `type`: See [The type option](#the-type-option)
-- `existence`: See [The existence option](#the-existence-option)
-- `conversion`: See [The conversion option](#the-conversion-option)
-- `items`: See [The items option](#the-items-option)
-- `model`: See [API models](#api-models)
-- `in`: The location of the parameter, either `'path'` or `'query'` (default)
-- `description`: A description of the parameter
-- `example`: See [Defining examples](#defining-examples)
-- `deprecated`: `true` or `false` (default)
-- all of [JSON Schema validations](#json-schema-validations)
+- `type` - See [The type option](#the-type-option).
+- `existence` - See [The existence option](#the-existence-option).
+- `conversion` - See [The conversion option](#the-conversion-option).
+- `items` - See [The items option](#the-items-option).
+- `model` - See [API models](#api-models).
+- `in` - The location of the parameter, either `'path'` or `'query'`
+- `description` - A description of the parameter.
+- `example` - See [Defining examples](#defining-examples).
+- `deprecated` - if true the parameter is declared as deprecated.
+
+Additionally, all [JSON Schema validations](#json-schema-validations)
+can be a specified.
 
 ### Defining reusable parameters
+
+A reusable parameter can be defined as below:
 
 ```ruby
   api_parameter 'foo', type: 'string'
@@ -242,47 +257,57 @@ Options:
 
 ### Defining request bodies
 
-Example:
+A request body of an API operation can be defined as below:
 
 ```ruby
-  request_body type: 'object' do
-    property 'foo', type: 'string'
+  api_operation 'foo' do
+    request_body type: 'object' do
+      property 'bar', type: 'string'
+    end
   end
 ```
 
-Options:
+#### Options
 
-- `type`: See [The type option](#the-type-option)
-- `existence`: See [The existence option](#the-existence-option)
-- `conversion`: See [The conversion option](#the-conversion-option)
-- `items`: See [The items option](#the-items-option)
-- `model`: See [API models](#api-models)
-- `description`: A description of the request body
-- `example`: See [Defining examples](#defining-examples)
-- `deprecated`: `true` or `false` (default)
-- all of [JSON Schema validations](#json-schema-validations)
+- `type` - See [The type option](#the-type-option).
+- `existence` - See [The existence option](#the-existence-option).
+- `conversion` - See [The conversion option](#the-conversion-option).
+- `items` - See [The items option](#the-items-option).
+- `model`-  See [API models](#api-models).
+- `description` - A description of the request body.
+- `example` - See [Defining examples](#defining-examples).
+- `deprecated` - if true, the request body is declared as deprecated.
+
+Additionally, all [JSON Schema validations](#json-schema-validations)
+can be a specified.
 
 ### Defining responses
 
-Example:
+A response of an API operation can be defined as below:
 
 ```ruby
-  response type: 'object' do
-    property 'foo', type: 'string'
+  api_operation 'foo' do
+    response 200, type: 'object' do
+      property 'bar', type: 'string'
+    end
   end
 ```
 
-Options:
+#### Options
 
-- `type`: See [The type option](#the-type-option)
-- `existence`: See [The existence option](#the-existence-option)
-- `conversion`: See [The conversion option](#the-conversion-option)
-- `items`: See [The items option](#the-items-option)
+- `type` - See [The type option](#the-type-option).
+- `existence` - See [The existence option](#the-existence-option).
+- `conversion` - See [The conversion option](#the-conversion-option).
+- `items` - See [The items option](#the-items-option).
 - `locale`
-- `description`: A description of the response
-- `example`: See [Defining examples](#defining-examples)
-- `deprecated`: `true` or `false` (default)
-- all of [JSON Schema validations](#json-schema-validations)
+- `description` - A description of the response.
+- `example` - See [Defining examples](#defining-examples).
+- `deprecated` - if true, the response is declared as deprecated.
+
+Additionally, all [JSON Schema validations](#json-schema-validations)
+can be a specified.
+
+### Defining reusable responses
 
 ### Defining properties
 
@@ -292,22 +317,22 @@ Example:
   property 'foo', type: 'string', source: :bar
 ```
 
-Options:
+#### Options
 
-- `type`: See [The type option](#the-type-option)
-- `existence`: See [The existence option](#the-existence-option)
-- `conversion`: See [The conversion option](#the-conversion-option)
-- `items`: See [The items option](#the-items-option)
-- `model`: See [API models](#api-models)
+- `type` - See [The type option](#the-type-option).
+- `existence` - See [The existence option](#the-existence-option).
+- `conversion` - See [The conversion option](#the-conversion-option).
+- `items` - See [The items option](#the-items-option).
+- `model` - See [API models](#api-models).
 - `source`
-- `description`: A description of the property
-- `example`: See [Defining examples](#defining-examples)
-- `deprecated`: `true` or `false` (default)
-- all of [JSON Schema validations](#json-schema-validations)
-
-
+- `description` - A description of the property.
+- `example` - See [Defining examples](#defining-examples).
+- `deprecated` - if true, the property is declared as deprecated.
+- all of [JSON Schema validations](#json-schema-validations).
 
 ### Defining reusable schemas
+
+A reusable schema can be defined as below:
 
 ```ruby
   api_schema 'Foo' do
@@ -351,18 +376,22 @@ parameter or schema. The supported types correspond to JSON Schema:
 - `boolean`
 - `integer`
 - `number`
-- `object` (default)
+- `object`
 - `string`
+
+The default type is `object`.
 
 ### The `existence` option
 
 The `existence` option combines the presence concepts of Rails and JSON Schema
 by four levels of existence:
 
-- `:present` or `true`: The parameter or property value must not be empty.
-- `:allow_empty`: The parameter or property value can be empty, for example `''`.
-- `:allow_nil` or `allow_null`: The parameter or property value can be `nil`.
-- `:allow_omitted` or `false`: The parameter or property can be omitted.
+- `:present` or `true` -  The parameter or property value must not be empty.
+- `:allow_empty` - The parameter or property value can be empty, for example `''`.
+- `:allow_nil` or `allow_null` - The parameter or property value can be `nil`.
+- `:allow_omitted` or `false` - The parameter or property can be omitted.
+
+The default level of existence is `false`.
 
 Note that `existence: :present` slightly differs from Rails `present?` as it
 treats `false` to be present.
@@ -424,20 +453,20 @@ Arrays:
 
 ## API Controllers
 
-_Jsapi_ provides the following methods to deal with API operations:
+_Jsapi_ provides the following instance methods to deal with API operations:
 
-- [api_params](#the-+api_params+-method)
-- [api_response](#the-+api_response+-method)
-- [api_operation](#the-+api_operation+-method)
-- [api_operation!](#the-+api_operation-21+-method)
-- [api_definitions](#the-+api-definitions+-method)
+- [api_params](#the-api_params-method)
+- [api_response](#the-api_response-method)
+- [api_operation](#the-api_operation-method)
+- [api_operation!](#the-api_operation-method-1)
+- [api_definitions](#the-api-definitions-method)
 
-These methods can be integrated into a controller by inheriting from
-`Jsapi::Controller::Base` or including `Jsapi::Controller::Methods`,
-for example:
+These methods can be integrated by inheriting from `Jsapi::Controller::Base`
+or including `Jsapi::Controller::Methods`, for example:
 
 ```ruby
   class FooController < Jsapi::Controller::Base
+    # ...
   end
 ```
 
@@ -446,6 +475,7 @@ or
 ```ruby
   class FooController < ActionController::API
     include Jsapi::Controller::Methods
+    # ...
   end
 ```
 

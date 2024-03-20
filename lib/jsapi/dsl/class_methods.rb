@@ -16,8 +16,8 @@ module Jsapi
       end
 
       # See +Definitions#operation+
-      def api_operation(name = nil, &block)
-        api_definitions { operation(name, &block) }
+      def api_operation(name = nil, **options, &block)
+        api_definitions { operation(name, **options, &block) }
       end
 
       # See +Definitions#parameter+

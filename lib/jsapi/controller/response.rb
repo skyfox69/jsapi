@@ -2,6 +2,7 @@
 
 module Jsapi
   module Controller
+    # Used to serialize a response.
     class Response
       def initialize(object, response, definitions)
         @object = object
@@ -9,6 +10,7 @@ module Jsapi
         @definitions = definitions
       end
 
+      # Returns the JSON representation of the response as a +String+.
       def to_json(*)
         schema = @response.schema.resolve(@definitions)
         if @response.locale

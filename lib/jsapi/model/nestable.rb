@@ -3,14 +3,17 @@
 module Jsapi
   module Model
     module Nestable
+      # Returns the value of +name+.
       def [](name)
         @attributes[name&.to_s]&.value
       end
 
+      # Returns true if +name+ is present, false otherwise.
       def attribute?(name)
         @attributes.key?(name&.to_s)
       end
 
+      # Returns a +Hash+ containing all attributes.
       def attributes
         @attributes.transform_values(&:value)
       end

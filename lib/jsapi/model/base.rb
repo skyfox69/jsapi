@@ -2,6 +2,7 @@
 
 module Jsapi
   module Model
+    # The base API model class.
     class Base
       extend Naming
 
@@ -12,14 +13,14 @@ module Jsapi
         @nested = nested
       end
 
-      def ==(other)
+      def ==(other) # :nodoc:
         super || (
           self.class == other.class &&
           attributes == other.attributes
         )
       end
 
-      def inspect
+      def inspect # :nodoc:
         [
           "#<#{self.class.name} ",
           attributes.map do |name, value|
@@ -28,7 +29,7 @@ module Jsapi
               value = value.inspect
             elsif value.is_a?(String)
               # Quote strings
-              value = "'#{value}'"
+              value = "\"#{value}\""
             elsif value.nil?
               value = 'nil'
             end

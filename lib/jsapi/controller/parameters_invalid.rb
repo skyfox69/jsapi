@@ -2,6 +2,7 @@
 
 module Jsapi
   module Controller
+    # Raised by +api_operation!+ if the request parameters are invalid.
     class ParametersInvalid < StandardError
       attr_reader :params
 
@@ -10,7 +11,7 @@ module Jsapi
         super('')
       end
 
-      # Overrides +StandardError#message+ to lazily generate the message.
+      # Overrides +message+ to lazily generate the error message.
       def message
         "#{
           @params.errors.full_messages.map do |message|

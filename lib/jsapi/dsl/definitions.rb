@@ -17,9 +17,33 @@ module Jsapi
 
       # Defines an API operation.
       #
+      # The name of an operation must be unique for a particular controller.
+      # It can be +nil+ if the controller handles one API operation only.
+      #
+      # Example:
+      #
       #   api_definitions do
-      #     operation 'my_operation', method: 'get', path: '/my_path'
+      #     operation 'foo', method: 'get', path: '/foo'
       #   end
+      #
+      # Options:
+      #
+      # [+:model+]
+      #   The model class associated with the API operation. The value must
+      #   be a class that inherits from <tt>Jsapi::Model::Base</tt>.
+      # [+:method+]
+      #   The HTTP verb of the operation. Default is <tt>'get'</tt>.
+      # [+:path+]
+      #   The relative path of the operation.
+      # [+:tags+]
+      #   An array of strings to group operations in OpenAPI documents.
+      # [+:summary+]
+      #   A short summary of the operation.
+      # [+:desciption+]
+      #   A description of the operation.
+      # [+:deprecated+]
+      #  if true, the operation is declared as deprecated.
+      #
       def operation(name = nil, **options, &block)
         wrap_error(name.nil? ? '' : "'#{name}'") do
           operation_model = _meta_model.add_operation(name, **options)
@@ -30,7 +54,7 @@ module Jsapi
       # Defines a reusable parameter.
       #
       #   api_definitions do
-      #     parameter 'my_parameter', type: 'string'
+      #     parameter 'foo', type: 'string'
       #   end
       def parameter(name, **options, &block)
         wrap_error("'#{name}'") do
@@ -49,7 +73,7 @@ module Jsapi
       # Defines a reusable response.
       #
       #   api_definitions do
-      #     response 'my_response', type: 'object'
+      #     response 'Foo', type: 'object'
       #  end
       def response(name, **options, &block)
         wrap_error("'#{name}'") do
@@ -61,7 +85,7 @@ module Jsapi
       # Defines a reusable schema.
       #
       #   api_definitions do
-      #     schema 'my_schema', type: 'object'
+      #     schema 'Foo', type: 'object'
       #  end
       def schema(name, **options, &block)
         wrap_error("'#{name}'") do

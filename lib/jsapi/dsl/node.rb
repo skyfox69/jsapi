@@ -9,11 +9,11 @@ module Jsapi
         @_meta_model = meta_model
       end
 
-      def call(&block)
+      def call(&block) # :nodoc:
         instance_eval(&block)
       end
 
-      def method_missing(*args)
+      def method_missing(*args) # :nodoc:
         if _meta_model.respond_to?(method = "#{args.first}=")
           _meta_model.public_send(method, args.second)
         else
@@ -21,7 +21,7 @@ module Jsapi
         end
       end
 
-      def respond_to_missing?(param1, _param2)
+      def respond_to_missing?(param1, _param2) # :nodoc:
         _meta_model.respond_to?("#{param1}=")
       end
 

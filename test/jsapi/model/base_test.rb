@@ -31,7 +31,7 @@ module Jsapi
         schema.add_property('foo', type: 'string')
 
         model = Base.new(DOM.wrap({ 'foo' => 'bar' }, schema))
-        assert_equal("#<Jsapi::Model::Base foo: 'bar'>", model.inspect)
+        assert_equal('#<Jsapi::Model::Base foo: "bar">', model.inspect)
 
         # nested object
         schema = Meta::Schema.new(type: 'object')
@@ -40,7 +40,7 @@ module Jsapi
 
         model = Base.new(DOM.wrap({ 'foo' => { 'bar' => 'Foo Bar' } }, schema))
         assert_equal(
-          "#<Jsapi::Model::Base foo: #<Jsapi::Model::Base bar: 'Foo Bar'>>",
+          '#<Jsapi::Model::Base foo: #<Jsapi::Model::Base bar: "Foo Bar">>',
           model.inspect
         )
       end

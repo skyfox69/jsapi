@@ -11,6 +11,7 @@ module Jsapi
         raise ArgumentError, "operation name can't be blank" if name.blank?
 
         @name = name.to_s
+        @model = options[:model]
         @method = options[:method]
         @path = options[:path]
         @tags = options[:tags]

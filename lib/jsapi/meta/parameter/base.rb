@@ -22,19 +22,19 @@ module Jsapi
           add_example(value: options[:example]) if options.key?(:example)
         end
 
-        # Returns +true+ if and only if empty values can be passed
+        # Returns true if and only if empty values can be passed
         # (see OpenAPI Specifications 2.0 and 3.x).
         def allow_empty_value?
           schema.existence <= Existence::ALLOW_EMPTY && location != 'path'
         end
 
-        # Returns +true+ if and only if the parameter is deprecated
+        # Returns true if and only if the parameter is deprecated
         # (see OpenAPI Specifications 2.0 and 3.x).
         def deprecated?
           @deprecated == true
         end
 
-        # Returns +true+ if and only if the parameter is required as specified
+        # Returns true if and only if the parameter is required as specified
         # by JSON Schema.
         def required?
           schema.existence > Existence::ALLOW_OMITTED || location == 'path'

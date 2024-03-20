@@ -8,10 +8,10 @@ module Jsapi
         attr_reader :all_of
 
         def initialize(**options)
-          super(**options.merge(type: 'object'))
           @all_of = []
           @model = nil
           @properties = {}
+          super(**options.merge(type: 'object'))
         end
 
         def add_all_of(name)

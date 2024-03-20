@@ -2,6 +2,7 @@
 
 module Jsapi
   module Controller
+    # Used to wrap request parameters.
     class Parameters
       include Model::Nestable
 
@@ -22,6 +23,8 @@ module Jsapi
         end
       end
 
+      # Validates the request parameters. Returns true if the parameters are
+      # valid, false otherwise. Validation errors are added to +errors+.
       def validate(errors)
         validate_attributes(errors)
       end
