@@ -2,7 +2,9 @@
 
 module Jsapi
   module DSL
+    # Used to define top-level API components.
     class Definitions < Node
+
       # Includes all of the API definitions from +classes+.
       def include(*classes)
         classes.each { |c| _meta_model.include(c.api_definitions) }
@@ -26,11 +28,11 @@ module Jsapi
       #     operation 'foo', method: 'get', path: '/foo'
       #   end
       #
-      # Options:
+      # Options:‚
       #
       # [+:model+]
-      #   The model class associated with the API operation. The value must
-      #   be a class that inherits from <tt>Jsapi::Model::Base</tt>.
+      #   The model class to be associated with the API operation. The value
+      #   must be a class that inherits from Jsapi::Model::Base.
       # [+:method+]
       #   The HTTP verb of the operation. Default is <tt>'get'</tt>.
       # [+:path+]

@@ -2,8 +2,9 @@
 
 module Jsapi
   module DSL
+    # Used to create a generic node within an OpenAPI specification.
     class Generic < Node
-      def method_missing(*args, &block)
+      def method_missing(*args, &block) # :nodoc:
         if args.second.is_a?(Hash) || block
           options = args.second || {}
           child_model = _meta_model.add_child(args.first, **options)
@@ -13,7 +14,7 @@ module Jsapi
         end
       end
 
-      def respond_to_missing?(*)
+      def respond_to_missing?(*) # :nodoc:
         true
       end
     end

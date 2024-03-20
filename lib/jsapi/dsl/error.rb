@@ -2,7 +2,10 @@
 
 module Jsapi
   module DSL
+    # Raised if an error occurred when defining an API component.
     class Error < StandardError
+      # Creates a new error. +origin+ is the innermost position at where
+      # the error occurred.
       def initialize(error_or_message, origin = nil)
         @path = origin.present? ? [origin] : []
         super(
@@ -14,6 +17,9 @@ module Jsapi
         )
       end
 
+      # Overrides StandardError#message to append the whole path of the
+      # position at where the error occurred to the message, for example:
+      # <tt>{message} (at foo/bar)</tt>.
       def message
         message = super
         return message if @path.empty?
@@ -21,6 +27,7 @@ module Jsapi
         "#{message} (at #{@path.join('/')})"
       end
 
+      # Prepends +origin+ to the path at where the error occurred.
       def prepend_origin(origin)
         @path.prepend(origin) if origin.present?
         self

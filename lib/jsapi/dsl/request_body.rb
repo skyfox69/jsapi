@@ -2,6 +2,7 @@
 
 module Jsapi
   module DSL
+    # Used to define request bodies.
     class RequestBody < Node
       include Example
       include NestedSchema

@@ -15,6 +15,7 @@ require_relative 'dsl/operation'
 require_relative 'dsl/class_methods'
 
 module Jsapi
+  # Provides class methods to define top-level API components.
   module DSL
     def self.included(base)
       base.extend(ClassMethods)

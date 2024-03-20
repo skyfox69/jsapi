@@ -2,6 +2,7 @@
 
 module Jsapi
   module DSL
+    # Used to define reusable schemas.
     class Schema < Node
       def all_of(*schema_names)
         schema_names.each { |name| _meta_model.add_all_of(name) }
@@ -11,7 +12,7 @@ module Jsapi
         _meta_model.add_example(example)
       end
 
-      # Override Kernel#format
+      # Overrides Kernel#format.
       def format(format)
         method_missing(:format, format)
       end

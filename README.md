@@ -481,9 +481,9 @@ or
 
 ### The `api_params` method
 
-`api_params` can be used to read request parameters by an instance of an API
-operation's model class. The parameters are casted according the operation's
-`parameter` and `request_body` definitions.
+`api_params` can be used to read request parameters by an instance of an
+operation's model class. The request parameters are casted according the
+operation's `parameter` and `request_body` definitions.
 
 ```ruby
   params = api_params('foo')
@@ -538,7 +538,7 @@ method can be used to render an OpenAPI document.
 
 # API models
 
-Top level parameters and nested object parameters are wrapped by instances of
+Top-level parameters and nested object parameters are wrapped by instances of
 `Jsapi::Model::Base` by default. To add custom model methods this class can be
 extended within the definition of an API component, for example:
 

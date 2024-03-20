@@ -2,6 +2,7 @@
 
 module Jsapi
   module DSL
+    # Used to to properties.
     class Property < Node
       include NestedSchema
 

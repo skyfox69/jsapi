@@ -2,6 +2,7 @@
 
 module Jsapi
   module DSL
+    # Used to define API operations.
     class Operation < Node
       def model(klass = nil, &block)
         if block
