@@ -60,6 +60,7 @@ module Jsapi
         end
       end
 
+      # Returns the OpenAPI document as a +Hash+.
       def openapi_document(version = '2.0')
         openapi_root(version).to_h.tap do |root|
           if version == '2.0'

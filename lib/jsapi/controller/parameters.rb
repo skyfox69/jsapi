@@ -6,6 +6,8 @@ module Jsapi
     class Parameters
       include Model::Nestable
 
+      # Creates a new instance that wraps +params+ according to +operation+.
+      # References are resolved to API components in +definitions+.
       def initialize(params, operation, definitions)
         @attributes = {}
 

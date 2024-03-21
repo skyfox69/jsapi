@@ -3,16 +3,19 @@
 module Jsapi
   module Controller
     module Methods
-      # Returns the API definitions of the caller's class.
+      # Returns the Meta::Definitions instance associated with the controller class.
+      # This method can be used to create an OpenAPI document, for example:
+      #
+      #   render(json: api_definitions.openapi_document)
+      #
       def api_definitions
         self.class.api_definitions
       end
 
       # Performs an API operation by calling the given block. The request parameters
-      # are passed as an instance of the operation's model class to the block. This
-      # method implicitly renders the JSON representation of the object returned by
-      # the block according to the +response+ definition of the operation and HTTP
-      # status code.
+      # are passed as an instance of the operation's model class to the block. The
+      # object returned by the block is implicitly rendered according to the
+      # +response+ definition of the operation and HTTP status code.
       #
       # +operation_name+ can be +nil+ or omitted if the controller handles one API
       # operation only.
