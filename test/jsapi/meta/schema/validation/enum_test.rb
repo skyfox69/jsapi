@@ -2,8 +2,6 @@
 
 require 'test_helper'
 
-require_relative 'dummy'
-
 module Jsapi
   module Meta
     module Schema
