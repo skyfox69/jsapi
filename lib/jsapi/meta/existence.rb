@@ -2,11 +2,15 @@
 
 module Jsapi
   module Meta
+    # Combines the presence concepts of the +#present?+ method and JSON Schema
+    # by four levels of existence.
     class Existence
       include Comparable
 
+      # The level of existence.
       attr_reader :level
 
+      # Creates a new instance with the specified level.
       def initialize(level)
         @level = level
       end
@@ -23,7 +27,7 @@ module Jsapi
       ALLOW_EMPTY = new(3)
 
       # The parameter or property value must respond to +present?+ with +true+
-      # or must be equal to +false+.
+      # or must be +false+.
       PRESENT = new(4)
 
       def self.from(value)
@@ -43,12 +47,21 @@ module Jsapi
         end
       end
 
-      def ==(other)
+      def ==(other) # :nodoc:
         other.is_a?(Existence) && level == other.level
       end
 
-      def <=>(other)
+      def <=>(other) # :nodoc:
         level <=> other.level
+      end
+
+      def inspect # :nodoc:
+        "#<#{self.class.name} level: #{level}>"
+      end
+
+      # Returns true if +object+ reaches the level of existence, false otherwise.
+      def reach?(object)
+        (object.null? ? 2 : object.empty? ? 3 : 4) >= level
       end
     end
   end

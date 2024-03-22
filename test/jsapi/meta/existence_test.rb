@@ -3,6 +3,11 @@
 module Jsapi
   module Meta
     class ExistenceTest < Minitest::Test
+      Dummy = Struct.new(:null, :empty, keyword_init: true) do
+        def null?; null; end
+        def empty?; empty; end
+      end
+
       def test_allow_omitted
         assert_equal(Existence::ALLOW_OMITTED, Existence.from(:allow_omitted))
       end
@@ -50,6 +55,26 @@ module Jsapi
 
       def test_allow_nil_is_greater_than_allow_ommitted
         assert(Existence::PRESENT > Existence::ALLOW_EMPTY)
+      end
+
+      def test_reach
+        dummy = Dummy.new(null: true)
+        assert(Existence::ALLOW_NIL.reach?(dummy))
+        assert(!Existence::ALLOW_EMPTY.reach?(dummy))
+
+        dummy = Dummy.new(empty: true)
+        assert(Existence::ALLOW_EMPTY.reach?(dummy))
+        assert(!Existence::PRESENT.reach?(dummy))
+
+        dummy = Dummy.new
+        assert(Existence::PRESENT.reach?(dummy))
+      end
+
+      def test_inspect
+        assert_equal(
+          '#<Jsapi::Meta::Existence level: 1>',
+          Existence::ALLOW_OMITTED.inspect
+        )
       end
     end
   end

@@ -19,8 +19,7 @@ module Jsapi
       end
 
       def validate(errors)
-        if (schema.existence >= Meta::Existence::ALLOW_EMPTY && null?) ||
-           (schema.existence == Meta::Existence::PRESENT && empty?)
+        unless schema.existence.reach?(self)
           errors.add(:base, :blank)
           return false
         end
