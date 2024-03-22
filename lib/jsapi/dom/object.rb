@@ -5,16 +5,18 @@ module Jsapi
     class Object < BaseObject
       include Model::Nestable
 
+      attr_reader :raw_attributes
+
       def initialize(attributes, schema, definitions)
         super(schema)
 
-        @attributes = schema.properties(definitions).transform_values do |property|
+        @raw_attributes = schema.properties(definitions).transform_values do |property|
           DOM.wrap(attributes[property.name], property.schema, definitions)
         end
       end
 
       def empty?
-        @attributes.values.all?(&:empty?)
+        @raw_attributes.values.all?(&:empty?)
       end
 
       def model

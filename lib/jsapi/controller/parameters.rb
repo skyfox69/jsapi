@@ -6,10 +6,12 @@ module Jsapi
     class Parameters
       include Model::Nestable
 
+      attr_reader :raw_attributes
+
       # Creates a new instance that wraps +params+ according to +operation+.
       # References are resolved to API components in +definitions+.
       def initialize(params, operation, definitions)
-        @attributes = {}
+        @raw_attributes = {}
 
         # Merge parameters and request body properties
         meta_models = operation.parameters.transform_values do |parameter|
@@ -21,7 +23,7 @@ module Jsapi
 
         # Wrap params
         meta_models.each do |name, meta_model|
-          @attributes[name] = DOM.wrap(params[name], meta_model.schema, definitions)
+          @raw_attributes[name] = DOM.wrap(params[name], meta_model.schema, definitions)
         end
       end
 
