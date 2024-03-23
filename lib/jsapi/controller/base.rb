@@ -4,8 +4,6 @@ module Jsapi
   module Controller
     # The base API controller class.
     #
-    # Minimal example:
-    #
     #   class FooController < Jsapi::Controller::Base
     #     api_operation do
     #       response type: 'string'
@@ -15,7 +13,6 @@ module Jsapi
     #       api_operation { 'Hello world' }
     #     end
     #   end
-    #
     class Base < ActionController::API
       include DSL
       include Methods

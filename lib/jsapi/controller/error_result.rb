@@ -4,6 +4,7 @@ module Jsapi
   module Controller
     # Used by +api_operation!+ to produce an error response.
     class ErrorResult
+
       # The HTTP status code of the error response to be produced.
       attr_reader :status
 

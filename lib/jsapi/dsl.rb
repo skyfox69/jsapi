@@ -16,8 +16,9 @@ require_relative 'dsl/class_methods'
 
 module Jsapi
   # Provides class methods to define top-level API components.
+  # See ClassMethods.
   module DSL
-    def self.included(base)
+    def self.included(base) # :nodoc:
       base.extend(ClassMethods)
     end
   end

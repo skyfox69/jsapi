@@ -9,16 +9,16 @@ module Jsapi
         super
       end
 
-      # Overrides <tt>ActiveModel::Errors#add</tt> to wrap errors related to
-      # nested models.
+      # Overrides <code>ActiveModel::Errors#add</code> to wrap errors related
+      # to nested models.
       def add(attribute, type = :invalid, **options)
         type = type.call(@base, options) if type.respond_to?(:call)
 
         errors << wrap(Error.new(@base, attribute.to_sym, type, **options))
       end
 
-      # Overrides <tt>ActiveModel::Errors#import</tt> to wrap errors related
-      # to nested models.
+      # Overrides <code>ActiveModel::Errors#import</code> to wrap errors
+      # related to nested models.
       def import(error, options = {})
         if (options = options.slice(:attribute, :type)).any?
           attribute = (options[:attribute] || error.attribute).to_sym

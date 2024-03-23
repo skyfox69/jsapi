@@ -11,7 +11,7 @@ module Jsapi
         super('')
       end
 
-      # Overrides <tt>StandardError#message</tt> to lazily generate the
+      # Overrides <code>StandardError#message</code> to lazily generate the
       # error message.
       def message
         "#{

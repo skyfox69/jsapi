@@ -19,10 +19,12 @@ module Jsapi
           @error == other.error
       end
 
+      # Like <code>ActiveModel::Error#full_message</code>.
       def full_message
         base? ? "'#{attribute}' #{message}" : "'#{attribute}.#{message[1..]}"
       end
 
+      # Like <code>ActiveModel::Error#match?</code>.
       def match?(attribute, type = nil, **options)
         return false if self.attribute != attribute
         return true if type.nil? && options.empty?
@@ -30,10 +32,12 @@ module Jsapi
         @error.match?(:base, type, **options)
       end
 
+      # Like <code>ActiveModel::Error#message</code>.
       def message
         base? ? @error.message : "'#{@error.attribute}' #{@error.message}".rstrip
       end
 
+      # Like <code>ActiveModel::Error#strict_match?</code>.
       def strict_match?(attribute, type = nil, **options)
         return false unless match?(attribute, type, **options)
 

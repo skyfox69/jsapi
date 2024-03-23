@@ -2,7 +2,7 @@
 
 module Jsapi
   module DSL
-    # Used to define (reusable) parameters.
+    # Used to specify details of a parameter.
     class Parameter < Node
       include Example
       include NestedSchema

@@ -2,7 +2,7 @@
 
 module Jsapi
   module DSL
-    # Used to define (reusable) responses.
+    # Used to specify details of a response.
     class Response < Node
       include Example
       include NestedSchema

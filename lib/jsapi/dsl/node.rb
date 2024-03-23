@@ -3,9 +3,7 @@
 module Jsapi
   module DSL
     class Node
-      attr_reader :_meta_model
-
-      def initialize(meta_model)
+      def initialize(meta_model) # :nodoc:
         @_meta_model = meta_model
       end
 
@@ -14,7 +12,8 @@ module Jsapi
       end
 
       def method_missing(*args) # :nodoc:
-        if _meta_model.respond_to?(method = "#{args.first}=")
+        method = "#{args.first}="
+        if _meta_model.respond_to?(method)
           _meta_model.public_send(method, args.second)
         else
           raise "unknown or invalid field: '#{args.first}'"
@@ -26,6 +25,8 @@ module Jsapi
       end
 
       private
+
+      attr_reader :_meta_model
 
       def wrap_error(*args, &block)
         block.call

@@ -12,6 +12,15 @@ require_relative 'schema/validation'
 
 module Jsapi
   module Meta
+    # Supported types:
+    #
+    # - array
+    # - boolean
+    # - integer
+    # - number
+    # - object
+    # - string
+    #
     module Schema
       class << self
         def new(**options)

@@ -5,11 +5,12 @@ module Jsapi
     # Used to define top-level API components.
     class Definitions < Node
 
-      # Includes all of the API definitions from +classes+.
+      # Includes API definitions from +classes+.
       def include(*classes)
         classes.each { |c| _meta_model.include(c.api_definitions) }
       end
 
+      # Defines the root of an OpenAPI document.
       def openapi(version = nil, &block)
         wrap_error("openapi #{version}") do
           openapi = _meta_model.openapi_root(version)
@@ -17,34 +18,37 @@ module Jsapi
         end
       end
 
-      # Defines an API operation.
+      # Defines an operation.
       #
-      # The name of an operation must be unique for a particular controller.
-      # It can be +nil+ if the controller handles one API operation only.
-      #
-      # Example:
-      #
-      #   api_definitions do
-      #     operation 'foo', method: 'get', path: '/foo'
+      #   operation 'foo', path: '/foo' do
+      #     parameter 'bar', type: 'string'
+      #     response do
+      #       property 'foo', type: 'string'
+      #     end
       #   end
       #
-      # Options:‚
+      # +name+ can be +nil+ if the controller handles one operation only.
+      #
+      # ==== Options
       #
       # [+:model+]
-      #   The model class to be associated with the API operation. The value
-      #   must be a class that inherits from Jsapi::Model::Base.
+      #   The model class to access top-level parameters by. The default model
+      #   class is Model::Base.
+      #
+      # ===== Annotations
+      #
       # [+:method+]
-      #   The HTTP verb of the operation. Default is <tt>'get'</tt>.
+      #   The HTTP verb of the operation. The default value is 'get'.
       # [+:path+]
       #   The relative path of the operation.
       # [+:tags+]
-      #   An array of strings to group operations in OpenAPI documents.
+      #   An array of strings used to group operations in an OpenAPI document.
       # [+:summary+]
       #   A short summary of the operation.
       # [+:desciption+]
       #   A description of the operation.
       # [+:deprecated+]
-      #  if true, the operation is declared as deprecated.
+      #   Specifies whether or not the operation is deprecated.
       #
       def operation(name = nil, **options, &block)
         wrap_error(name.nil? ? '' : "'#{name}'") do
@@ -55,9 +59,12 @@ module Jsapi
 
       # Defines a reusable parameter.
       #
-      #   api_definitions do
-      #     parameter 'foo', type: 'string'
-      #   end
+      #   parameter 'foo', type: 'string'
+      #
+      # ==== Options
+      #
+      # Same as Operation#parameter.
+      #
       def parameter(name, **options, &block)
         wrap_error("'#{name}'") do
           parameter_model = _meta_model.add_parameter(name, **options)
@@ -65,7 +72,11 @@ module Jsapi
         end
       end
 
-      # Associates one or more excpetion classes with a status code.
+      # Specifies the HTTP status code of an error response rendered when an
+      # exception of any of +klasses+ has been raised.
+      #
+      #   rescue_from Jsapi::Controller::ParametersInvalid, with: 400
+      #
       def rescue_from(*klasses, with: nil)
         klasses.each do |klass|
           _meta_model.add_rescue_handler(klass, status: with)
@@ -74,9 +85,14 @@ module Jsapi
 
       # Defines a reusable response.
       #
-      #   api_definitions do
-      #     response 'Foo', type: 'object'
-      #  end
+      #   response 'Foo', type: 'object' do
+      #     property 'bar', type: 'string'
+      #   end
+      #
+      # ==== Options
+      #
+      # Same as Operation#response.
+      #
       def response(name, **options, &block)
         wrap_error("'#{name}'") do
           response_model = _meta_model.add_response(name, **options)
@@ -86,9 +102,20 @@ module Jsapi
 
       # Defines a reusable schema.
       #
-      #   api_definitions do
-      #     schema 'Foo', type: 'object'
-      #  end
+      #   schema 'Foo' do
+      #     property 'bar', type: 'string'
+      #   end
+      #
+      # ==== Options
+      #
+      # [+:type+]
+      #   The type of the schema. See Meta::Schema for details.
+      # [+existence+]
+      #   The level of existence. See Meta::Existence for details.
+      # [+:model+]
+      #   The model class to access nested object parameters by. The
+      #   default model class is Model::Base.
+      #
       def schema(name, **options, &block)
         wrap_error("'#{name}'") do
           schema_model = _meta_model.add_schema(name, **options)

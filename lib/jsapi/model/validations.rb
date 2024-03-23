@@ -11,8 +11,8 @@ module Jsapi
         validate :nested_validity
       end
 
-      # Overrides <tt>ActiveModel::Validations#errors</tt> to store errors in
-      # an instance of <tt>Jsapi::Model::Errors</tt>.
+      # Overrides <code>ActiveModel::Validations#errors</code> to use
+      # Errors as error store.
       def errors
         @errors ||= Errors.new(self)
       end

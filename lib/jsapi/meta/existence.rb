@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    # Combines the presence concepts of the +#present?+ method and JSON Schema
+    # Combines the presence concepts of the +#present?+ method and JSON \Schema
     # by four levels of existence.
     class Existence
       include Comparable
@@ -16,11 +16,11 @@ module Jsapi
       end
 
       # The parameter or property can be omitted, corresponds to the opposite
-      # of +required+ as specified by JSON Schema.
+      # of +required+ as specified by JSON \Schema.
       ALLOW_OMITTED = new(1)
 
       # The parameter or property value can be +nil+, corresponds to
-      # +nullable: true+ as specified by JSON Schema.
+      # <code>nullable: true</code> as specified by JSON \Schema.
       ALLOW_NIL = new(2)
 
       # The parameter or property value must respond to +nil?+ with +false+.
@@ -30,6 +30,7 @@ module Jsapi
       # or must be +false+.
       PRESENT = new(4)
 
+      # Creates a new instance from +value+.
       def self.from(value)
         return value if value.is_a?(Existence)
 
@@ -59,7 +60,8 @@ module Jsapi
         "#<#{self.class.name} level: #{level}>"
       end
 
-      # Returns true if +object+ reaches the level of existence, false otherwise.
+      # Returns +true+ if +object+ reaches the level of existence,
+      # +false+ otherwise.
       def reach?(object)
         (object.null? ? 2 : object.empty? ? 3 : 4) >= level
       end

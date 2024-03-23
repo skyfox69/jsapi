@@ -3,7 +3,8 @@
 module Jsapi
   module Model
     class Error < ActiveModel::Error
-      # Overrides <tt>ActiveModel::Error#full_message</tt>.
+
+      # Overrides <code>ActiveModel::Error#full_message</code>.
       def full_message
         return message if attribute == :base || attribute.blank?
 

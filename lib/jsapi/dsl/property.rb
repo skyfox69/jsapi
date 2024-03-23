@@ -2,7 +2,7 @@
 
 module Jsapi
   module DSL
-    # Used to to properties.
+    # Used to specify details of a property.
     class Property < Node
       include NestedSchema
 

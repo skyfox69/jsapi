@@ -140,12 +140,12 @@ Create the controller:
 
 ## Jsapi DSL
 
-_Jsapi_ provides the following class methods to define API components:
+The following class methods are provided to define API components:
 
 - [api_operation](#defining-api-operations) - Defines a single API operation.
 - [api_parameter](#defining-reusable-parameters) - Defines a reusable parameter.
-- [api_response](#definining-reusable-responses) - Defines a reusable response.
-- [api_schema](#definining-reusable-schemas) - Defines a reusable schema.
+- [api_response](#defining-reusable-responses) - Defines a reusable response.
+- [api_schema](#defining-reusable-schemas) - Defines a reusable schema.
 - api_rescue_from - Defines a rescue handler.
 - api_include - Includes API definitions from other classes.
 
@@ -173,7 +173,7 @@ for example:
 ```
 
 The names and types of API components can be strings or symbols. All options
-except `type` can also be defined inside a block, for example:
+except `type` can also be defined inside the block, for example:
 
 ```ruby
   parameter 'foo', type: 'string', existence: true
@@ -183,85 +183,76 @@ except `type` can also be defined inside a block, for example:
   end
 ```
 
-### Defining API operations
+### Defining Operations
 
-An API operation can be defined as below:
+An operation can be defined as below.
 
 ```ruby
   api_operation 'foo' do
     parameter 'bar', type: 'string'
-    request_body, type: 'object', existence: true do
-      property 'foo_bar', type: 'string'
-    end
-    response type: 'object' do
-      property 'foo_bar', type: 'string'
+    response do
+      property 'foo', type: 'string'
     end
   end
 ```
 
-The first argument passed to `api_operation` specifies the operation name. The
-operation name must be unique for a particalur controller. It can be omitted,
-if the controller handles one API operation only.
+The operation name can be omitted, if the ontroller handles one operation only.
 
 #### Options
 
 - `model` - See [API models](#api-models).
 - `method` - The HTTP verb of the operation.
 - `path` - The relative path of the operation.
-- `tags` - One or more tags to group operations.
+- `tags` - One or more tags used to group operations.
 - `summary` - A short summary of the operation.
 - `description` - A desciption of the operation.
-- `deprecated` - if true, the operation is declared as deprecated.
-
-All options except `model` are used to generate a meaningful API documentation
-only. The default method is `get`.
+- `deprecated` - Specifies whether or not the operation is deprecated.
 
 ### Defining parameters
 
-A parameter of an API operation can be defined as below:
+A (top-level) parameter of an operation can be defined as below.
 
 ```ruby
   api_operation 'foo' do
-    parameter 'bar', type: 'string', in: 'path'
+    parameter 'bar', type: 'string'
+  end
+```
+
+It is also possible to define nested object parameters in place.
+
+```ruby
+  api_operation 'foo' do
+    parameter 'bar' do
+      property 'foo', type: 'string'
+    end
   end
 ```
 
 #### Options
 
+- `schema` - See [Reusable schemas](#reusable-schemas)
 - `type` - See [The type option](#the-type-option).
 - `existence` - See [The existence option](#the-existence-option).
+- `default` - The default value.
 - `conversion` - See [The conversion option](#the-conversion-option).
-- `items` - See [The items option](#the-items-option).
 - `model` - See [API models](#api-models).
-- `in` - The location of the parameter, either `'path'` or `'query'`
+- `items` - See [The items option](#the-items-option).
+- `format` - See [The format option](#the-format-option).
+- `in` - The location of the parameter.
 - `description` - A description of the parameter.
 - `example` - See [Defining examples](#defining-examples).
-- `deprecated` - if true the parameter is declared as deprecated.
+- `deprecated` - Specifies whether or not the parameter is deprecated.
 
-Additionally, all [JSON Schema validations](#json-schema-validations)
-can be a specified.
-
-### Defining reusable parameters
-
-A reusable parameter can be defined as below:
-
-```ruby
-  api_parameter 'foo', type: 'string'
-```
-
-```ruby
-  api_operation do
-    parameter 'foo'
-  end
-```
+Additionally, all of the [validations options](#validation-options) can
+be specified to validate top-level parameter values.
 
 ### Defining request bodies
 
-A request body of an API operation can be defined as below:
+A request body of an operation can be defined as below.
 
 ```ruby
   api_operation 'foo' do
-    request_body type: 'object' do
+    request_body do
       property 'bar', type: 'string'
     end
   end
@@ -269,25 +260,20 @@ A request body of an API operation can be defined as below:
 
 #### Options
 
-- `type` - See [The type option](#the-type-option).
+- `schema` - See [Reusable schemas](#reusable-schemas)
 - `existence` - See [The existence option](#the-existence-option).
-- `conversion` - See [The conversion option](#the-conversion-option).
-- `items` - See [The items option](#the-items-option).
-- `model`-  See [API models](#api-models).
+- `default` - The default value.
 - `description` - A description of the request body.
 - `example` - See [Defining examples](#defining-examples).
-- `deprecated` - if true, the request body is declared as deprecated.
-
-Additionally, all [JSON Schema validations](#json-schema-validations)
-can be a specified.
+- `deprecated` - Specifies whether or not the request body is deprecated.
 
 ### Defining responses
 
-A response of an API operation can be defined as below:
+A response of an operation can be defined as below.
 
 ```ruby
   api_operation 'foo' do
-    response 200, type: 'object' do
+    response 200 do
       property 'bar', type: 'string'
     end
   end
@@ -295,48 +281,83 @@ A response of an API operation can be defined as below:
 
 #### Options
 
+- `schema` - See [Reusable schemas](#reusable-schemas)
 - `type` - See [The type option](#the-type-option).
 - `existence` - See [The existence option](#the-existence-option).
-- `conversion` - See [The conversion option](#the-conversion-option).
 - `items` - See [The items option](#the-items-option).
-- `locale`
+- `format` - See [The format option](#the-format-option).
+- `locale` - The locale used when rendering the response.
 - `description` - A description of the response.
 - `example` - See [Defining examples](#defining-examples).
-- `deprecated` - if true, the response is declared as deprecated.
-
-Additionally, all [JSON Schema validations](#json-schema-validations)
-can be a specified.
-
-### Defining reusable responses
+- `deprecated` - Specifies whether or not the response is deprecated.
 
 ### Defining properties
 
-Example:
+A property can be defined as below.
 
 ```ruby
-  property 'foo', type: 'string', source: :bar
+  property 'foo', type: 'string'
+```
+
+It is also possible to define nested objects in place.
+
+```ruby
+  property 'foo' do
+    property 'bar', type: 'string'
+  end
 ```
 
 #### Options
 
+- `schema` - See [Reusable schemas](#reusable-schemas)
 - `type` - See [The type option](#the-type-option).
 - `existence` - See [The existence option](#the-existence-option).
+- `default` - The default value.
 - `conversion` - See [The conversion option](#the-conversion-option).
-- `items` - See [The items option](#the-items-option).
+- `source` - The method to read a property value.
 - `model` - See [API models](#api-models).
-- `source`
+- `items` - See [The items option](#the-items-option).
+- `format` - See [The format option](#the-format-option).
 - `description` - A description of the property.
 - `example` - See [Defining examples](#defining-examples).
-- `deprecated` - if true, the property is declared as deprecated.
-- all of [JSON Schema validations](#json-schema-validations).
+- `deprecated` - Specifies whether or not the property is deprecated.
 
-### Defining reusable schemas
+Additionally, all of the [validations options](#validation-options) can
+be specified to validate nested parameter values.
 
-A reusable schema can be defined as below:
+### Defining examples
+
+A simple sample value can be specified as below.
+
+```ruby
+  property 'foo', type: 'string', example: 'bar'
+```
+
+It is also possible to define multiple sample values.
+
+```ruby
+  schema 'Foo', type: 'object' do
+    property 'foo', type: 'string'
+
+    example 'foo', value: { 'foo' => 'foo' }
+    example 'bar', value: { 'foo' => 'bar' }
+  end
+```
+
+#### Options
+
+- `value` - The sample value
+- `external_value` - The URI of an external sample value.
+- `summary` - A short summary of the example.
+- `description` - A description of the example.
+
+### Reusable schemas
+
+A reusable schema can be defined as below.
 
 ```ruby
   api_schema 'Foo' do
-    property 'foo', type: 'string'
+    property 'bar', type: 'string'
   end
 ```
 
@@ -352,18 +373,33 @@ A reusable schema can be defined as below:
   end
 ```
 
-### Defining examples
+### Reusable parameters
+
+A reusable parameter can be defined as below.
 
 ```ruby
-  property 'foo', type: 'string', example: 'bar'
+  api_parameter 'foo', type: 'string'
 ```
 
 ```ruby
-  schema 'Foo', type: 'object' do
-    property 'foo', type: 'string'
+  api_operation do
+    parameter 'foo'
+  end
+```
 
-    example 'foo', value: { 'foo' => 'foo' }
-    example 'bar', value: { 'foo' => 'bar' }
+### Reusable responses
+
+A reusable response can be defined as below.
+
+```ruby
+  api_response 'Foo' do
+    property 'bar', type: 'string'
+  end
+```
+
+```ruby
+  api_operation do
+    response 200, 'Foo'
   end
 ```
 
@@ -403,53 +439,58 @@ a method or a `Proc`, for example:
 
 ```ruby
   parameter 'foo', type: 'string', conversion: :upcase
-  parameter 'bar', type: 'number', conversion: ->(n) { n.round(2) }
 ```
 
 ### The `items` option
 
-The `items` options specifies the kind of items contained in an array,
-for example:
+The `items` options specifies the kind of items of an array, for example:
 
 ```ruby
   parameter 'foo', type: 'array', items: { type: 'string' }
+```
 
-  parameter 'bar', type: 'array' do
-    items type: 'object' do
-      property 'foo_bar', type: 'string'
+```ruby
+  parameter 'foo', type: 'array' do
+    items do
+      property 'bar', type: 'string'
     end
   end
 ```
 
-### JSON Schema validations
+### The `format` option
 
-_Jsapi_ supports the following JSON Schema validations:
+The `format` option specifies the format of a string. Possible values are:
 
-All objects:
+- `date`
+- `date-time`
 
-- `enum`
+Parameter and property values are implictly casted to an instance of `Date`
+or `DateTime` if `format` is specified.
 
-Integers and number:
+### Validation options
 
-- `minimum`
-- `maximum`
-- `multiple_of`
+The following options can be specified to validate parameter values. The
+validation options correspond to JSON Schema validations.
+
+- `enum` - The valid values.
+- `minimum` - The minimum value of an integer or a number.
+- `maximum` - The maximum value of an integer or a number.
+- `multiple_of` - The value an integer or a number must be a multiple of.
+- `min_length` - The minimum length of a string.
+- `max_length` - The maximum length of a string.
+- `pattern` - The regular expression a string must match.
+- `min_items` - The minimum length of an array.
+- `max_items` - The maximum length of an array.
+
+The minimum and maximum value can be specified as shown below.
 
 ```ruby
-  parameter 'foo', type: 'integer', maximum: 9
-  parameter 'bar', type: 'integer', maximum: { value: 10, exclusive: true }
+  # Restrict values to positive integers
+  parameter 'foo', type: 'integer', minimum: 1
+
+  # Restrict values to positive numbers
+  parameter 'bar', type: 'number', minimum: { value: 0, exclusive: true }
 ```
-
-Strings:
-
-- `min_length`
-- `max_length`
-- `pattern`
-
-Arrays:
-
-- `min_items`
-- `max_items`
 
 ## API Controllers
 
@@ -555,7 +596,7 @@ extended within the definition of an API component, for example:
   end
 ```
 
-The model class of an API component can also be any class that inherits from
+The model class of an API component can also be any subclass of
 `Jsapi::Model::Base`, for example:
 
 ```ruby
@@ -565,6 +606,8 @@ The model class of an API component can also be any class that inherits from
     end
   end
 ```
+
+Custom model classes can be specified as below.
 
 ```ruby
   api_schema 'IntegerRange', model: BaseRange do

@@ -18,6 +18,7 @@ module Jsapi
       #   A short summary of the example.
       # [+:description+]
       #   A description of the example.
+      #
       def example(name_or_value = nil, **options, &block)
         if options.any? || block
           # example 'foo', value: 'bar', ...

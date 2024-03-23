@@ -11,7 +11,7 @@ module Jsapi
 
       def test_example
         parameter = Meta::Parameter.new('parameter')
-        Parameter.new(parameter).call { example value: 'foo' }
+        Parameter.new(parameter).call { example 'foo' }
         assert_equal('foo', parameter.examples['default'].value)
       end
 
