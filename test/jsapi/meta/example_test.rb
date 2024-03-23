@@ -5,7 +5,7 @@ require 'test_helper'
 module Jsapi
   module Meta
     class ExampleTest < Minitest::Test
-      def test_openapi_example_on_value
+      def test_openapi_example
         example = Example.new(
           summary: 'Foo',
           description: 'Description of foo',
@@ -21,7 +21,7 @@ module Jsapi
         )
       end
 
-      def test_openapi_example_on_external_value
+      def test_openapi_external_example
         example = Example.new(
           summary: 'Foo',
           description: 'Description of foo',

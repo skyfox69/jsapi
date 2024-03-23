@@ -7,18 +7,10 @@ module Jsapi
     class ExampleTest < Minitest::Test
       include Examples
 
-      def test_add_example_on_value
-        add_example('foo')
-        assert_equal('foo', examples['default'].value)
-      end
-
-      def test_add_example_on_name_and_options
+      def test_add_example
         add_example('foo', value: 'bar')
         assert_equal('bar', examples['foo'].value)
-      end
 
-      def test_add_example_raises_an_error_on_double_example
-        add_example('foo', value: 'Foo')
         error = assert_raises { add_example('foo', value: 'Bar') }
         assert_equal('Example already defined: foo', error.message)
       end

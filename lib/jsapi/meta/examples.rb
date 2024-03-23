@@ -3,16 +3,7 @@
 module Jsapi
   module Meta
     module Examples
-      def add_example(name_or_value = nil, **options)
-        if options.any?
-          # add_example('foo', value: 'bar', ...)
-          name = name_or_value&.to_s
-        else
-          # add_example('foo')
-          name = nil
-          options = { value: name_or_value }
-        end
-
+      def add_example(name = nil, **options)
         name = name.presence || 'default'
         raise "Example already defined: #{name}" if examples.key?(name)
 
