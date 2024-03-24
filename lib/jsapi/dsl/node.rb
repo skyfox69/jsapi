@@ -28,7 +28,7 @@ module Jsapi
 
       attr_reader :_meta_model
 
-      def wrap_error(*args, &block)
+      def node(*args, &block)
         block.call
       rescue Error => e
         raise e.prepend_origin(args.compact.join(' '))

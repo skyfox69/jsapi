@@ -45,7 +45,7 @@ module Jsapi
       # [+:schema+]
       #   The referred schema. The value must be the name of a schema defined
       #   by Definitions#schema. +:schema+ can be specified together with
-      #   +:existence+ and annotation options.
+      #   +:existence+ and annotation options only.
       # [+:type+]
       #   The type of the parameter. See Meta::Schema for details.
       # [+:existence+]
@@ -112,7 +112,7 @@ module Jsapi
       #     parameter 'foo', type: 'array', max_items: 3
       #
       def parameter(name, **options, &block)
-        wrap_error "'#{name}'" do
+        node("'#{name}'") do
           if options.any? || block
             parameter_model = _meta_model.add_parameter(name, **options)
             Parameter.new(parameter_model).call(&block) if block
@@ -148,7 +148,7 @@ module Jsapi
       #   Specifies whether or not the request body is deprecated.
       #
       def request_body(**options, &block)
-        wrap_error 'request body' do
+        node('request body') do
           request_body = _meta_model.set_request_body(**options)
           RequestBody.new(request_body).call(&block) if block
         end
@@ -173,7 +173,7 @@ module Jsapi
       # [+:schema+]
       #   The referred schema. The value must be the name of a schema defined
       #   by Definitions#schema. +:schema+ can be specified together with
-      #   +:locale+ and annotation options.
+      #   +:locale+ and annotation options only.
       # [+:type+]
       #   The type of the response. See Meta::Schema for details.
       # [+:existence+]
@@ -199,7 +199,7 @@ module Jsapi
       #   Specifies whether or not the response is deprecated.
       #
       def response(status_or_name = nil, name = nil, **options, &block)
-        wrap_error 'response', status_or_name do
+        node('response', status_or_name) do
           if options.any? || block
             raise Error, 'name cannot be specified together with options ' \
                          'or a block' if name

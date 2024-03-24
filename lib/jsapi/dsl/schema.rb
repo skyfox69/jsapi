@@ -31,7 +31,8 @@ module Jsapi
       #
       # [+schema+]
       #   The referred schema. The value must be the name of a schema defined
-      #   by Definitions#schema.
+      #   by Definitions#schema. +:schema: can be specified together with
+      #   +:existence+ only.
       # [+:type+]
       #   The type of an item. See Meta::Schema for details.
       # [+:existence+]
@@ -90,7 +91,8 @@ module Jsapi
       #
       # [+schema+]
       #   The referred schema. The value must be the name of a schema defined
-      #   by Definitions#schema.
+      #   by Definitions#schema. +:schema+ can be specified together with
+      #   +:existence+ and annotation options only.
       # [+:type+]
       #   The type of the property. See Meta::Schema for details.
       # [+:existence+]
@@ -130,7 +132,7 @@ module Jsapi
       # Same as Operation#parameter.
       #
       def property(name, **options, &block)
-        wrap_error "'#{name}'" do
+        node("'#{name}'") do
           unless _meta_model.respond_to?(:add_property)
             raise Error, "'property' isn't allowed for '#{_meta_model.type}'"
           end

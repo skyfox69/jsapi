@@ -12,7 +12,7 @@ module Jsapi
 
       # Defines the root of an OpenAPI document.
       def openapi(version = nil, &block)
-        wrap_error("openapi #{version}") do
+        node("openapi #{version}") do
           openapi = _meta_model.openapi_root(version)
           Generic.new(openapi).call(&block) if block
         end
@@ -51,7 +51,7 @@ module Jsapi
       #   Specifies whether or not the operation is deprecated.
       #
       def operation(name = nil, **options, &block)
-        wrap_error(name.nil? ? '' : "'#{name}'") do
+        node(name.nil? ? '' : "'#{name}'") do
           operation_model = _meta_model.add_operation(name, **options)
           Operation.new(operation_model).call(&block) if block
         end
@@ -66,7 +66,7 @@ module Jsapi
       # Same as Operation#parameter.
       #
       def parameter(name, **options, &block)
-        wrap_error("'#{name}'") do
+        node("'#{name}'") do
           parameter_model = _meta_model.add_parameter(name, **options)
           Parameter.new(parameter_model).call(&block) if block
         end
@@ -94,7 +94,7 @@ module Jsapi
       # Same as Operation#response.
       #
       def response(name, **options, &block)
-        wrap_error("'#{name}'") do
+        node("'#{name}'") do
           response_model = _meta_model.add_response(name, **options)
           Response.new(response_model).call(&block) if block
         end
@@ -117,7 +117,7 @@ module Jsapi
       #   default model class is Model::Base.
       #
       def schema(name, **options, &block)
-        wrap_error("'#{name}'") do
+        node("'#{name}'") do
           schema_model = _meta_model.add_schema(name, **options)
           Schema.new(schema_model).call(&block) if block
         end
