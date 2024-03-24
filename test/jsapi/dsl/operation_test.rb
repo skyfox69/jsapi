@@ -139,7 +139,18 @@ module Jsapi
       def test_response
         operation = Meta::Operation.new('operation')
         Operation.new(operation).call do
-          response 200, type: 'object' do
+          response do
+            property 'foo', type: 'string'
+          end
+        end
+        response = operation.responses['default']
+        assert_predicate(response.schema, :object?)
+      end
+
+      def test_response_with_status
+        operation = Meta::Operation.new('operation')
+        Operation.new(operation).call do
+          response 200 do
             property 'foo', type: 'string'
           end
         end
@@ -148,25 +159,6 @@ module Jsapi
 
         property = response.schema.properties(definitions)['foo']
         assert_predicate(property.schema, :string?)
-      end
-
-      def test_default_response
-        operation = Meta::Operation.new('operation')
-        Operation.new(operation).call do
-          response type: 'object' do
-            property 'foo', type: 'string'
-          end
-        end
-        response = operation.responses['default']
-        assert_predicate(response.schema, :object?)
-      end
-
-      def test_response_reference
-        operation = Meta::Operation.new('operation')
-        Operation.new(operation).call { response 200, 'Foo' }
-
-        response = operation.response(200)
-        assert_equal('Foo', response.reference)
       end
 
       def test_response_with_schema_reference
@@ -178,13 +170,50 @@ module Jsapi
         assert_equal('Foo', response.schema.reference)
       end
 
+      def test_response_reference
+        operation = Meta::Operation.new('operation')
+        Operation.new(operation).call { response 'Foo' }
+
+        response = operation.response('default')
+        assert_equal('Foo', response.reference)
+      end
+
+      def test_response_reference_with_status
+        operation = Meta::Operation.new('operation')
+        Operation.new(operation).call { response 200, 'Foo' }
+
+        response = operation.response(200)
+        assert_equal('Foo', response.reference)
+      end
+
       def test_raises_error_on_invalid_response_type
         operation = Meta::Operation.new('operation')
-
         error = assert_raises Error do
           Operation.new(operation).call { response type: 'foo' }
         end
         assert_equal("invalid type: 'foo' (at response)", error.message)
+      end
+
+      def test_raises_error_on_invalid_response_arguments
+        message = 'name cannot be specified together with options ' \
+                  'or a block (at response 200)'
+
+        operation = Meta::Operation.new('operation')
+        error = assert_raises Error do
+          Operation.new(operation).call do
+            response 200, 'Foo', type: 'object'
+          end
+        end
+        assert_equal(message, error.message)
+
+        error = assert_raises Error do
+          Operation.new(operation).call do
+            response 200, 'Foo' do
+              property 'foo', type: 'string'
+            end
+          end
+        end
+        assert_equal(message, error.message)
       end
 
       private

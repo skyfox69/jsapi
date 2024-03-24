@@ -44,7 +44,8 @@ module Jsapi
       #
       # [+:schema+]
       #   The referred schema. The value must be the name of a schema defined
-      #   by Definitions#schema.
+      #   by Definitions#schema. +:schema+ can be specified together with
+      #   +:existence+ and annotation options.
       # [+:type+]
       #   The type of the parameter. See Meta::Schema for details.
       # [+:existence+]
@@ -160,11 +161,10 @@ module Jsapi
       #     property 'bar', type: 'string'
       #   end
       #
-      # +status+ specifies the HTTP status code of the response. The default
-      # value is +:default+.
+      # The default status is <code>'default'</code>.
       #
-      # If +name+ is present, it refers to the reusable response with the
-      # that name.
+      # Refers to the reusable response with the same name if neither any
+      # options nor a block is specified.
       #
       #   response 200, 'Foo'
       #
@@ -172,7 +172,8 @@ module Jsapi
       #
       # [+:schema+]
       #   The referred schema. The value must be the name of a schema defined
-      #   by Definitions#schema.
+      #   by Definitions#schema. +:schema+ can be specified together with
+      #   +:locale+ and annotation options.
       # [+:type+]
       #   The type of the response. See Meta::Schema for details.
       # [+:existence+]
@@ -188,7 +189,7 @@ module Jsapi
       #   casted to an instance of +Date+ or +DateTime+ when rendering the
       #   response.
       #
-      # ===== Annotation options
+      # ===== Annotations
       #
       # [+:description+]
       #   A description of the response.
@@ -197,12 +198,18 @@ module Jsapi
       # [+:deprecated+]
       #   Specifies whether or not the response is deprecated.
       #
-      def response(status = nil, name = nil, **options, &block)
-        wrap_error 'response', status do
-          if name.nil?
-            response_model = _meta_model.add_response(status, **options)
+      def response(status_or_name = nil, name = nil, **options, &block)
+        wrap_error 'response', status_or_name do
+          if options.any? || block
+            raise Error, 'name cannot be specified together with options ' \
+                         'or a block' if name
+
+            response_model = _meta_model.add_response(status_or_name, **options)
             Response.new(response_model).call(&block) if block
           else
+            status = status_or_name if name
+            name = status_or_name unless name
+
             _meta_model.add_response_reference(status, name)
           end
         end
