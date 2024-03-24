@@ -21,7 +21,7 @@ Add the following line to `Gemfile` and run `bundle install`.
 ### Creating an API operation
 
 Create the route for the API operation in `config/routes.rb`. For example, a
-non-resourceful route for a simple echo operation can be defined as:
+non-resourceful route for a simple echo operation can be defined as below.
 
 ```ruby
   # config/routes.rb
@@ -149,8 +149,9 @@ The following class methods are provided to define API components:
 - api_rescue_from - Defines a rescue handler.
 - api_include - Includes API definitions from other classes.
 
-These methods can be integrated by inheriting from `Jsapi::Controller::Base`
-or including `Jsapi::DSL`.
+These methods can be integrated into a controller class by inheriting from
+`Jsapi::Controller::Base` or including `Jsapi::DSL`. The `Jsapi::DSL` module
+can also be included in any other class.
 
 API components can also be defined inside an `api_definitions` block,
 for example:
@@ -173,11 +174,13 @@ for example:
 ```
 
 The names and types of API components can be strings or symbols. All options
-except `type` can also be defined inside the block, for example:
+except `type` can also be specified inside the block, for example:
 
 ```ruby
+  # Define option as keyword argument
   parameter 'foo', type: 'string', existence: true
 
+  # Define option inside the block
   parameter 'bar', type: 'string' do
     existence true
   end
@@ -196,14 +199,14 @@ An operation can be defined as below.
   end
 ```
 
-The operation name can be omitted, if the ontroller handles one operation only.
+The operation name can be omitted, if the controller handles one operation only.
 
 #### Options
 
 - `model` - See [API models](#api-models).
 - `method` - The HTTP verb of the operation.
 - `path` - The relative path of the operation.
-- `tags` - One or more tags used to group operations.
+- `tags` - One or more tags used to group operations in an OpenAPI document.
 - `summary` - A short summary of the operation.
 - `description` - A desciption of the operation.
 - `deprecated` - Specifies whether or not the operation is deprecated.
@@ -243,12 +246,12 @@ It is also possible to define nested object parameters in place.
 - `example` - See [Defining examples](#defining-examples).
 - `deprecated` - Specifies whether or not the parameter is deprecated.
 
-Additionally, all of the [validations options](#validation-options) can
+Additionally, all of the [validation options](#validation-options) can
 be specified to validate top-level parameter values.
 
 ### Defining request bodies
 
-A request body of an operation can be defined as below.
+The request body of an operation can be defined as below.
 
 ```ruby
   api_operation 'foo' do
@@ -322,7 +325,7 @@ It is also possible to define nested objects in place.
 - `example` - See [Defining examples](#defining-examples).
 - `deprecated` - Specifies whether or not the property is deprecated.
 
-Additionally, all of the [validations options](#validation-options) can
+Additionally, all of the [validation options](#validation-options) can
 be specified to validate nested parameter values.
 
 ### Defining examples
@@ -347,19 +350,27 @@ It is also possible to define multiple sample values.
 #### Options
 
 - `value` - The sample value
-- `external_value` - The URI of an external sample value.
+- `external` - Specifies whether `value` is the URI of an external example.
 - `summary` - A short summary of the example.
 - `description` - A description of the example.
 
 ### Reusable schemas
 
-A reusable schema can be defined as below.
+The `api_schema` method defines a schema that can be associated with
+parameters, request bodies, responses and properties.
 
 ```ruby
   api_schema 'Foo' do
     property 'bar', type: 'string'
   end
+
+  api_operation do
+    parameter 'foo', schema: 'Foo'
+  end
 ```
+
+The properties of a schema can be included in another schema by calling
+the `all_of` method.
 
 ```ruby
   api_schema 'Bar' do
@@ -367,21 +378,14 @@ A reusable schema can be defined as below.
   end
 ```
 
-```ruby
-  api_schema 'Bar' do
-    property 'foo', schema: 'Foo'
-  end
-```
-
 ### Reusable parameters
 
-A reusable parameter can be defined as below.
+The `api_parameter` method defines a parameter that can be used in
+multiple operations.
 
 ```ruby
   api_parameter 'foo', type: 'string'
-```
 
-```ruby
   api_operation do
     parameter 'foo'
   end
@@ -389,17 +393,16 @@ A reusable parameter can be defined as below.
 
 ### Reusable responses
 
-A reusable response can be defined as below.
+The `api_response` method defines a response that can be used in
+multiple operations.
 
 ```ruby
   api_response 'Foo' do
     property 'bar', type: 'string'
   end
-```
 
-```ruby
   api_operation do
-    response 200, 'Foo'
+    response 'Foo'
   end
 ```
 
@@ -443,7 +446,8 @@ a method or a `Proc`, for example:
 
 ### The `items` option
 
-The `items` options specifies the kind of items of an array, for example:
+The `items` options specifies the kind of items that can be contained in an
+array, for example:
 
 ```ruby
   parameter 'foo', type: 'array', items: { type: 'string' }
@@ -494,7 +498,7 @@ The minimum and maximum value can be specified as shown below.
 
 ## API Controllers
 
-_Jsapi_ provides the following instance methods to deal with API operations:
+The following methods are provided to deal with API operations:
 
 - [api_params](#the-api_params-method)
 - [api_response](#the-api_response-method)
@@ -502,16 +506,15 @@ _Jsapi_ provides the following instance methods to deal with API operations:
 - [api_operation!](#the-api_operation-method-1)
 - [api_definitions](#the-api-definitions-method)
 
-These methods can be integrated by inheriting from `Jsapi::Controller::Base`
-or including `Jsapi::Controller::Methods`, for example:
+These methods can be integrated into a controller class by inheriting from
+`Jsapi::Controller::Base` or including `Jsapi::Controller::Methods`,
+for example:
 
 ```ruby
   class FooController < Jsapi::Controller::Base
     # ...
   end
 ```
-
-or
 
 ```ruby
   class FooController < ActionController::API
