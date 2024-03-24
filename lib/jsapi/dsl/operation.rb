@@ -44,8 +44,9 @@ module Jsapi
       #
       # [+:schema+]
       #   The referred schema. The value must be the name of a schema defined
-      #   by Definitions#schema. +:schema+ can be specified together with
-      #   +:existence+ and annotation options only.
+      #   by Definitions#schema. +:schema+ cannot be specified together with
+      #   +:type+, +:default+, +:conversion+, +:model+, +:items+, +:format+,
+      #   and validations.
       # [+:type+]
       #   The type of the parameter. See Meta::Schema for details.
       # [+:existence+]
@@ -86,7 +87,7 @@ module Jsapi
       # [+:minimum+]
       #   The minimum value of an integer or a number.
       #     parameter 'foo', type: 'integer', minimum: 0
-      #     parameter 'bar', type: 'number', minimum: { value: 1, exclusive: true }
+      #     parameter 'bar', type: 'number', minimum: { value: 0, exclusive: true }
       # [+:maximum+]
       #   The maximum value of an integer or a number.
       #     parameter 'foo', type: 'integer', maximum: 1
@@ -172,8 +173,8 @@ module Jsapi
       #
       # [+:schema+]
       #   The referred schema. The value must be the name of a schema defined
-      #   by Definitions#schema. +:schema+ can be specified together with
-      #   +:locale+ and annotation options only.
+      #   by Definitions#schema. +:schema+ cannot be specified together with
+      #   +:type+, +:items+, and +:format+.
       # [+:type+]
       #   The type of the response. See Meta::Schema for details.
       # [+:existence+]

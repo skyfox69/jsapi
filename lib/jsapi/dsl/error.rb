@@ -19,7 +19,7 @@ module Jsapi
       end
 
       # Overrides <code>StandardError#message</code> to append the whole path of
-      # the position at where the error occurred to the message, for example:
+      # the position at where the error occurred, for example:
       # <code>{message} (at foo/bar)</code>.
       def message
         message = super

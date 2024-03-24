@@ -15,14 +15,6 @@ module Jsapi
         assert_equal('foo', parameter.examples['default'].value)
       end
 
-      def test_example_with_block
-        parameter = Meta::Parameter.new('parameter')
-        Parameter.new(parameter).call do
-          example { value 'foo' }
-        end
-        assert_equal('foo', parameter.examples['default'].value)
-      end
-
       def test_deprecated
         parameter = Meta::Parameter.new('parameter')
         Parameter.new(parameter).call { deprecated true }

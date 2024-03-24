@@ -3,22 +3,26 @@
 module Jsapi
   module Meta
     class Example
-      attr_accessor :description, :external_value, :summary, :value
+      attr_accessor :description, :external, :summary, :value
 
       def initialize(**options)
         @summary = options[:summary]
         @description = options[:description]
         @value = options[:value]
-        @external_value = options[:external_value]
+        @external = options[:external] == true
       end
 
       def to_openapi_example
-        {
-          summary: summary,
-          description: description,
-          value: value,
-          external_value: external_value
-        }.compact
+        {}.tap do |hash|
+          hash[:summary] = summary if summary.present?
+          hash[:description] = description if description.present?
+
+          if external == true
+            hash[:external_value] = value
+          else
+            hash[:value] = value
+          end
+        end
       end
     end
   end

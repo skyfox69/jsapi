@@ -31,8 +31,8 @@ module Jsapi
       #
       # [+schema+]
       #   The referred schema. The value must be the name of a schema defined
-      #   by Definitions#schema. +:schema: can be specified together with
-      #   +:existence+ only.
+      #   by Definitions#schema. +:schema:+ cannot be specified together with
+      #   +:type+, +:default+, +conversion+, +items+, and +:format+.
       # [+:type+]
       #   The type of an item. See Meta::Schema for details.
       # [+:existence+]
@@ -91,8 +91,9 @@ module Jsapi
       #
       # [+schema+]
       #   The referred schema. The value must be the name of a schema defined
-      #   by Definitions#schema. +:schema+ can be specified together with
-      #   +:existence+ and annotation options only.
+      #   by Definitions#schema. +:schema+ cannot be specified together with
+      #   +:type+, +:default+, +:conversion+, +:model+, +:items+, +:format+,
+      #   annotations, and validations.
       # [+:type+]
       #   The type of the property. See Meta::Schema for details.
       # [+:existence+]
@@ -114,7 +115,7 @@ module Jsapi
       #     property 'foo', type: 'array', items: { type: 'string' }
       # [+:format+]
       #   The string format. Possible values are <code>'date'</code> and
-      #   <code>'date-time'</code>. Property values are implictly casted to
+      #   <code>'date-time'</code>. \Property values are implictly casted to
       #   an instance of +Date+ or +DateTime+ if format is specified.
       #     property 'foo', type: 'string', format: 'date'
       #

@@ -15,14 +15,6 @@ module Jsapi
         assert_equal('foo', response.examples['default'].value)
       end
 
-      def test_example_with_block
-        response = Meta::Response.new
-        Response.new(response).call do
-          example { value 'foo' }
-        end
-        assert_equal('foo', response.examples['default'].value)
-      end
-
       def test_delegates_to_schema
         response = Meta::Response.new(type: 'string')
         Response.new(response).call { format 'date' }

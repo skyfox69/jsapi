@@ -25,7 +25,8 @@ module Jsapi
         example = Example.new(
           summary: 'Foo',
           description: 'Description of foo',
-          external_value: '/foo/bar'
+          value: '/foo/bar',
+          external: true
         )
         assert_equal(
           {

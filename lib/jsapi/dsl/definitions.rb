@@ -5,12 +5,18 @@ module Jsapi
     # Used to define top-level API components.
     class Definitions < Node
 
-      # Includes API definitions from +classes+.
-      def include(*classes)
-        classes.each { |c| _meta_model.include(c.api_definitions) }
+      # Includes API definitions from +klasses+.
+      def include(*klasses)
+        klasses.each do |klass|
+          _meta_model.include(klass.api_definitions)
+        end
       end
 
       # Defines the root of an OpenAPI document.
+      #
+      #   openapi '3.1' do
+      #     info title: 'Foo', version: 1
+      #   end
       def openapi(version = nil, &block)
         node("openapi #{version}") do
           openapi = _meta_model.openapi_root(version)
