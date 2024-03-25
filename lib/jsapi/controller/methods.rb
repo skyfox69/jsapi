@@ -14,7 +14,7 @@ module Jsapi
       # Performs an API operation by calling the given block. The request parameters
       # are passed as an instance of the operation's model class to the block. The
       # object returned by the block is implicitly rendered according to the
-      # +response+ definition of the operation and HTTP status code.
+      # appropriate +response+ specification.
       #
       #   api_operation('foo') do |api_params|
       #     # ...
@@ -40,13 +40,15 @@ module Jsapi
       #   params = api_params('foo')
       #
       # +operation_name+ can be +nil+ if the controller handles one operation only.
+      #
+      # Note that each call of +api_params+ returns a newly created instance.
       def api_params(operation_name = nil)
         definitions = api_definitions
         _api_params(_api_operation(operation_name, definitions), definitions)
       end
 
       # Returns a Response to serialize the JSON representation of +result+ according
-      # to the +response+ definition of the operation and HTTP status code.
+      # to the appropriate +response+ specification.
       #
       #   render(json: api_response(bar, 'foo', status: 200))
       #

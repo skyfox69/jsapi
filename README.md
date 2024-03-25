@@ -1,12 +1,12 @@
 # Jsapi
 
-Provides a DSL to define JSON APIs in Rails.
+## Why Jsapi?
 
-Key features:
+Jsapi is a good choice when you want to build a Rails application providing JSON APIs
+consumed by one ore more clients. You can use Jsapi to read requests, produce responses
+and create OpenAPI documents. All of that can be specified at one place.
 
-- Reading request parameters by generic model classes
-- Serializing objects
-- Creating OpenAPI and JSON Schema documents
+Jsapi supports OpenAPI 2.0, 3.0 and 3.1.
 
 ## Installation
 
@@ -42,72 +42,96 @@ Define the API operation:
 
 ```ruby
   class EchoController < Jsapi::Controller::Base
-    api_operation 'echo', path: '/echo' do
-      parameter 'text', type: 'string', existence: true
-      response do
-        property 'echo', type: 'string'
-      end
-    end
-  end
-```
-
-Add the `index` method to perform the API operation:
-
-```ruby
-  class EchoController < Jsapi::Controller::Base
-    Echo = Struct.new(:echo)
-
-    api_operation 'echo' do
-      parameter 'text', type: 'string', existence: true
-      response do
-        property 'echo', type: 'string'
-      end
-    end
-
-    def index
-      params = api_params('echo')
-      if params.valid?
-        echo = Echo.new(api_params.text)
-        render(json: api_response(echo), 'echo')
-      else
-        messages = params.errors.full_messages.join(' ')
-        render(json: messages, status: :bad_request)
-      end
-    end
-  end
-```
-
-or
-
-```ruby
-  class EchoController < Jsapi::Controller::Base
-    Echo = Struct.new(:echo)
-
-    api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
-
-    api_operation 'echo', path: '/echo' do
-      parameter 'text', type: 'string', existence: true
-      response do
+    api_operation path: '/echo' do
+      parameter 'call', type: 'string', existence: true
+      response 200 do
         property 'echo', type: 'string'
       end
       response 400 do
+        property 'status', type: 'integer'
+        property 'message', type: 'string'
+      end
+    end
+  end
+```
+
+Create the action performing the API operation. There are several options to
+do this. The easiest way to implement an API operation is:
+
+```ruby
+  class EchoController < Jsapi::Controller::Base
+    # ...
+
+    def index
+      api_operation! status: 200 do |api_params|
+        Echo.new("#{api_params.call}, again")
+      end
+    end
+  end
+```
+
+`api_operation!` passes the parameters as a lightweight API model to the block
+and renders the JSON representation of the object returned by the block. If the
+parameters are invalid, a `Jsapi::Controller::ParametersInvalid` exception is
+raised.
+
+To render error responses, a rescue handler can be added:
+
+```ruby
+  class EchoController < Jsapi::Controller::Base
+    # ...
+
+    api_rescue Jsapi::Controller::ParametersInvalid, with: 400
+
+    # ...
+  end
+```
+
+The whole controller class could look like:
+
+```ruby
+  # app/controllers/echo_controller.rb
+
+  class EchoController < Jsapi::Controller::Base
+    Echo = Struct.new(:echo)
+
+    api_rescue Jsapi::Controller::ParametersInvalid, with: 400
+
+    api_operation path: '/echo' do
+      parameter 'call', type: 'string', existence: true
+      response 200 do
+        property 'echo', type: 'string'
+      end
+      response 400 do
+        property 'status', type: 'integer'
         property 'message', type: 'string'
       end
     end
 
     def index
-      api_operation! 'echo' do |api_params|
-        Echo.new(api_params.text)
+      api_operation! status: 200 do |api_params|
+        Echo.new("#{api_params.call}, again")
       end
     end
   end
 ```
 
-Both samples respond to `GET /echo?text=Hello` with:
+An instance of the `EchoController` class would respond to `GET /echo?call=Hello`
+with HTTP status code 200. The response body would be:
 
 ```json
   {
-    "echo": "Hello"
+    "echo": "Hello, again"
+  }
+```
+
+If the `call` query parameter is not present, it responds with HTTP status code
+400. The response body would be:
+
+```json
+  {
+    "status": 400,
+    "message": "'call' can't be blank."
   }
 ```
 
@@ -127,13 +151,14 @@ Create the controller:
   # app/controllers/openapi_controller.rb
 
   class OpenapiController < Jsapi::Controller::Base
-    api_definitions do
-      include EchoController
-      info name: 'Echo', version: '1.0'
+    api_include EchoController
+
+    openapi '3.1' do
+      info title: 'Echo', version: '1'
     end
 
     def index
-      render(json: api_definitions.openapi_document)
+      render(json: api_definitions.openapi_document('3.1'))
     end
   end
 ```
@@ -146,7 +171,7 @@ The following class methods are provided to define API components:
 - [api_parameter](#defining-reusable-parameters) - Defines a reusable parameter.
 - [api_response](#defining-reusable-responses) - Defines a reusable response.
 - [api_schema](#defining-reusable-schemas) - Defines a reusable schema.
-- api_rescue_from - Defines a rescue handler.
+- [api_rescue_from](#defining-rescue-handlers) - Defines a rescue handler.
 - api_include - Includes API definitions from other classes.
 
 These methods can be integrated into a controller class by inheriting from
@@ -354,6 +379,14 @@ It is also possible to define multiple sample values.
 - `summary` - A short summary of the example.
 - `description` - A description of the example.
 
+### Defining rescue handlers
+
+A rescue handler can be defined as below.
+
+```ruby
+  api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
+```
+
 ### Reusable schemas
 
 The `api_schema` method defines a schema that can be associated with
@@ -527,23 +560,41 @@ for example:
 
 `api_params` can be used to read request parameters by an instance of an
 operation's model class. The request parameters are casted according the
-operation's `parameter` and `request_body` definitions.
+operation's `parameter` and `request_body` specifications.
 
 ```ruby
   params = api_params('foo')
 ```
 
+The one and only argument specifies the name of the API operation. It can be
+omitted if the controller handles one API operation only.
+
+Note that each call of `api_params` returns a newly created instance. Thus, the
+instance returned by `api_params` must be locally stored when validating request
+parameters, for example:
+
+```ruby
+  if (params = api_params).valid?
+    # ...
+  else
+    full_messages = params.errors.full_messages
+    # ...
+  end
+```
+
 ### The `api_response` method
 
 `api_response` can be used to serialize an object according to one of the
-API operation's `response` definitions.
+API operation's `response` specifications.
 
 ```ruby
   render(json: api_response(foo, 'foo', status: 200))
 ```
 
-If `status` is not specified, the default response of the API operation
-is selected.
+The second positional argument specifies the name of the API operation.
+It can be omitted if the controller handles one API operation only. `status`
+specifies the HTTP status code of the response to be selected. If `status`
+is not present, the default response of the API operation is selected.
 
 ### The `api_operation` method
 
@@ -560,6 +611,15 @@ the object returned by the block.
   end
 ```
 
+The one and only positional argument specifies the name of the API operation.
+It can be omitted if the controller handles one API operation only. `status`
+specifies the HTTP status code of the response to be selected. If `status`
+is not present, the default response of the API operation is selected.
+
+If an exception is raised while performing the block, an error response
+according to the first matching rescue handler is rendered. If no matching
+rescue handler could be found, the exception is raised again.
+
 ### The `api_operation!` method
 
 Like `api_operation`, except that a `Jsapi::Controller::ParametersInvalid`
@@ -570,6 +630,9 @@ exception is raises if the request parameters are invalid.
     # ...
   end
 ```
+
+Note that the exception can be catched by a rescue handler to render an
+error response.
 
 ### The `api_definitions` method
 

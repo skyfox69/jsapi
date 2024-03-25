@@ -15,7 +15,7 @@ module Jsapi
       # Defines the root of an OpenAPI document.
       #
       #   openapi '3.1' do
-      #     info title: 'Foo', version: 1
+      #     info title: 'Foo', version: '1'
       #   end
       def openapi(version = nil, &block)
         node("openapi #{version}") do
