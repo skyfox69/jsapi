@@ -307,32 +307,13 @@ module Jsapi
 
       # OpenAPI root tests
 
-      def test_openapi_root_on_2_0
-        assert_equal(
-          { swagger: '2.0' },
-          @api_definitions.openapi_root('2.0').to_h
-        )
-      end
+      def test_openapi_root
+        openapi_root_2_0 = @api_definitions.openapi_root('2.0')
+        openapi_root_3_0 = @api_definitions.openapi_root('3.0')
+        openapi_root_3_1 = @api_definitions.openapi_root('3.0')
 
-      def test_openapi_root_on_3_0
-        assert_equal(
-          { openapi: '3.0.3' },
-          @api_definitions.openapi_root('3.0').to_h
-        )
-      end
-
-      def test_openapi_root_on_3_1
-        assert_equal(
-          { openapi: '3.1.0' },
-          @api_definitions.openapi_root('3.1').to_h
-        )
-      end
-
-      def test_openapi_root_on_unsupported_version
-        error = assert_raises(ArgumentError) do
-          @api_definitions.openapi_root('1.0')
-        end
-        assert_equal('unsupported OpenAPI version: 1.0', error.message)
+        assert_equal(openapi_root_3_0, openapi_root_3_1)
+        assert(openapi_root_2_0 != openapi_root_3_0)
       end
     end
   end

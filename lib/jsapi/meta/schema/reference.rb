@@ -34,7 +34,8 @@ module Jsapi
 
         # Returns the OpenAPI schema object as a +Hash+.
         def to_openapi_schema(version)
-          path = version == '2.0' ? 'definitions' : 'components/schemas'
+          version = OpenAPI::Version.from(version)
+          path = version.major == 2 ? 'definitions' : 'components/schemas'
 
           { '$ref': "#/#{path}/#{@reference}" }
         end

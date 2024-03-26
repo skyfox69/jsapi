@@ -79,14 +79,6 @@ module Jsapi
             response.to_openapi_response('3.0')
           )
         end
-
-        def test_raises_error_on_unsupported_openapi_version
-          response = Base.new(type: 'string')
-          error = assert_raises(ArgumentError) do
-            response.to_openapi_response('foo')
-          end
-          assert_equal('unsupported OpenAPI version: foo', error.message)
-        end
       end
     end
   end

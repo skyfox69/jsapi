@@ -46,6 +46,7 @@ module Jsapi
 
         # Returns the OpenAPI parameter objects as an array of hashes.
         def to_openapi_parameters(version, definitions)
+          version = OpenAPI::Version.from(version)
           schema = self.schema.resolve(definitions)
 
           if schema.object?
@@ -60,7 +61,7 @@ module Jsapi
           else
             parameter_name = schema.array? ? "#{name}[]" : name
             [
-              if version == '2.0'
+              if version.major == 2
                 {
                   name: parameter_name,
                   in: location,
@@ -114,7 +115,7 @@ module Jsapi
               description = property_schema.description
               allow_empty_value = property.schema.existence <= Existence::ALLOW_EMPTY
               [
-                if version == '2.0'
+                if version.major == 2
                   {
                     name: parameter_name,
                     in: location,

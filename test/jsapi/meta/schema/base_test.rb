@@ -174,14 +174,6 @@ module Jsapi
             schema.to_openapi_schema('3.1')
           )
         end
-
-        def test_raises_error_on_unsupported_openapi_version
-          schema = Schema.new(type: 'string')
-          error = assert_raises(ArgumentError) do
-            schema.to_openapi_schema('foo')
-          end
-          assert_equal('unsupported OpenAPI version: foo', error.message)
-        end
       end
     end
   end

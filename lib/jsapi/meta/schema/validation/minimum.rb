@@ -38,7 +38,8 @@ module Jsapi
           end
 
           def to_openapi_validation(version)
-            return to_json_schema_validation if version == '3.1'
+            version = OpenAPI::Version.from(version)
+            return to_json_schema_validation if version.major == 3 && version.minor == 1
             return super unless exclusive
 
             { minimum: value, exclusiveMinimum: true }

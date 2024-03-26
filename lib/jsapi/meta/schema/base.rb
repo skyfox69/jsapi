@@ -64,15 +64,15 @@ module Jsapi
         end
 
         def to_openapi_schema(version)
-          case version
-          when '2.0'
+          version = OpenAPI::Version.from(version)
+          if version.major == 2
             {
               type: type,
               description: description,
               default: default,
               example: examples.first
             }
-          when '3.0'
+          elsif version.minor == 0
             {
               type: type,
               nullable: nullable?.presence,
@@ -80,15 +80,13 @@ module Jsapi
               default: default,
               examples: examples.presence
             }
-          when '3.1'
+          else # 3.1
             {
               type: nullable? ? [type, 'null'] : type,
               description: description,
               default: default,
               examples: examples.presence
             }
-          else
-            raise ArgumentError, "unsupported OpenAPI version: #{version}"
           end.tap do |hash|
             validations.each_value do |validation|
               hash.merge!(validation.to_openapi_validation(version))

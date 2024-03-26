@@ -23,6 +23,7 @@ module Jsapi
         # referred parameter as an array of hashes. Raises a +ReferenceError+ if the
         # reference could not be resolved.
         def to_openapi_parameters(version, definitions)
+          version = OpenAPI::Version.from(version)
           parameter = resolve(definitions)
 
           if parameter.schema.resolve(definitions).object?
@@ -30,7 +31,7 @@ module Jsapi
             parameter.to_openapi_parameters(version, definitions)
           else
             # Return an array containing the reference object
-            path = version == '2.0' ? 'parameters' : 'components/parameters'
+            path = version.major == 2 ? 'parameters' : 'components/parameters'
 
             [{ '$ref': "#/#{path}/#{reference}" }]
           end

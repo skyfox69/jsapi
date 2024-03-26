@@ -23,8 +23,8 @@ module Jsapi
 
         # Returns the OpenAPI response object as a +Hash+.
         def to_openapi_response(version)
-          case version
-          when '2.0'
+          version = OpenAPI::Version.from(version)
+          if version.major == 2
             {
               description: description,
               schema: schema.to_openapi_schema(version),
@@ -34,7 +34,7 @@ module Jsapi
                 end
               )
             }
-          when '3.0', '3.1'
+          else
             {
               description: description,
               content: {
@@ -44,8 +44,6 @@ module Jsapi
                 }.compact
               }
             }
-          else
-            raise ArgumentError, "unsupported OpenAPI version: #{version}"
           end.compact
         end
       end

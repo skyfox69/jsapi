@@ -60,10 +60,12 @@ module Jsapi
         end
       end
 
-      # Returns the OpenAPI document as a +Hash+.
-      def openapi_document(version = '2.0')
-        openapi_root(version).to_h.tap do |root|
-          if version == '2.0'
+      # Returns the OpenAPI document for +version+ as a +Hash+.
+      # Raises an +ArgumentError+ if +version+ is not supported.
+      def openapi_document(version = nil)
+        version = OpenAPI::Version.from(version)
+        openapi_root(version).to_h(version).tap do |root|
+          if version.major == 2
             root.merge!(
               paths: openapi_paths(version),
               definitions: openapi_schemas(version),
@@ -83,18 +85,9 @@ module Jsapi
         end.compact
       end
 
-      def openapi_root(version = '2.0')
-        @openapi_roots[version] ||=
-          case version
-          when '2.0'
-            Generic.new(swagger: '2.0')
-          when '3.0'
-            Generic.new(openapi: '3.0.3')
-          when '3.1'
-            Generic.new(openapi: '3.1.0')
-          else
-            raise ArgumentError, "unsupported OpenAPI version: #{version}"
-          end
+      def openapi_root(version = nil)
+        version = OpenAPI::Version.from(version)
+        @openapi_roots[version.major] ||= OpenAPI::Root.new
       end
 
       def operation(name = nil)

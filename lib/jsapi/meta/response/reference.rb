@@ -21,7 +21,8 @@ module Jsapi
 
         # Returns the OpenAPI reference object as a +Hash+.
         def to_openapi_response(version)
-          path = version == '2.0' ? 'responses' : 'components/responses'
+          version = OpenAPI::Version.from(version)
+          path = version.major == 2 ? 'responses' : 'components/responses'
 
           { '$ref': "#/#{path}/#{@reference}" }
         end
