@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jsapi
-  module DOM
+  module JSON
     # Represents a JSON object.
     class Object < Value
       include Model::Nestable
@@ -12,7 +12,7 @@ module Jsapi
         super(schema)
         @raw_attributes =
           schema.properties(definitions).transform_values do |property|
-            DOM.wrap(attributes[property.name], property.schema, definitions)
+            JSON.wrap(attributes[property.name], property.schema, definitions)
           end
       end
 

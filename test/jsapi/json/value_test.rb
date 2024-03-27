@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module Jsapi
-  module DOM
+  module JSON
     class ValueTest < Minitest::Test
       def test_empty_predicate
         assert(!Value.new(nil).empty?)
@@ -19,11 +19,11 @@ module Jsapi
         schema = Meta::Schema.new(type: 'string', existence: true)
 
         errors = Model::Errors.new
-        assert(DOM.wrap('foo', schema).validate(errors))
+        assert(JSON.wrap('foo', schema).validate(errors))
         assert_predicate(errors, :empty?)
 
         errors = Model::Errors.new
-        assert(!DOM.wrap('', schema).validate(errors))
+        assert(!JSON.wrap('', schema).validate(errors))
         assert(errors.added?(:base, "can't be blank"))
       end
 
@@ -31,11 +31,11 @@ module Jsapi
         schema = Meta::Schema.new(type: 'string', existence: :allow_empty)
 
         errors = Model::Errors.new
-        assert(DOM.wrap('', schema).validate(errors))
+        assert(JSON.wrap('', schema).validate(errors))
         assert_predicate(errors, :empty?)
 
         errors = Model::Errors.new
-        assert(!DOM.wrap(nil, schema).validate(errors))
+        assert(!JSON.wrap(nil, schema).validate(errors))
         assert(errors.added?(:base, "can't be blank"))
       end
 
@@ -43,15 +43,15 @@ module Jsapi
         schema = Meta::Schema.new(type: 'string', pattern: /fo/)
 
         errors = Model::Errors.new
-        assert(DOM.wrap(nil, schema).validate(errors))
+        assert(JSON.wrap(nil, schema).validate(errors))
         assert_predicate(errors, :empty?)
 
         errors = Model::Errors.new
-        assert(DOM.wrap('foo', schema).validate(errors))
+        assert(JSON.wrap('foo', schema).validate(errors))
         assert_predicate(errors, :empty?)
 
         errors = Model::Errors.new
-        assert(!DOM.wrap('bar', schema).validate(errors))
+        assert(!JSON.wrap('bar', schema).validate(errors))
         assert(errors.added?(:base, 'is invalid'))
       end
 
@@ -59,8 +59,8 @@ module Jsapi
 
       def test_inspect
         assert_equal(
-          '#<Jsapi::DOM::String "foo">',
-          DOM.wrap('foo', Meta::Schema.new(type: 'string')).inspect
+          '#<Jsapi::JSON::String "foo">',
+          JSON.wrap('foo', Meta::Schema.new(type: 'string')).inspect
         )
       end
     end

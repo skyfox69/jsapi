@@ -9,7 +9,7 @@ module Jsapi
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
 
-        model = Base.new(DOM.wrap({ 'foo' => 'bar' }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => 'bar' }, schema))
         assert_equal('bar', model['foo'])
         assert_equal('bar', model[:foo])
       end
@@ -18,7 +18,7 @@ module Jsapi
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
 
-        model = Base.new(DOM.wrap({}, schema))
+        model = Base.new(JSON.wrap({}, schema))
 
         assert(model.attribute?('foo'))
         assert(model.attribute?(:foo))
@@ -31,17 +31,17 @@ module Jsapi
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
 
-        model = Base.new(DOM.wrap({}, schema))
+        model = Base.new(JSON.wrap({}, schema))
         assert_equal({ 'foo' => nil }, model.attributes)
 
-        model = Base.new(DOM.wrap({ 'foo' => 'bar' }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => 'bar' }, schema))
         assert_equal({ 'foo' => 'bar' }, model.attributes)
       end
 
       def test_method_missing_and_respond_to
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
-        model = Base.new(DOM.wrap({ 'foo' => 'bar' }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => 'bar' }, schema))
 
         assert(model.respond_to?(:foo))
         assert_equal('bar', model.foo)

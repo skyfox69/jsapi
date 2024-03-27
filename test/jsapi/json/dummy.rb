@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module Jsapi
-  module DOM
+  module JSON
     class Dummy < BaseObject
       attr_reader :value
 

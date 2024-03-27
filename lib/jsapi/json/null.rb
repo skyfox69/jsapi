@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 module Jsapi
-  module DOM
+  module JSON
     # Represents +null+.
     class Null < Value
+
       # Returns allways +true+.
       def empty?
         true

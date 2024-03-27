@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module Jsapi
-  module DOM
+  module JSON
     class NullTest < Minitest::Test
       def test_value
         assert_nil(Null.new(Meta::Schema.new).value)
@@ -20,7 +20,7 @@ module Jsapi
       # inspect
 
       def test_inspect
-        assert_equal('#<Jsapi::DOM::Null>', Null.new(Meta::Schema.new).inspect)
+        assert_equal('#<Jsapi::JSON::Null>', Null.new(Meta::Schema.new).inspect)
       end
     end
   end

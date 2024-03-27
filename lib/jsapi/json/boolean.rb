@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jsapi
-  module DOM
+  module JSON
     # Represents +true+ or +false+.
     class Boolean < Value
       TRUTHY_VALUES = [true, 'True', 'true'].freeze

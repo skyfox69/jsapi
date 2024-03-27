@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jsapi
-  module DOM
+  module JSON
     # Represents a JSON value.
     #
     # Subclasses of Value must provide a +value+ method returning the outside

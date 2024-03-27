@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module Jsapi
-  module DOM
+  module JSON
     class BooleanTest < Minitest::Test
       def test_value
         assert(Boolean.new('true', Meta::Schema.new).value)

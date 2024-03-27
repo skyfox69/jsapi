@@ -23,7 +23,7 @@ module Jsapi
 
         # Wrap params
         meta_models.each do |name, meta_model|
-          @raw_attributes[name] = DOM.wrap(params[name], meta_model.schema, definitions)
+          @raw_attributes[name] = JSON.wrap(params[name], meta_model.schema, definitions)
         end
       end
 

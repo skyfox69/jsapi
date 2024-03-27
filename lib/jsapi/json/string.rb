@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jsapi
-  module DOM
+  module JSON
     # Represents a JSON string.
     class String < Value
       attr_reader :value

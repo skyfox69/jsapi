@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module Jsapi
-  module DOM
+  module JSON
     class IntegerTest < Minitest::Test
       def test_value
         schema = Meta::Schema.new(type: 'integer')

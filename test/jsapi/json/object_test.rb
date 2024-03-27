@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module Jsapi
-  module DOM
+  module JSON
     class ObjectTest < Minitest::Test
       def test_model
         schema = Meta::Schema.new(type: 'object')
@@ -117,7 +117,7 @@ module Jsapi
         schema.add_property('foo', type: 'string')
 
         assert_equal(
-          '#<Jsapi::DOM::Object foo: #<Jsapi::DOM::String "bar">>',
+          '#<Jsapi::JSON::Object foo: #<Jsapi::JSON::String "bar">>',
           Object.new({ 'foo' => 'bar' }, schema, definitions).inspect
         )
       end

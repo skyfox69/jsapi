@@ -3,7 +3,7 @@
 require 'test_helper'
 
 module Jsapi
-  module DOM
+  module JSON
     class ArrayTest < Minitest::Test
       def test_value
         schema = Meta::Schema.new(type: 'array', items: { type: 'string' })
@@ -61,7 +61,7 @@ module Jsapi
       def test_inspect
         schema = Meta::Schema.new(type: 'array', items: { type: 'string' })
         assert_equal(
-          '#<Jsapi::DOM::Array [#<Jsapi::DOM::String "foo">]>',
+          '#<Jsapi::JSON::Array [#<Jsapi::JSON::String "foo">]>',
           Array.new(%w[foo], schema, definitions).inspect
         )
       end

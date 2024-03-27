@@ -9,10 +9,10 @@ module Jsapi
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
 
-        model = Base.new(DOM.wrap({ 'foo' => 'bar' }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => 'bar' }, schema))
 
-        assert(model == Base.new(DOM.wrap({ 'foo' => 'bar' }, schema)))
-        assert(model != Base.new(DOM.wrap({ 'foo' => nil }, schema)))
+        assert(model == Base.new(JSON.wrap({ 'foo' => 'bar' }, schema)))
+        assert(model != Base.new(JSON.wrap({ 'foo' => nil }, schema)))
       end
 
       def test_inspect
@@ -20,17 +20,17 @@ module Jsapi
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'integer')
 
-        model = Base.new(DOM.wrap({ 'foo' => 0 }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => 0 }, schema))
         assert_equal('#<Jsapi::Model::Base foo: 0>', model.inspect)
 
-        model = Base.new(DOM.wrap({ 'foo' => nil }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => nil }, schema))
         assert_equal('#<Jsapi::Model::Base foo: nil>', model.inspect)
 
         # string
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
 
-        model = Base.new(DOM.wrap({ 'foo' => 'bar' }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => 'bar' }, schema))
         assert_equal('#<Jsapi::Model::Base foo: "bar">', model.inspect)
 
         # nested object
@@ -38,7 +38,7 @@ module Jsapi
         property = schema.add_property('foo', type: 'object')
         property.schema.add_property('bar', type: 'string')
 
-        model = Base.new(DOM.wrap({ 'foo' => { 'bar' => 'Foo Bar' } }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => { 'bar' => 'Foo Bar' } }, schema))
         assert_equal(
           '#<Jsapi::Model::Base foo: #<Jsapi::Model::Base bar: "Foo Bar">>',
           model.inspect
@@ -49,7 +49,7 @@ module Jsapi
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('nested', type: 'string')
 
-        nested = DOM.wrap({ 'nested' => 'foo' }, schema)
+        nested = JSON.wrap({ 'nested' => 'foo' }, schema)
         model = Base.new(nested)
 
         assert_equal(nested, model.send(:nested))

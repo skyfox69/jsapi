@@ -9,10 +9,10 @@ module Jsapi
         schema = Meta::Schema.new(type: 'object', existence: true)
         schema.add_property('foo', type: 'string')
 
-        model = Base.new(DOM.wrap({ 'foo' => 'bar' }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => 'bar' }, schema))
         assert_predicate(model, :valid?)
 
-        model = Base.new(DOM.wrap({}, schema))
+        model = Base.new(JSON.wrap({}, schema))
         assert_predicate(model, :invalid?)
         assert_equal(["can't be blank"], model.errors.full_messages)
       end
@@ -21,10 +21,10 @@ module Jsapi
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string', existence: true)
 
-        model = Base.new(DOM.wrap({ 'foo' => 'bar' }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => 'bar' }, schema))
         assert_predicate(model, :valid?)
 
-        model = Base.new(DOM.wrap({ 'foo' => '' }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => '' }, schema))
         assert_predicate(model, :invalid?)
         assert(model.errors.added?(:foo, "can't be blank"))
       end
@@ -34,10 +34,10 @@ module Jsapi
         property = schema.add_property('foo', type: 'object')
         property.schema.add_property('bar', type: 'string', existence: true)
 
-        model = Base.new(DOM.wrap({ 'foo' => { 'bar' => 'Foo bar' } }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => { 'bar' => 'Foo bar' } }, schema))
         assert_predicate(model, :valid?)
 
-        model = Base.new(DOM.wrap({ 'foo' => {} }, schema))
+        model = Base.new(JSON.wrap({ 'foo' => {} }, schema))
         assert_predicate(model, :invalid?)
         assert(model.errors.added?(:foo, "'bar' can't be blank"))
       end

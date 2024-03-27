@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-require_relative 'dom/value'
-require_relative 'dom/array'
-require_relative 'dom/boolean'
-require_relative 'dom/integer'
-require_relative 'dom/null'
-require_relative 'dom/number'
-require_relative 'dom/object'
-require_relative 'dom/string'
+require_relative 'json/value'
+require_relative 'json/array'
+require_relative 'json/boolean'
+require_relative 'json/integer'
+require_relative 'json/null'
+require_relative 'json/number'
+require_relative 'json/object'
+require_relative 'json/string'
 
 module Jsapi
-  module DOM
+  module JSON
     class << self
       def wrap(object, schema, definitions = nil)
         schema = schema.resolve(definitions) unless definitions.nil?

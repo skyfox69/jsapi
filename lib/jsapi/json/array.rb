@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 module Jsapi
-  module DOM
+  module JSON
     # Represents a JSON array.
     class Array < Value
       def initialize(elements, schema, definitions)
         super(schema)
         @elements = Array(elements).map do |element|
-          DOM.wrap(element, schema.items, definitions)
+          JSON.wrap(element, schema.items, definitions)
         end
       end
 
