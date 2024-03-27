@@ -3,29 +3,29 @@
 module Jsapi
   module DOM
     class Array < BaseObject
-      def initialize(array, schema, definitions)
+      def initialize(items, schema, definitions)
         super(schema)
-        @array = Array(array).map do |item|
+        @items = Array(items).map do |item|
           DOM.wrap(item, schema.items, definitions)
         end
       end
 
       def empty?
-        @array.empty?
+        @items.empty?
       end
 
       def inspect # :nodoc:
-        "#<#{self.class.name} [#{@array.map(&:inspect).join(', ')}]>"
+        "#<#{self.class.name} [#{@items.map(&:inspect).join(', ')}]>"
       end
 
       def validate(errors)
         return false unless super
 
-        @array.map { |item| item.validate(errors) }.all?
+        @items.map { |item| item.validate(errors) }.all?
       end
 
       def value
-        @value ||= @array.map(&:value)
+        @value ||= @items.map(&:value)
       end
     end
   end
