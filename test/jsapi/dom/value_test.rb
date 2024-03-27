@@ -4,13 +4,13 @@ require 'test_helper'
 
 module Jsapi
   module DOM
-    class BaseObjectTest < Minitest::Test
+    class ValueTest < Minitest::Test
       def test_empty_predicate
-        assert(!BaseObject.new(nil).empty?)
+        assert(!Value.new(nil).empty?)
       end
 
       def test_null_predicate
-        assert(!BaseObject.new(nil).null?)
+        assert(!Value.new(nil).null?)
       end
 
       # Validation tests

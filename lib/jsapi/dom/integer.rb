@@ -2,7 +2,8 @@
 
 module Jsapi
   module DOM
-    class Integer < BaseObject
+    # Represents a JSON integer.
+    class Integer < Value
       attr_reader :value
 
       def initialize(value, schema)

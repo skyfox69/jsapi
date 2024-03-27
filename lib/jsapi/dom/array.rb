@@ -2,30 +2,33 @@
 
 module Jsapi
   module DOM
-    class Array < BaseObject
-      def initialize(items, schema, definitions)
+    # Represents a JSON array.
+    class Array < Value
+      def initialize(elements, schema, definitions)
         super(schema)
-        @items = Array(items).map do |item|
-          DOM.wrap(item, schema.items, definitions)
+        @elements = Array(elements).map do |element|
+          DOM.wrap(element, schema.items, definitions)
         end
       end
 
+      # Returns +true+ if it contains no elements, +false+ otherwise.
       def empty?
-        @items.empty?
+        @elements.empty?
       end
 
       def inspect # :nodoc:
-        "#<#{self.class.name} [#{@items.map(&:inspect).join(', ')}]>"
+        "#<#{self.class.name} [#{@elements.map(&:inspect).join(', ')}]>"
       end
 
+      # See Value#validate.
       def validate(errors)
         return false unless super
 
-        @items.map { |item| item.validate(errors) }.all?
+        @elements.map { |element| element.validate(errors) }.all?
       end
 
       def value
-        @value ||= @items.map(&:value)
+        @value ||= @elements.map(&:value)
       end
     end
   end

@@ -2,7 +2,8 @@
 
 module Jsapi
   module DOM
-    class Boolean < BaseObject
+    # Represents +true+ or +false+.
+    class Boolean < Value
       TRUTHY_VALUES = [true, 'True', 'true'].freeze
 
       attr_reader :value

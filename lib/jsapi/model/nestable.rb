@@ -9,7 +9,7 @@ module Jsapi
         raw_attributes[name&.to_s]&.value
       end
 
-      # Returns true if +name+ is present, false otherwise.
+      # Returns +true+ if +name+ is present, false +otherwise+.
       def attribute?(name)
         raw_attributes.key?(name&.to_s)
       end

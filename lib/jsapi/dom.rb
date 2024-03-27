@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'dom/base_object'
+require_relative 'dom/value'
 require_relative 'dom/array'
 require_relative 'dom/boolean'
 require_relative 'dom/integer'

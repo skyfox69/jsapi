@@ -2,7 +2,9 @@
 
 module Jsapi
   module DOM
-    class Null < BaseObject
+    # Represents +null+.
+    class Null < Value
+      # Returns allways +true+.
       def empty?
         true
       end
@@ -11,6 +13,7 @@ module Jsapi
         "#<#{self.class}>"
       end
 
+      # Returns allways +true+.
       def null?
         true
       end

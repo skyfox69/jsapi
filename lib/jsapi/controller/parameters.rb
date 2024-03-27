@@ -32,8 +32,8 @@ module Jsapi
         "#{attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ') }>"
       end
 
-      # Validates the request parameters. Returns true if the parameters are
-      # valid, false otherwise. Validation errors are added to +errors+.
+      # Validates the request parameters. Returns +true+ if the parameters are
+      # valid, +false+ otherwise. Validation errors are added to +errors+.
       def validate(errors)
         validate_attributes(errors)
       end
