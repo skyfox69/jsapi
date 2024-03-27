@@ -13,6 +13,10 @@ module Jsapi
         @definitions = definitions
       end
 
+      def inspect # :nodoc:
+        "#<#{self.class.name} #{@object.inspect}>"
+      end
+
       # Returns the JSON representation of the response as a +String+.
       def to_json(*)
         schema = @response.schema.resolve(@definitions)

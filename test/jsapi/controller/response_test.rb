@@ -185,6 +185,14 @@ module Jsapi
         response = Response.new(object, response_model, api_definitions)
         assert_equal('{"foo":"Hallo Welt"}', response.to_json)
       end
+
+      # inspect
+
+      def test_inspect
+        response_model = Meta::Response.new(type: 'string')
+        response = Response.new('foo', response_model, api_definitions)
+        assert_equal('#<Jsapi::Controller::Response "foo">', response.inspect)
+      end
     end
   end
 end

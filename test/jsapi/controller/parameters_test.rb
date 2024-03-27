@@ -87,6 +87,16 @@ module Jsapi
         assert(errors.added?(:foo, "'bar' can't be blank"))
       end
 
+      # inspect
+
+      def test_inspect
+        operation.add_parameter('foo', type: 'string')
+        assert_equal(
+          '#<Jsapi::Controller::Parameters foo: "bar">',
+          parameters = parameters(foo: 'bar').inspect
+        )
+      end
+
       private
 
       def definitions

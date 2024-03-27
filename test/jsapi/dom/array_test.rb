@@ -56,6 +56,16 @@ module Jsapi
         assert(errors.added?(:base, "can't be blank"))
       end
 
+      # inspect
+
+      def test_inspect
+        schema = Meta::Schema.new(type: 'array', items: { type: 'string' })
+        assert_equal(
+          '#<Jsapi::DOM::Array [#<Jsapi::DOM::String "foo">]>',
+          Array.new(%w[foo], schema, definitions).inspect
+        )
+      end
+
       private
 
       def definitions

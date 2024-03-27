@@ -5,8 +5,6 @@ require 'test_helper'
 module Jsapi
   module DOM
     class BaseObjectTest < Minitest::Test
-      # Predicate methods tests
-
       def test_empty_predicate
         assert(!BaseObject.new(nil).empty?)
       end
@@ -55,6 +53,15 @@ module Jsapi
         errors = Model::Errors.new
         assert(!DOM.wrap('bar', schema).validate(errors))
         assert(errors.added?(:base, 'is invalid'))
+      end
+
+      # inspect
+
+      def test_inspect
+        assert_equal(
+          '#<Jsapi::DOM::String "foo">',
+          DOM.wrap('foo', Meta::Schema.new(type: 'string')).inspect
+        )
       end
     end
   end

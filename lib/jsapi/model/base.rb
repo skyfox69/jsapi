@@ -22,22 +22,8 @@ module Jsapi
       end
 
       def inspect # :nodoc:
-        [
-          "#<#{self.class.name} ",
-          attributes.map do |name, value|
-            if value.is_a?(Base)
-              # Call #inspect recursively
-              value = value.inspect
-            elsif value.is_a?(String)
-              # Quote strings
-              value = "\"#{value}\""
-            elsif value.nil?
-              value = 'nil'
-            end
-            "#{name}: #{value}"
-          end.join(', '),
-          '>'
-        ].join
+        "#<#{self.class.name} " \
+        "#{attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ') }>"
       end
 
       private

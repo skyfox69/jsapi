@@ -14,6 +14,10 @@ module Jsapi
         @array.empty?
       end
 
+      def inspect # :nodoc:
+        "#<#{self.class.name} [#{@array.map(&:inspect).join(', ')}]>"
+      end
+
       def validate(errors)
         return false unless super
 

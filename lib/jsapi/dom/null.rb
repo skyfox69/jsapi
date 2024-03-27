@@ -7,6 +7,10 @@ module Jsapi
         true
       end
 
+      def inspect # :nodoc:
+        "#<#{self.class}>"
+      end
+
       def null?
         true
       end

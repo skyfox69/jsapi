@@ -110,6 +110,18 @@ module Jsapi
         assert_equal('bar', object['foo'])
       end
 
+      # inspect
+
+      def test_inspect
+        schema = Meta::Schema.new(type: 'object')
+        schema.add_property('foo', type: 'string')
+
+        assert_equal(
+          '#<Jsapi::DOM::Object foo: #<Jsapi::DOM::String "bar">>',
+          Object.new({ 'foo' => 'bar' }, schema, definitions).inspect
+        )
+      end
+
       private
 
       def definitions

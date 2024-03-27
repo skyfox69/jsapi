@@ -16,6 +16,12 @@ module Jsapi
       def test_empty_predicate
         assert_predicate(Null.new(Meta::Schema.new), :empty?)
       end
+
+      # inspect
+
+      def test_inspect
+        assert_equal('#<Jsapi::DOM::Null>', Null.new(Meta::Schema.new).inspect)
+      end
     end
   end
 end

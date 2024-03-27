@@ -19,6 +19,11 @@ module Jsapi
         @raw_attributes.values.all?(&:empty?)
       end
 
+      def inspect # :nodoc:
+        "#<#{self.class.name} " \
+        "#{@raw_attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ') }>"
+      end
+
       def model
         @model ||= (schema.model || Model::Base).new(self)
       end
