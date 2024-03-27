@@ -381,7 +381,8 @@ It is also possible to define multiple sample values.
 
 ### Defining rescue handlers
 
-A rescue handler can be defined as below.
+Rescue handlers are used to render error responses on errors. A rescue handler
+can be defined as below.
 
 ```ruby
   api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
