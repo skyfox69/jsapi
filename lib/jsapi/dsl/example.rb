@@ -3,7 +3,6 @@
 module Jsapi
   module DSL
     module Example
-
       # Specifies an example.
       #
       #   example 'foo'

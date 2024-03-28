@@ -3,7 +3,6 @@
 module Jsapi
   module DSL
     module ClassMethods
-
       # The API definitions of the current class.
       def api_definitions(&block)
         @api_definitions ||= Meta::Definitions.new(self)
