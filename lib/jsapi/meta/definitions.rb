@@ -93,7 +93,7 @@ module Jsapi
       def operation(name = nil)
         if (name = name.to_s).present?
           definitions = @self_and_included.find { |d| d.operations.key?(name) }
-          return definitions.operations[name] if definitions
+          definitions.operations[name] if definitions
         elsif @operations.one?
           # return the one and only operation
           @operations.values.first
@@ -120,14 +120,14 @@ module Jsapi
         return unless (name = name.to_s).present?
 
         definitions = @self_and_included.find { |d| d.responses.key?(name) }
-        return definitions.responses[name] if definitions
+        definitions.responses[name] if definitions
       end
 
       def schema(name)
         return unless (name = name.to_s).present?
 
         definitions = @self_and_included.find { |d| d.schemas.key?(name) }
-        return definitions.schemas[name] if definitions
+        definitions.schemas[name] if definitions
       end
 
       private

@@ -23,7 +23,7 @@ module Jsapi
 
       def inspect # :nodoc:
         "#<#{self.class.name} " \
-        "#{@raw_attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ') }>"
+        "#{@raw_attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ')}>"
       end
 
       # Returns a model to read attributes by.

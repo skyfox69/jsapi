@@ -93,7 +93,7 @@ module Jsapi
         operation.add_parameter('foo', type: 'string')
         assert_equal(
           '#<Jsapi::Controller::Parameters foo: "bar">',
-          parameters = parameters(foo: 'bar').inspect
+          parameters(foo: 'bar').inspect
         )
       end
 

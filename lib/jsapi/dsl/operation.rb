@@ -209,7 +209,7 @@ module Jsapi
             Response.new(response_model).call(&block) if block
           else
             status = status_or_name if name
-            name = status_or_name unless name
+            name ||= status_or_name
 
             _meta_model.add_response_reference(status, name)
           end

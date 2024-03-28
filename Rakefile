@@ -15,6 +15,6 @@ RDoc::Task.new do |rdoc|
   rdoc.rdoc_dir = 'rdoc'
   rdoc.rdoc_files.include('lib', 'LICENSE', 'README.md')
 
-  #rdoc.template = 'horo'
+  # rdoc.template = 'horo'
   # rdoc.options << '-f' << 'horo'
 end

@@ -19,7 +19,7 @@ module Jsapi
         false
       end
 
-      def inspect  # :nodoc:
+      def inspect # :nodoc:
         "#<#{self.class} #{value.inspect}>"
       end
 

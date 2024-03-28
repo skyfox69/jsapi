@@ -29,7 +29,7 @@ module Jsapi
 
       def inspect # :nodoc:
         "#<#{self.class.name} " \
-        "#{attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ') }>"
+        "#{attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ')}>"
       end
 
       # Validates the request parameters. Returns +true+ if the parameters are

@@ -4,8 +4,13 @@ module Jsapi
   module Meta
     class ExistenceTest < Minitest::Test
       Dummy = Struct.new(:null, :empty, keyword_init: true) do
-        def null?; null; end
-        def empty?; empty; end
+        def null?
+          null
+        end
+
+        def empty?
+          empty
+        end
       end
 
       def test_allow_omitted

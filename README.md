@@ -648,7 +648,7 @@ method can be used to render an OpenAPI document.
 
 Top-level parameters and nested object parameters are wrapped by instances of
 `Jsapi::Model::Base` by default. To add custom model methods this class can be
-extended within the definition of an API component, for example:
+extended within the specification of an API component, for example:
 
 ```ruby
   api_schema 'IntegerRange' do
@@ -663,8 +663,8 @@ extended within the definition of an API component, for example:
   end
 ```
 
-The model class of an API component can also be any subclass of
-`Jsapi::Model::Base`, for example:
+To use custom model methods in two or more API components, a subclass of
+`Jsapi::Model::Base` can be integrated as below.
 
 ```ruby
   class BaseRange < Jsapi::Model::Base
@@ -673,8 +673,6 @@ The model class of an API component can also be any subclass of
     end
   end
 ```
-
-Custom model classes can be specified as below.
 
 ```ruby
   api_schema 'IntegerRange', model: BaseRange do
@@ -694,7 +692,7 @@ Custom model classes can be specified as below.
   end
 ```
 
-Model classes can also contain validations, for example:
+A model class may also have validations, for example:
 
 ```ruby
   class BaseRange < Jsapi::Model::Base
@@ -703,6 +701,8 @@ Model classes can also contain validations, for example:
     private
 
     def end_greater_than_or_equal_to_begin
+      return if range_begin.blank? || range_end.blank?
+
       if range_end < range_begin
         errors.add(:range_end, :greater_than_or_equal_to, count: range_begin)
       end

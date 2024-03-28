@@ -72,7 +72,7 @@ module Jsapi
               default: default,
               example: examples.first
             }
-          elsif version.minor == 0
+          elsif version.minor.zero?
             {
               type: type,
               nullable: nullable?.presence,
