@@ -64,12 +64,11 @@ module Jsapi
 
       def test_validates_parameters_against_schema
         operation.add_parameter('foo', type: 'string', existence: true)
-
         errors = Model::Errors.new
+
         assert(parameters(foo: 'bar').validate(errors))
         assert_predicate(errors, :empty?)
 
-        errors = Model::Errors.new
         assert(!parameters(foo: '').validate(errors))
         assert(errors.added?(:foo, "can't be blank"))
       end
@@ -77,14 +76,30 @@ module Jsapi
       def test_validates_nested_parameters_against_model
         parameter = operation.add_parameter('foo', type: 'object')
         parameter.schema.add_property('bar', type: 'string', existence: true)
-
         errors = Model::Errors.new
+
         assert(parameters(foo: { 'bar' => 'Bar' }).validate(errors))
         assert_predicate(errors, :empty?)
 
-        errors = Model::Errors.new
         assert(!parameters(foo: {}).validate(errors))
         assert(errors.added?(:foo, "'bar' can't be blank"))
+      end
+
+      def test_validates_forbidden_parameters
+        operation.add_parameter('foo', type: 'object')
+        errors = Model::Errors.new
+
+        assert(parameters(strong: true).validate(errors))
+        assert_predicate(errors, :empty?)
+
+        assert(!parameters(bar: 'foo', strong: true).validate(errors))
+        assert(errors.added?(:base, "'bar' isn't allowed"))
+
+        assert(!parameters(bar: 'foo', strong: true).validate(errors))
+        assert(errors.added?(:base, "'bar' isn't allowed"))
+
+        assert(!parameters(foo: { bar: 'bar' }, strong: true).validate(errors))
+        assert(errors.added?(:base, "'foo.bar' isn't allowed"))
       end
 
       # inspect
@@ -107,9 +122,9 @@ module Jsapi
         @operation ||= definitions.add_operation('operation')
       end
 
-      def parameters(**args)
+      def parameters(strong: false, **args)
         params = ActionController::Parameters.new(**args)
-        Parameters.new(params, operation, definitions)
+        Parameters.new(params, operation, definitions, strong: strong)
       end
     end
   end

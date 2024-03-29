@@ -10,7 +10,14 @@ module Jsapi
 
       # Creates a new instance that wraps +params+ according to +operation+.
       # References are resolved to API components in +definitions+.
-      def initialize(params, operation, definitions)
+      #
+      # If +strong+ is +true+, parameters that can be mapped are accepted only.
+      # That means that the instance created is invalid if +params+ contains
+      # any parameters that cannot be mapped to a parameter or a request body
+      # property of +operation+.
+      def initialize(params, operation, definitions, strong: false)
+        @params = params
+        @strong = strong == true
         @raw_attributes = {}
 
         # Merge parameters and request body properties
@@ -33,9 +40,42 @@ module Jsapi
       end
 
       # Validates the request parameters. Returns +true+ if the parameters are
-      # valid, +false+ otherwise. Validation errors are added to +errors+.
+      # valid, +false+ otherwise. Detected errors are added to +errors+.
       def validate(errors)
-        validate_attributes(errors)
+        [
+          validate_attributes(errors),
+          !@strong || validate_parameters(
+            @params.except(:controller, :action),
+            attributes,
+            errors
+          )
+        ].all?
+      end
+
+      private
+
+      def validate_parameters(params, attributes, errors, path = [])
+        params.each.map do |key, value|
+          if attributes.key?(key)
+            # Validate nested parameters
+            !value.respond_to?(:keys) || validate_parameters(
+              value,
+              attributes[key].try(:attributes) || {},
+              errors,
+              path + [key]
+            )
+          else
+            errors.add(
+              :base,
+              I18n.translate(
+                'jsapi.errors.forbidden',
+                default: "'%<name>s' isn't allowed",
+                name: path.empty? ? key : (path + [key]).join('.')
+              )
+            )
+            false
+          end
+        end.all?
       end
     end
   end

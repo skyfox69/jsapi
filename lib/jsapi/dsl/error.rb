@@ -8,7 +8,7 @@ module Jsapi
       # Creates a new error. +origin+ is the innermost position at where
       # the error occurred.
       def initialize(error_or_message, origin = nil)
-        @path = origin.present? ? [origin] : []
+        @path = Array(origin)
         super(
           if error_or_message.respond_to?(:message)
             error_or_message.message

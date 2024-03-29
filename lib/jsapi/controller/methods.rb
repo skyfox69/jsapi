@@ -7,6 +7,7 @@ module Jsapi
       # This method can be used to create an OpenAPI document, for example:
       #
       #   render(json: api_definitions.openapi_document)
+      #
       def api_definitions
         self.class.api_definitions
       end
@@ -21,8 +22,19 @@ module Jsapi
       #   end
       #
       # +operation_name+ can be +nil+ if the controller handles one operation only.
-      def api_operation(operation_name = nil, status: nil, &block)
-        _perform_api_operation(operation_name, false, status: status, &block)
+      #
+      # If +strong+ is +true+, parameters that can be mapped are accepted only.
+      # That means that the model passed to the block is invalid if there are any
+      # request parameters that cannot be mapped to a parameter or a request body
+      # property of the operation.
+      #
+      def api_operation(operation_name = nil, status: nil, strong: false, &block)
+        _perform_api_operation(
+          operation_name, false,
+          status: status,
+          strong: strong,
+          &block
+        )
       end
 
       # Like +api_operation+, except that a ParametersInvalid exception is raised
@@ -31,8 +43,14 @@ module Jsapi
       #   api_operation!('foo') do |api_params|
       #     # ...
       #   end
-      def api_operation!(operation_name = nil, status: nil, &block)
-        _perform_api_operation(operation_name, true, status: status, &block)
+      #
+      def api_operation!(operation_name = nil, status: nil, strong: false, &block)
+        _perform_api_operation(
+          operation_name, true,
+          status: status,
+          strong: strong,
+          &block
+        )
       end
 
       # Returns the request parameters as an instance of the operation's model class.
@@ -41,10 +59,20 @@ module Jsapi
       #
       # +operation_name+ can be +nil+ if the controller handles one operation only.
       #
+      # If +strong+ is +true+, parameters that can be mapped are accepted only.
+      # That means that the model returned is invalid if there are any request
+      # parameters that cannot be mapped to a parameter or a request body property
+      # of the operation.
+      #
       # Note that each call of +api_params+ returns a newly created instance.
-      def api_params(operation_name = nil)
+      #
+      def api_params(operation_name = nil, strong: false)
         definitions = api_definitions
-        _api_params(_api_operation(operation_name, definitions), definitions)
+        _api_params(
+          _api_operation(operation_name, definitions),
+          definitions,
+          strong: strong
+        )
       end
 
       # Returns a Response to serialize the JSON representation of +result+ according
@@ -70,9 +98,9 @@ module Jsapi
         raise "operation not defined: #{operation_name}"
       end
 
-      def _api_params(operation, definitions)
+      def _api_params(operation, definitions, strong:)
         (operation.model || Model::Base).new(
-          Parameters.new(params, operation, definitions)
+          Parameters.new(params, operation, definitions, strong: strong)
         )
       end
 
@@ -83,13 +111,13 @@ module Jsapi
         raise "status code not defined: #{status}"
       end
 
-      def _perform_api_operation(operation_name, bang, status:, &block)
+      def _perform_api_operation(operation_name, bang, status:, strong:, &block)
         definitions = api_definitions
         operation = _api_operation(operation_name, definitions)
         response = _api_response(operation, status, definitions)
 
         if block
-          params = _api_params(operation, definitions)
+          params = _api_params(operation, definitions, strong: strong)
           result = begin
             raise ParametersInvalid.new(params) if bang && params.invalid?
 

@@ -530,7 +530,7 @@ The minimum and maximum value can be specified as shown below.
   parameter 'bar', type: 'number', minimum: { value: 0, exclusive: true }
 ```
 
-## API Controllers
+## API controllers
 
 The following methods are provided to deal with API operations:
 
@@ -567,8 +567,8 @@ operation's `parameter` and `request_body` specifications.
   params = api_params('foo')
 ```
 
-The one and only argument specifies the name of the API operation. It can be
-omitted if the controller handles one API operation only.
+The one and only positional argument specifies the name of the API operation.
+It can be omitted if the controller handles one API operation only.
 
 Note that each call of `api_params` returns a newly created instance. Thus, the
 instance returned by `api_params` must be locally stored when validating request
@@ -644,7 +644,32 @@ method can be used to render an OpenAPI document.
   render(json: api_definitions.openapi_document)
 ```
 
-# API models
+### Strong parameters
+
+The `api_operation`, `api_operation!` and `api_params` methods take a `strong`
+option that specifies whether or not request parameters that can be mapped are
+accepted only.
+
+```ruby
+  api_params('foo', strong: true)
+```
+
+The model returned is invalid if there are any request parameters that cannot be
+mapped to a parameter or a request body property of the API operation. For each
+parameter that cannot be mapped an error is added to the model. The pattern of
+error messages can be customized using I18n as below.
+
+```yaml
+# config/en.yml
+en:
+  jsapi:
+    errors:
+      forbidden: "{name} is forbidden"
+```
+
+The default pattern is `{name} isn't allowed`.
+
+## API models
 
 Top-level parameters and nested object parameters are wrapped by instances of
 `Jsapi::Model::Base` by default. To add custom model methods this class can be
