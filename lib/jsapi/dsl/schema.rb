@@ -133,7 +133,7 @@ module Jsapi
       # Same as Operation#parameter.
       #
       def property(name, **options, &block)
-        node("'#{name}'") do
+        define("'#{name}'") do
           unless _meta_model.respond_to?(:add_property)
             raise Error, "'property' isn't allowed for '#{_meta_model.type}'"
           end

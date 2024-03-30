@@ -27,7 +27,7 @@ module Jsapi
       #   A description of the example.
       #
       def example(name_or_value = nil, **options, &block)
-        node('example', name_or_value) do
+        define('example', name_or_value) do
           if options.any? || block
             # example 'foo', value: 'bar', ...
             name = name_or_value

@@ -113,7 +113,7 @@ module Jsapi
       #     parameter 'foo', type: 'array', max_items: 3
       #
       def parameter(name, **options, &block)
-        node("'#{name}'") do
+        define("'#{name}'") do
           if options.any? || block
             parameter_model = _meta_model.add_parameter(name, **options)
             Parameter.new(parameter_model).call(&block) if block
@@ -149,7 +149,7 @@ module Jsapi
       #   Specifies whether or not the request body is deprecated.
       #
       def request_body(**options, &block)
-        node('request body') do
+        define('request body') do
           request_body = _meta_model.set_request_body(**options)
           RequestBody.new(request_body).call(&block) if block
         end
@@ -200,7 +200,7 @@ module Jsapi
       #   Specifies whether or not the response is deprecated.
       #
       def response(status_or_name = nil, name = nil, **options, &block)
-        node('response', status_or_name) do
+        define('response', status_or_name) do
           if options.any? || block
             raise Error, 'name cannot be specified together with options ' \
                          'or a block' if name
