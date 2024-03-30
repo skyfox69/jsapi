@@ -35,12 +35,12 @@ module Jsapi
         )
       end
 
-      def test_operation
+      def test_operation_with_name
         Definitions.new(definitions).call { operation 'foo' }
         assert_predicate(definitions.operation('foo'), :present?)
       end
 
-      def test_unnamed_operation
+      def test_operation_without_name
         definitions = Meta::Definitions.new('Foo')
         Definitions.new(definitions).call { operation }
         assert_predicate(definitions.operation('foo'), :present?)
@@ -102,6 +102,13 @@ module Jsapi
         schema = definitions.schema('Foo')
         assert_predicate(schema, :present?)
         assert_equal('Description of foo', schema.description)
+      end
+
+      def test_raises_error_on_invalid_keyword
+        error = assert_raises Error do
+          Definitions.new(definitions).call { foo }
+        end
+        assert_equal("invalid keyword: 'foo'", error.message)
       end
 
       private

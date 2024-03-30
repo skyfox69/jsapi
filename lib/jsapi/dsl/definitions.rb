@@ -4,6 +4,9 @@ module Jsapi
   module DSL
     # Used to define top-level API components.
     class Definitions < Node
+      def call(&block) # :nodoc:
+        define { super }
+      end
 
       # Includes API definitions from +klasses+.
       def include(*klasses)

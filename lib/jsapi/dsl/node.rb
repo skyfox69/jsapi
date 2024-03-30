@@ -16,7 +16,7 @@ module Jsapi
         if _meta_model.respond_to?(method)
           _meta_model.public_send(method, args.second)
         else
-          raise "unknown or invalid field: '#{args.first}'"
+          raise "invalid keyword: '#{args.first}'"
         end
       end
 

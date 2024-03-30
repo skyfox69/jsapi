@@ -11,12 +11,21 @@ module Jsapi
         assert_equal('bar', dummy.foo)
       end
 
-      def test_raises_error_on_unknown_field
+      def test_raises_error_on_invalid_keyword
         node = Node.new(DummyModel.new)
         error = assert_raises do
           node.call { bar 'foo' }
         end
-        assert_equal("unknown or invalid field: 'bar'", error.message)
+        assert_equal("invalid keyword: 'bar'", error.message)
+      end
+
+      def test_raises_error_on_invalid_nested_keyword
+        error = assert_raises Error do
+          Schema.new(Meta::Schema.new).call do
+            property('foo') { bar 'bar' }
+          end
+        end
+        assert_equal("invalid keyword: 'bar' (at 'foo')", error.message)
       end
 
       def test_respond_to
@@ -24,18 +33,9 @@ module Jsapi
         assert(node.respond_to?(:foo))
       end
 
-      def test_respond_to_on_unknown_field
+      def test_respond_to_on_invalid_keyword
         node = Node.new(DummyModel.new)
         assert(!node.respond_to?(:bar))
-      end
-
-      def test_wrapped_error
-        error = assert_raises Error do
-          Schema.new(Meta::Schema.new).call do
-            property('foo') { bar 'bar' }
-          end
-        end
-        assert_equal("unknown or invalid field: 'bar' (at 'foo')", error.message)
       end
     end
   end
