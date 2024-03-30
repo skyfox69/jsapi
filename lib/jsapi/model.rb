@@ -8,3 +8,8 @@ require_relative 'model/naming'
 require_relative 'model/validations'
 require_relative 'model/base'
 require_relative 'model/nestable'
+
+module Jsapi
+  # Provides classes and modules to deal with API models.
+  module Model end
+end

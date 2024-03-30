@@ -10,6 +10,7 @@ require_relative 'json/object'
 require_relative 'json/string'
 
 module Jsapi
+  # Provides a DOM for JSON values.
   module JSON
     class << self
       def wrap(object, schema, definitions = nil)
