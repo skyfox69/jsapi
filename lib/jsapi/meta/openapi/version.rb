@@ -8,9 +8,9 @@ module Jsapi
           return version if version.is_a?(Version)
 
           case version
-          when '2.0', nil
+          when '2.0', 2, nil
             new(2, 0)
-          when '3.0'
+          when '3.0', 3
             new(3, 0)
           when '3.1'
             new(3, 1)

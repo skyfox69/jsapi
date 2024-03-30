@@ -28,6 +28,16 @@ module Jsapi
         definitions.include(definitions)
       end
 
+      # OpenAPI root tests
+
+      def test_add_openapi_root
+        @api_definitions.add_openapi_root('2.0')
+        assert(@api_definitions.openapi_roots.key?(2))
+
+        @api_definitions.add_openapi_root('3.1')
+        assert(@api_definitions.openapi_roots.key?(3))
+      end
+
       # Operation tests
 
       def test_add_operation
@@ -114,7 +124,7 @@ module Jsapi
         assert_predicate(@api_definitions.schema('Foo'), :present?)
       end
 
-      # JSON Schema documents tests
+      # JSON Schema document tests
 
       def test_json_schema_document
         @api_definitions.add_schema('Foo').add_property('bar', type: 'string')
@@ -194,7 +204,8 @@ module Jsapi
       # OpenAPI document tests
 
       def test_openapi_2_0_document
-        @api_definitions.add_operation('operation', path: '/foo')
+        @api_definitions.add_openapi_root('2.0', base_path: '/foo')
+        @api_definitions.add_operation('operation', path: '/bar')
         @api_definitions.add_parameter('parameter', type: 'string')
         @api_definitions.add_response('response', type: 'string')
         @api_definitions.add_schema('schema')
@@ -202,8 +213,9 @@ module Jsapi
         assert_equal(
           {
             swagger: '2.0',
+            basePath: '/foo',
             paths: {
-              '/foo' => {
+              '/bar' => {
                 'get' => {
                   operationId: 'operation',
                   parameters: [],
@@ -243,7 +255,8 @@ module Jsapi
       end
 
       def test_openapi_3_0_document
-        @api_definitions.add_operation('operation', path: '/foo')
+        @api_definitions.add_openapi_root('3.0', server: { url: '/foo' })
+        @api_definitions.add_operation('operation', path: '/bar')
         @api_definitions.add_parameter('parameter', type: 'string')
         @api_definitions.add_response('response', type: 'string')
         @api_definitions.add_schema('schema')
@@ -251,8 +264,11 @@ module Jsapi
         assert_equal(
           {
             openapi: '3.0.3',
+            server: {
+              url: '/foo'
+            },
             paths: {
-              '/foo' => {
+              '/bar' => {
                 'get' => {
                   operationId: 'operation',
                   parameters: [],
@@ -303,17 +319,6 @@ module Jsapi
           { openapi: '3.0.3' },
           @api_definitions.openapi_document('3.0')
         )
-      end
-
-      # OpenAPI root tests
-
-      def test_openapi_root
-        openapi_root_2_0 = @api_definitions.openapi_root('2.0')
-        openapi_root_3_0 = @api_definitions.openapi_root('3.0')
-        openapi_root_3_1 = @api_definitions.openapi_root('3.0')
-
-        assert_equal(openapi_root_3_0, openapi_root_3_1)
-        assert(openapi_root_2_0 != openapi_root_3_0)
       end
     end
   end

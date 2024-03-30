@@ -17,9 +17,9 @@ module Jsapi
       #   openapi '3.1' do
       #     info title: 'Foo', version: '1'
       #   end
-      def openapi(version = nil, &block)
+      def openapi(version = nil, **options, &block)
         node("openapi #{version}") do
-          openapi = _meta_model.openapi_root(version)
+          openapi = _meta_model.add_openapi_root(version, **options)
           Generic.new(openapi).call(&block) if block
         end
       end
