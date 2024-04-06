@@ -15,7 +15,9 @@ module Jsapi
         end
 
         def format=(format)
-          raise ArgumentError, "format not supported: '#{format}'" unless format.in?(FORMATS)
+          unless format.in?(FORMATS)
+            raise ArgumentError, "format not supported: #{format.inspect}"
+          end
 
           @format = format
         end

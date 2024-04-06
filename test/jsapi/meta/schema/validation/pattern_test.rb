@@ -7,7 +7,7 @@ module Jsapi
     module Schema
       module Validation
         class PatternTest < Minitest::Test
-          def test_raises_error_on_invalid_pattern
+          def test_raises_exception_on_invalid_pattern
             error = assert_raises(ArgumentError) { Pattern.new(nil) }
             assert_equal('invalid pattern: nil', error.message)
           end

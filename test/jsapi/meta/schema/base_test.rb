@@ -6,7 +6,7 @@ module Jsapi
   module Meta
     module Schema
       class BaseTest < Minitest::Test
-        def test_raises_error_on_invalid_option
+        def test_raises_exception_on_invalid_option
           error = assert_raises(ArgumentError) { Base.new(foo: 'bar') }
           assert_equal('invalid option: foo', error.message)
         end

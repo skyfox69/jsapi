@@ -92,7 +92,7 @@ module Jsapi
         assert_equal('foo', parameter.reference)
       end
 
-      def test_raises_error_on_invalid_parameter_type
+      def test_raises_exception_on_invalid_parameter_type
         operation = Meta::Operation.new('operation')
         error = assert_raises Error do
           Operation.new(operation).call { parameter 'foo', type: 'bar' }
@@ -125,7 +125,7 @@ module Jsapi
         assert_equal('Foo', request_body.schema.reference)
       end
 
-      def test_raises_error_on_invalid_request_body_type
+      def test_raises_exception_on_invalid_request_body_type
         operation = Meta::Operation.new('operation')
 
         error = assert_raises Error do
@@ -186,7 +186,7 @@ module Jsapi
         assert_equal('Foo', response.reference)
       end
 
-      def test_raises_error_on_invalid_response_type
+      def test_raises_exception_on_invalid_response_type
         operation = Meta::Operation.new('operation')
         error = assert_raises Error do
           Operation.new(operation).call { response type: 'foo' }
@@ -194,7 +194,7 @@ module Jsapi
         assert_equal("invalid type: 'foo' (at response)", error.message)
       end
 
-      def test_raises_error_on_invalid_response_arguments
+      def test_raises_exception_on_invalid_response_arguments
         message = 'name cannot be specified together with options ' \
                   'or a block (at response 200)'
 

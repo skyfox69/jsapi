@@ -28,16 +28,6 @@ module Jsapi
         definitions.include(definitions)
       end
 
-      # OpenAPI root tests
-
-      def test_add_openapi_root
-        @api_definitions.add_openapi_root('2.0')
-        assert(@api_definitions.openapi_roots.key?(2))
-
-        @api_definitions.add_openapi_root('3.1')
-        assert(@api_definitions.openapi_roots.key?(3))
-      end
-
       # Operation tests
 
       def test_add_operation
@@ -203,8 +193,12 @@ module Jsapi
 
       # OpenAPI document tests
 
+      def test_empty_openapi_2_0_document
+        assert_equal({}, @api_definitions.openapi_document)
+      end
+
       def test_openapi_2_0_document
-        @api_definitions.add_openapi_root('2.0', base_path: '/foo')
+        @api_definitions.openapi = { info: { title: 'Foo', version: '1' } }
         @api_definitions.add_operation('operation', path: '/bar')
         @api_definitions.add_parameter('parameter', type: 'string')
         @api_definitions.add_response('response', type: 'string')
@@ -213,7 +207,10 @@ module Jsapi
         assert_equal(
           {
             swagger: '2.0',
-            basePath: '/foo',
+            info: {
+              title: 'Foo',
+              version: '1'
+            },
             paths: {
               '/bar' => {
                 'get' => {
@@ -251,11 +248,21 @@ module Jsapi
       end
 
       def test_minimal_openapi_2_0_document
-        assert_equal({ swagger: '2.0' }, @api_definitions.openapi_document('2.0'))
+        @api_definitions.openapi = { info: { title: 'Foo', version: '1' } }
+        assert_equal(
+          {
+            swagger: '2.0',
+            info: {
+              title: 'Foo',
+              version: '1'
+            }
+          },
+          @api_definitions.openapi_document('2.0')
+        )
       end
 
       def test_openapi_3_0_document
-        @api_definitions.add_openapi_root('3.0', server: { url: '/foo' })
+        @api_definitions.openapi = { info: { title: 'Foo', version: '1' } }
         @api_definitions.add_operation('operation', path: '/bar')
         @api_definitions.add_parameter('parameter', type: 'string')
         @api_definitions.add_response('response', type: 'string')
@@ -264,8 +271,9 @@ module Jsapi
         assert_equal(
           {
             openapi: '3.0.3',
-            server: {
-              url: '/foo'
+            info: {
+              title: 'Foo',
+              version: '1'
             },
             paths: {
               '/bar' => {
@@ -315,8 +323,15 @@ module Jsapi
       end
 
       def test_minimal_openapi_3_0_document
+        @api_definitions.openapi = { info: { title: 'Foo', version: '1' } }
         assert_equal(
-          { openapi: '3.0.3' },
+          {
+            openapi: '3.0.3',
+            info: {
+              title: 'Foo',
+              version: '1'
+            }
+          },
           @api_definitions.openapi_document('3.0')
         )
       end

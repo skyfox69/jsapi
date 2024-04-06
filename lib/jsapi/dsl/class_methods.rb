@@ -40,9 +40,13 @@ module Jsapi
         api_definitions { schema(name, **options, &block) }
       end
 
-      # See Definitions#openapi
-      def openapi(version = '2.0', &block)
-        api_definitions { openapi(version, &block) }
+      # Defines the root of an OpenAPI document.
+      #
+      #   openapi do
+      #     info title: 'Foo', version: '1'
+      #   end
+      def openapi(**keywords, &block)
+        api_definitions { openapi(keywords, &block) }
       end
     end
   end

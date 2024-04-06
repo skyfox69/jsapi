@@ -10,7 +10,7 @@ module Jsapi
           super(**options.merge(type: 'array'))
         end
 
-        def items=(options)
+        def items=(options = {})
           @items = Schema.new(**options)
         end
 

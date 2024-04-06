@@ -33,7 +33,7 @@ module Jsapi
           assert_equal(%w[foo bar], properties.keys)
         end
 
-        def test_properties_raises_an_error_on_circular_reference
+        def test_properties_raises_an_exception_on_circular_reference
           definitions = Definitions.new
           definitions.add_schema('Foo').add_all_of('Bar')
           definitions.add_schema('Bar').add_all_of('Foo')

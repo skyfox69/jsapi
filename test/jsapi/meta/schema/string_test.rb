@@ -11,9 +11,9 @@ module Jsapi
           assert_equal('date', schema.format)
         end
 
-        def test_raises_error_on_unsupported_format
+        def test_raises_exception_on_unsupported_format
           error = assert_raises(ArgumentError) { String.new(format: 'foo') }
-          assert_equal("format not supported: 'foo'", error.message)
+          assert_equal('format not supported: "foo"', error.message)
         end
 
         def test_max_length

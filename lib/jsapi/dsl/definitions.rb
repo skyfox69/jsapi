@@ -15,18 +15,6 @@ module Jsapi
         end
       end
 
-      # Defines the root of an OpenAPI document.
-      #
-      #   openapi '3.1' do
-      #     info title: 'Foo', version: '1'
-      #   end
-      def openapi(version = nil, **options, &block)
-        define("openapi #{version}") do
-          openapi = _meta_model.add_openapi_root(version, **options)
-          Generic.new(openapi).call(&block) if block
-        end
-      end
-
       # Defines an operation.
       #
       #   operation 'foo', path: '/foo' do

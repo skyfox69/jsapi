@@ -5,7 +5,7 @@ require 'test_helper'
 module Jsapi
   module Meta
     class RescueHandlerTest < Minitest::Test
-      def test_raises_an_error_on_invalid_argument
+      def test_raises_an_exception_on_invalid_argument
         error = assert_raises(ArgumentError) { RescueHandler.new('foo') }
         assert_equal('"foo" must be a standard error class', error.message)
       end

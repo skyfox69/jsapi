@@ -393,19 +393,17 @@ api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
 All additional data required to generate OpenAPI documents can be specified as below.
 
 ```ruby
-openapi 2 do
+openapi do
   info title: 'Foo', version: 1
-  base_path '/foo'
-  security_definitions do
-    basic_auth type: 'basic'
-  end
-  security basic_auth: []
-end
+  security_scheme 'http_basic', type: 'basic'
+  security 'http_basic'
 
-openapi 3 do
-  info title: 'Foo', version: 1
-  server url: '/foo'
-  security type: 'http', schema: 'basic'
+  # OpenAPI 2.0
+  host 'https://foo.bar'
+  base_path '/foo'
+
+  # OpenAPI 3.0
+  server url: 'https://foo.bar/foo'
 end
 ```
 

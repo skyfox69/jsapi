@@ -5,7 +5,7 @@ require 'test_helper'
 module Jsapi
   module Meta
     class OperationTest < Minitest::Test
-      def test_raises_error_on_blank_name
+      def test_raises_exception_on_blank_name
         error = assert_raises(ArgumentError) { Operation.new('') }
         assert_equal("operation name can't be blank", error.message)
       end

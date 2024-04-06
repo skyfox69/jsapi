@@ -2,7 +2,6 @@
 
 require_relative 'dsl/error'
 require_relative 'dsl/node'
-require_relative 'dsl/generic'
 require_relative 'dsl/definitions'
 require_relative 'dsl/example'
 require_relative 'dsl/schema'

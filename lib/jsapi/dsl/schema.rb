@@ -68,6 +68,7 @@ module Jsapi
       #       # ...
       #     end
       #   end
+      #
       # +klass+ can be any subclass of Model::Base. If block is given, an
       # anonymous class is created that inherits either from +klass+ or
       # Model::Base.

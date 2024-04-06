@@ -21,17 +21,34 @@ module Jsapi
       end
 
       def test_openapi
-        Definitions.new(definitions).call { openapi('2.0') }
-        assert_equal({ swagger: '2.0' }, definitions.openapi_document('2.0'))
+        Definitions.new(definitions).call do
+          openapi(info: { title: 'Foo', version: '1' })
+        end
+        assert_equal(
+          {
+            swagger: '2.0',
+            info: {
+              title: 'Foo',
+              version: '1'
+            }
+          },
+          definitions.openapi_document('2.0')
+        )
       end
 
       def test_openapi_with_block
         Definitions.new(definitions).call do
-          openapi('2.0') { info name: 'Foo', version: '1' }
+          openapi { info title: 'Foo', version: '1' }
         end
         assert_equal(
-          { name: 'Foo', version: '1' },
-          definitions.openapi_document('2.0')[:info]
+          {
+            swagger: '2.0',
+            info: {
+              title: 'Foo',
+              version: '1'
+            }
+          },
+          definitions.openapi_document('2.0')
         )
       end
 
@@ -104,7 +121,7 @@ module Jsapi
         assert_equal('Description of foo', schema.description)
       end
 
-      def test_raises_error_on_invalid_keyword
+      def test_raises_exception_on_invalid_keyword
         error = assert_raises Error do
           Definitions.new(definitions).call { foo }
         end

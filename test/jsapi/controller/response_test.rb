@@ -130,7 +130,7 @@ module Jsapi
 
       # Serialization error tests
 
-      def test_raises_error_on_invalid_response
+      def test_raises_exception_on_invalid_response
         response_model = Meta::Response.new(type: 'string', existence: true)
 
         error = assert_raises RuntimeError do
@@ -139,7 +139,7 @@ module Jsapi
         assert_equal("response can't be nil", error.message)
       end
 
-      def test_raises_error_on_invalid_object
+      def test_raises_exception_on_invalid_object
         response_model = Meta::Response.new(type: 'object')
         response_model.schema.add_property('foo', type: 'string', existence: true)
 
@@ -152,7 +152,7 @@ module Jsapi
         assert_equal("foo can't be nil", error.message)
       end
 
-      def test_raises_error_on_invalid_nested_object
+      def test_raises_exception_on_invalid_nested_object
         response_model = Meta::Response.new(type: 'object')
         nested_schema = response_model.schema.add_property(:foo, type: 'object').schema
         nested_schema.add_property(:bar, type: 'string', existence: true)

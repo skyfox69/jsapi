@@ -65,21 +65,21 @@ module Jsapi
         assert_equal('"bar"', @render_options[:json].to_json)
       end
 
-      def test_api_operation_raises_an_error_on_undefined_name
+      def test_api_operation_raises_an_exception_on_undefined_name
         error = assert_raises RuntimeError do
           api_operation(:foo) {}
         end
         assert_equal('operation not defined: foo', error.message)
       end
 
-      def test_api_operation_raises_an_error_on_undefined_status_code
+      def test_api_operation_raises_an_exception_on_undefined_status_code
         error = assert_raises RuntimeError do
           api_operation(status: 204) {}
         end
         assert_equal('status code not defined: 204', error.message)
       end
 
-      def test_api_operation_reraises_an_error
+      def test_api_operation_reraises_an_exception
         assert_raises NotFoundError do
           api_operation status: 200 do
             raise NotFoundError
@@ -126,7 +126,7 @@ module Jsapi
         assert(api_params.errors.added?(:base, "'bar' isn't allowed"))
       end
 
-      def test_api_parameters_raises_an_error_on_undefined_operation_name
+      def test_api_parameters_raises_an_exception_on_undefined_operation_name
         error = assert_raises RuntimeError do
           api_params(:foo)
         end
@@ -140,14 +140,14 @@ module Jsapi
         assert_equal('"foo"', response.to_json)
       end
 
-      def test_api_response_raises_an_error_on_undefined_operation_name
+      def test_api_response_raises_an_exception_on_undefined_operation_name
         error = assert_raises RuntimeError do
           api_response('bar', :foo)
         end
         assert_equal('operation not defined: foo', error.message)
       end
 
-      def test_api_response_raises_an_error_on_undefined_status_code
+      def test_api_response_raises_an_exception_on_undefined_status_code
         error = assert_raises RuntimeError do
           api_response('foo', status: 204)
         end

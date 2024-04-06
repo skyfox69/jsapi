@@ -45,7 +45,7 @@ module Jsapi
         assert_equal('date', schema.items.format)
       end
 
-      def test_items_raises_an_error_on_other_type_than_array
+      def test_items_raises_an_exception_on_other_type_than_array
         schema = Meta::Schema.new(type: 'object')
         error = assert_raises Error do
           Schema.new(schema).call { items type: 'string' }
@@ -91,7 +91,7 @@ module Jsapi
         assert_equal('bar', bar.foo)
       end
 
-      def test_model_raises_an_error_on_other_type_than_object
+      def test_model_raises_an_exception_on_other_type_than_object
         schema = Meta::Schema.new(type: 'array')
         error = assert_raises Error do
           Schema.new(schema).call { model {} }
@@ -110,7 +110,18 @@ module Jsapi
         assert_predicate(property.schema, :string?)
       end
 
-      def test_property_raises_an_error_on_other_type_than_object
+      def test_property_with_block
+        schema = Meta::Schema.new
+        Schema.new(schema).call do
+          property 'foo', type: 'array' do
+            items type: 'string'
+          end
+        end
+        property = schema.properties(definitions)['foo']
+        assert_predicate(property.schema.items, :string?)
+      end
+
+      def test_property_raises_an_exception_on_other_type_than_object
         schema = Meta::Schema.new(type: 'array')
         error = assert_raises Error do
           Schema.new(schema).call { property 'foo' }

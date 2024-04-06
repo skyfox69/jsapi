@@ -12,7 +12,7 @@ module Jsapi
           assert_equal(parameter, reference.resolve(definitions))
         end
 
-        def test_raises_error_on_invalid_reference
+        def test_raises_exception_on_invalid_reference
           assert_raises(ReferenceError) do
             Reference.new('foo').resolve(Definitions.new)
           end

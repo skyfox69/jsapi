@@ -67,10 +67,12 @@ module Jsapi
       def test_openapi
         foo_class = Class.new do
           extend ClassMethods
-          openapi('2.0') { info name: 'Foo', version: '1' }
+          openapi do
+            info title: 'Foo', version: '1'
+          end
         end
         assert_equal(
-          { name: 'Foo', version: '1' },
+          { title: 'Foo', version: '1' },
           foo_class.api_definitions.openapi_document('2.0')[:info]
         )
       end

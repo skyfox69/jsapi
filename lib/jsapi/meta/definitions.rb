@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     class Definitions
-      attr_reader :openapi_roots, :operations, :parameters, :rescue_handlers, :responses, :schemas
+      attr_reader :openapi_root, :operations, :parameters, :rescue_handlers, :responses, :schemas
 
       def initialize(owner = nil)
         @owner = owner
@@ -11,14 +11,8 @@ module Jsapi
         @parameters = {}
         @responses = {}
         @schemas = {}
-        @openapi_roots = {}
         @rescue_handlers = []
         @self_and_included = [self]
-      end
-
-      def add_openapi_root(version = nil, **options)
-        version = OpenAPI::Version.from(version)
-        @openapi_roots[version.major] = OpenAPI::Root.new(**options)
       end
 
       def add_operation(name = nil, **options)
@@ -65,22 +59,26 @@ module Jsapi
         end
       end
 
+      def openapi=(keywords = {})
+        @openapi_root = OpenAPI::Root.new(**keywords)
+      end
+
       # Returns the OpenAPI document for +version+ as a +Hash+.
       # Raises an +ArgumentError+ if +version+ is not supported.
       def openapi_document(version = nil)
         version = OpenAPI::Version.from(version)
 
-        openapi_root(version.major).to_h(version).tap do |root|
-          root[:paths] = openapi_paths(version)
+        (openapi_root&.to_h(version) || {}).tap do |h|
+          h[:paths] = openapi_paths(version)
 
           if version.major == 2
-            root.merge!(
+            h.merge!(
               definitions: openapi_schemas(version),
               parameters: openapi_parameters(version),
               responses: openapi_responses(version)
             )
           else
-            root.merge!(
+            h.deep_merge!(
               components: {
                 schemas: openapi_schemas(version),
                 parameters: openapi_parameters(version),
@@ -139,14 +137,6 @@ module Jsapi
 
       def default_path
         @default_path ||= "/#{default_operation_name}"
-      end
-
-      def openapi_root(major_version)
-        @self_and_included.each do |definitions|
-          openapi_root = definitions.openapi_roots[major_version]
-          return openapi_root if openapi_root
-        end
-        OpenAPI::Root.new
       end
 
       def openapi_parameters(version)

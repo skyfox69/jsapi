@@ -39,7 +39,7 @@ module Jsapi
       assert_kind_of(JSON::String, json_string)
     end
 
-    def test_raises_error_on_invalid_type
+    def test_raises_exception_on_invalid_type
       error = Meta::Schema::Base.stub_any_instance(:type, 'foo') do
         assert_raises { JSON.wrap('foo', Meta::Schema.new) }
       end
