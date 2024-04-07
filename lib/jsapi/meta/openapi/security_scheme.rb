@@ -42,7 +42,7 @@ module Jsapi
         end
 
         def to_h(version)
-          case @normalized_type
+          case normalized_type
           when 'apiKey'
             { type: 'apiKey', name: name, in: location }
           when 'basic'
@@ -84,6 +84,10 @@ module Jsapi
             raise "invalid type: #{type.inspect}"
           end&.merge(description: description&.to_s)&.compact
         end
+
+        private
+
+        attr_reader :normalized_type
       end
     end
   end
