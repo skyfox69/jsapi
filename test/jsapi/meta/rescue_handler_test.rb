@@ -10,6 +10,13 @@ module Jsapi
         assert_equal('"foo" must be a standard error class', error.message)
       end
 
+      def test_inspect
+        assert_equal(
+          '#<Jsapi::Meta::RescueHandler class: StandardError, status: "default">',
+          RescueHandler.new(StandardError).inspect
+        )
+      end
+
       def test_match
         rescue_handler = RescueHandler.new(StandardError)
 

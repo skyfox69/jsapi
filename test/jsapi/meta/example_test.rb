@@ -5,7 +5,16 @@ require 'test_helper'
 module Jsapi
   module Meta
     class ExampleTest < Minitest::Test
-      def test_openapi_example
+      def test_minimal_openapi_example_object
+        example = Example.new(value: 'foo')
+
+        assert_equal(
+          { value: 'foo' },
+          example.to_openapi_example
+        )
+      end
+
+      def test_full_openapi_example_object
         example = Example.new(
           summary: 'Foo',
           description: 'Description of foo',
@@ -21,19 +30,13 @@ module Jsapi
         )
       end
 
-      def test_openapi_external_example
+      def test_openapi_example_object_on_external
         example = Example.new(
-          summary: 'Foo',
-          description: 'Description of foo',
           value: '/foo/bar',
           external: true
         )
         assert_equal(
-          {
-            summary: 'Foo',
-            description: 'Description of foo',
-            external_value: '/foo/bar'
-          },
+          { external_value: '/foo/bar' },
           example.to_openapi_example
         )
       end

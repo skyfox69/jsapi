@@ -4,15 +4,22 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents a license object.
-      class License < Object
-        attr_accessor :name, :url
+      class License < Base
+        ##
+        # :attr: name
+        # The name of the license.
+        attribute :name, String
 
-        # TODO: validates :name, presence: true
+        ##
+        # :attr: url
+        # The optional URL of the license.
+        attribute :url, String
 
-        def to_h
+        # Returns a hash representing the license object.
+        def to_openapi
           {
-            name: name&.to_s,
-            url: url&.to_s
+            name: name,
+            url: url
           }.compact
         end
       end

@@ -4,41 +4,52 @@ module Jsapi
   module Meta
     module Schema
       class String < Base
-        FORMATS = %w[date date-time].freeze
-
-        attr_reader :format
-
         include Conversion
 
-        def initialize(**options)
-          super(**options.merge(type: 'string'))
-        end
+        ##
+        # :attr: format
+        # The optional format of a string. Possible values are:
+        #
+        # - <code>"date"</code>
+        # - <code>"date-time"</code>
+        #
+        attribute :format, ::String, values: %w[date date-time]
 
-        def format=(format)
-          unless format.in?(FORMATS)
-            raise ArgumentError, "format not supported: #{format.inspect}"
-          end
+        ##
+        # :attr: max_length
+        # The maximum length of a string.
+        attribute :max_length, writer: false
 
-          @format = format
-        end
+        ##
+        # :attr: min_length
+        # The minimum length of a string.
+        attribute :min_length, writer: false
 
-        def max_length=(value)
+        ##
+        # :attr: pattern
+        # The regular expression a string must match.
+        attribute :pattern, writer: false
+
+        def max_length=(value) # :nodoc:
           add_validation('max_length', Validation::MaxLength.new(value))
+          @max_length = value
         end
 
-        def min_length=(value)
+        def min_length=(value) # :nodoc:
           add_validation('min_length', Validation::MinLength.new(value))
+          @min_length = value
         end
 
-        def pattern=(value)
+        def pattern=(value) # :nodoc:
           add_validation('pattern', Validation::Pattern.new(value))
+          @pattern = value
         end
 
-        def to_json_schema
+        def to_json_schema # :nodoc:
           format ? super.merge(format: format) : super
         end
 
-        def to_openapi_schema(_version)
+        def to_openapi_schema(*) # :nodoc:
           format ? super.merge(format: format) : super
         end
       end

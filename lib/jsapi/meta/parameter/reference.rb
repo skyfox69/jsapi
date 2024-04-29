@@ -3,25 +3,29 @@
 module Jsapi
   module Meta
     module Parameter
-      class Reference
-        attr_reader :reference
+      class Reference < Meta::Base
+        ##
+        # :attr_reader:
+        # The name of the referred parameter.
+        attribute :parameter, String
 
-        def initialize(reference)
-          @reference = reference
-        end
-
-        # Resolves the reference by looking up the reusable parameter in +definitions+.
-        # Raises a +ReferenceError+ if the reference could not be resolved.
+        # Resolves the reference by looking up the reusable parameter with
+        # the given name in +definitions+.
+        #
+        # Raises a ReferenceError if the reference could not be resolved.
         def resolve(definitions)
-          parameter = definitions.parameter(reference)
-          raise ReferenceError, reference if parameter.nil?
+          parameter = definitions.parameter(self.parameter)
+          raise ReferenceError, self.parameter if parameter.nil?
 
           parameter
         end
 
-        # Returns the OpenAPI reference object or the OpenAPI parameter objects of the
-        # referred parameter as an array of hashes. Raises a +ReferenceError+ if the
-        # reference could not be resolved.
+        # Returns an array of hashes. Each element represents an \OpenAPI
+        # parameter object if the type of the referred parameter is
+        # <code>"object"</code>. Otherwise the array contains a single
+        # hash representing the \OpenAPI reference object.
+        #
+        # Raises a ReferenceError if the reference could not be resolved.
         def to_openapi_parameters(version, definitions)
           version = OpenAPI::Version.from(version)
           parameter = resolve(definitions)
@@ -33,7 +37,7 @@ module Jsapi
             # Return an array containing the reference object
             path = version.major == 2 ? 'parameters' : 'components/parameters'
 
-            [{ '$ref': "#/#{path}/#{reference}" }]
+            [{ '$ref': "#/#{path}/#{self.parameter}" }]
           end
         end
       end

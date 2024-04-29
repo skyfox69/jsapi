@@ -7,7 +7,7 @@ module Jsapi
     module OpenAPI
       class ContactTest < Minitest::Test
         def test_empty_contact_object
-          assert_equal({}, Contact.new.to_h)
+          assert_equal({}, Contact.new.to_openapi)
         end
 
         def test_full_contact_object
@@ -21,7 +21,7 @@ module Jsapi
               name: 'Foo',
               url: 'https://foo.bar',
               email: 'foo@foo.bar'
-            ).to_h
+            ).to_openapi
           )
         end
       end

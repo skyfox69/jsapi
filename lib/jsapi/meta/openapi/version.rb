@@ -26,13 +26,13 @@ module Jsapi
           @minor = minor
         end
 
-        def ==(other)
+        def ==(other) # :nodoc:
           other.is_a?(self.class) &&
             @major == other.major &&
             @minor == other.minor
         end
 
-        def to_s
+        def to_s # :nodoc:
           "#{major}.#{minor}"
         end
       end

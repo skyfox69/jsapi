@@ -7,12 +7,13 @@ module Jsapi
   module Meta
     module Parameter
       class << self
-        def new(name, **options)
-          Base.new(name, **options)
-        end
-
-        def reference(name)
-          Reference.new(name)
+        # Creates a new parameter or parameter reference.
+        def new(name, keywords = {})
+          if keywords[:reference] == true
+            Reference.new(parameter: name)
+          else
+            Base.new(name, keywords)
+          end
         end
       end
     end

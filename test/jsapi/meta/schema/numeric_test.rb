@@ -52,30 +52,25 @@ module Jsapi
 
         # JSON Schema tests
 
-        def test_json_schema
+        def test_json_schema_object
           schema = Numeric.new(type: 'integer')
           assert_equal(
-            {
-              type: %w[integer null]
-            },
+            { type: %w[integer null] },
             schema.to_json_schema
           )
         end
 
         # OpenAPI tests
 
-        def test_openapi_2_0_schema
+        def test_openapi_schema_object
           schema = Numeric.new(type: 'integer')
+
+          # OpenAPI 2.0
           assert_equal(
-            {
-              type: 'integer'
-            },
+            { type: 'integer' },
             schema.to_openapi_schema('2.0')
           )
-        end
-
-        def test_openapi_3_0_schema
-          schema = Numeric.new(type: 'integer')
+          # OpenAPI 3.0
           assert_equal(
             {
               type: 'integer',
@@ -83,14 +78,9 @@ module Jsapi
             },
             schema.to_openapi_schema('3.0')
           )
-        end
-
-        def test_openapi_3_1_schema
-          schema = Numeric.new(type: 'integer')
+          # OpenAPI 3.1
           assert_equal(
-            {
-              type: %w[integer null]
-            },
+            { type: %w[integer null] },
             schema.to_openapi_schema('3.1')
           )
         end

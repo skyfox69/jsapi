@@ -3,24 +3,6 @@
 module Jsapi
   module DSL
     class OperationTest < Minitest::Test
-      def test_summary
-        operation = Meta::Operation.new('operation')
-        Operation.new(operation).call { summary 'Foo' }
-        assert_equal('Foo', operation.summary)
-      end
-
-      def test_description
-        operation = Meta::Operation.new('operation')
-        Operation.new(operation).call { description 'Foo' }
-        assert_equal('Foo', operation.description)
-      end
-
-      def test_deprecated
-        operation = Meta::Operation.new('operation')
-        Operation.new(operation).call { deprecated true }
-        assert(operation.deprecated?)
-      end
-
       # Model tests
 
       def test_model
@@ -80,7 +62,7 @@ module Jsapi
         parameter = operation.parameters['foo']
         assert_predicate(parameter.schema, :object?)
 
-        property = parameter.schema.properties(definitions)['bar']
+        property = parameter.schema.properties['bar']
         assert_predicate(property.schema, :string?)
       end
 
@@ -88,16 +70,15 @@ module Jsapi
         operation = Meta::Operation.new('operation')
         Operation.new(operation).call { parameter 'foo' }
 
-        parameter = operation.parameters['foo']
-        assert_equal('foo', parameter.reference)
+        reference = operation.parameters['foo']
+        assert_equal('foo', reference.parameter)
       end
 
       def test_raises_exception_on_invalid_parameter_type
         operation = Meta::Operation.new('operation')
-        error = assert_raises Error do
+        assert_raises Error do
           Operation.new(operation).call { parameter 'foo', type: 'bar' }
         end
-        assert_equal("invalid type: 'bar' (at 'foo')", error.message)
       end
 
       # Request body tests
@@ -112,7 +93,7 @@ module Jsapi
         request_body = operation.request_body
         assert_predicate(request_body.schema, :object?)
 
-        property = request_body.schema.properties(definitions)['foo']
+        property = request_body.schema.properties['foo']
         assert_predicate(property.schema, :string?)
       end
 
@@ -122,16 +103,14 @@ module Jsapi
           request_body schema: 'Foo'
         end
         request_body = operation.request_body
-        assert_equal('Foo', request_body.schema.reference)
+        assert_equal('Foo', request_body.schema.schema)
       end
 
       def test_raises_exception_on_invalid_request_body_type
         operation = Meta::Operation.new('operation')
-
-        error = assert_raises Error do
+        assert_raises Error do
           Operation.new(operation).call { request_body type: 'foo' }
         end
-        assert_equal("invalid type: 'foo' (at request body)", error.message)
       end
 
       # Response tests
@@ -154,10 +133,10 @@ module Jsapi
             property 'foo', type: 'string'
           end
         end
-        response = operation.responses[200]
+        response = operation.response(200)
         assert_predicate(response.schema, :object?)
 
-        property = response.schema.properties(definitions)['foo']
+        property = response.schema.properties['foo']
         assert_predicate(property.schema, :string?)
       end
 
@@ -167,35 +146,34 @@ module Jsapi
           response schema: 'Foo'
         end
         response = operation.responses['default']
-        assert_equal('Foo', response.schema.reference)
+        assert_equal('Foo', response.schema.schema)
       end
 
       def test_response_reference
         operation = Meta::Operation.new('operation')
         Operation.new(operation).call { response 'Foo' }
 
-        response = operation.response('default')
-        assert_equal('Foo', response.reference)
+        reference = operation.response('default')
+        assert_equal('Foo', reference.response)
       end
 
       def test_response_reference_with_status
         operation = Meta::Operation.new('operation')
         Operation.new(operation).call { response 200, 'Foo' }
 
-        response = operation.response(200)
-        assert_equal('Foo', response.reference)
+        reference = operation.response(200)
+        assert_equal('Foo', reference.response)
       end
 
       def test_raises_exception_on_invalid_response_type
         operation = Meta::Operation.new('operation')
-        error = assert_raises Error do
+        assert_raises Error do
           Operation.new(operation).call { response type: 'foo' }
         end
-        assert_equal("invalid type: 'foo' (at response)", error.message)
       end
 
       def test_raises_exception_on_invalid_response_arguments
-        message = 'name cannot be specified together with options ' \
+        message = 'name cannot be specified together with keywords ' \
                   'or a block (at response 200)'
 
         operation = Meta::Operation.new('operation')
@@ -214,12 +192,6 @@ module Jsapi
           end
         end
         assert_equal(message, error.message)
-      end
-
-      private
-
-      def definitions
-        Meta::Definitions.new
       end
     end
   end

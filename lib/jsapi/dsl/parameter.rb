@@ -3,9 +3,8 @@
 module Jsapi
   module DSL
     # Used to specify details of a parameter.
-    class Parameter < Node
+    class Parameter < Schema
       include Example
-      include NestedSchema
     end
   end
 end

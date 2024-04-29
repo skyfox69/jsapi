@@ -2,7 +2,7 @@
 
 module Jsapi
   module DSL
-    # Raised if an error occurred when defining an API component.
+    # Raised when an error occurred while defining an API component.
     class Error < StandardError
 
       # Creates a new error. +origin+ is the innermost position at where
@@ -20,12 +20,12 @@ module Jsapi
 
       # Overrides <code>StandardError#message</code> to append the whole path of
       # the position at where the error occurred, for example:
-      # <code>{message} (at foo/bar)</code>.
+      # <code>{message} (at foo / bar)</code>.
       def message
         message = super
         return message if @path.empty?
 
-        "#{message} (at #{@path.join('/')})"
+        "#{message} (at #{@path.join(' / ')})"
       end
 
       # Prepends +origin+ to the path at where the error occurred.

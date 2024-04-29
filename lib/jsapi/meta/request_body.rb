@@ -2,40 +2,57 @@
 
 module Jsapi
   module Meta
-    class RequestBody
-      attr_accessor :description
-      attr_reader :schema
+    class RequestBody < Base
+      ##
+      # :attr: description
+      # The optional description of the request body.
+      attribute :description, String
 
-      include Examples
+      ##
+      # :attr_reader: examples
+      # The optional examples.
+      attribute :examples, { String => Example }, default_key: 'default'
 
-      def initialize(**options)
-        @description = options[:description]
-        @schema = Schema.new(**options.except(:description, :example))
+      ##
+      # :attr_reader: schema
+      # The Schema of the parameter.
+      attribute :schema, writer: false
 
-        add_example(value: options[:example]) if options.key?(:example)
+      delegate_missing_to :schema
+
+      # Creates a new request body.
+      def initialize(keywords = {})
+        keywords = keywords.dup
+        super(keywords.extract!(:description, :examples))
+
+        add_example(value: keywords.delete(:example)) if keywords.key?(:example)
+
+        @schema = Schema.new(keywords)
       end
 
+      # Returns true if the request body is required, false otherwise.
       def required?
         schema.existence > Existence::ALLOW_OMITTED
       end
 
-      # Returns the OpenAPI 2.0 parameter object as a +Hash+.
+      # Returns a hash representing the \OpenAPI 2.0 parameter object.
       def to_openapi_parameter
         {
           name: 'body',
           in: 'body',
+          description: description,
           required: required?
-        }.merge(schema.to_openapi_schema('2.0'))
+        }.merge(schema.to_openapi_schema('2.0')).compact
       end
 
-      # Returns the OpenAPI 3.x request body object as a +Hash+.
+      # Returns a hash representing the \OpenAPI 3.x request body object.
       def to_openapi_request_body(version)
         {
           description: description,
           content: {
             'application/json' => {
               schema: schema.to_openapi_schema(version),
-              examples: openapi_examples.presence
+              examples: examples&.transform_values(&:to_openapi_example)
             }.compact
           },
           required: required?

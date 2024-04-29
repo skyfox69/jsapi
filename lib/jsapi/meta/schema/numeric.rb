@@ -6,30 +6,49 @@ module Jsapi
       class Numeric < Base
         include Conversion
 
-        def maximum=(value_or_options)
-          if value_or_options.is_a?(Hash)
-            value = value_or_options[:value]
-            exclusive = value_or_options[:exclusive] == true
-          else
-            value = value_or_options
-            exclusive = false
-          end
-          add_validation('maximum', Validation::Maximum.new(value, exclusive: exclusive))
+        ##
+        # :attr: maximum
+        # The (exclusive) maximum.
+        attribute :maximum, writer: false
+
+        ##
+        # :attr: minimum
+        # The (exclusive) minimum.
+        attribute :minimum, writer: false
+
+        ##
+        # :attr: multiple_of
+        attribute :multiple_of, writer: false
+
+        def maximum=(value) # :nodoc:
+          boundary = Boundary.from(value)
+
+          add_validation(
+            'maximum',
+            Validation::Maximum.new(
+              boundary.value,
+              exclusive: boundary.exclusive?
+            )
+          )
+          @maximum = boundary
         end
 
-        def minimum=(value_or_options)
-          if value_or_options.is_a?(Hash)
-            value = value_or_options[:value]
-            exclusive = value_or_options[:exclusive] == true
-          else
-            value = value_or_options
-            exclusive = false
-          end
-          add_validation('minimum', Validation::Minimum.new(value, exclusive: exclusive))
+        def minimum=(value) # :nodoc:
+          boundary = Boundary.from(value)
+
+          add_validation(
+            'minimum',
+            Validation::Minimum.new(
+              boundary.value,
+              exclusive: boundary.exclusive?
+            )
+          )
+          @minimum = boundary
         end
 
-        def multiple_of=(value)
+        def multiple_of=(value) # :nodoc:
           add_validation('multiple_of', Validation::MultipleOf.new(value))
+          @multiple_of = value
         end
       end
     end

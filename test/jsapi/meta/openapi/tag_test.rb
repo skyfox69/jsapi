@@ -6,14 +6,8 @@ module Jsapi
   module Meta
     module OpenAPI
       class TagTest < Minitest::Test
-        def test_external_docs
-          tag = Tag.new
-          tag.external_docs = { url: 'https://foo.bar/docs' }
-          assert_equal('https://foo.bar/docs', tag.external_docs.url)
-        end
-
         def test_empty_tag_object
-          assert_equal({}, Tag.new.to_h)
+          assert_equal({}, Tag.new.to_openapi)
         end
 
         def test_full_tag_object
@@ -31,7 +25,7 @@ module Jsapi
               external_docs: {
                 url: 'https://foo.bar/docs'
               }
-            ).to_h
+            ).to_openapi
           )
         end
       end

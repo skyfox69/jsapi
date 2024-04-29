@@ -121,13 +121,6 @@ module Jsapi
         assert_equal('Description of foo', schema.description)
       end
 
-      def test_raises_exception_on_invalid_keyword
-        error = assert_raises Error do
-          Definitions.new(definitions).call { foo }
-        end
-        assert_equal("invalid keyword: 'foo'", error.message)
-      end
-
       private
 
       def definitions

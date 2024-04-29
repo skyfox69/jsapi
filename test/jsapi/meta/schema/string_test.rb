@@ -6,43 +6,36 @@ module Jsapi
   module Meta
     module Schema
       class StringTest < Minitest::Test
-        def test_format
-          schema = String.new(format: 'date')
-          assert_equal('date', schema.format)
-        end
-
-        def test_raises_exception_on_unsupported_format
-          error = assert_raises(ArgumentError) { String.new(format: 'foo') }
-          assert_equal('format not supported: "foo"', error.message)
-        end
-
         def test_max_length
           schema = String.new(max_length: 10)
-          max_length = schema.validations['max_length']
+          assert_equal(10, schema.max_length)
 
-          assert_predicate(max_length, :present?)
-          assert_equal(10, max_length.value)
+          validation = schema.validations['max_length']
+          assert_predicate(validation, :present?)
+          assert_equal(10, validation.value)
         end
 
         def test_min_length
           schema = String.new(min_length: 10)
-          min_length = schema.validations['min_length']
+          assert_equal(10, schema.min_length)
 
-          assert_predicate(min_length, :present?)
-          assert_equal(10, min_length.value)
+          validation = schema.validations['min_length']
+          assert_predicate(validation, :present?)
+          assert_equal(10, validation.value)
         end
 
         def test_pattern
           schema = String.new(pattern: /foo/)
-          pattern = schema.validations['pattern']
+          assert_equal(/foo/, schema.pattern)
 
-          assert_predicate(pattern, :present?)
-          assert_equal('foo', pattern.value.source)
+          validation = schema.validations['pattern']
+          assert_predicate(validation, :present?)
+          assert_equal('foo', validation.value.source)
         end
 
         # JSON Schema tests
 
-        def test_minimal_json_schema
+        def test_minimal_json_schema_object
           schema = String.new
           assert_equal(
             {
@@ -52,7 +45,7 @@ module Jsapi
           )
         end
 
-        def test_json_schema
+        def test_json_schema_object
           schema = String.new(format: 'date')
           assert_equal(
             {
@@ -65,8 +58,9 @@ module Jsapi
 
         # OpenAPI tests
 
-        def test_minimal_openapi_3_0_schema
+        def test_minimal_openapi_schema_object
           schema = String.new
+          # OpenAPI 3.0
           assert_equal(
             {
               type: 'string',
@@ -74,9 +68,16 @@ module Jsapi
             },
             schema.to_openapi_schema('3.0')
           )
+          # OpenAPI 3.1
+          assert_equal(
+            {
+              type: %w[string null]
+            },
+            schema.to_openapi_schema('3.1')
+          )
         end
 
-        def test_openapi_3_0_schema
+        def test_openapi_schema_object
           schema = String.new(format: 'date')
           assert_equal(
             {

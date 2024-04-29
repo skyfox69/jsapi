@@ -2,6 +2,7 @@
 
 module Jsapi
   module Meta
+    # Raised when a reference can't be resolved.
     class ReferenceError < StandardError
       def initialize(reference)
         super("reference can't be resolved: '#{reference}'")

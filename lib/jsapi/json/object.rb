@@ -11,7 +11,7 @@ module Jsapi
       def initialize(attributes, schema, definitions)
         super(schema)
         @raw_attributes =
-          schema.properties(definitions).transform_values do |property|
+          schema.resolve_properties(definitions).transform_values do |property|
             JSON.wrap(attributes[property.name], property.schema, definitions)
           end
       end

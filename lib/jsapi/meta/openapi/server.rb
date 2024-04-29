@@ -4,20 +4,28 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents a server object.
-      class Server < Object
-        attr_accessor :description, :url, :variables
+      class Server < Base
+        ##
+        # :attr: description
+        # The optional description of the server.
+        attribute :description, String
 
-        # TODO: validates :url, presence: true
+        ##
+        # :attr: url
+        # The absolute or relative URL of the server.
+        attribute :url, String
 
-        def add_variable(name, keywords)
-          (@variables ||= {})[name.to_s] = ServerVariable.new(**keywords)
-        end
+        ##
+        # :attr_reader: variables
+        # The optional server variables.
+        attribute :variables, { String => ServerVariable }
 
-        def to_h
+        # Returns a hash representing the server object.
+        def to_openapi
           {
-            description: description&.to_s,
-            url: url&.to_s,
-            variables: variables&.transform_values(&:to_h)
+            url: url,
+            description: description,
+            variables: variables&.transform_values(&:to_openapi)
           }.compact
         end
       end

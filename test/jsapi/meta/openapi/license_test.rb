@@ -7,7 +7,7 @@ module Jsapi
     module OpenAPI
       class LicenseTest < Minitest::Test
         def test_empty_license_object
-          assert_equal({}, License.new.to_h)
+          assert_equal({}, License.new.to_openapi)
         end
 
         def test_full_license_object
@@ -19,7 +19,7 @@ module Jsapi
             License.new(
               name: 'Foo',
               url: 'https://foo.bar/license'
-            ).to_h
+            ).to_openapi
           )
         end
       end

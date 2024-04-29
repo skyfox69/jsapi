@@ -12,11 +12,11 @@ module Jsapi
       end
 
       def method_missing(*args, &block) # :nodoc:
-        keyword = args.first
-        method = find_method(keyword)
-        raise "invalid keyword: '#{keyword}'" unless method
+        name = args.first
+        method = find_method(name)
+        raise "unsupported method: #{name}" unless method
 
-        define(keyword) do
+        define(name) do
           value = _meta_model.public_send(method, *args[1..])
           Node.new(value).call(&block) if block
         end
@@ -38,8 +38,8 @@ module Jsapi
         raise Error.new(e, args.compact.join(' ').presence)
       end
 
-      def find_method(keyword)
-        ["#{keyword}=", "add_#{keyword}"].find do |method|
+      def find_method(name)
+        ["#{name}=", "add_#{name}"].find do |method|
           _meta_model.respond_to?(method)
         end
       end

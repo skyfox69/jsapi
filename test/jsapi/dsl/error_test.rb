@@ -16,7 +16,7 @@ module Jsapi
 
       def test_prepend_origin
         error = Error.new('{message}', 'bar').prepend_origin('foo')
-        assert_equal('{message} (at foo/bar)', error.message)
+        assert_equal('{message} (at foo / bar)', error.message)
 
         error = Error.new('{message}', 'bar').prepend_origin('')
         assert_equal('{message} (at bar)', error.message)

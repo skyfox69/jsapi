@@ -14,6 +14,10 @@ module Jsapi
         @status = status || 'default'
       end
 
+      def inspect # :nodoc:
+        "#<#{self.class.name} class: #{@klass}, status: #{@status.inspect}>"
+      end
+
       def match?(exception)
         exception.is_a?(@klass)
       end

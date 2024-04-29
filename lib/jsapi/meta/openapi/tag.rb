@@ -4,21 +4,28 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents a tag object.
-      class Tag < Object
-        attr_accessor :description, :name
-        attr_reader :external_docs
+      class Tag < Base
+        ##
+        # :attr: description
+        # The description of the tag.
+        attribute :description, String
 
-        # TODO: validates :name, presence: true
+        ##
+        # :attr: external_docs
+        # The ExternalDocumentation object.
+        attribute :external_docs, ExternalDocumentation
 
-        def external_docs=(keywords)
-          @external_docs = ExternalDocumentation.new(**keywords)
-        end
+        ##
+        # :attr: name
+        # The name of the tag.
+        attribute :name, String
 
-        def to_h
+        # Returns a hash representing the tag object.
+        def to_openapi
           {
-            name: name&.to_s,
-            description: description&.to_s,
-            externalDocs: external_docs&.to_h
+            name: name,
+            description: description,
+            externalDocs: external_docs&.to_openapi
           }.compact
         end
       end

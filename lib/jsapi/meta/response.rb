@@ -7,12 +7,13 @@ module Jsapi
   module Meta
     module Response
       class << self
-        def new(**options)
-          Base.new(**options)
-        end
-
-        def reference(name)
-          Reference.new(name)
+        # Creates a new response or response reference.
+        def new(keywords = {})
+          if keywords[:response].present?
+            Reference.new(keywords)
+          else
+            Base.new(keywords)
+          end
         end
       end
     end

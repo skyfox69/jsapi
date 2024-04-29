@@ -4,37 +4,22 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents a security requirement object.
-      class SecurityRequirement < Object
-        class Scheme < Object
-          attr_accessor :scopes
-
-          def initialize(**keywords)
-            @scopes = []
-            super
-          end
-
-          def add_scope(scope)
-            raise ArgumentError, "scope can't be blank" if scope.blank?
-
-            @scopes << scope.to_s
-          end
+      class SecurityRequirement < Base
+        class Scheme < Base
+          ##
+          # :attr: scopes
+          # The array of scopes.
+          attribute :scopes, [String], default: []
         end
 
-        attr_reader :schemes
+        ##
+        # :attr_reader: schemes
+        # The schemes.
+        attribute :schemes, { String => Scheme }
 
-        def initialize(**keywords)
-          @schemes = {}
-          super
-        end
-
-        def add_scheme(name, keywords = {})
-          raise ArgumentError, "name can't be blank" if name.blank?
-
-          @schemes[name.to_s] = Scheme.new(**keywords)
-        end
-
-        def to_h
-          schemes.transform_values(&:scopes)
+        # Returns a hash representing the security requirement object.
+        def to_openapi
+          schemes&.transform_values(&:scopes) || {}
         end
       end
     end

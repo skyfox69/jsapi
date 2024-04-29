@@ -28,6 +28,12 @@ Metrics/BlockLength:
 Metrics/MethodLength:
   Enabled: false
 
+Metrics/ModuleLength:
+  Enabled: false
+
+Metrics/ParameterLists:
+  CountKeywordArgs: false
+
 Metrics/PerceivedComplexity:
   Enabled: false
 
@@ -36,6 +42,9 @@ Naming/VariableNumber:
     - test/**/*.rb
 
 Naming/MemoizedInstanceVariableName:
+  Enabled: false
+
+Style/Alias:
   Enabled: false
 
 Style/Documentation:
@@ -48,6 +57,9 @@ Style/GuardClause:
   Enabled: false
 
 Style/IfUnlessModifier:
+  Enabled: false
+
+Style/Lambda:
   Enabled: false
 
 Style/MultilineIfModifier:

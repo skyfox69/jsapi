@@ -68,7 +68,7 @@ module Jsapi
       def openapi_document(version = nil)
         version = OpenAPI::Version.from(version)
 
-        (openapi_root&.to_h(version) || {}).tap do |h|
+        (openapi_root&.to_openapi(version) || {}).tap do |h|
           h[:paths] = openapi_paths(version)
 
           if version.major == 2

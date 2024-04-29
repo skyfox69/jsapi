@@ -4,31 +4,44 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents an OAuth flow object.
-      class OAuthFlow < Object
-        class Scope < Object
-          attr_accessor :description
+      class OAuthFlow < Base
+        class Scope < Base
+          ##
+          # :attr: description
+          # The optional description of the scope.
+          attribute :description, String, default: ''
         end
 
-        attr_accessor :authorization_url, :token_url, :refresh_url
-        attr_reader :scopes
+        ##
+        # :attr: authorization_url
+        # The authorization URL to be used for the flow.
+        attribute :authorization_url, String
 
-        def initialize(**keywords)
-          @scopes = {}
-          super
-        end
+        ##
+        # :attr: refresh_url
+        # The refresh URL to be used for the flow.
+        #
+        # Note that the refresh URL was introduced with \OpenAPI 3.0. It is
+        # skipped when generating an \OpenAPI 2.0 document.
+        attribute :refresh_url, String
 
-        def add_scope(name, keywords = {})
-          raise ArgumentError, "name can't be blank" if name.blank?
+        ##
+        # :attr: scopes
+        # The hash containing the scopes.
+        attribute :scopes, { String => Scope }, default: {}
 
-          @scopes[name] = Scope.new(**keywords)
-        end
+        ##
+        # :attr: token_url
+        # The token URL to be used for the flow.
+        attribute :token_url, String
 
-        def to_h(version)
+        # Returns a hash representing the OAuth flow object.
+        def to_openapi(version)
           {
-            authorizationUrl: authorization_url&.to_s,
-            tokenUrl: token_url&.to_s,
-            refreshUrl: (refresh_url&.to_s if version.major > 2),
-            scopes: scopes.transform_values { |s| s.description || '' }
+            authorizationUrl: authorization_url,
+            tokenUrl: token_url,
+            refreshUrl: (refresh_url if version.major > 2),
+            scopes: scopes.transform_values(&:description)
           }.compact
         end
       end

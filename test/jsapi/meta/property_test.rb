@@ -5,17 +5,23 @@ require 'test_helper'
 module Jsapi
   module Meta
     class PropertyTest < Minitest::Test
+      def test_initialize
+        property = Property.new('foo', type: 'string')
+        assert_equal('foo', property.name)
+        assert_equal('string', property.type)
+      end
+
       def test_raises_exception_on_blank_name
         error = assert_raises(ArgumentError) { Property.new('') }
         assert_equal("property name can't be blank", error.message)
       end
 
-      def test_required
+      # Predicate methods tests
+
+      def test_required_predicate
         property = Property.new('foo', existence: true)
         assert(property.required?)
-      end
 
-      def test_not_required
         property = Property.new('foo', existence: false)
         assert(!property.required?)
       end

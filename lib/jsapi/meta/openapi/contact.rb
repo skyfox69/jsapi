@@ -4,14 +4,28 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents a contact object.
-      class Contact < Object
-        attr_accessor :email, :name, :url
+      class Contact < Base
+        ##
+        # :attr: email
+        # The email address of the contact.
+        attribute :email, String
 
-        def to_h
+        ##
+        # :attr: name
+        # The name of the contact.
+        attribute :name, String
+
+        ##
+        # :attr: url
+        # The URL of the contact.
+        attribute :url, String
+
+        # Returns a hash representing the contact object.
+        def to_openapi
           {
-            name: name&.to_s,
-            url: url&.to_s,
-            email: email&.to_s
+            name: name,
+            url: url,
+            email: email
           }.compact
         end
       end

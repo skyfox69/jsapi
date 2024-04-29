@@ -3,9 +3,8 @@
 module Jsapi
   module DSL
     # Used to specify details of a response.
-    class Response < Node
+    class Response < Schema
       include Example
-      include NestedSchema
     end
   end
 end

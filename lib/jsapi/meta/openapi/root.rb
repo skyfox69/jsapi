@@ -3,118 +3,113 @@
 module Jsapi
   module Meta
     module OpenAPI
-      # Represents an OpenAPI object.
-      class Root < Object
-        SCHEMES = %w[http https ws wss].freeze
+      # Represents an \OpenAPI object.
+      class Root < Base
+        ##
+        # :attr: base_path
+        # The base path of the API. Applies to \OpenAPI 2.0.
+        attribute :base_path, String
 
-        attr_accessor :base_path, :host
+        ##
+        # :attr: consumes
+        # The MIME types the API can consume. Applies to \OpenAPI 2.0.
+        attribute :consumed_mime_types, [String]
 
-        attr_reader :consumes, :external_docs, :info, :produces, :security_requirements,
-                    :schemes, :security_schemes, :servers, :tags
+        alias :consumes :consumed_mime_types
+        alias :consumes= :consumed_mime_types=
+        alias :add_consumes :add_consumed_mime_type
 
-        # TODO: validates :info, presence: true
+        ##
+        # :attr: external_docs
+        # The optional ExternalDocumentation object.
+        attribute :external_docs, ExternalDocumentation
 
-        def add_consumes(mime_type)
-          raise ArgumentError, "mime type can't be blank" if mime_type.blank?
+        ##
+        # :attr: host
+        # The host serving the API. Applies to \OpenAPI 2.0.
+        attribute :host, String
 
-          (@consumes ||= []) << mime_type
-        end
+        ##
+        # :attr: info
+        # The Info object.
+        attribute :info, Info
 
-        def add_produces(mime_type)
-          raise ArgumentError, "mime type can't be blank" if mime_type.blank?
+        ##
+        # :attr: produces
+        # The MIME types the API can produce. Applies to \OpenAPI 2.0.
+        attribute :produced_mime_types, [String]
 
-          (@produces ||= []) << mime_type
-        end
+        alias :produces :produced_mime_types
+        alias :produces= :produced_mime_types=
+        alias :add_produces :add_produced_mime_type
 
-        def add_scheme(scheme)
-          raise ArgumentError, "invalid scheme: #{scheme.inspect}" unless scheme.in?(SCHEMES)
+        ##
+        # :attr: schemes
+        # The array of transfer protocols supported by the API. Possible
+        # values are:
+        #
+        # - <code>"http"</code>
+        # - <code>"https"</code>
+        # - <code>"ws"</code>
+        # - <code>"wss"</code>
+        #
+        # Applies to \OpenAPI 2.0 only.
+        attribute :schemes, [String], values: %w[http https ws wss]
 
-          (@schemes ||= []) << scheme
-        end
+        ##
+        # :attr: security_requirements
+        # The array of SecurityRequirement objects.
+        attribute :security_requirements, [SecurityRequirement]
 
-        def add_security(keywords = {})
-          SecurityRequirement.new(**keywords).tap do |security|
-            (@security_requirements ||= []) << security
-          end
-        end
+        alias add_security add_security_requirement
 
-        def add_security_scheme(name, keywords = {})
-          raise ArgumentError, "name can't be blank" if name.blank?
+        ##
+        # :attr_reader: security_schemes
+        # The security schemes.
+        attribute :security_schemes, { String => SecurityScheme }
 
-          (@security_schemes ||= {})[name.to_s] = SecurityScheme.new(**keywords)
-        end
+        ##
+        # :attr: servers
+        # The array of Server objects. Applies to \OpenAPI 3.0. and higher.
+        attribute :servers, [Server]
 
-        def add_server(keywords = {})
-          Server.new(**keywords).tap do |server|
-            (@servers ||= []) << server
-          end
-        end
+        ##
+        # :attr: tags
+        # The array of Tag objects.
+        attribute :tags, [Tag]
 
-        def add_tag(keywords = {})
-          Tag.new(**keywords).tap do |tag|
-            (@tags ||= []) << tag
-          end
-        end
-
-        def consumes=(mime_types)
-          @consumes = Array(mime_types)
-        end
-
-        def external_docs=(keywords = {})
-          @external_docs = ExternalDocumentation.new(**keywords)
-        end
-
-        def info=(keywords = {})
-          @info = Info.new(**keywords)
-          Info.new(**keywords)
-        end
-
-        def produces=(mime_types)
-          @produces = Array(mime_types)
-        end
-
-        def schemes=(schemes)
-          schemes = Array(schemes)
-
-          if (invalid_schemes = schemes - SCHEMES).any?
-            invalid_schemes = invalid_schemes.map(&:inspect).join(', ')
-            raise ArgumentError, "invalid schemes: #{invalid_schemes}"
-          end
-
-          @schemes = schemes
-        end
-
-        def to_h(version)
+        # Returns a hash representing the \OpenAPI object.
+        def to_openapi(version)
           security_schemes =
             self.security_schemes&.transform_values do |value|
-              value.to_h(version)
-            end&.compact
+              value.to_openapi(version)
+            end
 
           if version.major == 2
             {
               swagger: '2.0',
-              info: info&.to_h,
-              host: host&.to_s,
-              basePath: base_path&.to_s,
-              schemes: schemes.presence,
-              consumes: consumes.presence,
-              produces: produces.presence,
+              info: info&.to_openapi,
+              host: host,
+              basePath: base_path,
+              schemes: schemes,
+              consumes: consumed_mime_types,
+              produces: produced_mime_types,
               securityDefinitions: security_schemes,
-              security: security_requirements&.map(&:to_h),
-              tags: tags&.map(&:to_h),
-              externalDocs: external_docs&.to_h
+              security: security_requirements&.map(&:to_openapi),
+              tags: tags&.map(&:to_openapi),
+              externalDocs: external_docs&.to_openapi
             }
           else
             {
               openapi: version.minor.zero? ? '3.0.3' : '3.1.0',
-              info: info&.to_h,
-              servers: servers&.map(&:to_h),
+              info: info&.to_openapi,
+              servers: servers&.map(&:to_openapi),
               components: {
                 securitySchemes: security_schemes
               }.compact.presence,
-              security: security_requirements&.map(&:to_h),
-              tags: tags&.map(&:to_h),
-              externalDocs: external_docs&.to_h
+              security: security_requirements&.map(&:to_openapi),
+              tags: tags&.map(&:to_openapi),
+              externalDocs: external_docs&.to_openapi
             }
           end.compact
         end

@@ -25,31 +25,9 @@ module Jsapi
       #   end
       #
       # +name+ can be +nil+ if the controller handles one operation only.
-      #
-      # ==== Options
-      #
-      # [+:model+]
-      #   The model class to access top-level parameters by. The default model
-      #   class is Model::Base.
-      #
-      # ===== Annotations
-      #
-      # [+:method+]
-      #   The HTTP verb of the operation. The default value is 'get'.
-      # [+:path+]
-      #   The relative path of the operation.
-      # [+:tags+]
-      #   An array of strings used to group operations in an OpenAPI document.
-      # [+:summary+]
-      #   A short summary of the operation.
-      # [+:desciption+]
-      #   A description of the operation.
-      # [+:deprecated+]
-      #   Specifies whether or not the operation is deprecated.
-      #
-      def operation(name = nil, **options, &block)
-        define(name.nil? ? '' : "'#{name}'") do
-          operation_model = _meta_model.add_operation(name, **options)
+      def operation(name = nil, **keywords, &block)
+        define('operation', name.inspect) do
+          operation_model = _meta_model.add_operation(name, **keywords)
           Operation.new(operation_model).call(&block) if block
         end
       end
@@ -58,13 +36,9 @@ module Jsapi
       #
       #   parameter 'foo', type: 'string'
       #
-      # ==== Options
-      #
-      # Same as Operation#parameter.
-      #
-      def parameter(name, **options, &block)
-        define("'#{name}'") do
-          parameter_model = _meta_model.add_parameter(name, **options)
+      def parameter(name, **keywords, &block)
+        define('parameter', name.inspect) do
+          parameter_model = _meta_model.add_parameter(name, **keywords)
           Parameter.new(parameter_model).call(&block) if block
         end
       end
@@ -85,14 +59,9 @@ module Jsapi
       #   response 'Foo', type: 'object' do
       #     property 'bar', type: 'string'
       #   end
-      #
-      # ==== Options
-      #
-      # Same as Operation#response.
-      #
-      def response(name, **options, &block)
-        define("'#{name}'") do
-          response_model = _meta_model.add_response(name, **options)
+      def response(name, **keywords, &block)
+        define('response', name.inspect) do
+          response_model = _meta_model.add_response(name, **keywords)
           Response.new(response_model).call(&block) if block
         end
       end
@@ -102,20 +71,9 @@ module Jsapi
       #   schema 'Foo' do
       #     property 'bar', type: 'string'
       #   end
-      #
-      # ==== Options
-      #
-      # [+:type+]
-      #   The type of the schema. See Meta::Schema for details.
-      # [+existence+]
-      #   The level of existence. See Meta::Existence for details.
-      # [+:model+]
-      #   The model class to access nested object parameters by. The
-      #   default model class is Model::Base.
-      #
-      def schema(name, **options, &block)
-        define("'#{name}'") do
-          schema_model = _meta_model.add_schema(name, **options)
+      def schema(name, **keywords, &block)
+        define('schema', name.inspect) do
+          schema_model = _meta_model.add_schema(name, **keywords)
           Schema.new(schema_model).call(&block) if block
         end
       end

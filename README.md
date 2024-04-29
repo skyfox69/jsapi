@@ -226,7 +226,7 @@ end
 
 The operation name can be omitted, if the controller handles one operation only.
 
-**Options**
+**Keywords**
 
 - `:model` - See [API models](#api-models).
 - `:method` - The HTTP verb of the operation.
@@ -256,7 +256,7 @@ api_operation 'foo' do
 end
 ```
 
-**Options**
+**Keywords**
 
 - `:schema` - See [Reusable schemas](#reusable-schemas)
 - `:type` - See [The type option](#the-type-option).
@@ -286,7 +286,7 @@ api_operation 'foo' do
 end
 ```
 
-**Options**
+**Keywords**
 
 - `:schema` - See [Reusable schemas](#reusable-schemas)
 - `:existence` - See [The existence option](#the-existence-option).
@@ -307,7 +307,7 @@ api_operation 'foo' do
 end
 ```
 
-**Options**
+**Keywords**
 
 - `:schema` - See [Reusable schemas](#reusable-schemas)
 - `:type` - See [The type option](#the-type-option).
@@ -335,7 +335,7 @@ property 'foo' do
 end
 ```
 
-**Options**
+**Keywords**
 
 - `:schema` - See [Reusable schemas](#reusable-schemas)
 - `:type` - See [The type option](#the-type-option).
@@ -372,7 +372,7 @@ schema 'Foo', type: 'object' do
 end
 ```
 
-**Options**
+**Keywords**
 
 - `value` - The sample value
 - `external` - Specifies whether `value` is the URI of an external example.

@@ -4,15 +4,22 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents an external documentation object.
-      class ExternalDocumentation < Object
-        attr_accessor :description, :url
+      class ExternalDocumentation < Base
+        ##
+        # :attr: description
+        # The optional description of the external documentation.
+        attribute :description, String
 
-        # TODO: validates :url, presence: true
+        ##
+        # :attr: url
+        # The URL of the external documentation.
+        attribute :url, String
 
-        def to_h
+        # Returns a hash representing the external documentation object.
+        def to_openapi
           {
-            description: description&.to_s,
-            url: url&.to_s
+            url: url,
+            description: description
           }.compact
         end
       end

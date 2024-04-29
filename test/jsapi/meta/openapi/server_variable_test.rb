@@ -7,7 +7,7 @@ module Jsapi
     module OpenAPI
       class ServerVariableTest < Minitest::Test
         def test_empty_server_variable_object
-          assert_equal({}, ServerVariable.new.to_h)
+          assert_equal({}, ServerVariable.new.to_openapi)
         end
 
         def test_full_server_object
@@ -21,7 +21,7 @@ module Jsapi
               enum: %w[foo bar],
               default: 'foo',
               description: 'Foo'
-            ).to_h
+            ).to_openapi
           )
         end
       end

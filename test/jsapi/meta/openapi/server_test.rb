@@ -7,7 +7,7 @@ module Jsapi
     module OpenAPI
       class ServerTest < Minitest::Test
         def test_empty_server_object
-          assert_equal({}, Server.new.to_h)
+          assert_equal({}, Server.new.to_openapi)
         end
 
         def test_full_server_object
@@ -27,7 +27,7 @@ module Jsapi
                 }
               }
             },
-            server.to_h
+            server.to_openapi
           )
         end
       end

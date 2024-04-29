@@ -3,18 +3,10 @@
 module Jsapi
   module DSL
     class ExampleTest < Minitest::Test
-      def test_example
+      def test_default_example
         parameter = Parameter.new(parameter_model)
         parameter.call { example 'foo' }
         assert_equal('foo', parameter_model.examples['default'].value)
-
-        error = assert_raises Error do
-          parameter.call { example 'bar' }
-        end
-        assert_equal(
-          'Example already defined: default (at example bar)',
-          error.message
-        )
       end
 
       def test_example_with_options

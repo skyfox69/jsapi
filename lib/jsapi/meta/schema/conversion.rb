@@ -9,6 +9,7 @@ module Jsapi
         extend ActiveSupport::Concern
 
         included do
+          # The method or +Proc+ to convert objects by.
           attr_accessor :conversion
         end
 

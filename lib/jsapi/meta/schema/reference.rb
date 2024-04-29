@@ -3,23 +3,24 @@
 module Jsapi
   module Meta
     module Schema
-      class Reference
-        attr_reader :existence, :reference
+      class Reference < Meta::Base
+        ##
+        # :attr: existence
+        # The level of Existence. The default level of existence
+        # is +ALLOW_OMITTED+.
+        attribute :existence, Existence, default: Existence::ALLOW_OMITTED
 
-        def initialize(**options)
-          @reference = options[:schema]
-          @existence = Existence.from(options[:existence])
-        end
-
-        def existence=(existence)
-          @existence = Existence.from(existence)
-        end
+        ##
+        # :attr: schema
+        # The name of the referred schema as a string.
+        attribute :schema, String
 
         # Resolves the reference by looking up the reusable schema in +definitions+.
+        #
         # Raises a +ReferenceError+ if the reference could not be resolved.
         def resolve(definitions)
-          schema = definitions.schema(@reference)
-          raise ReferenceError, @reference if schema.nil?
+          schema = definitions.schema(self.schema)
+          raise ReferenceError, self.schema if schema.nil?
 
           schema = schema.resolve(definitions)
           return schema if existence < Existence::ALLOW_EMPTY
@@ -27,17 +28,17 @@ module Jsapi
           Delegator.new(schema, [existence, schema.existence].max)
         end
 
-        # Returns the JSON schema as a +Hash+.
+        # Returns a hash representing the \JSON \Schema reference object.
         def to_json_schema
-          { '$ref': "#/definitions/#{@reference}" }
+          { '$ref': "#/definitions/#{schema}" }
         end
 
-        # Returns the OpenAPI schema object as a +Hash+.
+        # Returns a hash representing the \OpenAPI reference object.
         def to_openapi_schema(version)
           version = OpenAPI::Version.from(version)
           path = version.major == 2 ? 'definitions' : 'components/schemas'
 
-          { '$ref': "#/#{path}/#{@reference}" }
+          { '$ref': "#/#{path}/#{schema}" }
         end
       end
     end

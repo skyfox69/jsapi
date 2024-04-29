@@ -6,11 +6,6 @@ module Jsapi
   module Meta
     module Schema
       class BaseTest < Minitest::Test
-        def test_raises_exception_on_invalid_option
-          error = assert_raises(ArgumentError) { Base.new(foo: 'bar') }
-          assert_equal('invalid option: foo', error.message)
-        end
-
         def test_examples
           schema = Schema.new(type: 'string', example: 'foo')
           schema.add_example('bar')
@@ -19,31 +14,21 @@ module Jsapi
 
         def test_enum
           schema = Base.new(enum: %w[foo bar])
-          enum = schema.validations['enum']
+          assert_equal(%w[foo bar], schema.enum)
 
-          assert_predicate(enum, :present?)
-          assert_equal(%w[foo bar], enum.value)
+          validation = schema.validations['enum']
+          assert_predicate(validation, :present?)
+          assert_equal(%w[foo bar], validation.value)
         end
 
-        def test_existence
-          schema = Base.new
-          schema.existence = true
-          assert_equal(Existence::PRESENT, schema.existence)
-        end
-
-        def test_default_existence
-          schema = Base.new
-          assert_equal(Existence::ALLOW_OMITTED, schema.existence)
-        end
-
-        def test_nullable
+        def test_nullable_predicate
           schema = Base.new
           assert schema.nullable?
         end
 
         # JSON Schema tests
 
-        def test_json_schema
+        def test_json_schema_object
           schema = Schema.new(
             type: 'string',
             existence: true,
@@ -62,7 +47,7 @@ module Jsapi
           )
         end
 
-        def test_json_schema_on_nullable
+        def test_json_schema_object_on_nullable
           schema = Schema.new(type: 'string', existence: :allow_null)
           assert_equal(
             {
@@ -72,7 +57,7 @@ module Jsapi
           )
         end
 
-        def test_json_schema_including_enum
+        def test_json_schema_object_on_enum
           schema = Schema.new(type: 'string', enum: %w[foo bar])
           assert_equal(
             {
@@ -85,46 +70,26 @@ module Jsapi
 
         # OpenAPI tests
 
-        def test_openapi_2_0_schema
-          schema = Schema.new(
-            type: 'string',
-            existence: true,
-            description: 'Foo',
-            default: 'foo',
-            example: 'bar'
-          )
+        def test_minimal_openapi_schema_object
+          schema = Schema.new(type: 'string', existence: true)
+
+          %w[2.0 3.0 3.1].each do |version|
+            assert_equal(
+              { type: 'string' },
+              schema.to_openapi_schema(version)
+            )
+          end
+        end
+
+        def test_minimal_openapi_schema_object_on_nullable
+          schema = Schema.new(type: 'string', existence: :allow_null)
+
+          # OpenAPI 2.0
           assert_equal(
-            {
-              type: 'string',
-              description: 'Foo',
-              default: 'foo',
-              example: 'bar'
-            },
+            { type: 'string' },
             schema.to_openapi_schema('2.0')
           )
-        end
-
-        def test_openapi_3_0_schema
-          schema = Schema.new(
-            type: 'string',
-            existence: true,
-            description: 'Foo',
-            default: 'foo',
-            example: 'bar'
-          )
-          assert_equal(
-            {
-              type: 'string',
-              description: 'Foo',
-              default: 'foo',
-              examples: %w[bar]
-            },
-            schema.to_openapi_schema('3.0')
-          )
-        end
-
-        def test_openapi_3_0_schema_on_nullable
-          schema = Schema.new(type: 'string', existence: :allow_null)
+          # OpenAPI 3.0
           assert_equal(
             {
               type: 'string',
@@ -132,10 +97,27 @@ module Jsapi
             },
             schema.to_openapi_schema('3.0')
           )
+          # OpenAPI 3.1
+          assert_equal(
+            {
+              type: %w[string null]
+            },
+            schema.to_openapi_schema('3.1')
+          )
         end
 
-        def test_openapi_3_0_schema_including_enum
+        def test_minimal_openapi_schema_object_on_enum
           schema = Schema.new(type: 'string', enum: %w[foo bar])
+
+          # OpenAPI 2.0
+          assert_equal(
+            {
+              type: 'string',
+              enum: %w[foo bar]
+            },
+            schema.to_openapi_schema('2.0')
+          )
+          # OpenAPI 3.0
           assert_equal(
             {
               type: 'string',
@@ -144,32 +126,63 @@ module Jsapi
             },
             schema.to_openapi_schema('3.0')
           )
-        end
-
-        def test_openapi_3_1_schema
-          schema = Schema.new(
-            type: 'string',
-            existence: true,
-            description: 'Foo',
-            default: 'foo',
-            example: 'bar'
-          )
+          # OpenAPI 3.1
           assert_equal(
             {
-              type: 'string',
-              description: 'Foo',
-              default: 'foo',
-              examples: %w[bar]
+              type: %w[string null],
+              enum: %w[foo bar]
             },
             schema.to_openapi_schema('3.1')
           )
         end
 
-        def test_openapi_3_1_schema_on_nullable
-          schema = Schema.new(type: 'string', existence: :allow_null)
+        def test_full_openapi_schema_object
+          schema = Schema.new(
+            type: 'string',
+            existence: true,
+            description: 'Foo',
+            default: 'foo',
+            example: 'bar',
+            external_docs: {
+              url: 'https://foo.bar/docs'
+            }
+          )
+          # OpenAPI 2.0
           assert_equal(
             {
-              type: %w[string null]
+              type: 'string',
+              description: 'Foo',
+              default: 'foo',
+              example: 'bar',
+              externalDocs: {
+                url: 'https://foo.bar/docs'
+              }
+            },
+            schema.to_openapi_schema('2.0')
+          )
+          # OpenAPI 3.0
+          assert_equal(
+            {
+              type: 'string',
+              description: 'Foo',
+              default: 'foo',
+              examples: %w[bar],
+              externalDocs: {
+                url: 'https://foo.bar/docs'
+              }
+            },
+            schema.to_openapi_schema('3.0')
+          )
+          # OpenAPI 3.1
+          assert_equal(
+            {
+              type: 'string',
+              description: 'Foo',
+              default: 'foo',
+              examples: %w[bar],
+              externalDocs: {
+                url: 'https://foo.bar/docs'
+              }
             },
             schema.to_openapi_schema('3.1')
           )

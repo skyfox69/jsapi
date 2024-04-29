@@ -3,48 +3,77 @@
 module Jsapi
   module Meta
     module Parameter
-      class Base
-        attr_accessor :description, :name
-        attr_reader :location, :schema
-        attr_writer :deprecated
+      class Base < Meta::Base
+        ##
+        # :attr: deprecated
+        # Specifies whether or not the parameter is deprecated.
+        attribute :deprecated, values: [true, false]
 
-        include Examples
+        ##
+        # :attr: description
+        # The optional description of the parameter.
+        attribute :description, String
 
-        def initialize(name, **options)
+        ##
+        # :attr_reader: examples
+        # The optional examples.
+        attribute :examples, { String => Example }, default_key: 'default'
+
+        ##
+        # :attr: in
+        # The location of the parameter. Possible values are:
+        #
+        # - <code>"path"</code>
+        # - <code>"query"</code>
+        #
+        # The default location is <code>"query"</code>.
+        attribute :in, String, values: %w[path query], default: 'query'
+
+        ##
+        # :attr_reader: name
+        # The name of the parameter.
+        attribute :name, writer: false
+
+        ##
+        # :attr_reader: schema
+        # The Schema of the parameter.
+        attribute :schema, writer: false
+
+        delegate_missing_to :schema
+
+        # Creates a new parameter.
+        #
+        # Raises an +ArgumentError+ if +name+ is blank.
+        def initialize(name, keywords = {})
           raise ArgumentError, "parameter name can't be blank" if name.blank?
 
+          keywords = keywords.dup
+          super(keywords.extract!(:deprecated, :description, :examples, :in))
+
+          add_example(value: keywords.delete(:example)) if keywords.key?(:example)
+
           @name = name.to_s
-          @location = options[:in] || 'query'
-          @description = options[:description]
-          @deprecated = options[:deprecated] == true
-          @schema = Schema.new(**options.except(:deprecated, :description, :example, :in))
-
-          add_example(value: options[:example]) if options.key?(:example)
+          @schema = Schema.new(keywords)
         end
 
-        # Returns true if and only if empty values can be passed
-        # (see OpenAPI Specifications 2.0 and 3.x).
+        # Returns true if empty values are allowed as specified by \OpenAPI,
+        # false otherwise.
         def allow_empty_value?
-          schema.existence <= Existence::ALLOW_EMPTY && location != 'path'
+          schema.existence <= Existence::ALLOW_EMPTY && self.in != 'path'
         end
 
-        # Returns true if and only if the parameter is deprecated
-        # (see OpenAPI Specifications 2.0 and 3.x).
-        def deprecated?
-          @deprecated == true
-        end
-
-        # Returns true if and only if the parameter is required as specified
-        # by JSON Schema.
+        # Returns true if it is required as specified by \JSON \Schema,
+        # false otherwise.
         def required?
-          schema.existence > Existence::ALLOW_OMITTED || location == 'path'
+          schema.existence > Existence::ALLOW_OMITTED || self.in == 'path'
         end
 
+        # Returns itself.
         def resolve(*)
           self
         end
 
-        # Returns the OpenAPI parameter objects as an array of hashes.
+        # Returns the \OpenAPI parameter objects as an array of hashes.
         def to_openapi_parameters(version, definitions)
           version = OpenAPI::Version.from(version)
           schema = self.schema.resolve(definitions)
@@ -64,7 +93,7 @@ module Jsapi
               if version.major == 2
                 {
                   name: parameter_name,
-                  in: location,
+                  in: self.in,
                   description: description,
                   required: required?.presence,
                   allowEmptyValue: allow_empty_value?.presence,
@@ -73,18 +102,19 @@ module Jsapi
               else
                 {
                   name: parameter_name,
-                  in: location,
+                  in: self.in,
                   description: description,
                   required: required?.presence,
                   allowEmptyValue: allow_empty_value?.presence,
                   deprecated: deprecated?.presence,
                   schema: schema.to_openapi_schema(version),
-                  examples: openapi_examples.presence
+                  examples: examples&.transform_values(&:to_openapi_example)
 
-                  # NOTE: collectionFormat is replaced by style and explode.
-                  #       The default values for query parameters are:
-                  #       - style: 'form'
-                  #       - explode: true
+                  # NOTE
+                  # collectionFormat is replaced by style and explode.
+                  # The default values for query parameters are:
+                  # - style: 'form'
+                  # - explode: true
                 }
               end.compact
             ]
@@ -94,7 +124,7 @@ module Jsapi
         private
 
         def explode_object_parameter(name, schema, version, definitions, **options)
-          schema.properties(definitions).values.flat_map do |property|
+          schema.resolve_properties(definitions).values.flat_map do |property|
             property_schema = property.schema.resolve(definitions)
             parameter_name = "#{name}[#{property.name}]"
 
@@ -118,7 +148,7 @@ module Jsapi
                 if version.major == 2
                   {
                     name: parameter_name,
-                    in: location,
+                    in: self.in,
                     description: description,
                     required: required,
                     allowEmptyValue: allow_empty_value.presence,
@@ -127,13 +157,13 @@ module Jsapi
                 else
                   {
                     name: parameter_name,
-                    in: location,
+                    in: self.in,
                     description: description,
                     required: required,
                     allowEmptyValue: allow_empty_value.presence,
                     deprecated: deprecated,
                     schema: property_schema.to_openapi_schema(version),
-                    examples: property_schema.examples.presence
+                    examples: examples&.transform_values(&:to_openapi_example)
                   }
                 end.compact
               ]

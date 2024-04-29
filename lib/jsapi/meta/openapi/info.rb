@@ -4,28 +4,46 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents an info object.
-      class Info < Object
-        attr_accessor :description, :terms_of_service, :title, :version
-        attr_reader :contact, :license
+      class Info < Base
+        ##
+        # :attr: contact
+        # The optional Contact object.
+        attribute :contact, Contact
 
-        # TODO: validates :title, :version, presence: true
+        ##
+        # :attr: description
+        # The optional description of the API.
+        attribute :description, String
 
-        def contact=(keywords)
-          @contact = Contact.new(**keywords)
-        end
+        ##
+        # :attr: license
+        # The optional License object.
+        attribute :license, License
 
-        def license=(keywords)
-          @license = License.new(**keywords)
-        end
+        ##
+        # :attr: terms_of_service
+        # The optional URL pointing to the terms of service.
+        attribute :terms_of_service, String
 
-        def to_h
+        ##
+        # :attr: title
+        # The title of the API.
+        attribute :title, String
+
+        ##
+        # :attr: version
+        # The version of the API.
+        attribute :version, String
+
+        # Returns a hash representing the info object.
+        def to_openapi
           {
-            title: title&.to_s,
-            description: description&.to_s,
-            termsOfService: terms_of_service&.to_s,
-            contact: contact&.to_h,
-            license: license&.to_h,
-            version: version&.to_s
+            title: title,
+            version: version,
+            description: description,
+            termsOfService: terms_of_service,
+            contact: contact&.to_openapi,
+            license: license&.to_openapi
           }.compact
         end
       end

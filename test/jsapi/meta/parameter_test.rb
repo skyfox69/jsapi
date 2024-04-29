@@ -10,9 +10,9 @@ module Jsapi
         assert_kind_of(Parameter::Base, parameter)
       end
 
-      def test_reference
-        reference = Parameter.reference('foo')
-        assert_kind_of(Parameter::Reference, reference)
+      def test_new_reference
+        parameter = Parameter.new('foo', reference: true)
+        assert_kind_of(Parameter::Reference, parameter)
       end
     end
   end

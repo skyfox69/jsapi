@@ -7,19 +7,19 @@ module Jsapi
     module OpenAPI
       class ExternalDocumentationTest < Minitest::Test
         def test_empty_external_documentation_object
-          assert_equal({}, ExternalDocumentation.new.to_h)
+          assert_equal({}, ExternalDocumentation.new.to_openapi)
         end
 
         def test_full_external_documentation_object
           assert_equal(
             {
-              description: 'Foo',
-              url: 'https://foo.bar/docs'
+              url: 'https://foo.bar/docs',
+              description: 'Foo'
             },
             ExternalDocumentation.new(
-              description: 'Foo',
-              url: 'https://foo.bar/docs'
-            ).to_h
+              url: 'https://foo.bar/docs',
+              description: 'Foo'
+            ).to_openapi
           )
         end
       end

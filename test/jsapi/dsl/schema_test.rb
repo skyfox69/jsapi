@@ -3,10 +3,10 @@
 module Jsapi
   module DSL
     class SchemaTest < Minitest::Test
-      def test_description
+      def test_all_of
         schema = Meta::Schema.new
-        Schema.new(schema).call { description 'Foo' }
-        assert_equal('Foo', schema.description)
+        Schema.new(schema).call { all_of 'Foo' }
+        assert_equal(%w[Foo], schema.all_of_references.map(&:schema))
       end
 
       def test_example
@@ -19,12 +19,6 @@ module Jsapi
         schema = Meta::Schema.new(type: 'string')
         Schema.new(schema).call { format 'date' }
         assert_equal('date', schema.format)
-      end
-
-      def test_all_of
-        schema = Meta::Schema.new
-        Schema.new(schema).call { all_of 'Foo' }
-        assert_equal(%w[Foo], schema.all_of.map(&:reference))
       end
 
       # Items tests
@@ -50,7 +44,7 @@ module Jsapi
         error = assert_raises Error do
           Schema.new(schema).call { items type: 'string' }
         end
-        assert_equal("'items' isn't allowed for 'object'", error.message)
+        assert_equal("items isn't supported for 'object'", error.message)
       end
 
       # Model tests
@@ -96,7 +90,7 @@ module Jsapi
         error = assert_raises Error do
           Schema.new(schema).call { model {} }
         end
-        assert_equal("'model' isn't allowed for 'array'", error.message)
+        assert_equal("model isn't supported for 'array'", error.message)
       end
 
       # Property tests
@@ -106,7 +100,7 @@ module Jsapi
         Schema.new(schema).call do
           property 'foo', type: 'string'
         end
-        property = schema.properties(definitions)['foo']
+        property = schema.properties['foo']
         assert_predicate(property.schema, :string?)
       end
 
@@ -117,7 +111,7 @@ module Jsapi
             items type: 'string'
           end
         end
-        property = schema.properties(definitions)['foo']
+        property = schema.properties['foo']
         assert_predicate(property.schema.items, :string?)
       end
 
@@ -126,7 +120,10 @@ module Jsapi
         error = assert_raises Error do
           Schema.new(schema).call { property 'foo' }
         end
-        assert_equal("'property' isn't allowed for 'array' (at 'foo')", error.message)
+        assert_equal(
+          "property isn't supported for 'array' (at property \"foo\")",
+          error.message
+        )
       end
 
       private

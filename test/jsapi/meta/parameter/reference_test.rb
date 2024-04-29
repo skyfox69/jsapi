@@ -8,35 +8,40 @@ module Jsapi
       class ReferenceTest < Minitest::Test
         def test_resolve
           parameter = definitions.add_parameter('foo')
-          reference = Reference.new('foo')
+          reference = Reference.new(parameter: 'foo')
           assert_equal(parameter, reference.resolve(definitions))
         end
 
-        def test_raises_exception_on_invalid_reference
+        def test_resolve_raises_an_exception_on_unresolvable_name
           assert_raises(ReferenceError) do
-            Reference.new('foo').resolve(Definitions.new)
+            Reference.new(parameter: 'foo').resolve(Definitions.new)
           end
         end
 
-        # OpenAPI 2.0 tests
+        # OpenAPI tests
 
-        def test_openapi_2_0_parameter
+        def test_openapi_parameters
           definitions.add_parameter('foo', type: 'string')
-          reference = Reference.new('foo')
+          reference = Reference.new(parameter: 'foo')
 
+          # OpenAPI 2.0
           assert_equal(
-            [
-              { '$ref': '#/parameters/foo' }
-            ],
+            [{ '$ref': '#/parameters/foo' }],
             reference.to_openapi_parameters('2.0', definitions)
+          )
+          # OpenAPI 3.0
+          assert_equal(
+            [{ '$ref': '#/components/parameters/foo' }],
+            reference.to_openapi_parameters('3.0', definitions)
           )
         end
 
-        def test_openapi_2_0_object_parameter
+        def test_openapi_parameters_on_object
           parameter = definitions.add_parameter('foo', type: 'object')
           parameter.schema.add_property('bar', type: 'string')
-          reference = Reference.new('foo')
+          reference = Reference.new(parameter: 'foo')
 
+          # OpenAPI 2.0
           assert_equal(
             [
               {
@@ -48,27 +53,7 @@ module Jsapi
             ],
             reference.to_openapi_parameters('2.0', definitions)
           )
-        end
-
-        # OpenAPI 3.0 tests
-
-        def test_openapi_3_0_parameter
-          definitions.add_parameter('foo', type: 'string')
-          reference = Reference.new('foo')
-
-          assert_equal(
-            [
-              { '$ref': '#/components/parameters/foo' }
-            ],
-            reference.to_openapi_parameters('3.0', definitions)
-          )
-        end
-
-        def test_openapi_3_0_object_parameter
-          parameter = definitions.add_parameter('foo', type: 'object')
-          parameter.schema.add_property('bar', type: 'string')
-          reference = Reference.new('foo')
-
+          # OpenAPI 3.0
           assert_equal(
             [
               {

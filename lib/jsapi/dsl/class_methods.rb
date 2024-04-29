@@ -10,32 +10,56 @@ module Jsapi
         @api_definitions
       end
 
-      # See Definitions#include
-      def api_include(*classes)
-        api_definitions { include(*classes) }
+      # Includes API definitions from +klasses+.
+      def api_include(*klasses)
+        api_definitions { include(*klasses) }
       end
 
-      # See Definitions#operation
+      # Defines an operation.
+      #
+      #   api_operation 'foo', path: '/foo' do
+      #     parameter 'bar', type: 'string'
+      #     response do
+      #       property 'foo', type: 'string'
+      #     end
+      #   end
+      #
+      # +name+ can be +nil+ if the controller handles one operation only.
       def api_operation(name = nil, **options, &block)
         api_definitions { operation(name, **options, &block) }
       end
 
-      # See Definitions#parameter
+      # Defines a reusable parameter.
+      #
+      #   api_parameter 'foo', type: 'string'
+      #
       def api_parameter(name, **options, &block)
         api_definitions { parameter(name, **options, &block) }
       end
 
-      # See Definitions#rescue_from
+      # Specifies the HTTP status code of an error response rendered when an
+      # exception of any of +klasses+ has been raised.
+      #
+      #   api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
+      #
       def api_rescue_from(*klasses, with: nil)
         api_definitions { rescue_from(*klasses, with: with) }
       end
 
-      # See Definitions#response
+      # Defines a reusable response.
+      #
+      #   api_response 'Foo', type: 'object' do
+      #     property 'bar', type: 'string'
+      #   end
       def api_response(name, **options, &block)
         api_definitions { response(name, **options, &block) }
       end
 
-      # See Definitions#schema
+      # Defines a reusable schema.
+      #
+      #   api_schema 'Foo' do
+      #     property 'bar', type: 'string'
+      #   end
       def api_schema(name, **options, &block)
         api_definitions { schema(name, **options, &block) }
       end

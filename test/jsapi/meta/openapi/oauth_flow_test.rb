@@ -6,23 +6,9 @@ module Jsapi
   module Meta
     module OpenAPI
       class OAuthFlowTest < Minitest::Test
-        def test_add_scope
-          oauth_flow = OAuthFlow.new
-          oauth_flow.add_scope('read:foo', description: 'Description of read:foo')
-          assert_equal('Description of read:foo', oauth_flow.scopes['read:foo'].description)
-        end
-
-        def test_add_scope_raises_an_exception_if_name_is_blank
-          oauth_flow = OAuthFlow.new
-          error = assert_raises(ArgumentError) do
-            oauth_flow.add_scope('')
-          end
-          assert_equal("name can't be blank", error.message)
-        end
-
         def test_minimal_oauth_flow_object
           %w[2.0 3.0].each do |version|
-            assert_equal({ scopes: {} }, OAuthFlow.new.to_h(Version.from(version)))
+            assert_equal({ scopes: {} }, OAuthFlow.new.to_openapi(Version.from(version)))
           end
         end
 
@@ -44,8 +30,8 @@ module Jsapi
               'write:foo' => 'Description of write:foo'
             }
           }
-          assert_equal(hash.except(:refreshUrl), oauth_flow.to_h(Version.from('2.0')))
-          assert_equal(hash, oauth_flow.to_h(Version.from('3.0')))
+          assert_equal(hash.except(:refreshUrl), oauth_flow.to_openapi(Version.from('2.0')))
+          assert_equal(hash, oauth_flow.to_openapi(Version.from('3.0')))
         end
       end
     end

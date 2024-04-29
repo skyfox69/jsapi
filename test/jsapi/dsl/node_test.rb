@@ -3,7 +3,7 @@
 module Jsapi
   module DSL
     class NodeTest < Minitest::Test
-      def test_generic_keyword
+      def test_method_missing
         dummy = Class.new do
           attr_accessor :foo
         end.new
@@ -11,7 +11,31 @@ module Jsapi
         assert_equal('bar', dummy.foo)
       end
 
-      def test_generic_keyword_with_block
+      def test_method_missing_on_array
+        dummy = Class.new do
+          attr_reader :foos
+
+          def add_foo(value)
+            (@foos ||= []) << value
+          end
+        end.new
+        Node.new(dummy).call { foo 'bar' }
+        assert_equal(%w[bar], dummy.foos)
+      end
+
+      def test_method_missing_on_hash
+        dummy = Class.new do
+          attr_reader :foos
+
+          def add_foo(key, value)
+            (@foos ||= {})[key] = value
+          end
+        end.new
+        Node.new(dummy).call { foo 'foo', 'bar' }
+        assert_equal('bar', dummy.foos['foo'])
+      end
+
+      def test_method_missing_with_block
         dummy = Class.new do
           attr_reader :foo
 
@@ -27,19 +51,7 @@ module Jsapi
         assert_equal('bar', dummy.foo.bar)
       end
 
-      def test_generic_array_keyword
-        dummy = Class.new do
-          attr_reader :foos
-
-          def add_foo(value)
-            (@foos ||= []) << value
-          end
-        end.new
-        Node.new(dummy).call { foo 'bar' }
-        assert_equal(%w[bar], dummy.foos)
-      end
-
-      def test_generic_array_keyword_with_block
+      def test_method_missing_with_block_on_array
         dummy = Class.new do
           attr_reader :foos
 
@@ -57,19 +69,7 @@ module Jsapi
         assert_equal(%w[bar], dummy.foos.map(&:bar))
       end
 
-      def test_generic_hash_keyword
-        dummy = Class.new do
-          attr_reader :foos
-
-          def add_foo(key, value)
-            (@foos ||= {})[key] = value
-          end
-        end.new
-        Node.new(dummy).call { foo 'foo', 'bar' }
-        assert_equal('bar', dummy.foos['foo'])
-      end
-
-      def test_generic_hash_keyword_with_block
+      def test_method_missing_with_block_on_hash
         dummy = Class.new do
           attr_reader :foos
 
@@ -86,22 +86,6 @@ module Jsapi
         assert_equal('bar', dummy.foos['foo'].bar)
       end
 
-      def test_raises_exception_on_invalid_keyword
-        node = Node.new(Class.new.new)
-        error = assert_raises do
-          node.call { foo 'bar' }
-        end
-        assert_equal("invalid keyword: 'foo'", error.message)
-      end
-
-      def test_raises_exception_on_invalid_nested_keyword
-        node = Node.new(Class.new { attr_writer :foo }.new)
-        error = assert_raises do
-          node.call { foo('bar') { bar 'foo' } }
-        end
-        assert_equal("invalid keyword: 'bar' (at foo)", error.message)
-      end
-
       def test_respond_to
         dummy = Class.new do
           attr_writer :foo
@@ -109,6 +93,19 @@ module Jsapi
         node = Node.new(dummy)
         assert(node.respond_to?(:foo))
         assert(!node.respond_to?(:bar))
+      end
+
+      def test_raises_exception_on_unsupported_method
+        node = Node.new(Class.new { attr_writer :foo }.new)
+        error = assert_raises do
+          node.call { bar 'foo' }
+        end
+        assert_equal('unsupported method: bar', error.message)
+
+        error = assert_raises do
+          node.call { foo('bar') { bar 'foo' } }
+        end
+        assert_equal('unsupported method: bar (at foo)', error.message)
       end
     end
   end

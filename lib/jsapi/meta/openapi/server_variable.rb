@@ -4,16 +4,28 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents a server variable object.
-      class ServerVariable < Object
-        attr_accessor :default, :description, :enum
+      class ServerVariable < Base
+        ##
+        # :attr: default
+        # The default value of the server variable.
+        attribute :default, String
 
-        # TODO: validates :default, presence: true
+        ##
+        # :attr: description
+        # The optional description of the server variable.
+        attribute :description, String
 
-        def to_h
+        ##
+        # :attr: enum
+        # The values of the server variable.
+        attribute :enum, [String]
+
+        # Returns a hash representing the server variable object.
+        def to_openapi
           {
-            enum: Array(enum).presence,
-            default: default&.to_s,
-            description: description&.to_s
+            default: default,
+            enum: enum.presence, # must not be empty
+            description: description
           }.compact
         end
       end

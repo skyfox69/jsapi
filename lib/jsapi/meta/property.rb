@@ -2,26 +2,44 @@
 
 module Jsapi
   module Meta
-    class Property
-      attr_accessor :name, :source
-      attr_reader :schema
-      attr_writer :deprecated
+    class Property < Base
+      ##
+      # :attr: deprecated
+      # Specifies whether or not the property is deprecated.
+      attribute :deprecated, values: [true, false]
 
-      delegate :to_json_schema, :to_openapi_schema, to: :schema
+      ##
+      # :attr_reader: name
+      # The name of the property.
+      attribute :name, writer: false
 
-      def initialize(name, **options)
+      ##
+      # :attr_reader: schema
+      # The Schema of the parameter.
+      attribute :schema, writer: false
+
+      ##
+      # :attr: source
+      # The alternative method to read a property value when serializing
+      # an object.
+      attribute :source, Symbol
+
+      delegate_missing_to :schema
+
+      # Creates a new property.
+      #
+      # Raises an +ArgumentError+ if +name+ is blank.
+      def initialize(name, keywords = {})
         raise ArgumentError, "property name can't be blank" if name.blank?
 
+        keywords = keywords.dup
+        super(keywords.extract!(:deprecated, :source))
+
         @name = name.to_s
-        @deprecated = options[:deprecated] == true
-        @source = options[:source]
-        @schema = Schema.new(**options.except(:deprecated, :source))
+        @schema = Schema.new(keywords)
       end
 
-      def deprecated?
-        @deprecated == true
-      end
-
+      # Returns true if the property is required, false otherwise.
       def required?
         schema.existence > Existence::ALLOW_OMITTED
       end
