@@ -321,6 +321,7 @@ end
 - `:description` - A description of the response.
 - `:example` - See [Defining examples](#defining-examples).
 - `:deprecated` - Specifies whether or not the response is deprecated.
+- `:links` - The linked operations.
 
 ### Defining properties
 

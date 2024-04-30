@@ -136,7 +136,7 @@ module Jsapi
       end
 
       def add_parameter(name, keywords = {}) # :nodoc:
-        (@parameters ||= {})[name.to_s] = Parameter.new(name, **keywords)
+        (@parameters ||= {})[name.to_s] = Parameter.new(name, keywords)
       end
 
       # Returns a hash representing the \OpenAPI operation object.

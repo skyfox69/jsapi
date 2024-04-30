@@ -15,7 +15,12 @@ module Jsapi
         attribute :examples, { String => Example }, default_key: 'default'
 
         ##
-        # :attr:
+        # :attr: links
+        # The optional OpenAPI::Link objects.
+        attribute :links, { String => OpenAPI::Link }
+
+        ##
+        # :attr: locale
         # The locale used when rendering a response.
         attribute :locale, Symbol
 
@@ -34,6 +39,13 @@ module Jsapi
           add_example(value: keywords.delete(:example)) if keywords.key?(:example)
 
           @schema = Schema.new(**keywords)
+        end
+
+        def add_link(key, keywords = {}) # :nodoc:
+          raise ArgumentError, "key can't be blank" if key.blank?
+
+          keywords = keywords.reverse_merge(operation_id: key)
+          (@links ||= {})[key.to_s] = OpenAPI::Link.new(keywords)
         end
 
         # Returns itself.
@@ -62,7 +74,8 @@ module Jsapi
                   schema: schema.to_openapi_schema(version),
                   examples: examples&.transform_values(&:to_openapi_example)
                 }.compact
-              }
+              },
+              links: links&.transform_values(&:to_openapi)
             }
           end.compact
         end
