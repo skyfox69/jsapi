@@ -16,6 +16,11 @@ module Jsapi
         attribute :default
 
         ##
+        # :attr: deprecated
+        # Specifies whether or not the schema is deprecated.
+        attribute :deprecated, values: [true, false]
+
+        ##
         # :attr: description
         # The optional description of the schema.
         attribute :description, ::String
@@ -40,6 +45,11 @@ module Jsapi
         # The level of Existence. The default level of existence
         # is +ALLOW_OMITTED+.
         attribute :existence, Existence, default: Existence::ALLOW_OMITTED
+
+        ##
+        # :attr: title
+        # The optional title of the schema.
+        attribute :title, String
 
         ##
         # :attr_reader: type
@@ -78,9 +88,11 @@ module Jsapi
         def to_json_schema
           {
             type: nullable? ? [type, 'null'] : type,
+            title: title,
             description: description,
             default: default,
-            examples: examples.presence
+            examples: examples.presence,
+            deprecated: deprecated?.presence
           }.tap do |hash|
             validations.each_value do |validation|
               hash.merge!(validation.to_json_schema_validation)
@@ -102,15 +114,18 @@ module Jsapi
             {
               type: type,
               nullable: nullable?.presence,
-              examples: examples
+              examples: examples,
+              deprecated: deprecated?.presence
             }
           else
             # OpenAPI 3.1
             {
               type: nullable? ? [type, 'null'] : type,
-              examples: examples
+              examples: examples,
+              deprecated: deprecated?.presence
             }
           end.tap do |hash|
+            hash[:title] = title
             hash[:description] = description
             hash[:default] = default
             hash[:externalDocs] = external_docs&.to_openapi

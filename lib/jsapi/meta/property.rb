@@ -4,11 +4,6 @@ module Jsapi
   module Meta
     class Property < Base
       ##
-      # :attr: deprecated
-      # Specifies whether or not the property is deprecated.
-      attribute :deprecated, values: [true, false]
-
-      ##
       # :attr_reader: name
       # The name of the property.
       attribute :name, writer: false
@@ -33,7 +28,7 @@ module Jsapi
         raise ArgumentError, "property name can't be blank" if name.blank?
 
         keywords = keywords.dup
-        super(keywords.extract!(:deprecated, :source))
+        super(keywords.extract!(:source))
 
         @name = name.to_s
         @schema = Schema.new(keywords)

@@ -28,20 +28,35 @@ module Jsapi
 
         # JSON Schema tests
 
-        def test_json_schema_object
+        def test_minimal_json_schema_object
+          schema = Schema.new(
+            type: 'string',
+            existence: true
+          )
+          assert_equal(
+            { type: 'string' },
+            schema.to_json_schema
+          )
+        end
+
+        def test_full_json_schema_object
           schema = Schema.new(
             type: 'string',
             existence: true,
-            description: 'Foo',
+            title: 'Title of foo',
+            description: 'Description of foo',
             default: 'foo',
-            example: 'bar'
+            example: 'bar',
+            deprecated: true
           )
           assert_equal(
             {
               type: 'string',
-              description: 'Foo',
+              title: 'Title of foo',
+              description: 'Description of foo',
               default: 'foo',
-              examples: %w[bar]
+              examples: %w[bar],
+              deprecated: true
             },
             schema.to_json_schema
           )
@@ -140,9 +155,11 @@ module Jsapi
           schema = Schema.new(
             type: 'string',
             existence: true,
-            description: 'Foo',
+            title: 'Title of foo',
+            description: 'Description of foo',
             default: 'foo',
             example: 'bar',
+            deprecated: true,
             external_docs: {
               url: 'https://foo.bar/docs'
             }
@@ -151,7 +168,8 @@ module Jsapi
           assert_equal(
             {
               type: 'string',
-              description: 'Foo',
+              title: 'Title of foo',
+              description: 'Description of foo',
               default: 'foo',
               example: 'bar',
               externalDocs: {
@@ -164,9 +182,11 @@ module Jsapi
           assert_equal(
             {
               type: 'string',
-              description: 'Foo',
+              title: 'Title of foo',
+              description: 'Description of foo',
               default: 'foo',
               examples: %w[bar],
+              deprecated: true,
               externalDocs: {
                 url: 'https://foo.bar/docs'
               }
@@ -177,9 +197,11 @@ module Jsapi
           assert_equal(
             {
               type: 'string',
-              description: 'Foo',
+              title: 'Title of foo',
+              description: 'Description of foo',
               default: 'foo',
               examples: %w[bar],
+              deprecated: true,
               externalDocs: {
                 url: 'https://foo.bar/docs'
               }

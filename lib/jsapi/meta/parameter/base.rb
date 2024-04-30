@@ -162,7 +162,7 @@ module Jsapi
                     required: required,
                     allowEmptyValue: allow_empty_value.presence,
                     deprecated: deprecated,
-                    schema: property_schema.to_openapi_schema(version),
+                    schema: property_schema.to_openapi_schema(version).except(:deprecated),
                     examples: examples&.transform_values(&:to_openapi_example)
                   }
                 end.compact

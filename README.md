@@ -267,6 +267,7 @@ end
 - `:items` - See [The items option](#the-items-option).
 - `:format` - See [The format option](#the-format-option).
 - `:in` - The location of the parameter.
+- `:title` - The title of the parameter.
 - `:description` - A description of the parameter.
 - `:example` - See [Defining examples](#defining-examples).
 - `:deprecated` - Specifies whether or not the parameter is deprecated.
@@ -291,6 +292,7 @@ end
 - `:schema` - See [Reusable schemas](#reusable-schemas)
 - `:existence` - See [The existence option](#the-existence-option).
 - `:default` - The default value.
+- `:title` - The title of the request body.
 - `:description` - A description of the request body.
 - `:example` - See [Defining examples](#defining-examples).
 - `:deprecated` - Specifies whether or not the request body is deprecated.
@@ -315,6 +317,7 @@ end
 - `:items` - See [The items option](#the-items-option).
 - `:format` - See [The format option](#the-format-option).
 - `:locale` - The locale used when rendering the response.
+- `:title` - The title of the response.
 - `:description` - A description of the response.
 - `:example` - See [Defining examples](#defining-examples).
 - `:deprecated` - Specifies whether or not the response is deprecated.
@@ -346,6 +349,7 @@ end
 - `:model` - See [API models](#api-models).
 - `:items` - See [The items option](#the-items-option).
 - `:format` - See [The format option](#the-format-option).
+- `:title` - The title of the property.
 - `:description` - A description of the property.
 - `:example` - See [Defining examples](#defining-examples).
 - `:deprecated` - Specifies whether or not the property is deprecated.

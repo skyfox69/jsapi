@@ -308,7 +308,8 @@ module Jsapi
             'bar',
             type: 'string',
             existence: true,
-            description: 'Description of foo'
+            description: 'Description of foo',
+            deprecated: true # expected to be omitted
           )
 
           # OpenAPI 2.0
