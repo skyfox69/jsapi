@@ -25,10 +25,7 @@ module Jsapi
           link = response.add_link('bar', operation_id: 'foo')
           assert(link.equal?(response.link('bar')))
           assert_equal('foo', link.operation_id)
-        end
 
-        def test_add_link_raises_an_exception_on_blank_key
-          response = Base.new(type: 'string')
           error = assert_raises(ArgumentError) do
             response.add_link('')
           end
@@ -66,6 +63,7 @@ module Jsapi
 
         def test_full_openapi_response_object
           response = Base.new(type: 'string', existence: false, example: 'foo')
+          response.add_link('foo')
 
           # OpenAPI 2.0
           assert_equal(
@@ -93,6 +91,11 @@ module Jsapi
                       value: 'foo'
                     }
                   }
+                }
+              },
+              links: {
+                'foo' => {
+                  operationId: 'foo'
                 }
               }
             },
