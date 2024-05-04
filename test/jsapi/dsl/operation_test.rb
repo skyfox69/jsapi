@@ -3,17 +3,23 @@
 module Jsapi
   module DSL
     class OperationTest < Minitest::Test
+      def test_method
+        operation = Meta::Operation.new('foo')
+        Operation.new(operation).call { method 'post' }
+        assert_equal('post', operation.method)
+      end
+
       # Model tests
 
       def test_model
         foo = Class.new(Model::Base)
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call { model foo }
         assert_equal(foo, operation.model)
       end
 
       def test_model_with_block
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call do
           model do
             def foo
@@ -28,7 +34,7 @@ module Jsapi
 
       def test_model_with_class_and_block
         foo = Class.new(Model::Base)
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call do
           model foo do
             def foo
@@ -44,7 +50,7 @@ module Jsapi
       # Parameter tests
 
       def test_parameter
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call do
           parameter 'foo', type: 'string'
         end
@@ -53,7 +59,7 @@ module Jsapi
       end
 
       def test_parameter_with_block
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call do
           parameter 'foo', type: 'object' do
             property 'bar', type: 'string'
@@ -67,7 +73,7 @@ module Jsapi
       end
 
       def test_parameter_reference
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call { parameter 'foo' }
 
         reference = operation.parameters['foo']
@@ -75,7 +81,7 @@ module Jsapi
       end
 
       def test_raises_exception_on_invalid_parameter_type
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         assert_raises Error do
           Operation.new(operation).call { parameter 'foo', type: 'bar' }
         end
@@ -84,7 +90,7 @@ module Jsapi
       # Request body tests
 
       def test_request_body
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call do
           request_body type: 'object' do
             property 'foo', type: 'string'
@@ -98,7 +104,7 @@ module Jsapi
       end
 
       def test_request_body_reference
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call do
           request_body schema: 'Foo'
         end
@@ -107,7 +113,7 @@ module Jsapi
       end
 
       def test_raises_exception_on_invalid_request_body_type
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         assert_raises Error do
           Operation.new(operation).call { request_body type: 'foo' }
         end
@@ -116,7 +122,7 @@ module Jsapi
       # Response tests
 
       def test_response
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call do
           response do
             property 'foo', type: 'string'
@@ -127,7 +133,7 @@ module Jsapi
       end
 
       def test_response_with_status
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call do
           response 200 do
             property 'foo', type: 'string'
@@ -141,7 +147,7 @@ module Jsapi
       end
 
       def test_response_with_schema_reference
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call do
           response schema: 'Foo'
         end
@@ -150,7 +156,7 @@ module Jsapi
       end
 
       def test_response_reference
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call { response 'Foo' }
 
         reference = operation.response('default')
@@ -158,7 +164,7 @@ module Jsapi
       end
 
       def test_response_reference_with_status
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         Operation.new(operation).call { response 200, 'Foo' }
 
         reference = operation.response(200)
@@ -166,7 +172,7 @@ module Jsapi
       end
 
       def test_raises_exception_on_invalid_response_type
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         assert_raises Error do
           Operation.new(operation).call { response type: 'foo' }
         end
@@ -176,7 +182,7 @@ module Jsapi
         message = 'name cannot be specified together with keywords ' \
                   'or a block (at response 200)'
 
-        operation = Meta::Operation.new('operation')
+        operation = Meta::Operation.new('foo')
         error = assert_raises Error do
           Operation.new(operation).call do
             response 200, 'Foo', type: 'object'

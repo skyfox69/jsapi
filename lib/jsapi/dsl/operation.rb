@@ -5,6 +5,11 @@ module Jsapi
     # Used to specify details of an operation.
     class Operation < Node
 
+      # Overrides Object#method
+      def method(method) # :nodoc:
+        method_missing(:method, method)
+      end
+
       # Specifies the model class to access top-level parameters by.
       #
       #   model Foo do
@@ -29,16 +34,17 @@ module Jsapi
       #
       #   parameter 'foo', type: 'string'
       #
-      # Refers to the reusable parameter with the same name if neither
-      # any keywords nor a block is specified.
-      #
-      #   parameter 'foo'
-      #
       # Nested object parameters can be defined within the block.
       #
       #   parameter 'foo' do
       #     property 'bar', type: 'string'
       #   end
+      #
+      # Refers to the reusable parameter with the same name if neither
+      # any keywords nor a block is specified.
+      #
+      #   parameter 'foo'
+      #
       def parameter(name, **keywords, &block)
         define('parameter', name) do
           keywords = { reference: true } unless keywords.any? || block

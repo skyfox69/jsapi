@@ -26,7 +26,7 @@ module Jsapi
       #
       # +name+ can be +nil+ if the controller handles one operation only.
       def operation(name = nil, **keywords, &block)
-        define('operation', name.inspect) do
+        define('operation', name&.inspect) do
           operation_model = _meta_model.add_operation(name, **keywords)
           Operation.new(operation_model).call(&block) if block
         end
