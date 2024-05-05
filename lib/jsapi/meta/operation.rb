@@ -4,6 +4,11 @@ module Jsapi
   module Meta
     class Operation < Base
       ##
+      # :attr: callbacks
+      # The optional callbacks. Applies to \OpenAPI 3.x.
+      attribute :callbacks, { String => OpenAPI::Callback }
+
+      ##
       # :attr: consumed_mime_types
       # The MIME types consumed by the operation.
       # Applies to \OpenAPI 2.0 only.
@@ -172,6 +177,12 @@ module Jsapi
           # Responses
           hash[:responses] = responses.transform_values do |response|
             response.to_openapi_response(version)
+          end
+          # Callbacks
+          if callbacks && version.major > 2
+            hash[:callbacks] = callbacks.transform_values do |callback|
+              callback.to_openapi(version, definitions)
+            end
           end
         end.compact
       end

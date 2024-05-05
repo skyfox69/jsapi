@@ -8,13 +8,13 @@ module Jsapi
       class ReferenceTest < Minitest::Test
         def test_resolve
           parameter = definitions.add_parameter('foo')
-          reference = Reference.new(parameter: 'foo')
+          reference = Reference.new(ref: 'foo')
           assert_equal(parameter, reference.resolve(definitions))
         end
 
         def test_resolve_raises_an_exception_on_unresolvable_name
           assert_raises(ReferenceError) do
-            Reference.new(parameter: 'foo').resolve(Definitions.new)
+            Reference.new(ref: 'foo').resolve(Definitions.new)
           end
         end
 
@@ -22,7 +22,7 @@ module Jsapi
 
         def test_openapi_parameters
           definitions.add_parameter('foo', type: 'string')
-          reference = Reference.new(parameter: 'foo')
+          reference = Reference.new(ref: 'foo')
 
           # OpenAPI 2.0
           assert_equal(
@@ -39,7 +39,7 @@ module Jsapi
         def test_openapi_parameters_on_object
           parameter = definitions.add_parameter('foo', type: 'object')
           parameter.schema.add_property('bar', type: 'string')
-          reference = Reference.new(parameter: 'foo')
+          reference = Reference.new(ref: 'foo')
 
           # OpenAPI 2.0
           assert_equal(

@@ -7,25 +7,28 @@ module Jsapi
     module OpenAPI
       class RootTest < Minitest::Test
         def test_minimal_openapi_object
+          definitions = Definitions.new
           root = Root.new
+
           # OpenAPI 2.0
           assert_equal(
             { swagger: '2.0' },
-            root.to_openapi(Version.from('2.0'))
+            root.to_openapi(Version.from('2.0'), definitions)
           )
           # OpenAPI 3.0
           assert_equal(
             { openapi: '3.0.3' },
-            root.to_openapi(Version.from('3.0'))
+            root.to_openapi(Version.from('3.0'), definitions)
           )
           # OpenAPI 3.1
           assert_equal(
             { openapi: '3.1.0' },
-            root.to_openapi(Version.from('3.1'))
+            root.to_openapi(Version.from('3.1'), definitions)
           )
         end
 
         def test_full_openapi_object
+          definitions = Definitions.new
           root = Root.new(
             info: {
               title: 'Foo',
@@ -50,6 +53,8 @@ module Jsapi
               url: 'https://foo.bar/docs'
             }
           )
+          root.add_callback('foo').add_operation('{$request.query.foo}', 'bar')
+          root.add_link('foo', operation_id: 'foo')
           root.add_security_scheme('http_basic', type: 'basic')
           root.add_security.add_scheme('http_basic')
 
@@ -83,7 +88,7 @@ module Jsapi
                 url: 'https://foo.bar/docs'
               }
             },
-            root.to_openapi(Version.from('2.0'))
+            root.to_openapi(Version.from('2.0'), definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -99,6 +104,22 @@ module Jsapi
                 }
               ],
               components: {
+                callbacks: {
+                  'foo' => {
+                    '{$request.query.foo}' => {
+                      'get' => {
+                        operationId: 'bar',
+                        parameters: [],
+                        responses: {}
+                      }
+                    }
+                  }
+                },
+                links: {
+                  'foo' => {
+                    operationId: 'foo'
+                  }
+                },
                 securitySchemes: {
                   'http_basic' => {
                     type: 'http',
@@ -120,7 +141,7 @@ module Jsapi
                 url: 'https://foo.bar/docs'
               }
             },
-            root.to_openapi(Version.from('3.0'))
+            root.to_openapi(Version.from('3.0'), definitions)
           )
           # OpenAPI 3.1
           assert_equal(
@@ -136,6 +157,22 @@ module Jsapi
                 }
               ],
               components: {
+                callbacks: {
+                  'foo' => {
+                    '{$request.query.foo}' => {
+                      'get' => {
+                        operationId: 'bar',
+                        parameters: [],
+                        responses: {}
+                      }
+                    }
+                  }
+                },
+                links: {
+                  'foo' => {
+                    operationId: 'foo'
+                  }
+                },
                 securitySchemes: {
                   'http_basic' => {
                     type: 'http',
@@ -157,7 +194,7 @@ module Jsapi
                 url: 'https://foo.bar/docs'
               }
             },
-            root.to_openapi(Version.from('3.1'))
+            root.to_openapi(Version.from('3.1'), definitions)
           )
         end
       end

@@ -9,11 +9,9 @@ module Jsapi
       class << self
         # Creates a new response or response reference.
         def new(keywords = {})
-          if keywords[:response].present?
-            Reference.new(keywords)
-          else
-            Base.new(keywords)
-          end
+          return Reference.new(keywords) if keywords.key?(:ref)
+
+          Base.new(keywords)
         end
       end
     end

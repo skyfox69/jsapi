@@ -41,13 +41,6 @@ module Jsapi
           @schema = Schema.new(**keywords)
         end
 
-        def add_link(key, keywords = {}) # :nodoc:
-          raise ArgumentError, "key can't be blank" if key.blank?
-
-          keywords = keywords.reverse_merge(operation_id: key)
-          (@links ||= {})[key.to_s] = OpenAPI::Link.new(keywords)
-        end
-
         # Returns itself.
         def resolve(*)
           self

@@ -5,6 +5,27 @@ module Jsapi
     # Used to specify details of an operation.
     class Operation < Node
 
+      # Defines a callback. This method can be used to define a callback in
+      # place or to refer a reusable callback.
+      #
+      #   callback 'foo' do
+      #     operation '{$request.query.foo}', 'bar'
+      #   end
+      #
+      #   callback ref: 'foo'
+      #
+      # Refers to the reusable callback with the same name if neither any
+      # keywords nor a block is specified.
+      def callback(name = nil, **keywords, &block)
+        define('callback', name&.inspect) do
+          name = keywords[:ref] if name.nil?
+          keywords = { ref: name } unless keywords.any? || block
+
+          callback_model = _meta_model.add_callback(name, keywords)
+          Node.new(callback_model).call(&block) if block
+        end
+      end
+
       # Overrides Object#method
       def method(method) # :nodoc:
         method_missing(:method, method)
@@ -34,6 +55,8 @@ module Jsapi
       #
       #   parameter 'foo', type: 'string'
       #
+      #   parameter ref: 'foo'
+      #
       # Nested object parameters can be defined within the block.
       #
       #   parameter 'foo' do
@@ -42,12 +65,11 @@ module Jsapi
       #
       # Refers to the reusable parameter with the same name if neither
       # any keywords nor a block is specified.
-      #
-      #   parameter 'foo'
-      #
-      def parameter(name, **keywords, &block)
-        define('parameter', name) do
-          keywords = { reference: true } unless keywords.any? || block
+      def parameter(name = nil, **keywords, &block)
+        define('parameter', name&.inspect) do
+          name = keywords[:ref] if name.nil?
+          keywords = { ref: name } unless keywords.any? || block
+
           parameter_model = _meta_model.add_parameter(name, keywords)
           Parameter.new(parameter_model).call(&block) if block
         end
@@ -56,7 +78,7 @@ module Jsapi
       # Defines the request body.
       #
       #   request_body do
-      #     property 'bar', type: 'string'
+      #     property 'foo', type: 'string'
       #   end
       def request_body(**keywords, &block)
         define('request body') do
@@ -69,15 +91,15 @@ module Jsapi
       # place or to refer a reusable response.
       #
       #   response 200 do
-      #     property 'bar', type: 'string'
+      #     property 'foo', type: 'string'
       #   end
+      #
+      #   response 200, ref: 'foo'
       #
       # The default status is <code>"default"</code>.
       #
       # Refers to the reusable response with the same name if neither any
       # keywords nor a block is specified.
-      #
-      #   response 200, 'Foo'
       def response(status_or_name = nil, name = nil, **keywords, &block)
         define('response', status_or_name) do
           raise Error, 'name cannot be specified together with keywords ' \
@@ -87,7 +109,7 @@ module Jsapi
             status = status_or_name
           else
             status = status_or_name if name
-            keywords = { response: name || status_or_name }
+            keywords = { ref: name || status_or_name }
           end
           response_model = _meta_model.add_response(status, keywords)
           Response.new(response_model).call(&block) if block

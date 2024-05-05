@@ -16,22 +16,6 @@ module Jsapi
           assert_equal('foo', response.example.value)
         end
 
-        def test_links
-          response = Base.new(type: 'string')
-          link = response.add_link('foo')
-          assert(link.equal?(response.link('foo')))
-          assert_equal('foo', link.operation_id)
-
-          link = response.add_link('bar', operation_id: 'foo')
-          assert(link.equal?(response.link('bar')))
-          assert_equal('foo', link.operation_id)
-
-          error = assert_raises(ArgumentError) do
-            response.add_link('')
-          end
-          assert_equal("key can't be blank", error.message)
-        end
-
         # OpenAPI tests
 
         def test_minimal_openapi_response_object
@@ -63,7 +47,7 @@ module Jsapi
 
         def test_full_openapi_response_object
           response = Base.new(type: 'string', existence: false, example: 'foo')
-          response.add_link('foo')
+          response.add_link('foo', operation_id: 'foo')
 
           # OpenAPI 2.0
           assert_equal(

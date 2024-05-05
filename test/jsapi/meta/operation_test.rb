@@ -69,6 +69,8 @@ module Jsapi
         )
         operation.add_parameter('bar', type: 'string', in: 'query')
         operation.add_response(type: 'string')
+        callback = operation.add_callback('onBar')
+        callback.add_operation('{$request.query.bar}', 'bar')
         operation.add_security.add_scheme('http_basic')
 
         # OpenAPI 2.0
@@ -155,6 +157,17 @@ module Jsapi
                       type: 'string',
                       nullable: true
                     }
+                  }
+                }
+              }
+            },
+            callbacks: {
+              'onBar' => {
+                '{$request.query.bar}' => {
+                  'get' => {
+                    operationId: 'bar',
+                    parameters: [],
+                    responses: {}
                   }
                 }
               }

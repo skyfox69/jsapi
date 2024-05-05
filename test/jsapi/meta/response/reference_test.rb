@@ -8,20 +8,20 @@ module Jsapi
       class ReferenceTest < Minitest::Test
         def test_resolve
           response = definitions.add_response('Foo')
-          reference = Reference.new(response: 'Foo')
+          reference = Reference.new(ref: 'Foo')
           assert_equal(response, reference.resolve(definitions))
         end
 
         def test_resolve_raises_an_exception_on_unresolvable_name
           assert_raises(ReferenceError) do
-            Reference.new(response: 'foo').resolve(Definitions.new)
+            Reference.new(ref: 'foo').resolve(Definitions.new)
           end
         end
 
-        # OpenAPI 2.0 tests
+        # OpenAPI tests
 
         def test_openapi_response
-          reference = Reference.new(response: 'foo')
+          reference = Reference.new(ref: 'foo')
 
           # OpenAPI 2.0
           assert_equal(

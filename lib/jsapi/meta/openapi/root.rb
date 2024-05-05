@@ -6,6 +6,11 @@ module Jsapi
       # Represents an \OpenAPI object.
       class Root < Base
         ##
+        # :attr: callbacks
+        # The reusable Callback objects. Applies to \OpenAPI 3.x.
+        attribute :callbacks, { String => Callback }
+
+        ##
         # :attr: base_path
         # The base path of the API. Applies to \OpenAPI 2.0.
         attribute :base_path, String
@@ -35,6 +40,11 @@ module Jsapi
         attribute :info, Info
 
         ##
+        # :attr: links
+        # The reusable Link objects. Applies to \OpenAPI 3.x.
+        attribute :links, { String => Link }
+
+        ##
         # :attr: produces
         # The MIME types the API can produce. Applies to \OpenAPI 2.0.
         attribute :produced_mime_types, [String]
@@ -53,7 +63,7 @@ module Jsapi
         # - <code>"ws"</code>
         # - <code>"wss"</code>
         #
-        # Applies to \OpenAPI 2.0 only.
+        # Applies to \OpenAPI 2.0.
         attribute :schemes, [String], values: %w[http https ws wss]
 
         ##
@@ -70,7 +80,7 @@ module Jsapi
 
         ##
         # :attr: servers
-        # The array of Server objects. Applies to \OpenAPI 3.0. and higher.
+        # The array of Server objects. Applies to \OpenAPI 3.x.
         attribute :servers, [Server]
 
         ##
@@ -79,7 +89,7 @@ module Jsapi
         attribute :tags, [Tag]
 
         # Returns a hash representing the \OpenAPI object.
-        def to_openapi(version)
+        def to_openapi(version, definitions)
           security_schemes =
             self.security_schemes&.transform_values do |value|
               value.to_openapi(version)
@@ -105,6 +115,10 @@ module Jsapi
               info: info&.to_openapi,
               servers: servers&.map(&:to_openapi),
               components: {
+                callbacks: callbacks&.transform_values do |callback|
+                  callback.to_openapi(version, definitions)
+                end,
+                links: links&.transform_values(&:to_openapi),
                 securitySchemes: security_schemes
               }.compact.presence,
               security: security_requirements&.map(&:to_openapi),

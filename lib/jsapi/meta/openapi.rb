@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'openapi/version'
+require_relative 'openapi/callback'
 require_relative 'openapi/contact'
 require_relative 'openapi/license'
 require_relative 'openapi/info'

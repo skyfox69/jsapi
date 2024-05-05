@@ -6,35 +6,14 @@ module Jsapi
   module Meta
     module OpenAPI
       class LinkTest < Minitest::Test
-        def test_empty_link_object
-          assert_equal({}, Link.new.to_openapi)
+        def test_new
+          link = Link.new
+          assert_kind_of(Link::Base, link)
         end
 
-        def test_full_link_object
-          link = Link.new(
-            operation_id: 'foo',
-            description: 'Description of foo',
-            request_body: 'bar',
-            server: {
-              url: 'https://foo.bar/foo'
-            }
-          )
-          link.add_parameter(:bar, nil)
-
-          assert_equal(
-            {
-              operationId: 'foo',
-              parameters: {
-                'bar' => nil
-              },
-              request_body: 'bar',
-              description: 'Description of foo',
-              server: {
-                url: 'https://foo.bar/foo'
-              }
-            },
-            link.to_openapi
-          )
+        def test_new_reference
+          link = Link.new(ref: 'foo')
+          assert_kind_of(Link::Reference, link)
         end
       end
     end

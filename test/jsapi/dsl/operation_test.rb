@@ -9,6 +9,48 @@ module Jsapi
         assert_equal('post', operation.method)
       end
 
+      # Callback tests
+
+      def test_callback
+        operation = Meta::Operation.new('foo')
+        Operation.new(operation).call do
+          callback 'foo' do
+            operation '{$request.query.foo}', 'bar'
+          end
+        end
+        assert_equal(
+          { '{$request.query.foo}' => 'bar' },
+          operation.callback('foo').operations.transform_values(&:name)
+        )
+      end
+
+      def test_callback_reference
+        operation = Meta::Operation.new('foo')
+        Operation.new(operation).call { callback ref: 'foo' }
+        assert_equal('foo', operation.callback('foo').ref)
+      end
+
+      def test_callback_reference_by_name
+        operation = Meta::Operation.new('foo')
+        Operation.new(operation).call { callback 'foo' }
+        assert_equal('foo', operation.callback('foo').ref)
+      end
+
+      def test_callback_raises_an_exception_on_ambiguous_keywords
+        operation = Meta::Operation.new('foo')
+        error = assert_raises(Error) do
+          Operation.new(operation).call do
+            callback 'foo', ref: 'bar' do
+              operation '{$request.query.foo}', 'bar'
+            end
+          end
+        end
+        assert_equal(
+          'unsupported method: operation (at callback "foo")',
+          error.message
+        )
+      end
+
       # Model tests
 
       def test_model
@@ -74,17 +116,34 @@ module Jsapi
 
       def test_parameter_reference
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call { parameter 'foo' }
-
-        reference = operation.parameters['foo']
-        assert_equal('foo', reference.parameter)
+        Operation.new(operation).call { parameter ref: 'foo' }
+        assert_equal('foo', operation.parameters['foo'].ref)
       end
 
-      def test_raises_exception_on_invalid_parameter_type
+      def test_parameter_reference_by_name
         operation = Meta::Operation.new('foo')
-        assert_raises Error do
+        Operation.new(operation).call { parameter 'foo' }
+        assert_equal('foo', operation.parameters['foo'].ref)
+      end
+
+      def test_parameter_raises_an_exception_on_invalid_type
+        operation = Meta::Operation.new('foo')
+        assert_raises(Error) do
           Operation.new(operation).call { parameter 'foo', type: 'bar' }
         end
+      end
+
+      def test_parameter_raises_an_exception_on_ambiguous_keywords
+        operation = Meta::Operation.new('foo')
+        error = assert_raises(Error) do
+          Operation.new(operation).call do
+            parameter 'foo', ref: 'bar', type: 'string'
+          end
+        end
+        assert_equal(
+          'unsupported keyword: type (at parameter "foo")',
+          error.message
+        )
       end
 
       # Request body tests
@@ -112,9 +171,9 @@ module Jsapi
         assert_equal('Foo', request_body.schema.schema)
       end
 
-      def test_raises_exception_on_invalid_request_body_type
+      def test_request_body_raises_an_exception_on_invalid_type
         operation = Meta::Operation.new('foo')
-        assert_raises Error do
+        assert_raises(Error) do
           Operation.new(operation).call { request_body type: 'foo' }
         end
       end
@@ -158,39 +217,35 @@ module Jsapi
       def test_response_reference
         operation = Meta::Operation.new('foo')
         Operation.new(operation).call { response 'Foo' }
-
-        reference = operation.response('default')
-        assert_equal('Foo', reference.response)
+        assert_equal('Foo', operation.response('default').ref)
       end
 
       def test_response_reference_with_status
         operation = Meta::Operation.new('foo')
         Operation.new(operation).call { response 200, 'Foo' }
-
-        reference = operation.response(200)
-        assert_equal('Foo', reference.response)
+        assert_equal('Foo', operation.response(200).ref)
       end
 
-      def test_raises_exception_on_invalid_response_type
+      def test_response_raises_an_exception_on_invalid_type
         operation = Meta::Operation.new('foo')
-        assert_raises Error do
+        assert_raises(Error) do
           Operation.new(operation).call { response type: 'foo' }
         end
       end
 
-      def test_raises_exception_on_invalid_response_arguments
+      def test_response_raises_an_exception_on_invalid_arguments
         message = 'name cannot be specified together with keywords ' \
                   'or a block (at response 200)'
 
         operation = Meta::Operation.new('foo')
-        error = assert_raises Error do
+        error = assert_raises(Error) do
           Operation.new(operation).call do
             response 200, 'Foo', type: 'object'
           end
         end
         assert_equal(message, error.message)
 
-        error = assert_raises Error do
+        error = assert_raises(Error) do
           Operation.new(operation).call do
             response 200, 'Foo' do
               property 'foo', type: 'string'

@@ -9,11 +9,9 @@ module Jsapi
       class << self
         # Creates a new parameter or parameter reference.
         def new(name, keywords = {})
-          if keywords[:reference] == true
-            Reference.new(parameter: name)
-          else
-            Base.new(name, keywords)
-          end
+          return Reference.new(keywords) if keywords.key?(:ref)
+
+          Base.new(name, keywords)
         end
       end
     end

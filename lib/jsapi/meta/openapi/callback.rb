@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
-require_relative 'link/base'
-require_relative 'link/reference'
+require_relative 'callback/base'
+require_relative 'callback/reference'
 
 module Jsapi
   module Meta
     module OpenAPI
-      module Link
+      module Callback
         class << self
-          # Creates a link or a link reference.
+          # Creates a callback or a callback reference.
           def new(keywords = {})
             return Reference.new(keywords) if keywords.key?(:ref)
 

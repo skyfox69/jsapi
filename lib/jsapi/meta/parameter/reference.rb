@@ -5,17 +5,17 @@ module Jsapi
     module Parameter
       class Reference < Meta::Base
         ##
-        # :attr_reader:
+        # :attr_reader: ref
         # The name of the referred parameter.
-        attribute :parameter, String
+        attribute :ref, String
 
         # Resolves the reference by looking up the reusable parameter with
         # the given name in +definitions+.
         #
         # Raises a ReferenceError if the reference could not be resolved.
         def resolve(definitions)
-          parameter = definitions.parameter(self.parameter)
-          raise ReferenceError, self.parameter if parameter.nil?
+          parameter = definitions.parameter(ref)
+          raise ReferenceError, ref if parameter.nil?
 
           parameter
         end
@@ -37,7 +37,7 @@ module Jsapi
             # Return an array containing the reference object
             path = version.major == 2 ? 'parameters' : 'components/parameters'
 
-            [{ '$ref': "#/#{path}/#{self.parameter}" }]
+            [{ '$ref': "#/#{path}/#{ref}" }]
           end
         end
       end
