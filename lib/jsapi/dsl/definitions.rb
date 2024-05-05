@@ -27,7 +27,7 @@ module Jsapi
       # +name+ can be +nil+ if the controller handles one operation only.
       def operation(name = nil, **keywords, &block)
         define('operation', name&.inspect) do
-          operation_model = _meta_model.add_operation(name, **keywords)
+          operation_model = _meta_model.add_operation(name, keywords)
           Operation.new(operation_model).call(&block) if block
         end
       end
@@ -38,7 +38,7 @@ module Jsapi
       #
       def parameter(name, **keywords, &block)
         define('parameter', name.inspect) do
-          parameter_model = _meta_model.add_parameter(name, **keywords)
+          parameter_model = _meta_model.add_parameter(name, keywords)
           Parameter.new(parameter_model).call(&block) if block
         end
       end
@@ -61,7 +61,7 @@ module Jsapi
       #   end
       def response(name, **keywords, &block)
         define('response', name.inspect) do
-          response_model = _meta_model.add_response(name, **keywords)
+          response_model = _meta_model.add_response(name, keywords)
           Response.new(response_model).call(&block) if block
         end
       end
@@ -73,7 +73,7 @@ module Jsapi
       #   end
       def schema(name, **keywords, &block)
         define('schema', name.inspect) do
-          schema_model = _meta_model.add_schema(name, **keywords)
+          schema_model = _meta_model.add_schema(name, keywords)
           Schema.new(schema_model).call(&block) if block
         end
       end

@@ -15,28 +15,28 @@ module Jsapi
         @self_and_included = [self]
       end
 
-      def add_operation(name = nil, **options)
+      def add_operation(name = nil, keywords = {})
         name = name.nil? ? default_operation_name : name.to_s
-        @operations[name] = Operation.new(name, **options.reverse_merge(path: default_path))
+        @operations[name] = Operation.new(name, keywords.reverse_merge(path: default_path))
       end
 
-      def add_parameter(name, **options)
+      def add_parameter(name, keywords = {})
         name = name.to_s
-        @parameters[name] = Parameter.new(name, **options)
+        @parameters[name] = Parameter.new(name, keywords)
       end
 
       def add_rescue_handler(klass, status: nil)
         @rescue_handlers << RescueHandler.new(klass, status: status)
       end
 
-      def add_response(name, **options)
+      def add_response(name, keywords = {})
         name = name.to_s
-        @responses[name] = Response.new(**options)
+        @responses[name] = Response.new(keywords)
       end
 
-      def add_schema(name, **options)
+      def add_schema(name, keywords = {})
         name = name.to_s
-        @schemas[name] = Schema.new(**options)
+        @schemas[name] = Schema.new(keywords)
       end
 
       def include(definitions)

@@ -101,7 +101,7 @@ module Jsapi
       # Refers to the reusable response with the same name if neither any
       # keywords nor a block is specified.
       def response(status_or_name = nil, name = nil, **keywords, &block)
-        define('response', status_or_name) do
+        define('response', status_or_name&.inspect) do
           raise Error, 'name cannot be specified together with keywords ' \
                        'or a block' if name && (keywords.any? || block)
 

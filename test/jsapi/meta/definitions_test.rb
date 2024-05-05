@@ -7,10 +7,6 @@ module Jsapi
     class DefinitionsTest < Minitest::Test
       class FooBarController; end
 
-      def setup
-        @api_definitions = Definitions.new(FooBarController)
-      end
-
       # Include tests
 
       def test_include
@@ -31,94 +27,94 @@ module Jsapi
       # Operation tests
 
       def test_add_operation
-        @api_definitions.add_operation('foo')
-        assert(@api_definitions.operations.key?('foo'))
+        definitions.add_operation('foo')
+        assert(definitions.operations.key?('foo'))
       end
 
       def test_default_operation_name
-        @api_definitions.add_operation
-        assert_equal(%w[foo_bar], @api_definitions.operations.keys)
+        definitions.add_operation
+        assert_equal(%w[foo_bar], definitions.operations.keys)
       end
 
       def test_default_operation_path
-        @api_definitions.add_operation
-        assert_equal('/foo_bar', @api_definitions.operation.path)
+        definitions.add_operation
+        assert_equal('/foo_bar', definitions.operation.path)
       end
 
       def test_operation
-        assert_nil(@api_definitions.operation(nil))
+        assert_nil(definitions.operation(nil))
 
-        @api_definitions.add_operation('foo')
-        assert_equal('foo', @api_definitions.operation.name)
-        assert_equal('foo', @api_definitions.operation('foo').name)
+        definitions.add_operation('foo')
+        assert_equal('foo', definitions.operation.name)
+        assert_equal('foo', definitions.operation('foo').name)
       end
 
       # Parameter tests
 
       def test_add_parameter
-        @api_definitions.add_parameter('foo')
-        assert(@api_definitions.parameters.key?('foo'))
+        definitions.add_parameter('foo')
+        assert(definitions.parameters.key?('foo'))
       end
 
       def test_parameter
-        assert_nil(@api_definitions.parameter(nil))
-        assert_nil(@api_definitions.parameter('foo'))
+        assert_nil(definitions.parameter(nil))
+        assert_nil(definitions.parameter('foo'))
 
-        @api_definitions.add_parameter('foo')
-        assert_equal('foo', @api_definitions.parameter('foo').name)
+        definitions.add_parameter('foo')
+        assert_equal('foo', definitions.parameter('foo').name)
       end
 
       # Rescue handlers tests
 
       def test_rescue_handler_for
-        @api_definitions.add_rescue_handler(Controller::ParametersInvalid, status: 400)
-        @api_definitions.add_rescue_handler(StandardError, status: 500)
+        definitions.add_rescue_handler(Controller::ParametersInvalid, status: 400)
+        definitions.add_rescue_handler(StandardError, status: 500)
 
         error = Controller::ParametersInvalid.new(Model::Base.new({}))
-        assert_equal(400, @api_definitions.rescue_handler_for(error).status)
+        assert_equal(400, definitions.rescue_handler_for(error).status)
 
         error = StandardError.new
-        assert_equal(500, @api_definitions.rescue_handler_for(error).status)
+        assert_equal(500, definitions.rescue_handler_for(error).status)
 
         error = Exception.new
-        assert_nil(@api_definitions.rescue_handler_for(error))
+        assert_nil(definitions.rescue_handler_for(error))
       end
 
       # Response tests
 
       def test_add_response
-        @api_definitions.add_response('Foo')
-        assert(@api_definitions.responses.key?('Foo'))
+        definitions.add_response('Foo')
+        assert(definitions.responses.key?('Foo'))
       end
 
       def test_response
-        assert_nil(@api_definitions.response(nil))
-        assert_nil(@api_definitions.response('Foo'))
+        assert_nil(definitions.response(nil))
+        assert_nil(definitions.response('Foo'))
 
-        @api_definitions.add_response('Foo')
-        assert_predicate(@api_definitions.response('Foo'), :present?)
+        definitions.add_response('Foo')
+        assert_predicate(definitions.response('Foo'), :present?)
       end
 
       # Schema tests
 
       def test_add_schema
-        @api_definitions.add_schema('Foo')
-        assert(@api_definitions.schemas.key?('Foo'))
+        definitions.add_schema('Foo')
+        assert(definitions.schemas.key?('Foo'))
       end
 
       def test_schema
-        assert_nil(@api_definitions.schema(nil))
-        assert_nil(@api_definitions.schema('Foo'))
+        assert_nil(definitions.schema(nil))
+        assert_nil(definitions.schema('Foo'))
 
-        @api_definitions.add_schema('Foo')
-        assert_predicate(@api_definitions.schema('Foo'), :present?)
+        definitions.add_schema('Foo')
+        assert_predicate(definitions.schema('Foo'), :present?)
       end
 
       # JSON Schema document tests
 
       def test_json_schema_document
-        @api_definitions.add_schema('Foo').add_property('bar', type: 'string')
-        @api_definitions.add_schema('Bar').add_property('foo', schema: 'Foo')
+        definitions.add_schema('Foo').add_property('bar', type: 'string')
+        definitions.add_schema('Bar').add_property('foo', schema: 'Foo')
 
         # 'Foo'
         assert_equal(
@@ -142,7 +138,7 @@ module Jsapi
               }
             }
           },
-          @api_definitions.json_schema_document('Foo')
+          definitions.json_schema_document('Foo')
         )
 
         # 'Bar'
@@ -167,15 +163,15 @@ module Jsapi
               }
             }
           },
-          @api_definitions.json_schema_document('Bar')
+          definitions.json_schema_document('Bar')
         )
 
         # Others
-        assert_nil(@api_definitions.json_schema_document('FooBar'))
+        assert_nil(definitions.json_schema_document('FooBar'))
       end
 
       def test_json_schema_document_without_definitions
-        @api_definitions.add_schema('Foo').add_property('bar', type: 'string')
+        definitions.add_schema('Foo').add_property('bar', type: 'string')
 
         assert_equal(
           {
@@ -187,23 +183,26 @@ module Jsapi
             },
             required: []
           },
-          @api_definitions.json_schema_document('Foo')
+          definitions.json_schema_document('Foo')
         )
       end
 
       # OpenAPI document tests
 
-      def test_empty_openapi_2_0_document
-        assert_equal({}, @api_definitions.openapi_document)
+      def test_empty_openapi_document
+        %w[2.0 3.0 3.1].each do |version|
+          assert_equal({}, definitions.openapi_document(version))
+        end
       end
 
-      def test_openapi_2_0_document
-        @api_definitions.openapi = { info: { title: 'Foo', version: '1' } }
-        @api_definitions.add_operation('operation', path: '/bar')
-        @api_definitions.add_parameter('parameter', type: 'string')
-        @api_definitions.add_response('response', type: 'string')
-        @api_definitions.add_schema('schema')
+      def test_full_openapi_document
+        definitions.openapi = { info: { title: 'Foo', version: '1' } }
+        definitions.add_operation('operation', path: '/bar')
+        definitions.add_parameter('parameter', type: 'string')
+        definitions.add_response('response', type: 'string')
+        definitions.add_schema('schema')
 
+        # OpenAPI 2.0
         assert_equal(
           {
             swagger: '2.0',
@@ -243,31 +242,9 @@ module Jsapi
               }
             }
           },
-          @api_definitions.openapi_document('2.0')
+          definitions.openapi_document('2.0')
         )
-      end
-
-      def test_minimal_openapi_2_0_document
-        @api_definitions.openapi = { info: { title: 'Foo', version: '1' } }
-        assert_equal(
-          {
-            swagger: '2.0',
-            info: {
-              title: 'Foo',
-              version: '1'
-            }
-          },
-          @api_definitions.openapi_document('2.0')
-        )
-      end
-
-      def test_openapi_3_0_document
-        @api_definitions.openapi = { info: { title: 'Foo', version: '1' } }
-        @api_definitions.add_operation('operation', path: '/bar')
-        @api_definitions.add_parameter('parameter', type: 'string')
-        @api_definitions.add_response('response', type: 'string')
-        @api_definitions.add_schema('schema')
-
+        # OpenAPI 3.0
         assert_equal(
           {
             openapi: '3.0.3',
@@ -318,22 +295,14 @@ module Jsapi
               }
             }
           },
-          @api_definitions.openapi_document('3.0')
+          definitions.openapi_document('3.0')
         )
       end
 
-      def test_minimal_openapi_3_0_document
-        @api_definitions.openapi = { info: { title: 'Foo', version: '1' } }
-        assert_equal(
-          {
-            openapi: '3.0.3',
-            info: {
-              title: 'Foo',
-              version: '1'
-            }
-          },
-          @api_definitions.openapi_document('3.0')
-        )
+      private
+
+      def definitions
+        @definitions ||= Definitions.new(FooBarController)
       end
     end
   end
