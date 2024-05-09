@@ -169,7 +169,7 @@ module Jsapi
           end
           if request_body
             if version.major == 2
-              hash[:parameters] << request_body.to_openapi_parameter
+              hash[:parameters] << request_body.resolve(definitions).to_openapi_parameter
             else
               hash[:request_body] = request_body.to_openapi_request_body(version)
             end

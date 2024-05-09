@@ -79,11 +79,6 @@ module Jsapi
           existence <= Existence::ALLOW_NIL
         end
 
-        # Returns itself.
-        def resolve(*)
-          self
-        end
-
         # Returns a hash representing the \JSON \Schema object.
         def to_json_schema
           {

@@ -37,6 +37,14 @@ module Jsapi
         api_definitions { parameter(name, **options, &block) }
       end
 
+      # Defines a reusable request body.
+      #
+      #   api_request_body 'foo', type: 'string'
+      #
+      def api_request_body(name, **options, &block)
+        api_definitions { request_body(name, **options, &block) }
+      end
+
       # Specifies the HTTP status code of an error response rendered when an
       # exception of any of +klasses+ has been raised.
       #

@@ -68,11 +68,6 @@ module Jsapi
           schema.existence > Existence::ALLOW_OMITTED || self.in == 'path'
         end
 
-        # Returns itself.
-        def resolve(*)
-          self
-        end
-
         # Returns the \OpenAPI parameter objects as an array of hashes.
         def to_openapi_parameters(version, definitions)
           version = OpenAPI::Version.from(version)

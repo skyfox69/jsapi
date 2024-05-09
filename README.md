@@ -169,17 +169,17 @@ The following class methods are provided to define API components:
 
 - [api_operation](#defining-api-operations) - Defines a single API operation.
 - [api_parameter](#defining-reusable-parameters) - Defines a reusable parameter.
+- [api_response_body](#defining-reusable-request-bodies) - Defines a reusable request body.
 - [api_response](#defining-reusable-responses) - Defines a reusable response.
 - [api_schema](#defining-reusable-schemas) - Defines a reusable schema.
 - [api_rescue_from](#defining-rescue-handlers) - Defines a rescue handler.
 - api_include - Includes API definitions from other classes.
 
 These methods can be integrated into a controller class by inheriting from
-`Jsapi::Controller::Base` or including `Jsapi::DSL`. The `Jsapi::DSL` module
-can also be included in any other class.
+`Jsapi::Controller::Base` or including `Jsapi::DSL`. The `Jsapi::DSL` module can
+also be included in any other class.
 
-API components can also be defined inside an `api_definitions` block,
-for example:
+API components can also be defined inside an `api_definitions` block, for example:
 
 ```ruby
 api_definitions do
@@ -449,18 +449,33 @@ api_operation do
 end
 ```
 
+### Reusable request bodies
+
+The `api_request_body` method defines a request body that ca be used in
+multiple operations.
+
+```ruby
+api_request_body 'foo' do
+  property 'bar', type: 'string'
+end
+
+api_operation do
+  request_body 'foo'
+end
+```
+
 ### Reusable responses
 
 The `api_response` method defines a response that can be used in
 multiple operations.
 
 ```ruby
-api_response 'Foo' do
+api_response 'foo' do
   property 'bar', type: 'string'
 end
 
 api_operation do
-  response 'Foo'
+  response 'foo'
 end
 ```
 

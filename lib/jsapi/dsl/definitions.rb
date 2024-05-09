@@ -43,6 +43,17 @@ module Jsapi
         end
       end
 
+      # Defines a reusable request body.
+      #
+      #   request_body 'foo', type: 'string'
+      #
+      def request_body(name, **keywords, &block)
+        define('request_body', name.inspect) do
+          request_body_model = _meta_model.add_request_body(name, keywords)
+          RequestBody.new(request_body_model).call(&block) if block
+        end
+      end
+
       # Specifies the HTTP status code of an error response rendered when an
       # exception of any of +klasses+ has been raised.
       #

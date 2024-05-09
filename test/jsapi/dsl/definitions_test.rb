@@ -64,10 +64,12 @@ module Jsapi
       end
 
       def test_parameter
-        Definitions.new(definitions).call { parameter 'foo', type: 'string' }
+        Definitions.new(definitions).call do
+          parameter 'foo', type: 'string'
+        end
         parameter = definitions.parameter('foo')
         assert_predicate(parameter, :present?)
-        assert_equal('string', parameter.schema.type)
+        assert_equal('string', parameter.type)
       end
 
       def test_parameter_with_block
@@ -81,6 +83,26 @@ module Jsapi
         assert_equal('Description of foo', parameter.description)
       end
 
+      def test_request_body
+        Definitions.new(definitions).call do
+          request_body 'foo', type: 'string'
+        end
+        request_body = definitions.request_body('foo')
+        assert_predicate(request_body, :present?)
+        assert_equal('string', request_body.type)
+      end
+
+      def test_request_body_with_block
+        Definitions.new(definitions).call do
+          request_body 'foo' do
+            description 'Description of foo'
+          end
+        end
+        request_body = definitions.request_body('foo')
+        assert_predicate(request_body, :present?)
+        assert_equal('Description of foo', request_body.description)
+      end
+
       def test_recue_from
         Definitions.new(definitions).call do
           rescue_from StandardError, with: 500
@@ -90,33 +112,33 @@ module Jsapi
       end
 
       def test_response
-        Definitions.new(definitions).call { response 'Foo' }
-        assert_predicate(definitions.response('Foo'), :present?)
+        Definitions.new(definitions).call { response 'foo' }
+        assert_predicate(definitions.response('foo'), :present?)
       end
 
       def test_response_with_block
         Definitions.new(definitions).call do
-          response 'Foo' do
+          response 'foo' do
             description 'Description of foo'
           end
         end
-        response = definitions.response('Foo')
+        response = definitions.response('foo')
         assert_predicate(response, :present?)
         assert_equal('Description of foo', response.description)
       end
 
       def test_schema
-        Definitions.new(definitions).call { schema 'Foo' }
-        assert_predicate(definitions.schema('Foo'), :present?)
+        Definitions.new(definitions).call { schema 'foo' }
+        assert_predicate(definitions.schema('foo'), :present?)
       end
 
       def test_schema_with_block
         Definitions.new(definitions).call do
-          schema 'Foo' do
+          schema 'foo' do
             description 'Description of foo'
           end
         end
-        schema = definitions.schema('Foo')
+        schema = definitions.schema('foo')
         assert_predicate(schema, :present?)
         assert_equal('Description of foo', schema.description)
       end

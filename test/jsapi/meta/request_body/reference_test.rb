@@ -4,12 +4,12 @@ require 'test_helper'
 
 module Jsapi
   module Meta
-    module Response
+    module RequestBody
       class ReferenceTest < Minitest::Test
         def test_resolve
-          response = definitions.add_response('foo')
+          request_body = definitions.add_request_body('foo')
           reference = Reference.new(ref: 'foo')
-          assert_equal(response, reference.resolve(definitions))
+          assert_equal(request_body, reference.resolve(definitions))
         end
 
         def test_resolve_raises_an_exception_on_unresolvable_name
@@ -20,18 +20,11 @@ module Jsapi
 
         # OpenAPI tests
 
-        def test_openapi_response
+        def test_openapi_request_body
           reference = Reference.new(ref: 'foo')
-
-          # OpenAPI 2.0
           assert_equal(
-            { '$ref': '#/responses/foo' },
-            reference.to_openapi_response('2.0')
-          )
-          # OpenAPI 3.0 tests
-          assert_equal(
-            { '$ref': '#/components/responses/foo' },
-            reference.to_openapi_response('3.0')
+            { '$ref': '#/components/requestBodies/foo' },
+            reference.to_openapi_request_body('3.0')
           )
         end
 

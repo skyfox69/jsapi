@@ -36,6 +36,15 @@ module Jsapi
         assert_predicate(definitions.parameter('foo'), :present?)
       end
 
+      def test_api_request_body
+        foo_class = Class.new do
+          extend ClassMethods
+          api_request_body 'foo'
+        end
+        definitions = foo_class.api_definitions
+        assert_predicate(definitions.request_body('foo'), :present?)
+      end
+
       def test_api_rescue_from
         foo_class = Class.new do
           extend ClassMethods

@@ -11,7 +11,7 @@ module Jsapi
       end
 
       def test_new_reference
-        response = Response.new(ref: 'Foo')
+        response = Response.new(ref: 'foo')
         assert_kind_of(Response::Reference, response)
       end
     end

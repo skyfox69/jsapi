@@ -41,11 +41,6 @@ module Jsapi
           @schema = Schema.new(**keywords)
         end
 
-        # Returns itself.
-        def resolve(*)
-          self
-        end
-
         # Returns a hash representing the \OpenAPI response object.
         def to_openapi_response(version)
           version = OpenAPI::Version.from(version)

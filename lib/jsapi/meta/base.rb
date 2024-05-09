@@ -26,6 +26,11 @@ module Jsapi
           end.join(', ')
         }>"
       end
+
+      # Returns itself.
+      def resolve(*)
+        self
+      end
     end
   end
 end

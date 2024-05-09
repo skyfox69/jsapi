@@ -24,7 +24,7 @@ module Jsapi
         definitions.include(definitions)
       end
 
-      # Operation tests
+      # Operations tests
 
       def test_add_operation
         definitions.add_operation('foo')
@@ -49,7 +49,7 @@ module Jsapi
         assert_equal('foo', definitions.operation('foo').name)
       end
 
-      # Parameter tests
+      # Reusable parameters tests
 
       def test_add_parameter
         definitions.add_parameter('foo')
@@ -62,6 +62,51 @@ module Jsapi
 
         definitions.add_parameter('foo')
         assert_equal('foo', definitions.parameter('foo').name)
+      end
+
+      # Reusable request bodies tests
+
+      def test_add_request_body
+        definitions.add_request_body('foo')
+        assert(definitions.request_bodies.key?('foo'))
+      end
+
+      def test_request_body
+        assert_nil(definitions.request_body(nil))
+        assert_nil(definitions.request_body('foo'))
+
+        definitions.add_request_body('foo')
+        assert_predicate(definitions.request_body('foo'), :present?)
+      end
+
+      # Reusable responses tests
+
+      def test_add_response
+        definitions.add_response('Foo')
+        assert(definitions.responses.key?('Foo'))
+      end
+
+      def test_response
+        assert_nil(definitions.response(nil))
+        assert_nil(definitions.response('Foo'))
+
+        definitions.add_response('Foo')
+        assert_predicate(definitions.response('Foo'), :present?)
+      end
+
+      # Reusable schemas tests
+
+      def test_add_schema
+        definitions.add_schema('Foo')
+        assert(definitions.schemas.key?('Foo'))
+      end
+
+      def test_schema
+        assert_nil(definitions.schema(nil))
+        assert_nil(definitions.schema('Foo'))
+
+        definitions.add_schema('Foo')
+        assert_predicate(definitions.schema('Foo'), :present?)
       end
 
       # Rescue handlers tests
@@ -78,36 +123,6 @@ module Jsapi
 
         error = Exception.new
         assert_nil(definitions.rescue_handler_for(error))
-      end
-
-      # Response tests
-
-      def test_add_response
-        definitions.add_response('Foo')
-        assert(definitions.responses.key?('Foo'))
-      end
-
-      def test_response
-        assert_nil(definitions.response(nil))
-        assert_nil(definitions.response('Foo'))
-
-        definitions.add_response('Foo')
-        assert_predicate(definitions.response('Foo'), :present?)
-      end
-
-      # Schema tests
-
-      def test_add_schema
-        definitions.add_schema('Foo')
-        assert(definitions.schemas.key?('Foo'))
-      end
-
-      def test_schema
-        assert_nil(definitions.schema(nil))
-        assert_nil(definitions.schema('Foo'))
-
-        definitions.add_schema('Foo')
-        assert_predicate(definitions.schema('Foo'), :present?)
       end
 
       # JSON Schema document tests
@@ -199,6 +214,7 @@ module Jsapi
         definitions.openapi = { info: { title: 'Foo', version: '1' } }
         definitions.add_operation('operation', path: '/bar')
         definitions.add_parameter('parameter', type: 'string')
+        definitions.add_request_body('request_body', type: 'string')
         definitions.add_response('response', type: 'string')
         definitions.add_schema('schema')
 
@@ -279,6 +295,19 @@ module Jsapi
                     nullable: true
                   },
                   allowEmptyValue: true
+                }
+              },
+              requestBodies: {
+                'request_body' => {
+                  content: {
+                    'application/json' => {
+                      schema: {
+                        type: 'string',
+                        nullable: true
+                      }
+                    }
+                  },
+                  required: false
                 }
               },
               responses: {
