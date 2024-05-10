@@ -27,13 +27,15 @@ module Jsapi
       #   items do
       #     property 'foo', type: 'string'
       #   end
+      #
+      # Raises an Error if type is other than <code>"array"</code>.
       def items(**keywords, &block)
         unless _meta_model.respond_to?(:items=)
           raise Error, "items isn't supported for '#{_meta_model.type}'"
         end
 
         _meta_model.items = keywords
-        Schema.new(_meta_model.items).call(&block) if block
+        Schema.new(_meta_model.items, &block) if block
       end
 
       # Specifies the model class to access nested object parameters by.
@@ -47,6 +49,8 @@ module Jsapi
       # +klass+ can be any subclass of Model::Base. If block is given, an
       # anonymous class is created that inherits either from +klass+ or
       # Model::Base.
+      #
+      # Raises an Error if type is other than <code>"object"</code>.
       def model(klass = nil, &block)
         unless _meta_model.respond_to?(:model=)
           raise Error, "model isn't supported for '#{_meta_model.type}'"
@@ -62,6 +66,8 @@ module Jsapi
       # Defines a property
       #
       #   property 'foo', type: 'string'
+      #
+      # Raises an Error if type is other than <code>"object"</code>.
       def property(name, **keywords, &block)
         define('property', name.inspect) do
           unless _meta_model.respond_to?(:add_property)
@@ -69,7 +75,7 @@ module Jsapi
           end
 
           property_model = _meta_model.add_property(name, keywords)
-          Schema.new(property_model).call(&block) if block
+          Schema.new(property_model, &block) if block
         end
       end
     end

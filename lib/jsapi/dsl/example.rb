@@ -9,7 +9,7 @@ module Jsapi
       #
       # The default name is <code>'default'</code>.
       def example(name_or_value = nil, **keywords, &block)
-        define('example', name_or_value) do
+        define('example', name_or_value&.inspect) do
           if keywords.any? || block
             # example 'foo', value: 'bar', ...
             name = name_or_value
@@ -20,7 +20,7 @@ module Jsapi
           end
 
           example = _meta_model.add_example(name, keywords)
-          Node.new(example).call(&block) if block
+          Node.new(example, &block) if block
         end
       end
     end

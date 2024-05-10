@@ -5,7 +5,7 @@ module Jsapi
     class OperationTest < Minitest::Test
       def test_method
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call { method 'post' }
+        Operation.new(operation) { method 'post' }
         assert_equal('post', operation.method)
       end
 
@@ -13,7 +13,7 @@ module Jsapi
 
       def test_callback
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call do
+        Operation.new(operation) do
           callback 'foo' do
             operation '{$request.query.foo}', 'bar'
           end
@@ -26,20 +26,20 @@ module Jsapi
 
       def test_callback_reference
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call { callback ref: 'foo' }
+        Operation.new(operation) { callback ref: 'foo' }
         assert_equal('foo', operation.callback('foo').ref)
       end
 
       def test_callback_reference_by_name
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call { callback 'foo' }
+        Operation.new(operation) { callback 'foo' }
         assert_equal('foo', operation.callback('foo').ref)
       end
 
       def test_callback_raises_an_exception_on_ambiguous_keywords
         operation = Meta::Operation.new('foo')
         error = assert_raises(Error) do
-          Operation.new(operation).call do
+          Operation.new(operation) do
             callback 'foo', ref: 'bar' do
               operation '{$request.query.foo}', 'bar'
             end
@@ -56,13 +56,13 @@ module Jsapi
       def test_model
         foo = Class.new(Model::Base)
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call { model foo }
+        Operation.new(operation) { model foo }
         assert_equal(foo, operation.model)
       end
 
       def test_model_with_block
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call do
+        Operation.new(operation) do
           model do
             def foo
               'bar'
@@ -77,7 +77,7 @@ module Jsapi
       def test_model_with_class_and_block
         foo = Class.new(Model::Base)
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call do
+        Operation.new(operation) do
           model foo do
             def foo
               'bar'
@@ -93,7 +93,7 @@ module Jsapi
 
       def test_parameter
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call do
+        Operation.new(operation) do
           parameter 'foo', type: 'string'
         end
         parameter = operation.parameters['foo']
@@ -102,7 +102,7 @@ module Jsapi
 
       def test_parameter_with_block
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call do
+        Operation.new(operation) do
           parameter 'foo', type: 'object' do
             property 'bar', type: 'string'
           end
@@ -116,27 +116,27 @@ module Jsapi
 
       def test_parameter_reference
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call { parameter ref: 'foo' }
+        Operation.new(operation) { parameter ref: 'foo' }
         assert_equal('foo', operation.parameters['foo'].ref)
       end
 
       def test_parameter_reference_by_name
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call { parameter 'foo' }
+        Operation.new(operation) { parameter 'foo' }
         assert_equal('foo', operation.parameters['foo'].ref)
       end
 
       def test_parameter_raises_an_exception_on_invalid_type
         operation = Meta::Operation.new('foo')
         assert_raises(Error) do
-          Operation.new(operation).call { parameter 'foo', type: 'bar' }
+          Operation.new(operation) { parameter 'foo', type: 'bar' }
         end
       end
 
       def test_parameter_raises_an_exception_on_ambiguous_keywords
         operation = Meta::Operation.new('foo')
         error = assert_raises(Error) do
-          Operation.new(operation).call do
+          Operation.new(operation) do
             parameter 'foo', ref: 'bar', type: 'string'
           end
         end
@@ -150,7 +150,7 @@ module Jsapi
 
       def test_request_body
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call do
+        Operation.new(operation) do
           request_body type: 'object' do
             property 'foo', type: 'string'
           end
@@ -164,7 +164,7 @@ module Jsapi
 
       def test_request_body_reference
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call do
+        Operation.new(operation) do
           request_body schema: 'Foo'
         end
         request_body = operation.request_body
@@ -174,7 +174,7 @@ module Jsapi
       def test_request_body_raises_an_exception_on_invalid_type
         operation = Meta::Operation.new('foo')
         assert_raises(Error) do
-          Operation.new(operation).call { request_body type: 'foo' }
+          Operation.new(operation) { request_body type: 'foo' }
         end
       end
 
@@ -182,7 +182,7 @@ module Jsapi
 
       def test_response
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call do
+        Operation.new(operation) do
           response do
             property 'foo', type: 'string'
           end
@@ -193,7 +193,7 @@ module Jsapi
 
       def test_response_with_status
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call do
+        Operation.new(operation) do
           response 200 do
             property 'foo', type: 'string'
           end
@@ -207,29 +207,29 @@ module Jsapi
 
       def test_response_with_schema_reference
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call do
-          response schema: 'Foo'
+        Operation.new(operation) do
+          response schema: 'foo'
         end
         response = operation.responses['default']
-        assert_equal('Foo', response.schema.schema)
+        assert_equal('foo', response.schema.schema)
       end
 
       def test_response_reference
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call { response 'Foo' }
-        assert_equal('Foo', operation.response('default').ref)
+        Operation.new(operation) { response 'foo' }
+        assert_equal('foo', operation.response('default').ref)
       end
 
       def test_response_reference_with_status
         operation = Meta::Operation.new('foo')
-        Operation.new(operation).call { response 200, 'Foo' }
-        assert_equal('Foo', operation.response(200).ref)
+        Operation.new(operation) { response 200, 'foo' }
+        assert_equal('foo', operation.response(200).ref)
       end
 
       def test_response_raises_an_exception_on_invalid_type
         operation = Meta::Operation.new('foo')
         assert_raises(Error) do
-          Operation.new(operation).call { response type: 'foo' }
+          Operation.new(operation) { response type: 'foo' }
         end
       end
 
@@ -239,16 +239,16 @@ module Jsapi
 
         operation = Meta::Operation.new('foo')
         error = assert_raises(Error) do
-          Operation.new(operation).call do
-            response 200, 'Foo', type: 'object'
+          Operation.new(operation) do
+            response 200, 'foo', type: 'object'
           end
         end
         assert_equal(message, error.message)
 
         error = assert_raises(Error) do
-          Operation.new(operation).call do
-            response 200, 'Foo' do
-              property 'foo', type: 'string'
+          Operation.new(operation) do
+            response 200, 'foo' do
+              property 'bar', type: 'string'
             end
           end
         end

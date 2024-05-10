@@ -21,7 +21,7 @@ module Jsapi
       end
 
       def test_openapi
-        Definitions.new(definitions).call do
+        Definitions.new(definitions) do
           openapi(info: { title: 'Foo', version: '1' })
         end
         assert_equal(
@@ -37,7 +37,7 @@ module Jsapi
       end
 
       def test_openapi_with_block
-        Definitions.new(definitions).call do
+        Definitions.new(definitions) do
           openapi { info title: 'Foo', version: '1' }
         end
         assert_equal(
@@ -53,18 +53,18 @@ module Jsapi
       end
 
       def test_operation_with_name
-        Definitions.new(definitions).call { operation 'foo' }
+        Definitions.new(definitions) { operation 'foo' }
         assert_predicate(definitions.operation('foo'), :present?)
       end
 
       def test_operation_without_name
         definitions = Meta::Definitions.new('Foo')
-        Definitions.new(definitions).call { operation }
+        Definitions.new(definitions) { operation }
         assert_predicate(definitions.operation('foo'), :present?)
       end
 
       def test_parameter
-        Definitions.new(definitions).call do
+        Definitions.new(definitions) do
           parameter 'foo', type: 'string'
         end
         parameter = definitions.parameter('foo')
@@ -73,7 +73,7 @@ module Jsapi
       end
 
       def test_parameter_with_block
-        Definitions.new(definitions).call do
+        Definitions.new(definitions) do
           parameter 'foo' do
             description 'Description of foo'
           end
@@ -84,7 +84,7 @@ module Jsapi
       end
 
       def test_request_body
-        Definitions.new(definitions).call do
+        Definitions.new(definitions) do
           request_body 'foo', type: 'string'
         end
         request_body = definitions.request_body('foo')
@@ -93,7 +93,7 @@ module Jsapi
       end
 
       def test_request_body_with_block
-        Definitions.new(definitions).call do
+        Definitions.new(definitions) do
           request_body 'foo' do
             description 'Description of foo'
           end
@@ -104,7 +104,7 @@ module Jsapi
       end
 
       def test_recue_from
-        Definitions.new(definitions).call do
+        Definitions.new(definitions) do
           rescue_from StandardError, with: 500
         end
         rescue_handlers = definitions.rescue_handlers
@@ -112,12 +112,12 @@ module Jsapi
       end
 
       def test_response
-        Definitions.new(definitions).call { response 'foo' }
+        Definitions.new(definitions) { response 'foo' }
         assert_predicate(definitions.response('foo'), :present?)
       end
 
       def test_response_with_block
-        Definitions.new(definitions).call do
+        Definitions.new(definitions) do
           response 'foo' do
             description 'Description of foo'
           end
@@ -128,12 +128,12 @@ module Jsapi
       end
 
       def test_schema
-        Definitions.new(definitions).call { schema 'foo' }
+        Definitions.new(definitions) { schema 'foo' }
         assert_predicate(definitions.schema('foo'), :present?)
       end
 
       def test_schema_with_block
-        Definitions.new(definitions).call do
+        Definitions.new(definitions) do
           schema 'foo' do
             description 'Description of foo'
           end

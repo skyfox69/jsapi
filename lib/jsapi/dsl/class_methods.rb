@@ -6,7 +6,7 @@ module Jsapi
       # The API definitions of the current class.
       def api_definitions(&block)
         @api_definitions ||= Meta::Definitions.new(self)
-        Definitions.new(@api_definitions).call(&block) if block
+        Definitions.new(@api_definitions, &block) if block
         @api_definitions
       end
 

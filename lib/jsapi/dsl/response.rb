@@ -21,7 +21,7 @@ module Jsapi
           keywords = { ref: name } unless keywords.any? || block
 
           link_model = _meta_model.add_link(name, keywords)
-          Node.new(link_model).call(&block) if block
+          Node.new(link_model, &block) if block
         end
       end
     end

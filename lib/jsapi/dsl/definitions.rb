@@ -4,9 +4,6 @@ module Jsapi
   module DSL
     # Used to define top-level API components.
     class Definitions < Node
-      def call(&block) # :nodoc:
-        define { super }
-      end
 
       # Includes API definitions from +klasses+.
       def include(*klasses)
@@ -28,7 +25,7 @@ module Jsapi
       def operation(name = nil, **keywords, &block)
         define('operation', name&.inspect) do
           operation_model = _meta_model.add_operation(name, keywords)
-          Operation.new(operation_model).call(&block) if block
+          Operation.new(operation_model, &block) if block
         end
       end
 
@@ -39,7 +36,7 @@ module Jsapi
       def parameter(name, **keywords, &block)
         define('parameter', name.inspect) do
           parameter_model = _meta_model.add_parameter(name, keywords)
-          Parameter.new(parameter_model).call(&block) if block
+          Parameter.new(parameter_model, &block) if block
         end
       end
 
@@ -50,7 +47,7 @@ module Jsapi
       def request_body(name, **keywords, &block)
         define('request_body', name.inspect) do
           request_body_model = _meta_model.add_request_body(name, keywords)
-          RequestBody.new(request_body_model).call(&block) if block
+          RequestBody.new(request_body_model, &block) if block
         end
       end
 
@@ -73,7 +70,7 @@ module Jsapi
       def response(name, **keywords, &block)
         define('response', name.inspect) do
           response_model = _meta_model.add_response(name, keywords)
-          Response.new(response_model).call(&block) if block
+          Response.new(response_model, &block) if block
         end
       end
 
@@ -85,7 +82,7 @@ module Jsapi
       def schema(name, **keywords, &block)
         define('schema', name.inspect) do
           schema_model = _meta_model.add_schema(name, keywords)
-          Schema.new(schema_model).call(&block) if block
+          Schema.new(schema_model, &block) if block
         end
       end
     end

@@ -4,34 +4,31 @@ module Jsapi
   module DSL
     class ExampleTest < Minitest::Test
       def test_default_example
-        parameter = Parameter.new(parameter_model)
-        parameter.call { example 'foo' }
+        Parameter.new(parameter_model) { example 'foo' }
         assert_equal('foo', parameter_model.examples['default'].value)
       end
 
       def test_example_with_options
-        Parameter.new(parameter_model).call do
-          example value: 'foo'
-        end
+        Parameter.new(parameter_model) { example value: 'foo' }
         assert_equal('foo', parameter_model.examples['default'].value)
       end
 
       def test_example_with_block
-        Parameter.new(parameter_model).call do
+        Parameter.new(parameter_model) do
           example { value 'foo' }
         end
         assert_equal('foo', parameter_model.examples['default'].value)
       end
 
       def test_example_with_name_and_options
-        Parameter.new(parameter_model).call do
+        Parameter.new(parameter_model) do
           example 'foo', value: 'bar'
         end
         assert_equal('bar', parameter_model.examples['foo'].value)
       end
 
       def test_example_with_name_and_block
-        Parameter.new(parameter_model).call do
+        Parameter.new(parameter_model) do
           example 'foo' do
             value 'bar'
           end

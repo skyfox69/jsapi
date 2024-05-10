@@ -22,7 +22,7 @@ module Jsapi
           keywords = { ref: name } unless keywords.any? || block
 
           callback_model = _meta_model.add_callback(name, keywords)
-          Node.new(callback_model).call(&block) if block
+          Node.new(callback_model, &block) if block
         end
       end
 
@@ -71,7 +71,7 @@ module Jsapi
           keywords = { ref: name } unless keywords.any? || block
 
           parameter_model = _meta_model.add_parameter(name, keywords)
-          Parameter.new(parameter_model).call(&block) if block
+          Parameter.new(parameter_model, &block) if block
         end
       end
 
@@ -83,7 +83,7 @@ module Jsapi
       def request_body(**keywords, &block)
         define('request body') do
           _meta_model.request_body = keywords
-          RequestBody.new(_meta_model.request_body).call(&block) if block
+          RequestBody.new(_meta_model.request_body, &block) if block
         end
       end
 
@@ -100,6 +100,8 @@ module Jsapi
       #
       # Refers to the reusable response with the same name if neither any
       # keywords nor a block is specified.
+      #
+      # Raises an Error if name is specified together with keywords or a block.
       def response(status_or_name = nil, name = nil, **keywords, &block)
         define('response', status_or_name&.inspect) do
           raise Error, 'name cannot be specified together with keywords ' \
@@ -112,7 +114,7 @@ module Jsapi
             keywords = { ref: name || status_or_name }
           end
           response_model = _meta_model.add_response(status, keywords)
-          Response.new(response_model).call(&block) if block
+          Response.new(response_model, &block) if block
         end
       end
     end

@@ -3,12 +3,9 @@
 module Jsapi
   module DSL
     class Node
-      def initialize(meta_model) # :nodoc:
+      def initialize(meta_model, &block) # :nodoc:
         @_meta_model = meta_model
-      end
-
-      def call(&block) # :nodoc:
-        instance_eval(&block)
+        instance_eval(&block) if block
       end
 
       def method_missing(*args, &block) # :nodoc:
@@ -18,7 +15,7 @@ module Jsapi
 
         define(name) do
           value = _meta_model.public_send(method, *args[1..])
-          Node.new(value).call(&block) if block
+          Node.new(value, &block) if block
         end
       end
 

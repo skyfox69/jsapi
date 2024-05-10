@@ -8,14 +8,14 @@ module Jsapi
       def test_api_include
         foo_class = Class.new do
           extend ClassMethods
-          api_schema 'Foo'
+          api_schema 'foo'
         end
         bar_class = Class.new do
           extend ClassMethods
           api_include foo_class
         end
         definitions = bar_class.api_definitions
-        assert_predicate(definitions.schema('Foo'), :present?)
+        assert_predicate(definitions.schema('foo'), :present?)
       end
 
       def test_api_operation
@@ -58,31 +58,37 @@ module Jsapi
       def test_api_response
         foo_class = Class.new do
           extend ClassMethods
-          api_response 'Foo'
+          api_response 'foo'
         end
         definitions = foo_class.api_definitions
-        assert_predicate(definitions.response('Foo'), :present?)
+        assert_predicate(definitions.response('foo'), :present?)
       end
 
       def test_api_schema
         foo_class = Class.new do
           extend ClassMethods
-          api_schema 'Foo'
+          api_schema 'foo'
         end
         definitions = foo_class.api_definitions
-        assert_predicate(definitions.schema('Foo'), :present?)
+        assert_predicate(definitions.schema('foo'), :present?)
       end
 
       def test_openapi
         foo_class = Class.new do
           extend ClassMethods
           openapi do
-            info title: 'Foo', version: '1'
+            info title: 'foo', version: '1'
           end
         end
         assert_equal(
-          { title: 'Foo', version: '1' },
-          foo_class.api_definitions.openapi_document('2.0')[:info]
+          {
+            swagger: '2.0',
+            info: {
+              title: 'foo',
+              version: '1'
+            }
+          },
+          foo_class.api_definitions.openapi_document('2.0')
         )
       end
     end
