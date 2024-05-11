@@ -23,7 +23,7 @@ module Jsapi
       #
       # +name+ can be +nil+ if the controller handles one operation only.
       def operation(name = nil, **keywords, &block)
-        define('operation', name&.inspect) do
+        _define('operation', name&.inspect) do
           operation_model = _meta_model.add_operation(name, keywords)
           Operation.new(operation_model, &block) if block
         end
@@ -34,7 +34,7 @@ module Jsapi
       #   parameter 'foo', type: 'string'
       #
       def parameter(name, **keywords, &block)
-        define('parameter', name.inspect) do
+        _define('parameter', name.inspect) do
           parameter_model = _meta_model.add_parameter(name, keywords)
           Parameter.new(parameter_model, &block) if block
         end
@@ -45,7 +45,7 @@ module Jsapi
       #   request_body 'foo', type: 'string'
       #
       def request_body(name, **keywords, &block)
-        define('request_body', name.inspect) do
+        _define('request_body', name.inspect) do
           request_body_model = _meta_model.add_request_body(name, keywords)
           RequestBody.new(request_body_model, &block) if block
         end
@@ -68,7 +68,7 @@ module Jsapi
       #     property 'bar', type: 'string'
       #   end
       def response(name, **keywords, &block)
-        define('response', name.inspect) do
+        _define('response', name.inspect) do
           response_model = _meta_model.add_response(name, keywords)
           Response.new(response_model, &block) if block
         end
@@ -80,7 +80,7 @@ module Jsapi
       #     property 'bar', type: 'string'
       #   end
       def schema(name, **keywords, &block)
-        define('schema', name.inspect) do
+        _define('schema', name.inspect) do
           schema_model = _meta_model.add_schema(name, keywords)
           Schema.new(schema_model, &block) if block
         end

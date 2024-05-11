@@ -17,9 +17,9 @@ module Jsapi
         _meta_model.add_example(example)
       end
 
-      # Overrides Kernel#format
+      # Overrides Kernel#format to handle +format+ as a keyword.
       def format(format) # :nodoc:
-        method_missing(:format, format)
+        _keyword(:format, format)
       end
 
       # Specifies the kind of items that can be contained in an array.
@@ -63,13 +63,17 @@ module Jsapi
         _meta_model.model = klass
       end
 
-      # Defines a property
+      # Defines a property.
       #
       #   property 'foo', type: 'string'
       #
+      #   property 'foo' do
+      #     property 'bar', type: 'string'
+      #   end
+      #
       # Raises an Error if type is other than <code>"object"</code>.
       def property(name, **keywords, &block)
-        define('property', name.inspect) do
+        _define('property', name.inspect) do
           unless _meta_model.respond_to?(:add_property)
             raise Error, "property isn't supported for '#{_meta_model.type}'"
           end

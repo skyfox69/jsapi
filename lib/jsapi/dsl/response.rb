@@ -6,17 +6,21 @@ module Jsapi
     class Response < Schema
       include Example
 
-      # Defines a link. This method can be used to define a link object in
-      # place or to refer a reusable link object.
+      # Defines a link or refers a reusable link object.
       #
+      #   # define a link
       #   link 'foo', operation_id: 'bar'
       #
+      #   # refer a reusable link
       #   link ref: 'foo'
       #
-      # Refers to the reusable link object with the same name if neither any
+      # Refers the reusable link object with the same name if neither any
       # keywords nor a block is specified.
+      #
+      #   link 'foo'
+      #
       def link(name = nil, **keywords, &block)
-        define('link', name&.inspect) do
+        _define('link', name&.inspect) do
           name = keywords[:ref] if name.nil?
           keywords = { ref: name } unless keywords.any? || block
 

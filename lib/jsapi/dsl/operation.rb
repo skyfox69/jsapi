@@ -5,19 +5,23 @@ module Jsapi
     # Used to specify details of an operation.
     class Operation < Node
 
-      # Defines a callback. This method can be used to define a callback in
-      # place or to refer a reusable callback.
+      # Defines a callback or refers a reusable callback.
       #
+      #   # define a callback
       #   callback 'foo' do
       #     operation '{$request.query.foo}', 'bar'
       #   end
       #
+      #   # refer a reusable callback
       #   callback ref: 'foo'
       #
-      # Refers to the reusable callback with the same name if neither any
+      # Refers the reusable callback with the same name if neither any
       # keywords nor a block is specified.
+      #
+      #   callback 'foo'
+      #
       def callback(name = nil, **keywords, &block)
-        define('callback', name&.inspect) do
+        _define('callback', name&.inspect) do
           name = keywords[:ref] if name.nil?
           keywords = { ref: name } unless keywords.any? || block
 
@@ -26,9 +30,9 @@ module Jsapi
         end
       end
 
-      # Overrides Object#method
+      # Overrides Object#method to handle +method+ as a keyword.
       def method(method) # :nodoc:
-        method_missing(:method, method)
+        _keyword(:method, method)
       end
 
       # Specifies the model class to access top-level parameters by.
@@ -50,23 +54,26 @@ module Jsapi
         _meta_model.model = klass
       end
 
-      # Defines a parameter. This method can be used to define a parameter
-      # in place or to refer a reusable parameter.
+      # Defines a parameter or refers a reusable parameter.
       #
+      #   # define a parameter
       #   parameter 'foo', type: 'string'
       #
-      #   parameter ref: 'foo'
-      #
-      # Nested object parameters can be defined within the block.
-      #
-      #   parameter 'foo' do
+      #   # define a nested parameter
+      #   parameter 'foo', type: 'object' do
       #     property 'bar', type: 'string'
       #   end
       #
-      # Refers to the reusable parameter with the same name if neither
-      # any keywords nor a block is specified.
+      #   # refer a reusable parameter
+      #   parameter ref: 'foo'
+      #
+      # Refers the reusable parameter with the same name if neither any
+      # keywords nor a block is specified.
+      #
+      #   parameter 'foo'
+      #
       def parameter(name = nil, **keywords, &block)
-        define('parameter', name&.inspect) do
+        _define('parameter', name&.inspect) do
           name = keywords[:ref] if name.nil?
           keywords = { ref: name } unless keywords.any? || block
 
@@ -75,35 +82,48 @@ module Jsapi
         end
       end
 
-      # Defines the request body.
+      # Defines the request body or refers a reusable request body.
       #
-      #   request_body do
+      #   # define a request body
+      #   request_body type: 'object' do
       #     property 'foo', type: 'string'
       #   end
+      #
+      #   # refer a reusable request body
+      #   request_body ref: 'foo'
+      #
+      # Refers the reusable request body with the same name if neither any
+      # keywords nor a block is specified.
+      #
+      #   request_body 'foo'
+      #
       def request_body(**keywords, &block)
-        define('request body') do
+        _define('request body') do
           _meta_model.request_body = keywords
           RequestBody.new(_meta_model.request_body, &block) if block
         end
       end
 
-      # Defines a response. This method can be used to define a response in
-      # place or to refer a reusable response.
+      # Defines a response or refers a reusable response.
       #
-      #   response 200 do
+      #   # define a response
+      #   response 200, type: 'object' do
       #     property 'foo', type: 'string'
       #   end
       #
+      #   # refer a reusable response
       #   response 200, ref: 'foo'
       #
       # The default status is <code>"default"</code>.
       #
-      # Refers to the reusable response with the same name if neither any
-      # keywords nor a block is specified.
+      # Refers the reusable response with the same name if neither any keywords
+      # nor a block is specified.
+      #
+      #   response 'foo'
       #
       # Raises an Error if name is specified together with keywords or a block.
       def response(status_or_name = nil, name = nil, **keywords, &block)
-        define('response', status_or_name&.inspect) do
+        _define('response', status_or_name&.inspect) do
           raise Error, 'name cannot be specified together with keywords ' \
                        'or a block' if name && (keywords.any? || block)
 

@@ -5,11 +5,13 @@ module Jsapi
     module Example
       # Specifies an example.
       #
+      #   example 'foo', value: 'bar'
+      #
       #   example 'foo'
       #
       # The default name is <code>'default'</code>.
       def example(name_or_value = nil, **keywords, &block)
-        define('example', name_or_value&.inspect) do
+        _define('example', name_or_value&.inspect) do
           if keywords.any? || block
             # example 'foo', value: 'bar', ...
             name = name_or_value
