@@ -10,7 +10,7 @@ module Jsapi
         attribute :description, String
 
         ##
-        # :attr_reader: examples
+        # :attr: examples
         # The optional examples.
         attribute :examples, { String => Example }, default_key: 'default'
 
@@ -31,7 +31,6 @@ module Jsapi
 
         delegate_missing_to :schema
 
-        # Creates a new response.
         def initialize(keywords = {})
           keywords = keywords.dup
           super(keywords.extract!(:description, :examples, :locale))
@@ -42,12 +41,12 @@ module Jsapi
         end
 
         # Returns a hash representing the \OpenAPI response object.
-        def to_openapi_response(version)
+        def to_openapi(version)
           version = OpenAPI::Version.from(version)
           if version.major == 2
             {
               description: description,
-              schema: schema.to_openapi_schema(version),
+              schema: schema.to_openapi(version),
               examples: (
                 if examples.present?
                   { 'application/json' => examples.values.first.value }
@@ -59,7 +58,7 @@ module Jsapi
               description: description,
               content: {
                 'application/json' => {
-                  schema: schema.to_openapi_schema(version),
+                  schema: schema.to_openapi(version),
                   examples: examples&.transform_values(&:to_openapi_example)
                 }.compact
               },

@@ -21,7 +21,7 @@ module Jsapi
         end
 
         # Returns a hash representing the \OpenAPI reference object.
-        def to_openapi_request_body(*)
+        def to_openapi(*)
           { '$ref': "#/components/requestBodies/#{ref}" }
         end
       end

@@ -28,7 +28,7 @@ module Jsapi
                 type: 'string'
               }
             },
-            response.to_openapi_response('2.0')
+            response.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -41,7 +41,7 @@ module Jsapi
                 }
               }
             },
-            response.to_openapi_response('3.0')
+            response.to_openapi('3.0')
           )
         end
 
@@ -59,7 +59,7 @@ module Jsapi
                 'application/json' => 'foo'
               }
             },
-            response.to_openapi_response('2.0')
+            response.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -83,7 +83,7 @@ module Jsapi
                 }
               }
             },
-            response.to_openapi_response('3.0')
+            response.to_openapi('3.0')
           )
         end
       end

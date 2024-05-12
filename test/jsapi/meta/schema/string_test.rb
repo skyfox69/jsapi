@@ -66,14 +66,14 @@ module Jsapi
               type: 'string',
               nullable: true
             },
-            schema.to_openapi_schema('3.0')
+            schema.to_openapi('3.0')
           )
           # OpenAPI 3.1
           assert_equal(
             {
               type: %w[string null]
             },
-            schema.to_openapi_schema('3.1')
+            schema.to_openapi('3.1')
           )
         end
 
@@ -85,7 +85,7 @@ module Jsapi
               nullable: true,
               format: 'date'
             },
-            schema.to_openapi_schema('3.0')
+            schema.to_openapi('3.0')
           )
         end
       end

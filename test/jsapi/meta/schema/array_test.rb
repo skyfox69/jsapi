@@ -61,7 +61,7 @@ module Jsapi
               type: 'array',
               items: {}
             },
-            schema.to_openapi_schema('2.0')
+            schema.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -69,7 +69,7 @@ module Jsapi
               type: 'array',
               items: {}
             },
-            schema.to_openapi_schema('3.0')
+            schema.to_openapi('3.0')
           )
         end
 
@@ -84,7 +84,7 @@ module Jsapi
                 type: 'string'
               }
             },
-            schema.to_openapi_schema('2.0')
+            schema.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -96,7 +96,7 @@ module Jsapi
                 nullable: true
               }
             },
-            schema.to_openapi_schema('3.0')
+            schema.to_openapi('3.0')
           )
         end
       end

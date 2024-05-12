@@ -21,7 +21,6 @@ module Jsapi
 
         delegate_missing_to :schema
 
-        # Creates a new request body.
         def initialize(keywords = {})
           keywords = keywords.dup
           super(keywords.extract!(:description, :examples))
@@ -31,9 +30,10 @@ module Jsapi
           @schema = Schema.new(keywords)
         end
 
-        # Returns true if the request body is required, false otherwise.
+        # Returns true if the level of existence is greater than or equal to
+        # +ALLOW_NIL+, false otherwise.
         def required?
-          schema.existence > Existence::ALLOW_OMITTED
+          schema.existence >= Existence::ALLOW_NIL
         end
 
         # Returns a hash representing the \OpenAPI 2.0 parameter object.
@@ -43,16 +43,17 @@ module Jsapi
             in: 'body',
             description: description,
             required: required?
-          }.merge(schema.to_openapi_schema('2.0')).compact
+          }.merge(schema.to_openapi('2.0')).compact
         end
 
         # Returns a hash representing the \OpenAPI 3.x request body object.
-        def to_openapi_request_body(version)
+        def to_openapi(version)
+          version = OpenAPI::Version.from(version)
           {
             description: description,
             content: {
               'application/json' => {
-                schema: schema.to_openapi_schema(version),
+                schema: schema.to_openapi(version),
                 examples: examples&.transform_values(&:to_openapi_example)
               }.compact
             },

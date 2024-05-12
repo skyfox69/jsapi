@@ -68,7 +68,7 @@ module Jsapi
           # OpenAPI 2.0
           assert_equal(
             { type: 'integer' },
-            schema.to_openapi_schema('2.0')
+            schema.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -76,12 +76,12 @@ module Jsapi
               type: 'integer',
               nullable: true
             },
-            schema.to_openapi_schema('3.0')
+            schema.to_openapi('3.0')
           )
           # OpenAPI 3.1
           assert_equal(
             { type: %w[integer null] },
-            schema.to_openapi_schema('3.1')
+            schema.to_openapi('3.1')
           )
         end
       end

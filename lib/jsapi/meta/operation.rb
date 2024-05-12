@@ -145,7 +145,7 @@ module Jsapi
       end
 
       # Returns a hash representing the \OpenAPI operation object.
-      def to_openapi_operation(version, definitions)
+      def to_openapi(version, definitions)
         version = OpenAPI::Version.from(version)
         {
           operationId: name,
@@ -165,18 +165,18 @@ module Jsapi
           end
           # Parameters (and request body)
           hash[:parameters] = parameters.values.flat_map do |parameter|
-            parameter.to_openapi_parameters(version, definitions)
+            parameter.to_openapi(version, definitions)
           end
           if request_body
             if version.major == 2
               hash[:parameters] << request_body.resolve(definitions).to_openapi_parameter
             else
-              hash[:request_body] = request_body.to_openapi_request_body(version)
+              hash[:request_body] = request_body.to_openapi(version)
             end
           end
           # Responses
           hash[:responses] = responses.transform_values do |response|
-            response.to_openapi_response(version)
+            response.to_openapi(version)
           end
           # Callbacks
           if callbacks && version.major > 2

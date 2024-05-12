@@ -68,7 +68,7 @@ module Jsapi
               },
               required: true
             },
-            request_body.to_openapi_request_body('3.0')
+            request_body.to_openapi('3.0')
           )
         end
 
@@ -96,7 +96,7 @@ module Jsapi
               },
               required: false
             },
-            request_body.to_openapi_request_body('3.0')
+            request_body.to_openapi('3.0')
           )
         end
       end

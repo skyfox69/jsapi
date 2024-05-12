@@ -20,23 +20,23 @@ module Jsapi
 
         # OpenAPI tests
 
-        def test_openapi_parameters
+        def test_openapi_reference_object
           definitions.add_parameter('foo', type: 'string')
           reference = Reference.new(ref: 'foo')
 
           # OpenAPI 2.0
           assert_equal(
             [{ '$ref': '#/parameters/foo' }],
-            reference.to_openapi_parameters('2.0', definitions)
+            reference.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
             [{ '$ref': '#/components/parameters/foo' }],
-            reference.to_openapi_parameters('3.0', definitions)
+            reference.to_openapi('3.0', definitions)
           )
         end
 
-        def test_openapi_parameters_on_object
+        def test_openapi_reference_object_on_nested_parameters
           parameter = definitions.add_parameter('foo', type: 'object')
           parameter.schema.add_property('bar', type: 'string')
           reference = Reference.new(ref: 'foo')
@@ -51,7 +51,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            reference.to_openapi_parameters('2.0', definitions)
+            reference.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -66,7 +66,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            reference.to_openapi_parameters('3.0', definitions)
+            reference.to_openapi('3.0', definitions)
           )
         end
 

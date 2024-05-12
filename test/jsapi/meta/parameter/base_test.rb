@@ -50,7 +50,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('2.0', Definitions.new)
+            parameter.to_openapi('2.0', Definitions.new)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -65,7 +65,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('3.0', Definitions.new)
+            parameter.to_openapi('3.0', Definitions.new)
           )
         end
 
@@ -82,7 +82,7 @@ module Jsapi
                 type: 'string'
               }
             ],
-            parameter.to_openapi_parameters('2.0', Definitions.new)
+            parameter.to_openapi('2.0', Definitions.new)
           )
 
           # OpenAPI 3.0
@@ -98,7 +98,7 @@ module Jsapi
                 }
               }
             ],
-            parameter.to_openapi_parameters('3.0', Definitions.new)
+            parameter.to_openapi('3.0', Definitions.new)
           )
         end
 
@@ -119,7 +119,7 @@ module Jsapi
                 collectionFormat: 'multi'
               }
             ],
-            parameter.to_openapi_parameters('2.0', Definitions.new)
+            parameter.to_openapi('2.0', Definitions.new)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -138,7 +138,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('3.0', Definitions.new)
+            parameter.to_openapi('3.0', Definitions.new)
           )
         end
 
@@ -156,7 +156,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('2.0', Definitions.new)
+            parameter.to_openapi('2.0', Definitions.new)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -171,7 +171,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('3.0', Definitions.new)
+            parameter.to_openapi('3.0', Definitions.new)
           )
         end
 
@@ -193,7 +193,7 @@ module Jsapi
                 collectionFormat: 'multi'
               }
             ],
-            parameter.to_openapi_parameters('2.0', Definitions.new)
+            parameter.to_openapi('2.0', Definitions.new)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -212,7 +212,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('3.0', Definitions.new)
+            parameter.to_openapi('3.0', Definitions.new)
           )
         end
 
@@ -231,7 +231,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('2.0', Definitions.new)
+            parameter.to_openapi('2.0', Definitions.new)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -246,7 +246,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            parameter.to_openapi_parameters('3.0', Definitions.new)
+            parameter.to_openapi('3.0', Definitions.new)
           )
         end
 
@@ -271,7 +271,7 @@ module Jsapi
                 type: 'string'
               }
             ],
-            parameter.to_openapi_parameters('2.0', Definitions.new)
+            parameter.to_openapi('2.0', Definitions.new)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -292,7 +292,7 @@ module Jsapi
                 }
               }
             ],
-            parameter.to_openapi_parameters('3.0', Definitions.new)
+            parameter.to_openapi('3.0', Definitions.new)
           )
         end
 
@@ -323,7 +323,7 @@ module Jsapi
                 type: 'string'
               }
             ],
-            parameter.to_openapi_parameters('2.0', Definitions.new)
+            parameter.to_openapi('2.0', Definitions.new)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -345,7 +345,7 @@ module Jsapi
                 }
               }
             ],
-            parameter.to_openapi_parameters('3.0', Definitions.new)
+            parameter.to_openapi('3.0', Definitions.new)
           )
         end
       end

@@ -68,8 +68,8 @@ module Jsapi
           schema.existence > Existence::ALLOW_OMITTED || self.in == 'path'
         end
 
-        # Returns the \OpenAPI parameter objects as an array of hashes.
-        def to_openapi_parameters(version, definitions)
+        # Returns an array of hashes representing the \OpenAPI parameter objects.
+        def to_openapi(version, definitions)
           version = OpenAPI::Version.from(version)
           schema = self.schema.resolve(definitions)
 
@@ -93,7 +93,7 @@ module Jsapi
                   required: required?.presence,
                   allowEmptyValue: allow_empty_value?.presence,
                   collectionFormat: ('multi' if schema.array?)
-                }.merge(schema.to_openapi_schema(version))
+                }.merge(schema.to_openapi(version))
               else
                 {
                   name: parameter_name,
@@ -102,14 +102,13 @@ module Jsapi
                   required: required?.presence,
                   allowEmptyValue: allow_empty_value?.presence,
                   deprecated: deprecated?.presence,
-                  schema: schema.to_openapi_schema(version),
+                  schema: schema.to_openapi(version),
                   examples: examples&.transform_values(&:to_openapi_example)
 
-                  # NOTE
-                  # collectionFormat is replaced by style and explode.
-                  # The default values for query parameters are:
-                  # - style: 'form'
-                  # - explode: true
+                  # NOTE: collectionFormat is replaced by style and explode.
+                  #       The default values for query parameters are:
+                  #       - style: 'form'
+                  #       - explode: true
                 }
               end.compact
             ]
@@ -148,7 +147,7 @@ module Jsapi
                     required: required,
                     allowEmptyValue: allow_empty_value.presence,
                     collectionFormat: ('multi' if property_schema.array?)
-                  }.merge(property_schema.to_openapi_schema(version))
+                  }.merge(property_schema.to_openapi(version))
                 else
                   {
                     name: parameter_name,
@@ -157,7 +156,7 @@ module Jsapi
                     required: required,
                     allowEmptyValue: allow_empty_value.presence,
                     deprecated: deprecated,
-                    schema: property_schema.to_openapi_schema(version).except(:deprecated),
+                    schema: property_schema.to_openapi(version).except(:deprecated),
                     examples: examples&.transform_values(&:to_openapi_example)
                   }
                 end.compact

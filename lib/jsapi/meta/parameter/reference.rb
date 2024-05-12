@@ -26,13 +26,13 @@ module Jsapi
         # hash representing the \OpenAPI reference object.
         #
         # Raises a ReferenceError if the reference could not be resolved.
-        def to_openapi_parameters(version, definitions)
+        def to_openapi(version, definitions)
           version = OpenAPI::Version.from(version)
           parameter = resolve(definitions)
 
           if parameter.schema.resolve(definitions).object?
             # Explode referred parameter
-            parameter.to_openapi_parameters(version, definitions)
+            parameter.to_openapi(version, definitions)
           else
             # Return an array containing the reference object
             path = version.major == 2 ? 'parameters' : 'components/parameters'

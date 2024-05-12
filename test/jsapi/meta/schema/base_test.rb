@@ -91,7 +91,7 @@ module Jsapi
           %w[2.0 3.0 3.1].each do |version|
             assert_equal(
               { type: 'string' },
-              schema.to_openapi_schema(version)
+              schema.to_openapi(version)
             )
           end
         end
@@ -102,7 +102,7 @@ module Jsapi
           # OpenAPI 2.0
           assert_equal(
             { type: 'string' },
-            schema.to_openapi_schema('2.0')
+            schema.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -110,14 +110,14 @@ module Jsapi
               type: 'string',
               nullable: true
             },
-            schema.to_openapi_schema('3.0')
+            schema.to_openapi('3.0')
           )
           # OpenAPI 3.1
           assert_equal(
             {
               type: %w[string null]
             },
-            schema.to_openapi_schema('3.1')
+            schema.to_openapi('3.1')
           )
         end
 
@@ -130,7 +130,7 @@ module Jsapi
               type: 'string',
               enum: %w[foo bar]
             },
-            schema.to_openapi_schema('2.0')
+            schema.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -139,7 +139,7 @@ module Jsapi
               nullable: true,
               enum: %w[foo bar]
             },
-            schema.to_openapi_schema('3.0')
+            schema.to_openapi('3.0')
           )
           # OpenAPI 3.1
           assert_equal(
@@ -147,7 +147,7 @@ module Jsapi
               type: %w[string null],
               enum: %w[foo bar]
             },
-            schema.to_openapi_schema('3.1')
+            schema.to_openapi('3.1')
           )
         end
 
@@ -176,7 +176,7 @@ module Jsapi
                 url: 'https://foo.bar/docs'
               }
             },
-            schema.to_openapi_schema('2.0')
+            schema.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -191,7 +191,7 @@ module Jsapi
                 url: 'https://foo.bar/docs'
               }
             },
-            schema.to_openapi_schema('3.0')
+            schema.to_openapi('3.0')
           )
           # OpenAPI 3.1
           assert_equal(
@@ -206,7 +206,7 @@ module Jsapi
                 url: 'https://foo.bar/docs'
               }
             },
-            schema.to_openapi_schema('3.1')
+            schema.to_openapi('3.1')
           )
         end
       end

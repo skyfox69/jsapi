@@ -91,7 +91,7 @@ module Jsapi
               properties: {},
               required: []
             },
-            schema.to_openapi_schema('2.0')
+            schema.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -100,7 +100,7 @@ module Jsapi
               properties: {},
               required: []
             },
-            schema.to_openapi_schema('3.0')
+            schema.to_openapi('3.0')
           )
         end
 
@@ -126,7 +126,7 @@ module Jsapi
               },
               required: %w[foo]
             },
-            schema.to_openapi_schema('2.0')
+            schema.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -147,7 +147,7 @@ module Jsapi
               },
               required: %w[foo]
             },
-            schema.to_openapi_schema('3.0')
+            schema.to_openapi('3.0')
           )
         end
       end

@@ -21,7 +21,7 @@ module Jsapi
           # Returns a hash representing the callback object.
           def to_openapi(version, definitions)
             operations.transform_values do |operation|
-              { operation.method => operation.to_openapi_operation(version, definitions) }
+              { operation.method => operation.to_openapi(version, definitions) }
             end
           end
         end

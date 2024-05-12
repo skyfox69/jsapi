@@ -38,13 +38,13 @@ module Jsapi
           ).compact
         end
 
-        def to_openapi_schema(version) # :nodoc:
+        def to_openapi(version) # :nodoc:
           super.merge(
             allOf: all_of_references.map do |schema|
-              schema.to_openapi_schema(version)
+              schema.to_openapi(version)
             end.presence,
             properties: properties.transform_values do |property|
-              property.to_openapi_schema(version)
+              property.to_openapi(version)
             end,
             required: properties.values.select(&:required?).map(&:name)
           ).compact

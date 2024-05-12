@@ -49,7 +49,7 @@ module Jsapi
           format ? super.merge(format: format) : super
         end
 
-        def to_openapi_schema(*) # :nodoc:
+        def to_openapi(*) # :nodoc:
           format ? super.merge(format: format) : super
         end
       end

@@ -37,7 +37,7 @@ module Jsapi
               parameters: [],
               responses: {}
             },
-            operation.to_openapi_operation(version, definitions)
+            operation.to_openapi(version, definitions)
           )
         end
       end
@@ -116,7 +116,7 @@ module Jsapi
               { 'http_basic' => [] }
             ]
           },
-          operation.to_openapi_operation('2.0', definitions)
+          operation.to_openapi('2.0', definitions)
         )
         # OpenAPI 3.0
         assert_equal(
@@ -180,7 +180,7 @@ module Jsapi
               { url: 'https://foo.bar/foo' }
             ]
           },
-          operation.to_openapi_operation('3.0', definitions)
+          operation.to_openapi('3.0', definitions)
         )
       end
 
