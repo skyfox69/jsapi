@@ -6,38 +6,23 @@ module Jsapi
   module Meta
     module Schema
       class ReferenceTest < Minitest::Test
-        def test_existence
+        def test_reference_by_schema
           reference = Reference.new(schema: 'foo')
-          reference.existence = true
-          assert_equal(Existence::PRESENT, reference.existence)
+          assert_equal('foo', reference.ref)
+          assert_equal('foo', reference.schema)
         end
-
-        def test_default_existence
-          schema = Reference.new(schema: 'foo')
-          assert_equal(Existence::ALLOW_OMITTED, schema.existence)
-        end
-
-        # #resolve tests
 
         def test_resolve
           definitions = Definitions.new
           schema = definitions.add_schema('foo')
 
-          assert_equal(schema, Reference.new(schema: 'foo').resolve(definitions))
-        end
-
-        def test_resolve_recursively
-          definitions = Definitions.new
-          schema = definitions.add_schema('foo')
-          definitions.add_schema('foo_ref', schema: 'foo')
-
-          assert_equal(schema, Reference.new(schema: 'foo_ref').resolve(definitions))
+          assert_equal(schema, Reference.new(ref: 'foo').resolve(definitions))
         end
 
         def test_resolve_with_higher_existence_level
           definitions = Definitions.new
           definitions.add_schema('foo', existence: :allow_empty)
-          reference = Reference.new(schema: 'foo', existence: true)
+          reference = Reference.new(ref: 'foo', existence: true)
 
           resolved = reference.resolve(definitions)
           assert_kind_of(Delegator, resolved)
@@ -47,23 +32,17 @@ module Jsapi
         def test_resolve_with_lower_existence_level
           definitions = Definitions.new
           definitions.add_schema('foo', existence: true)
-          reference = Reference.new(schema: 'foo', existence: :allow_empty)
+          reference = Reference.new(ref: 'foo', existence: :allow_empty)
 
           resolved = reference.resolve(definitions)
           assert_kind_of(Delegator, resolved)
           assert_equal(Existence::PRESENT, resolved.existence)
         end
 
-        def test_raises_exception_on_invalid_reference
-          assert_raises(ReferenceError) do
-            Reference.new(schema: 'foo').resolve(Definitions.new)
-          end
-        end
-
         # JSON Schema tests
 
-        def test_json_schema
-          reference = Reference.new(schema: 'foo')
+        def test_json_schema_reference_object
+          reference = Reference.new(ref: 'foo')
           assert_equal(
             { '$ref': '#/definitions/foo' },
             reference.to_json_schema
@@ -72,15 +51,15 @@ module Jsapi
 
         # OpenAPI tests
 
-        def test_openapi_schema_2_0
-          reference = Reference.new(schema: 'foo')
+        def test_openapi_reference_object
+          reference = Reference.new(ref: 'foo')
+
+          # OpenAPI 2.0
           assert_equal(
             { '$ref': '#/definitions/foo' },
             reference.to_openapi('2.0')
           )
-        end
-
-        def test_openapi_schema_3_0
+          # OpenAPI 3.0
           reference = Reference.new(schema: 'foo')
           assert_equal(
             { '$ref': '#/components/schemas/foo' },

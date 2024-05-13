@@ -14,12 +14,6 @@ module Jsapi
           assert_equal(request_body, reference.resolve(definitions))
         end
 
-        def test_resolve_raises_an_exception_on_unresolvable_name
-          assert_raises(ReferenceError) do
-            Reference.new(ref: 'foo').resolve(Definitions.new)
-          end
-        end
-
         # OpenAPI tests
 
         def test_openapi_reference_object

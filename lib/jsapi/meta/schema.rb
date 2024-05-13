@@ -33,7 +33,7 @@ module Jsapi
         #
         # Raises an InvalidArgumentError if the given type is invalid.
         def new(keywords = {})
-          return Reference.new(keywords) if keywords.key?(:schema)
+          return Reference.new(keywords) if keywords.key?(:ref) || keywords.key?(:schema)
 
           type = keywords[:type]
           case type&.to_s

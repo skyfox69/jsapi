@@ -4,12 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       module Callback
-        class Reference < Meta::Base
-          ##
-          # :attr_reader: ref
-          # The name of the referred callback.
-          attribute :ref, String
-
+        class Reference < BaseReference
           # Returns a hash representing the \OpenAPI reference object.
           def to_openapi(*)
             { '$ref': "#/components/callbacks/#{ref}" }

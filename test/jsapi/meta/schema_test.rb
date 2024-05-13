@@ -36,7 +36,10 @@ module Jsapi
       end
 
       def test_new_reference
-        schema = Schema.new(schema: 'my_schema')
+        schema = Schema.new(ref: 'foo')
+        assert_kind_of(Schema::Reference, schema)
+
+        schema = Schema.new(schema: 'foo')
         assert_kind_of(Schema::Reference, schema)
       end
 
@@ -46,7 +49,14 @@ module Jsapi
       end
 
       def test_raises_exception_on_invalid_type
-        assert_raises(InvalidArgumentError) { Schema.new(type: 'foo') }
+        error = assert_raises(InvalidArgumentError) do
+          Schema.new(type: 'foo')
+        end
+        assert_equal(
+          'type must be one of ["array", "boolean", "integer", ' \
+          '"number", "object", "string"], is "foo"',
+          error.message
+        )
       end
     end
   end
