@@ -6,9 +6,9 @@ module Jsapi
   module Meta
     module OpenAPI
       class CallbackTest < Minitest::Test
-        def test_new
+        def test_new_model
           callback = Callback.new
-          assert_kind_of(Callback::Base, callback)
+          assert_kind_of(Callback::Model, callback)
         end
 
         def test_new_reference

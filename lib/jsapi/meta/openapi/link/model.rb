@@ -5,7 +5,7 @@ module Jsapi
     module OpenAPI
       module Link
         # Represents a link object.
-        class Base < Meta::Base
+        class Model < Base
           ##
           # :attr: description
           # The optional description of the link.

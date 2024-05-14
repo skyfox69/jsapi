@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module RequestBody
-      class Base < Meta::Base
+      class Model < Base
         ##
         # :attr: description
         # The optional description of the request body.

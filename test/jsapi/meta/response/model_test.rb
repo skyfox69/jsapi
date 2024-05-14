@@ -5,21 +5,21 @@ require 'test_helper'
 module Jsapi
   module Meta
     module Response
-      class BaseTest < Minitest::Test
+      class ModelTest < Minitest::Test
         def test_type
-          response = Base.new(type: 'string')
-          assert_equal('string', response.type)
+          response_model = Model.new(type: 'string')
+          assert_equal('string', response_model.type)
         end
 
         def test_example
-          response = Base.new(type: 'string', example: 'foo')
-          assert_equal('foo', response.example.value)
+          response_model = Model.new(type: 'string', example: 'foo')
+          assert_equal('foo', response_model.example.value)
         end
 
         # OpenAPI tests
 
         def test_minimal_openapi_response_object
-          response = Base.new(type: 'string', existence: true)
+          response_model = Model.new(type: 'string', existence: true)
 
           # OpenAPI 2.0
           assert_equal(
@@ -28,7 +28,7 @@ module Jsapi
                 type: 'string'
               }
             },
-            response.to_openapi('2.0')
+            response_model.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -41,13 +41,17 @@ module Jsapi
                 }
               }
             },
-            response.to_openapi('3.0')
+            response_model.to_openapi('3.0')
           )
         end
 
         def test_full_openapi_response_object
-          response = Base.new(type: 'string', existence: false, example: 'foo')
-          response.add_link('foo', operation_id: 'foo')
+          response_model = Model.new(
+            type: 'string',
+            existence: false,
+            example: 'foo'
+          )
+          response_model.add_link('foo', operation_id: 'foo')
 
           # OpenAPI 2.0
           assert_equal(
@@ -59,7 +63,7 @@ module Jsapi
                 'application/json' => 'foo'
               }
             },
-            response.to_openapi('2.0')
+            response_model.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
@@ -83,7 +87,7 @@ module Jsapi
                 }
               }
             },
-            response.to_openapi('3.0')
+            response_model.to_openapi('3.0')
           )
         end
       end

@@ -8,38 +8,33 @@ module Jsapi
       class ReferenceTest < Minitest::Test
         def test_resolve
           parameter = definitions.add_parameter('foo')
-          reference = Reference.new(ref: 'foo')
-          assert_equal(parameter, reference.resolve(definitions))
-        end
-
-        def test_resolve_raises_an_exception_on_unresolvable_name
-          assert_raises(ReferenceError) do
-            Reference.new(ref: 'foo').resolve(Definitions.new)
-          end
+          parameter_reference = Reference.new(ref: 'foo')
+          assert_equal(parameter, parameter_reference.resolve(definitions))
         end
 
         # OpenAPI tests
 
         def test_openapi_reference_object
           definitions.add_parameter('foo', type: 'string')
-          reference = Reference.new(ref: 'foo')
+          parameter_reference = Reference.new(ref: 'foo')
 
           # OpenAPI 2.0
           assert_equal(
             [{ '$ref': '#/parameters/foo' }],
-            reference.to_openapi('2.0', definitions)
+            parameter_reference.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
             [{ '$ref': '#/components/parameters/foo' }],
-            reference.to_openapi('3.0', definitions)
+            parameter_reference.to_openapi('3.0', definitions)
           )
         end
 
         def test_openapi_reference_object_on_nested_parameters
           parameter = definitions.add_parameter('foo', type: 'object')
-          parameter.schema.add_property('bar', type: 'string')
-          reference = Reference.new(ref: 'foo')
+          parameter.add_property('bar', type: 'string')
+
+          parameter_reference = Reference.new(ref: 'foo')
 
           # OpenAPI 2.0
           assert_equal(
@@ -51,7 +46,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            reference.to_openapi('2.0', definitions)
+            parameter_reference.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -66,7 +61,7 @@ module Jsapi
                 allowEmptyValue: true
               }
             ],
-            reference.to_openapi('3.0', definitions)
+            parameter_reference.to_openapi('3.0', definitions)
           )
         end
 

@@ -5,7 +5,7 @@ module Jsapi
     module OpenAPI
       module Callback
         # Represents a callback object. Applies to \OpenAPI 3.x.
-        class Base < Meta::Base
+        class Model < Base
           ##
           # :attr: operations
           # The operations.

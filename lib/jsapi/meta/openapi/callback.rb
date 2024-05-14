@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'callback/base'
+require_relative 'callback/model'
 require_relative 'callback/reference'
 
 module Jsapi
@@ -8,11 +8,11 @@ module Jsapi
     module OpenAPI
       module Callback
         class << self
-          # Creates a callback or a callback reference.
+          # Creates a callback model or reference.
           def new(keywords = {})
             return Reference.new(keywords) if keywords.key?(:ref)
 
-            Base.new(keywords)
+            Model.new(keywords)
           end
         end
       end

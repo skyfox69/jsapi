@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Parameter
-      class Base < Meta::Base
+      class Model < Base
         ##
         # :attr: deprecated
         # Specifies whether or not the parameter is deprecated.

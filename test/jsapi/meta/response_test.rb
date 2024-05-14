@@ -5,9 +5,9 @@ require 'test_helper'
 module Jsapi
   module Meta
     class ResponseTest < Minitest::Test
-      def test_new
+      def test_new_model
         response = Response.new(type: 'string')
-        assert_kind_of(Response::Base, response)
+        assert_kind_of(Response::Model, response)
       end
 
       def test_new_reference

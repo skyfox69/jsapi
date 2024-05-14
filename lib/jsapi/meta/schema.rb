@@ -18,9 +18,8 @@ module Jsapi
   module Meta
     module Schema
       class << self
-        # Creates a new schema or schema reference. The +:type+ keyword
-        # determines the type of the schema to be created. Possible
-        # types are:
+        # Creates a new schema model or reference. The +:type+ keyword determines
+        # the type of the schema to be created. Possible types are:
         #
         # - <code>"array"</code>
         # - <code>"boolean"</code>
@@ -33,7 +32,9 @@ module Jsapi
         #
         # Raises an InvalidArgumentError if the given type is invalid.
         def new(keywords = {})
-          return Reference.new(keywords) if keywords.key?(:ref) || keywords.key?(:schema)
+          if keywords.key?(:ref) || keywords.key?(:schema)
+            return Reference.new(keywords)
+          end
 
           type = keywords[:type]
           case type&.to_s

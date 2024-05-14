@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Response
-      class Base < Meta::Base
+      class Model < Base
         ##
         # :attr: description
         # The optional description of the response.

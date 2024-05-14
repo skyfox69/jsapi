@@ -6,13 +6,13 @@ module Jsapi
   module Meta
     module OpenAPI
       module Link
-        class BaseTest < Minitest::Test
+        class ModelTest < Minitest::Test
           def test_empty_link_object
-            assert_equal({}, Base.new.to_openapi)
+            assert_equal({}, Model.new.to_openapi)
           end
 
           def test_full_link_object
-            link = Base.new(
+            link_model = Model.new(
               operation_id: 'foo',
               description: 'Description of foo',
               request_body: 'bar',
@@ -20,7 +20,7 @@ module Jsapi
                 url: 'https://foo.bar/foo'
               }
             )
-            link.add_parameter(:bar, nil)
+            link_model.add_parameter(:bar, nil)
 
             assert_equal(
               {
@@ -34,7 +34,7 @@ module Jsapi
                   url: 'https://foo.bar/foo'
                 }
               },
-              link.to_openapi
+              link_model.to_openapi
             )
           end
         end

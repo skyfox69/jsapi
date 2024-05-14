@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'link/base'
+require_relative 'link/model'
 require_relative 'link/reference'
 
 module Jsapi
@@ -8,11 +8,11 @@ module Jsapi
     module OpenAPI
       module Link
         class << self
-          # Creates a link or a link reference.
+          # Creates a link model or reference.
           def new(keywords = {})
             return Reference.new(keywords) if keywords.key?(:ref)
 
-            Base.new(keywords)
+            Model.new(keywords)
           end
         end
       end

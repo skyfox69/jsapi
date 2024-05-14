@@ -5,9 +5,9 @@ require 'test_helper'
 module Jsapi
   module Meta
     class ParameterTest < Minitest::Test
-      def test_new
+      def test_new_model
         parameter = Parameter.new('foo', type: 'string')
-        assert_kind_of(Parameter::Base, parameter)
+        assert_kind_of(Parameter::Model, parameter)
       end
 
       def test_new_reference

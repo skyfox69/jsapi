@@ -5,31 +5,31 @@ require 'test_helper'
 module Jsapi
   module Meta
     module RequestBody
-      class BaseTest < Minitest::Test
+      class ModelTest < Minitest::Test
         def test_type
-          request_body = Base.new(type: 'string')
-          assert_equal('string', request_body.type)
+          request_body_model = Model.new(type: 'string')
+          assert_equal('string', request_body_model.type)
         end
 
         def test_example
-          request_body = Base.new(type: 'string', example: 'foo')
-          assert_equal('foo', request_body.example.value)
+          request_body_model = Model.new(type: 'string', example: 'foo')
+          assert_equal('foo', request_body_model.example.value)
         end
 
         # Predicate methods tests
 
         def test_required_predicate
-          request_body = Base.new(type: 'string', existence: true)
-          assert(request_body.required?)
+          request_body_model = Model.new(type: 'string', existence: true)
+          assert(request_body_model.required?)
 
-          request_body = Base.new(type: 'string', existence: false)
-          assert(!request_body.required?)
+          request_body_model = Model.new(type: 'string', existence: false)
+          assert(!request_body_model.required?)
         end
 
         # OpenAPI tests
 
         def test_minimal_openapi_parameter_object
-          request_body = Base.new(type: 'string', existence: true)
+          request_body_model = Model.new(type: 'string', existence: true)
           assert_equal(
             {
               name: 'body',
@@ -37,12 +37,12 @@ module Jsapi
               required: true,
               type: 'string'
             },
-            request_body.to_openapi_parameter
+            request_body_model.to_openapi_parameter
           )
         end
 
         def test_full_openapi_parameter_object
-          request_body = Base.new(type: 'string', description: 'Foo')
+          request_body_model = Model.new(type: 'string', description: 'Foo')
           assert_equal(
             {
               name: 'body',
@@ -51,12 +51,12 @@ module Jsapi
               required: false,
               type: 'string'
             },
-            request_body.to_openapi_parameter
+            request_body_model.to_openapi_parameter
           )
         end
 
         def test_minimal_openapi_request_body_object
-          request_body = Base.new(type: 'string', existence: true)
+          request_body_model = Model.new(type: 'string', existence: true)
           assert_equal(
             {
               content: {
@@ -68,12 +68,12 @@ module Jsapi
               },
               required: true
             },
-            request_body.to_openapi('3.0')
+            request_body_model.to_openapi('3.0')
           )
         end
 
         def test_full_openapi_request_body_object
-          request_body = Base.new(
+          request_body_model = Model.new(
             type: 'string',
             description: 'Foo',
             example: 'foo'
@@ -96,7 +96,7 @@ module Jsapi
               },
               required: false
             },
-            request_body.to_openapi('3.0')
+            request_body_model.to_openapi('3.0')
           )
         end
       end
