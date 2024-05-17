@@ -41,15 +41,15 @@ module Jsapi
         end
 
         # Returns a hash representing the \OpenAPI response object.
-        def to_openapi(version)
+        def to_openapi(version, definitions)
           version = OpenAPI::Version.from(version)
           if version.major == 2
             {
               description: description,
               schema: schema.to_openapi(version),
               examples: (
-                if examples.present?
-                  { 'application/json' => examples.values.first.value }
+                if (example = examples&.values&.first).present?
+                  { 'application/json' => example.resolve(definitions).value }
                 end
               )
             }
@@ -59,7 +59,7 @@ module Jsapi
               content: {
                 'application/json' => {
                   schema: schema.to_openapi(version),
-                  examples: examples&.transform_values(&:to_openapi_example)
+                  examples: examples&.transform_values(&:to_openapi)
                 }.compact
               },
               links: links&.transform_values(&:to_openapi)

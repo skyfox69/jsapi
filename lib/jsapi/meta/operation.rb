@@ -176,7 +176,7 @@ module Jsapi
           end
           # Responses
           hash[:responses] = responses.transform_values do |response|
-            response.to_openapi(version)
+            response.to_openapi(version, definitions)
           end
           # Callbacks
           if callbacks && version.major > 2

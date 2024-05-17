@@ -3,11 +3,12 @@
 module Jsapi
   module Meta
     class Definitions
-      attr_reader :openapi_root, :operations, :parameters, :request_bodies,
-                  :rescue_handlers, :responses, :schemas
+      attr_reader :examples, :openapi_root, :operations, :parameters,
+                  :request_bodies, :rescue_handlers, :responses, :schemas
 
       def initialize(owner = nil)
         @owner = owner
+        @examples = {}
         @operations = {}
         @parameters = {}
         @request_bodies = {}
@@ -15,6 +16,10 @@ module Jsapi
         @schemas = {}
         @rescue_handlers = []
         @self_and_included = [self]
+      end
+
+      def add_example(name, keywords = {})
+        @examples[name.to_s] = Example.new(keywords)
       end
 
       def add_operation(name = nil, keywords = {})
@@ -43,6 +48,13 @@ module Jsapi
       def add_schema(name, keywords = {})
         name = name.to_s
         @schemas[name] = Schema.new(keywords)
+      end
+
+      def example(name)
+        return unless (name = name.to_s).present?
+
+        definitions = @self_and_included.find { |d| d.examples.key?(name) }
+        definitions.examples[name] if definitions
       end
 
       def include(definitions)
@@ -89,7 +101,8 @@ module Jsapi
                 schemas: openapi_schemas(version),
                 parameters: openapi_parameters(version),
                 requestBodies: openapi_request_bodies(version),
-                responses: openapi_responses(version)
+                responses: openapi_responses(version),
+                examples: openapi_examples
               }.compact.presence
             )
           end
@@ -153,6 +166,13 @@ module Jsapi
         @default_path ||= "/#{default_operation_name}"
       end
 
+      def openapi_examples
+        @self_and_included
+          .map(&:examples).reduce(&:merge)
+          .transform_values(&:to_openapi)
+          .presence
+      end
+
       def openapi_parameters(version)
         @self_and_included
           .map(&:parameters).reduce(&:merge)
@@ -182,7 +202,7 @@ module Jsapi
       def openapi_responses(version)
         @self_and_included
           .map(&:responses).reduce(&:merge).transform_values do |response|
-          response.to_openapi(version)
+          response.to_openapi(version, self)
         end.presence
       end
 

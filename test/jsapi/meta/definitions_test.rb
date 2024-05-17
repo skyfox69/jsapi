@@ -24,6 +24,21 @@ module Jsapi
         definitions.include(definitions)
       end
 
+      # Examples tests
+
+      def test_add_example
+        definitions.add_example('foo', value: 'bar')
+        assert(definitions.examples.key?('foo'))
+      end
+
+      def test_example
+        assert_nil(definitions.example(nil))
+        assert_nil(definitions.example('foo'))
+
+        definitions.add_example('foo', value: 'bar')
+        assert_equal('bar', definitions.example('foo').value)
+      end
+
       # Operations tests
 
       def test_add_operation
@@ -212,6 +227,7 @@ module Jsapi
 
       def test_full_openapi_document
         definitions.openapi = { info: { title: 'Foo', version: '1' } }
+        definitions.add_example('example', value: 'foo')
         definitions.add_operation('operation', path: '/bar')
         definitions.add_parameter('parameter', type: 'string')
         definitions.add_request_body('request_body', type: 'string')
@@ -320,6 +336,11 @@ module Jsapi
                       }
                     }
                   }
+                }
+              },
+              examples: {
+                'example' => {
+                  value: 'foo'
                 }
               }
             }
