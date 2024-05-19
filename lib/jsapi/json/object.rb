@@ -9,11 +9,20 @@ module Jsapi
       attr_reader :raw_attributes
 
       def initialize(attributes, schema, definitions)
+        # Select inherriting schema on polymorphism
+        if (discriminator = schema.discriminator)
+          schema = discriminator.resolve(
+            attributes[discriminator.property_name],
+            definitions
+          )
+        end
+        # Wrap attribute values
+        @raw_attributes = schema.resolve_properties(definitions)
+                                .transform_values do |property|
+          JSON.wrap(attributes[property.name], property.schema, definitions)
+        end
+
         super(schema)
-        @raw_attributes =
-          schema.resolve_properties(definitions).transform_values do |property|
-            JSON.wrap(attributes[property.name], property.schema, definitions)
-          end
       end
 
       # Returns +true+ if all attributes are empty, +false+ otherwise.

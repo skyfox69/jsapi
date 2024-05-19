@@ -32,7 +32,7 @@ module Jsapi
         assert_nil(object[nil])
       end
 
-      def test_attribute
+      def test_attribute_predicate
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
 
@@ -48,6 +48,26 @@ module Jsapi
 
         object = Object.new({ 'foo' => 'bar' }, schema, definitions)
         assert_equal({ 'foo' => 'bar' }, object.attributes)
+      end
+
+      def test_attributes_on_polymorphism
+        definitions
+          .add_schema('base', discriminator: { property_name: 'type' })
+          .add_property('type', type: 'string')
+
+        definitions
+          .add_schema('foo', all_of: [{ schema: 'base' }])
+          .add_property('foo', type: 'string')
+
+        object = Object.new(
+          { 'type' => 'foo', 'foo' => 'bar' },
+          definitions.schema('base'),
+          definitions
+        )
+        assert_equal(
+          { 'type' => 'foo', 'foo' => 'bar' },
+          object.attributes
+        )
       end
 
       # Validation tests

@@ -259,20 +259,20 @@ end
 **Keywords**
 
 - `:schema` - See [Reusable schemas](#reusable-schemas)
-- `:type` - See [The type option](#the-type-option).
-- `:existence` - See [The existence option](#the-existence-option).
+- `:type` - See [The type keyword](#the-type-keyword).
+- `:existence` - See [The existence keyword](#the-existence-keyword).
 - `:default` - The default value.
-- `:conversion` - See [The conversion option](#the-conversion-option).
+- `:conversion` - See [The conversion keyword](#the-conversion-keyword).
 - `:model` - See [API models](#api-models).
-- `:items` - See [The items option](#the-items-option).
-- `:format` - See [The format option](#the-format-option).
+- `:items` - See [The items keyword](#the-items-keyword).
+- `:format` - See [The format keyword](#the-format-keyword).
 - `:in` - The location of the parameter.
 - `:title` - The title of the parameter.
 - `:description` - A description of the parameter.
 - `:example` - See [Defining examples](#defining-examples).
 - `:deprecated` - Specifies whether or not the parameter is deprecated.
 
-Additionally, all of the [validation options](#validation-options) can
+Additionally, all of the [validation keywords](#validation-keywords) can
 be specified to validate top-level parameter values.
 
 ### Defining request bodies
@@ -290,7 +290,7 @@ end
 **Keywords**
 
 - `:schema` - See [Reusable schemas](#reusable-schemas)
-- `:existence` - See [The existence option](#the-existence-option).
+- `:existence` - See [The existence keyword](#the-existence-keyword).
 - `:default` - The default value.
 - `:title` - The title of the request body.
 - `:description` - A description of the request body.
@@ -312,10 +312,10 @@ end
 **Keywords**
 
 - `:schema` - See [Reusable schemas](#reusable-schemas)
-- `:type` - See [The type option](#the-type-option).
-- `:existence` - See [The existence option](#the-existence-option).
-- `:items` - See [The items option](#the-items-option).
-- `:format` - See [The format option](#the-format-option).
+- `:type` - See [The type keyword](#the-type-keyword).
+- `:existence` - See [The existence keyword](#the-existence-keyword).
+- `:items` - See [The items keyword](#the-items-keyword).
+- `:format` - See [The format keyword](#the-format-keyword).
 - `:locale` - The locale used when rendering the response.
 - `:title` - The title of the response.
 - `:description` - A description of the response.
@@ -342,20 +342,20 @@ end
 **Keywords**
 
 - `:schema` - See [Reusable schemas](#reusable-schemas)
-- `:type` - See [The type option](#the-type-option).
-- `:existence` - See [The existence option](#the-existence-option).
+- `:type` - See [The type keyword](#the-type-keyword).
+- `:existence` - See [The existence keyword](#the-existence-keyword).
 - `:default` - The default value.
-- `:conversion` - See [The conversion option](#the-conversion-option).
+- `:conversion` - See [The conversion keyword](#the-conversion-keyword).
 - `:source` - The method to read a property value.
 - `:model` - See [API models](#api-models).
-- `:items` - See [The items option](#the-items-option).
-- `:format` - See [The format option](#the-format-option).
+- `:items` - See [The items keyword](#the-items-keyword).
+- `:format` - See [The format keyword](#the-format-keyword).
 - `:title` - The title of the property.
 - `:description` - A description of the property.
 - `:example` - See [Defining examples](#defining-examples).
 - `:deprecated` - Specifies whether or not the property is deprecated.
 
-Additionally, all of the [validation options](#validation-options) can
+Additionally, all of the [validation keyword](#validation-keywords) can
 be specified to validate nested parameter values.
 
 ### Defining examples
@@ -436,6 +436,28 @@ api_schema 'Bar' do
 end
 ```
 
+Polymorphism:
+
+```ruby
+api_schema 'Base' do
+  discriminator property_name: 'type' do
+    mapping 'foo', 'Foo'
+    mapping 'bar', 'Bar'
+  end
+  property 'type', type: 'string', existence: true
+end
+
+schema 'Foo' do
+  all_of 'Base'
+  property 'foo', type: 'string'
+end
+
+schema 'Bar' do
+  all_of 'Base'
+  property 'bar', type: 'string'
+end
+```
+
 ### Reusable parameters
 
 The `api_parameter` method defines a parameter that can be used in
@@ -479,9 +501,9 @@ api_operation do
 end
 ```
 
-### The `:type` option
+### The `:type` keyword
 
-The `:type` option specifies the type of a parameter, request body, response,
+The `:type` keyword specifies the type of a parameter, request body, response,
 parameter or schema. The supported types correspond to JSON Schema:
 
 - `array`
@@ -493,9 +515,9 @@ parameter or schema. The supported types correspond to JSON Schema:
 
 The default type is `object`.
 
-### The `:existence` option
+### The `:existence` keyword
 
-The `:existence` option combines the presence concepts of Rails and JSON Schema
+The `:existence` keyword combines the presence concepts of Rails and JSON Schema
 by four levels of existence:
 
 - `:present` or `true` -  The parameter or property value must not be empty.
@@ -508,18 +530,18 @@ The default level of existence is `false`.
 Note that `existence: :present` slightly differs from Rails `present?` as it
 treats `false` to be present.
 
-### The `:conversion` option
+### The `:conversion` keyword
 
-The `conversion` option can be used to convert an integer, number or string by
+The `conversion` keyword can be used to convert an integer, number or string by
 a method or a `Proc`, for example:
 
 ```ruby
 parameter 'foo', type: 'string', conversion: :upcase
 ```
 
-### The `:items` option
+### The `:items` keyword
 
-The `:items` options specifies the kind of items that can be contained in an
+The `:items` keyword specifies the kind of items that can be contained in an
 array, for example:
 
 ```ruby
@@ -534,9 +556,9 @@ parameter 'foo', type: 'array' do
 end
 ```
 
-### The `:format` option
+### The `:format` keyword
 
-The `:format` option specifies the format of a string. Possible values are:
+The `:format` keyword specifies the format of a string. Possible values are:
 
 - `date`
 - `date-time`
@@ -544,10 +566,10 @@ The `:format` option specifies the format of a string. Possible values are:
 Parameter and property values are implictly casted to an instance of `Date`
 or `DateTime` if `:format` is specified.
 
-### Validation options
+### Validation keywords
 
-The following options can be specified to validate parameter values. The
-validation options correspond to JSON Schema validations.
+The following keywords can be specified to validate parameter values. The
+validation keywords correspond to JSON Schema validations.
 
 - `:enum` - The valid values.
 - `:minimum` - The minimum value of an integer or a number.

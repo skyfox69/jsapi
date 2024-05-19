@@ -105,7 +105,10 @@ module Jsapi
         end
 
         def test_openapi_schema_object
-          schema = Object.new(all_of: [{ schema: 'Foo' }])
+          schema = Object.new(
+            all_of: [{ schema: 'Foo' }],
+            discriminator: { property_name: 'foo' }
+          )
           schema.add_property('foo', type: 'string', existence: true)
           schema.add_property('bar', type: 'integer', existence: false)
 
@@ -116,6 +119,7 @@ module Jsapi
               allOf: [
                 { '$ref': '#/definitions/Foo' }
               ],
+              discriminator: 'foo',
               properties: {
                 'foo' => {
                   type: 'string'
@@ -136,6 +140,9 @@ module Jsapi
               allOf: [
                 { '$ref': '#/components/schemas/Foo' }
               ],
+              discriminator: {
+                propertyName: 'foo'
+              },
               properties: {
                 'foo' => {
                   type: 'string'

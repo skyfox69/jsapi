@@ -46,6 +46,17 @@ module Jsapi
         when 'object'
           return if object.blank? # {}
 
+          # Select inherriting schema on polymorphism
+          if (discriminator = schema.discriminator)
+            discriminator_property = schema.properties[discriminator.property_name]
+            schema = discriminator.resolve(
+              object.public_send(
+                discriminator_property.source || discriminator_property.name
+              ),
+              @definitions
+            )
+          end
+          # Serialize properties
           schema.resolve_properties(@definitions).transform_values do |property|
             serialize(
               object.public_send(property.source || property.name),

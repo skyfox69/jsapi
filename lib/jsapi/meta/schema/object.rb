@@ -12,6 +12,10 @@ module Jsapi
         alias :add_all_of :add_all_of_reference
 
         ##
+        # :attr: discriminator
+        attribute :discriminator, Discriminator
+
+        ##
         # :attr: model
         # The model class to access nested object parameters by. The default
         # model class is Model::Base.
@@ -43,6 +47,7 @@ module Jsapi
             allOf: all_of_references.map do |schema|
               schema.to_openapi(version)
             end.presence,
+            discriminator: discriminator&.to_openapi(version),
             properties: properties.transform_values do |property|
               property.to_openapi(version)
             end,
