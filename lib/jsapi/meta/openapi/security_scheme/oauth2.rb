@@ -22,6 +22,7 @@ module Jsapi
 
           # Returns a hash representing the security scheme object.
           def to_openapi(version)
+            version = Version.from(version)
             {
               type: 'oauth2',
               description: description

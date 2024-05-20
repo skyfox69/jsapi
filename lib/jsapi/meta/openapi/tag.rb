@@ -21,7 +21,7 @@ module Jsapi
         attribute :name, String
 
         # Returns a hash representing the tag object.
-        def to_openapi
+        def to_openapi(*)
           {
             name: name,
             description: description,

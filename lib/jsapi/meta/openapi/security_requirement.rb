@@ -18,7 +18,7 @@ module Jsapi
         attribute :schemes, { String => Scheme }
 
         # Returns a hash representing the security requirement object.
-        def to_openapi
+        def to_openapi(*)
           schemes&.transform_values(&:scopes) || {}
         end
       end

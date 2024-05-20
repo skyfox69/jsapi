@@ -17,6 +17,7 @@ module Jsapi
           # Returns a hash representing the security scheme object, or +nil+
           # if <code>version.major</code> is 2.
           def to_openapi(version)
+            version = Version.from(version)
             return if version.major == 2
 
             {

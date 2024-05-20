@@ -21,7 +21,7 @@ module Jsapi
         attribute :variables, { String => ServerVariable }
 
         # Returns a hash representing the server object.
-        def to_openapi
+        def to_openapi(*)
           {
             url: url,
             description: description,

@@ -9,6 +9,7 @@ module Jsapi
           class Basic < Base
             # Returns a hash representing the security scheme object.
             def to_openapi(version)
+              version = OpenAPI::Version.from(version)
               if version.major == 2
                 {
                   type: 'basic',

@@ -21,7 +21,7 @@ module Jsapi
         attribute :url, String
 
         # Returns a hash representing the contact object.
-        def to_openapi
+        def to_openapi(*)
           {
             name: name,
             url: url,

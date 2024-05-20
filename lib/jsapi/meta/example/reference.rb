@@ -5,7 +5,7 @@ module Jsapi
     module Example
       class Reference < BaseReference
         # Returns a hash representing the \OpenAPI reference object.
-        def to_openapi
+        def to_openapi(*)
           { '$ref': "#/components/examples/#{ref}" }
         end
       end

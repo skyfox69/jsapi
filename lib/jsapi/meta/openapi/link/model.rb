@@ -32,7 +32,7 @@ module Jsapi
           attribute :server, Server
 
           # Returns a hash representing the link object.
-          def to_openapi
+          def to_openapi(*)
             {
               operationId: operation_id,
               parameters: parameters,

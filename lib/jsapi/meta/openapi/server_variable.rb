@@ -21,7 +21,7 @@ module Jsapi
         attribute :enum, [String]
 
         # Returns a hash representing the server variable object.
-        def to_openapi
+        def to_openapi(*)
           {
             default: default,
             enum: enum.presence, # must not be empty

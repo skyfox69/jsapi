@@ -26,7 +26,7 @@ module Jsapi
         attribute :value
 
         # Returns a hash representing the \OpenAPI example object.
-        def to_openapi
+        def to_openapi(*)
           {}.tap do |hash|
             hash[:summary] = summary if summary.present?
             hash[:description] = description if description.present?

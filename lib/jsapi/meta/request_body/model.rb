@@ -48,7 +48,6 @@ module Jsapi
 
         # Returns a hash representing the \OpenAPI 3.x request body object.
         def to_openapi(version)
-          version = OpenAPI::Version.from(version)
           {
             description: description,
             content: {

@@ -16,7 +16,7 @@ module Jsapi
         attribute :url, String
 
         # Returns a hash representing the external documentation object.
-        def to_openapi
+        def to_openapi(*)
           {
             url: url,
             description: description

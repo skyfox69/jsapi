@@ -90,6 +90,7 @@ module Jsapi
 
         # Returns a hash representing the \OpenAPI object.
         def to_openapi(version, definitions)
+          version = Version.from(version)
           security_schemes =
             self.security_schemes&.transform_values do |value|
               value.to_openapi(version)
