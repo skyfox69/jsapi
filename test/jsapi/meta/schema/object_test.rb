@@ -15,19 +15,24 @@ module Jsapi
         # resolve_properties tests
 
         def test_resolve_properties
-          definitions = Definitions.new
-          definitions.add_schema('Foo').add_property('foo')
+          schema = definitions.add_schema('Foo')
+          schema.add_property('foo', read_only: true)
 
           schema = Object.new
           schema.add_all_of(schema: 'Foo')
-          schema.add_property('bar')
+          schema.add_property('bar', write_only: true)
 
-          properties = schema.resolve_properties(definitions)
+          properties = schema.resolve_properties(nil, definitions)
           assert_equal(%w[foo bar], properties.keys)
+
+          properties = schema.resolve_properties(:read, definitions)
+          assert_equal(%w[foo], properties.keys)
+
+          properties = schema.resolve_properties(:write, definitions)
+          assert_equal(%w[bar], properties.keys)
         end
 
         def test_resolve_properties_raises_an_exception_on_circular_reference
-          definitions = Definitions.new
           definitions.add_schema('Foo').add_all_of(schema: 'Bar')
           definitions.add_schema('Bar').add_all_of(schema: 'Foo')
 
@@ -35,7 +40,7 @@ module Jsapi
           schema.add_all_of(schema: 'Foo')
 
           error = assert_raises(RuntimeError) do
-            schema.resolve_properties(definitions)
+            schema.resolve_properties(nil, definitions)
           end
           assert_equal('circular reference: Foo', error.message)
         end
@@ -156,6 +161,12 @@ module Jsapi
             },
             schema.to_openapi('3.0')
           )
+        end
+
+        private
+
+        def definitions
+          @definitions ||= Definitions.new
         end
       end
     end

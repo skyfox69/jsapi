@@ -17,7 +17,7 @@ module Jsapi
           )
         end
         # Wrap attribute values
-        @raw_attributes = schema.resolve_properties(definitions)
+        @raw_attributes = schema.resolve_properties(:write, definitions)
                                 .transform_values do |property|
           JSON.wrap(attributes[property.name], property.schema, definitions)
         end

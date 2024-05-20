@@ -344,6 +344,8 @@ end
 - `:schema` - See [Reusable schemas](#reusable-schemas)
 - `:type` - See [The type keyword](#the-type-keyword).
 - `:existence` - See [The existence keyword](#the-existence-keyword).
+- `:read_only` - Specifies whether or not the property is read only.
+- `:write_only` - Specifies whether or not the property is write only.
 - `:default` - The default value.
 - `:conversion` - See [The conversion keyword](#the-conversion-keyword).
 - `:source` - The method to read a property value.

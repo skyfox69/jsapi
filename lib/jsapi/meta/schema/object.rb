@@ -30,8 +30,17 @@ module Jsapi
           (@properties ||= {})[name.to_s] = Property.new(name, **keywords)
         end
 
-        def resolve_properties(definitions)
-          merge_properties(definitions, [])
+        def resolve_properties(access, definitions)
+          properties = merge_properties(definitions, [])
+
+          case access
+          when :read
+            properties.reject { |_k, v| v.write_only? }
+          when :write
+            properties.reject { |_k, v| v.read_only? }
+          else
+            properties
+          end
         end
 
         def to_json_schema # :nodoc:

@@ -57,7 +57,7 @@ module Jsapi
             )
           end
           # Serialize properties
-          schema.resolve_properties(@definitions).transform_values do |property|
+          schema.resolve_properties(:read, @definitions).transform_values do |property|
             serialize(
               object.public_send(property.source || property.name),
               property.schema.resolve(@definitions),
