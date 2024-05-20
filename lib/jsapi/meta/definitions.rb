@@ -63,6 +63,15 @@ module Jsapi
         @self_and_included << definitions
       end
 
+      def inspect # :nodoc:
+        "#<#{self.class.name} #{
+          %i[owner operations parameters request_bodies responses schemas
+             examples openapi_root rescue_handlers].map do |name|
+            "#{name}: #{instance_variable_get("@#{name}").inspect}"
+          end.join(', ')
+        }>"
+      end
+
       # Returns the JSON Schema document for the given schema as a +Hash+.
       def json_schema_document(name)
         schema(name)&.to_json_schema&.tap do |hash|

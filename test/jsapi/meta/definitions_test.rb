@@ -7,6 +7,22 @@ module Jsapi
     class DefinitionsTest < Minitest::Test
       class FooBarController; end
 
+      def test_inspect
+        assert_equal(
+          '#<Jsapi::Meta::Definitions ' \
+          'owner: Jsapi::Meta::DefinitionsTest::FooBarController, ' \
+          'operations: {}, ' \
+          'parameters: {}, ' \
+          'request_bodies: {}, ' \
+          'responses: {}, ' \
+          'schemas: {}, ' \
+          'examples: {}, ' \
+          'openapi_root: nil, ' \
+          'rescue_handlers: []>',
+          Definitions.new(FooBarController).inspect
+        )
+      end
+
       # Include tests
 
       def test_include
