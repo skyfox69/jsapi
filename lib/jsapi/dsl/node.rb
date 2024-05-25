@@ -28,6 +28,16 @@ module Jsapi
         raise Error.new(e, args.compact.join(' ').presence)
       end
 
+      def _eval(model, klass = Node, &block)
+        return unless block
+
+        if model.reference?
+          raise Error, 'reference cannot be specified together with a block'
+        end
+
+        klass.new(model, &block)
+      end
+
       def _find_method(name)
         ["#{name}=", "add_#{name}"].find do |method|
           _meta_model.respond_to?(method)
@@ -40,7 +50,7 @@ module Jsapi
 
         _define(name) do
           value = _meta_model.public_send(method, *params)
-          Node.new(value, &block) if block
+          _eval(value, &block)
         end
       end
 

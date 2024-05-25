@@ -12,6 +12,18 @@ module Jsapi
         end
       end
 
+      # Defines the root of an OpenAPI document.
+      #
+      #   openapi do
+      #     info title: 'Foo', version: '1'
+      #   end
+      def openapi(**keywords, &block)
+        _define('openapi') do
+          _meta_model.openapi_root = keywords
+          OpenAPI::Root.new(_meta_model.openapi_root, &block) if block
+        end
+      end
+
       # Defines an operation.
       #
       #   operation 'foo', path: '/foo' do

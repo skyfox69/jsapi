@@ -20,11 +20,6 @@ module Jsapi
         assert(not_found_response.equal?(operation.response(404)))
       end
 
-      def test_raises_exception_on_blank_name
-        error = assert_raises(ArgumentError) { Operation.new('') }
-        assert_equal("operation name can't be blank", error.message)
-      end
-
       # OpenAPI tests
 
       def test_minimal_openapi_operation_object
@@ -69,9 +64,8 @@ module Jsapi
         )
         operation.add_parameter('bar', type: 'string', in: 'query')
         operation.add_response(type: 'string')
-        callback = operation.add_callback('onBar')
-        callback.add_operation('{$request.query.bar}', 'bar')
         operation.add_security.add_scheme('http_basic')
+        operation.add_callback('onBar').add_operation('{$request.query.bar}')
 
         # OpenAPI 2.0
         assert_equal(
@@ -165,7 +159,6 @@ module Jsapi
               'onBar' => {
                 '{$request.query.bar}' => {
                   'get' => {
-                    operationId: 'bar',
                     parameters: [],
                     responses: {}
                   }

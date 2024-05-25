@@ -4,7 +4,7 @@ module Jsapi
   module DSL
     # Used to specify details of a parameter.
     class Parameter < Schema
-      include Example
+      include Examples
     end
   end
 end

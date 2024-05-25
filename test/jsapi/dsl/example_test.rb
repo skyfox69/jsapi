@@ -2,44 +2,56 @@
 
 module Jsapi
   module DSL
-    class ExampleTest < Minitest::Test
-      def test_default_example
-        Parameter.new(parameter_model) { example 'foo' }
-        assert_equal('foo', parameter_model.examples['default'].value)
-      end
-
-      def test_example_with_options
-        Parameter.new(parameter_model) { example value: 'foo' }
-        assert_equal('foo', parameter_model.examples['default'].value)
-      end
-
-      def test_example_with_block
-        Parameter.new(parameter_model) do
-          example { value 'foo' }
+    module Concerns
+      class ExamplesTest < Minitest::Test
+        class Dummy < Node
+          include Examples
         end
-        assert_equal('foo', parameter_model.examples['default'].value)
-      end
 
-      def test_example_with_name_and_options
-        Parameter.new(parameter_model) do
-          example 'foo', value: 'bar'
+        def test_default_example
+          model = define_model do
+            example 'bar'
+          end
+          assert_equal('bar', model.example('default').value)
         end
-        assert_equal('bar', parameter_model.examples['foo'].value)
-      end
 
-      def test_example_with_name_and_block
-        Parameter.new(parameter_model) do
-          example 'foo' do
-            value 'bar'
+        def test_example_with_options
+          model = define_model do
+            example value: 'bar'
+          end
+          assert_equal('bar', model.example('default').value)
+        end
+
+        def test_example_with_block
+          model = define_model do
+            example { value 'bar' }
+          end
+          assert_equal('bar', model.example('default').value)
+        end
+
+        def test_example_with_name_and_options
+          model = define_model do
+            example 'foo', value: 'bar'
+          end
+          assert_equal('bar', model.example('foo').value)
+        end
+
+        def test_example_with_name_and_block
+          model = define_model do
+            example 'foo' do
+              value 'bar'
+            end
+          end
+          assert_equal('bar', model.example('foo').value)
+        end
+
+        private
+
+        def define_model(&block)
+          Meta::Parameter.new('foo').tap do |model|
+            Dummy.new(model, &block)
           end
         end
-        assert_equal('bar', parameter_model.examples['foo'].value)
-      end
-
-      private
-
-      def parameter_model
-        @parameter_model ||= Meta::Parameter.new('parameter')
       end
     end
   end

@@ -15,6 +15,10 @@ module Jsapi
           name.delete_suffix('::Reference').demodulize.underscore
       end
 
+      def reference? # :nodoc:
+        true
+      end
+
       # Resolves +ref+ by looking up the object with that name in +definitions+.
       #
       # Raises a ReferenceError if +ref+ could not be resolved.

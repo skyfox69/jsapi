@@ -53,7 +53,7 @@ module Jsapi
               url: 'https://foo.bar/docs'
             }
           )
-          root.add_callback('foo').add_operation('{$request.query.foo}', 'bar')
+          root.add_callback('onFoo').add_operation('{$request.query.foo}')
           root.add_link('foo', operation_id: 'foo')
           root.add_security_scheme('http_basic', type: 'basic')
           root.add_security.add_scheme('http_basic')
@@ -105,10 +105,9 @@ module Jsapi
               ],
               components: {
                 callbacks: {
-                  'foo' => {
+                  'onFoo' => {
                     '{$request.query.foo}' => {
                       'get' => {
-                        operationId: 'bar',
                         parameters: [],
                         responses: {}
                       }
@@ -158,10 +157,9 @@ module Jsapi
               ],
               components: {
                 callbacks: {
-                  'foo' => {
+                  'onFoo' => {
                     '{$request.query.foo}' => {
                       'get' => {
-                        operationId: 'bar',
                         parameters: [],
                         responses: {}
                       }

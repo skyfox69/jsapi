@@ -4,7 +4,7 @@ module Jsapi
   module DSL
     # Used to specify details of a response.
     class Response < Schema
-      include Example
+      include Examples
 
       # Defines a link or refers a reusable link object.
       #

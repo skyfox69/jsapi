@@ -8,14 +8,19 @@ module Jsapi
         class Model < Base
           ##
           # :attr: operations
-          # The operations.
           attribute :operations, writer: false, default: {}
 
-          # Adds an operation.
-          def add_operation(expression, operation_name, keywords = {})
+          # Adds a callback operation.
+          #
+          # Raises an +ArgumentError+ if +expression+ is blank.
+          def add_operation(expression, keywords = {})
             raise ArgumentError, "expression can't be blank" if expression.blank?
 
-            (@operations ||= {})[expression.to_s] = Operation.new(operation_name, keywords)
+            (@operations ||= {})[expression.to_s] = Operation.new(nil, keywords)
+          end
+
+          def operation(expression) # :nodoc:
+            @operations&.[](expression&.to_s)
           end
 
           # Returns a hash representing the callback object.

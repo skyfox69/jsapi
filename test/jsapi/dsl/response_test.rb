@@ -4,52 +4,55 @@ module Jsapi
   module DSL
     class ResponseTest < Minitest::Test
       def test_example
-        response = Meta::Response.new
-        Response.new(response) { example value: 'foo' }
-        assert_equal('foo', response.examples['default'].value)
+        response = define_response { example 'foo' }
+        assert_equal('foo', response.example('default').value)
       end
 
       # Link tests
 
       def test_link
-        response = Meta::Response.new
-        Response.new(response) do
+        response = define_response do
           link 'foo', operation_id: 'bar'
         end
         assert_equal('bar', response.link('foo').operation_id)
       end
 
       def test_link_with_block
-        response = Meta::Response.new
-        Response.new(response) do
+        response = define_response do
           link('foo') { operation_id 'bar' }
         end
         assert_equal('bar', response.link('foo').operation_id)
       end
 
       def test_link_reference
-        response = Meta::Response.new
-        Response.new(response) { link ref: 'foo' }
+        response = define_response do
+          link ref: 'foo'
+        end
         assert_equal('foo', response.link('foo').ref)
       end
 
       def test_link_reference_by_name
-        response = Meta::Response.new
-        Response.new(response) { link 'foo' }
+        response = define_response do
+          link 'foo'
+        end
         assert_equal('foo', response.link('foo').ref)
       end
 
       def test_raises_an_exception_on_ambiguous_keywords
-        response = Meta::Response.new
         error = assert_raises(Error) do
-          Response.new(response) do
+          define_response do
             link ref: 'foo', operation_id: 'bar'
           end
         end
-        assert_equal(
-          'unsupported keyword: operation_id (at link)',
-          error.message
-        )
+        assert_equal('unsupported keyword: operation_id (at link)', error.message)
+      end
+
+      private
+
+      def define_response(**keywords, &block)
+        Meta::Response.new(keywords).tap do |response|
+          Response.new(response, &block)
+        end
       end
     end
   end

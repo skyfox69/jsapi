@@ -86,10 +86,6 @@ module Jsapi
         end
       end
 
-      def openapi=(keywords = {})
-        @openapi_root = OpenAPI::Root.new(**keywords)
-      end
-
       # Returns a hash representing the OpenAPI document for +version+.
       # Raises an +ArgumentError+ if +version+ is not supported.
       def openapi_document(version = nil)
@@ -116,6 +112,10 @@ module Jsapi
             )
           end
         end.compact
+      end
+
+      def openapi_root=(keywords = {})
+        @openapi_root = OpenAPI::Root.new(**keywords)
       end
 
       def operation(name = nil)

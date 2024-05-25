@@ -26,6 +26,10 @@ module Jsapi
         )
       end
 
+      def test_reference_predicate
+        assert(!Base.new.reference?)
+      end
+
       def test_resolve
         meta_model = Base.new
         assert(meta_model.equal?(meta_model.resolve))

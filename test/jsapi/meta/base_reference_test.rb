@@ -5,6 +5,10 @@ require 'test_helper'
 module Jsapi
   module Meta
     class BaseReferenceTest < Minitest::Test
+      def test_reference_predicate
+        assert_predicate(BaseReference.new, :reference?)
+      end
+
       def test_resolve_recursively
         definitions = Definitions.new
         schema = definitions.add_schema('foo')

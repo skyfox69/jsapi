@@ -4,31 +4,7 @@ module Jsapi
   module DSL
     # Used to specify details of an operation.
     class Operation < Node
-
-      # Defines a callback or refers a reusable callback.
-      #
-      #   # define a callback
-      #   callback 'foo' do
-      #     operation '{$request.query.foo}', 'bar'
-      #   end
-      #
-      #   # refer a reusable callback
-      #   callback ref: 'foo'
-      #
-      # Refers the reusable callback with the same name if neither any
-      # keywords nor a block is specified.
-      #
-      #   callback 'foo'
-      #
-      def callback(name = nil, **keywords, &block)
-        _define('callback', name&.inspect) do
-          name = keywords[:ref] if name.nil?
-          keywords = { ref: name } unless keywords.any? || block
-
-          callback_model = _meta_model.add_callback(name, keywords)
-          Node.new(callback_model, &block) if block
-        end
-      end
+      include Callbacks
 
       # Overrides Object#method to handle +method+ as a keyword.
       def method(method) # :nodoc:
@@ -78,7 +54,7 @@ module Jsapi
           keywords = { ref: name } unless keywords.any? || block
 
           parameter_model = _meta_model.add_parameter(name, keywords)
-          Parameter.new(parameter_model, &block) if block
+          _eval(parameter_model, Parameter, &block)
         end
       end
 
@@ -100,7 +76,7 @@ module Jsapi
       def request_body(**keywords, &block)
         _define('request body') do
           _meta_model.request_body = keywords
-          RequestBody.new(_meta_model.request_body, &block) if block
+          _eval(_meta_model.request_body, RequestBody, &block)
         end
       end
 
@@ -134,7 +110,7 @@ module Jsapi
             keywords = { ref: name || status_or_name }
           end
           response_model = _meta_model.add_response(status, keywords)
-          Response.new(response_model, &block) if block
+          _eval(response_model, Response, &block)
         end
       end
     end

@@ -27,6 +27,11 @@ module Jsapi
         }>"
       end
 
+      # Returns true if and only if this is a reference.
+      def reference?
+        false
+      end
+
       # Returns itself.
       def resolve(*)
         self

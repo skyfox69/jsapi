@@ -130,13 +130,8 @@ module Jsapi
       # The tags used to group operations in an \OpenAPI document.
       attribute :tags, [String]
 
-      # Creates a new operation.
-      #
-      # Raises an +ArgumentError+ if +name+ is blank.
-      def initialize(name, keywords = {})
-        raise ArgumentError, "operation name can't be blank" if name.blank?
-
-        @name = name.to_s
+      def initialize(name = nil, keywords = {})
+        @name = name&.to_s
         super(keywords)
       end
 

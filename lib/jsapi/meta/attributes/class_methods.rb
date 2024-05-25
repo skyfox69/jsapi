@@ -91,7 +91,7 @@ module Jsapi
               type_caster = TypeCaster.new(type, values: values, name: name)
 
               # Attribute writer
-              define_method("#{name}=") do |argument|
+              define_method("#{name}=") do |argument = nil|
                 instance_variable_set(
                   instance_variable_name, type_caster.cast(argument)
                 )

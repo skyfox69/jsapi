@@ -4,153 +4,105 @@ module Jsapi
   module DSL
     class OperationTest < Minitest::Test
       def test_method
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) { method 'post' }
+        operation = define_operation { method 'post' }
         assert_equal('post', operation.method)
       end
 
-      # Callback tests
-
       def test_callback
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) do
-          callback 'foo' do
-            operation '{$request.query.foo}', 'bar'
-          end
-        end
-        assert_equal(
-          { '{$request.query.foo}' => 'bar' },
-          operation.callback('foo').operations.transform_values(&:name)
-        )
-      end
-
-      def test_callback_reference
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) { callback ref: 'foo' }
-        assert_equal('foo', operation.callback('foo').ref)
-      end
-
-      def test_callback_reference_by_name
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) { callback 'foo' }
-        assert_equal('foo', operation.callback('foo').ref)
-      end
-
-      def test_callback_raises_an_exception_on_ambiguous_keywords
-        operation = Meta::Operation.new('foo')
-        error = assert_raises(Error) do
-          Operation.new(operation) do
-            callback 'foo', ref: 'bar' do
-              operation '{$request.query.foo}', 'bar'
-            end
-          end
-        end
-        assert_equal(
-          'unsupported method: operation (at callback "foo")',
-          error.message
-        )
+        operation = define_operation { callback 'onFoo' }
+        assert_predicate(operation.callback('onFoo'), :present?)
       end
 
       # Model tests
 
       def test_model
-        foo = Class.new(Model::Base)
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) { model foo }
-        assert_equal(foo, operation.model)
+        klass = Class.new(Model::Base)
+        operation = define_operation { model klass }
+        assert_equal(klass, operation.model)
       end
 
       def test_model_with_block
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) do
+        operation = define_operation do
           model do
             def foo
               'bar'
             end
           end
         end
-        bar = operation.model.new({})
-        assert_kind_of(Model::Base, bar)
-        assert_equal('bar', bar.foo)
+        model = operation.model.new({})
+        assert_kind_of(Model::Base, model)
+        assert_equal('bar', model.foo)
       end
 
       def test_model_with_class_and_block
-        foo = Class.new(Model::Base)
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) do
-          model foo do
+        klass = Class.new(Model::Base)
+        operation = define_operation do
+          model klass do
             def foo
               'bar'
             end
           end
         end
-        bar = operation.model.new({})
-        assert_kind_of(foo, bar)
-        assert_equal('bar', bar.foo)
+        model = operation.model.new({})
+        assert_kind_of(klass, model)
+        assert_equal('bar', model.foo)
       end
 
       # Parameter tests
 
       def test_parameter
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) do
+        operation = define_operation do
           parameter 'foo', type: 'string'
         end
-        parameter = operation.parameters['foo']
+        parameter = operation.parameter('foo')
         assert_predicate(parameter.schema, :string?)
       end
 
       def test_parameter_with_block
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) do
+        operation = define_operation do
           parameter 'foo', type: 'object' do
             property 'bar', type: 'string'
           end
         end
-        parameter = operation.parameters['foo']
+        parameter = operation.parameter('foo')
         assert_predicate(parameter.schema, :object?)
 
-        property = parameter.schema.properties['bar']
+        property = parameter.schema.property('bar')
         assert_predicate(property.schema, :string?)
       end
 
       def test_parameter_reference
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) { parameter ref: 'foo' }
-        assert_equal('foo', operation.parameters['foo'].ref)
+        operation = define_operation do
+          parameter ref: 'foo'
+        end
+        assert_equal('foo', operation.parameter('foo').ref)
       end
 
       def test_parameter_reference_by_name
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) { parameter 'foo' }
-        assert_equal('foo', operation.parameters['foo'].ref)
+        operation = define_operation do
+          parameter 'foo'
+        end
+        assert_equal('foo', operation.parameter('foo').ref)
       end
 
       def test_parameter_raises_an_exception_on_invalid_type
-        operation = Meta::Operation.new('foo')
-        assert_raises(Error) do
-          Operation.new(operation) { parameter 'foo', type: 'bar' }
+        error = assert_raises(Error) do
+          define_operation { parameter 'foo', type: 'bar' }
         end
+        assert(error.message.start_with?('type must be one of'))
       end
 
       def test_parameter_raises_an_exception_on_ambiguous_keywords
-        operation = Meta::Operation.new('foo')
         error = assert_raises(Error) do
-          Operation.new(operation) do
-            parameter 'foo', ref: 'bar', type: 'string'
-          end
+          define_operation { parameter 'foo', ref: 'bar', type: 'string' }
         end
-        assert_equal(
-          'unsupported keyword: type (at parameter "foo")',
-          error.message
-        )
+        assert_equal('unsupported keyword: type (at parameter "foo")', error.message)
       end
 
       # Request body tests
 
       def test_request_body
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) do
+        operation = define_operation do
           request_body type: 'object' do
             property 'foo', type: 'string'
           end
@@ -158,56 +110,63 @@ module Jsapi
         request_body = operation.request_body
         assert_predicate(request_body.schema, :object?)
 
-        property = request_body.schema.properties['foo']
+        property = request_body.schema.property('foo')
         assert_predicate(property.schema, :string?)
       end
 
-      def test_request_body_reference
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) do
-          request_body schema: 'Foo'
+      def test_request_body_on_schema_reference
+        operation = define_operation do
+          request_body schema: 'foo'
         end
         request_body = operation.request_body
-        assert_equal('Foo', request_body.schema.schema)
+        assert_equal('foo', request_body.schema.schema)
+      end
+
+      def test_request_body_reference
+        operation = define_operation do
+          request_body ref: 'foo'
+        end
+        assert_equal('foo', operation.request_body.ref)
       end
 
       def test_request_body_raises_an_exception_on_invalid_type
-        operation = Meta::Operation.new('foo')
-        assert_raises(Error) do
-          Operation.new(operation) { request_body type: 'foo' }
+        error = assert_raises(Error) do
+          define_operation { request_body type: 'foo' }
         end
+        assert(error.message.start_with?('type must be one of'))
+      end
+
+      def test_request_body_raises_an_exception_on_ambiguous_keywords
+        error = assert_raises(Error) do
+          define_operation { request_body ref: 'foo', type: 'string' }
+        end
+        assert_equal('unsupported keyword: type (at request body)', error.message)
       end
 
       # Response tests
 
-      def test_response
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) do
+      def test_default_response
+        operation = define_operation do
           response do
             property 'foo', type: 'string'
           end
         end
-        response = operation.responses['default']
+        response = operation.response('default')
         assert_predicate(response.schema, :object?)
       end
 
       def test_response_with_status
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) do
+        operation = define_operation do
           response 200 do
             property 'foo', type: 'string'
           end
         end
         response = operation.response(200)
         assert_predicate(response.schema, :object?)
-
-        property = response.schema.properties['foo']
-        assert_predicate(property.schema, :string?)
       end
 
-      def test_response_with_schema_reference
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) do
+      def test_response_on_schema_reference
+        operation = define_operation do
           response schema: 'foo'
         end
         response = operation.responses['default']
@@ -215,44 +174,67 @@ module Jsapi
       end
 
       def test_response_reference
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) { response 'foo' }
+        operation = define_operation do
+          response ref: 'foo'
+        end
         assert_equal('foo', operation.response('default').ref)
       end
 
-      def test_response_reference_with_status
-        operation = Meta::Operation.new('foo')
-        Operation.new(operation) { response 200, 'foo' }
+      def test_response_reference_by_name
+        operation = define_operation do
+          response 'foo'
+        end
+        assert_equal('foo', operation.response('default').ref)
+      end
+
+      def test_response_reference_by_name_with_status
+        operation = define_operation do
+          response 200, 'foo'
+        end
         assert_equal('foo', operation.response(200).ref)
       end
 
       def test_response_raises_an_exception_on_invalid_type
-        operation = Meta::Operation.new('foo')
-        assert_raises(Error) do
-          Operation.new(operation) { response type: 'foo' }
+        error = assert_raises(Error) do
+          define_operation { response type: 'foo' }
         end
+        assert(error.message.start_with?('type must be one of'))
       end
 
       def test_response_raises_an_exception_on_invalid_arguments
         message = 'name cannot be specified together with keywords ' \
                   'or a block (at response 200)'
 
-        operation = Meta::Operation.new('foo')
         error = assert_raises(Error) do
-          Operation.new(operation) do
+          define_operation do
             response 200, 'foo', type: 'object'
           end
         end
         assert_equal(message, error.message)
 
         error = assert_raises(Error) do
-          Operation.new(operation) do
+          define_operation do
             response 200, 'foo' do
               property 'bar', type: 'string'
             end
           end
         end
         assert_equal(message, error.message)
+      end
+
+      def test_response_raises_an_exception_on_ambiguous_keywords
+        error = assert_raises(Error) do
+          define_operation { response ref: 'foo', type: 'string' }
+        end
+        assert_equal('unsupported keyword: type (at response)', error.message)
+      end
+
+      private
+
+      def define_operation(**keywords, &block)
+        Meta::Operation.new(keywords).tap do |operation|
+          Operation.new(operation, &block)
+        end
       end
     end
   end

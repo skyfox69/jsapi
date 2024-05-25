@@ -242,7 +242,7 @@ module Jsapi
       end
 
       def test_full_openapi_document
-        definitions.openapi = { info: { title: 'Foo', version: '1' } }
+        definitions.openapi_root = { info: { title: 'Foo', version: '1' } }
         definitions.add_example('example', value: 'foo')
         definitions.add_operation('operation', path: '/bar')
         definitions.add_parameter('parameter', type: 'string')

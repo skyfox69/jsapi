@@ -78,7 +78,7 @@ module Jsapi
       #     info title: 'Foo', version: '1'
       #   end
       def openapi(**keywords, &block)
-        api_definitions { openapi(keywords, &block) }
+        api_definitions { openapi(**keywords, &block) }
       end
     end
   end
