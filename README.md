@@ -403,7 +403,9 @@ All additional data required to generate OpenAPI documents can be specified as b
 openapi do
   info title: 'Foo', version: 1
   security_scheme 'http_basic', type: 'basic'
-  security 'http_basic'
+  security do
+    scheme 'http_basic'
+  end
 
   # OpenAPI 2.0
   host 'https://foo.bar'
