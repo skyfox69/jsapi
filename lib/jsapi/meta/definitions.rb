@@ -168,7 +168,8 @@ module Jsapi
       private
 
       def default_operation_name
-        @default_operation_name ||= @owner.to_s.demodulize.delete_suffix('Controller').underscore
+        @default_operation_name ||=
+          @owner.to_s.demodulize.delete_suffix('Controller').underscore
       end
 
       def default_path
