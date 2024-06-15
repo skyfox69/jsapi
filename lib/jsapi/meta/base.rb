@@ -6,8 +6,9 @@ module Jsapi
     class Base
       extend Attributes::ClassMethods
 
-      # Creates a new meta model. Raises an +ArgumentError+ if at least one
-      # keyword is not supported.
+      # Creates a new meta model.
+      #
+      # Raises an +ArgumentError+ if at least one keyword is not supported.
       def initialize(keywords = {})
         keywords.each do |key, value|
           if respond_to?(method = "#{key}=")

@@ -5,8 +5,8 @@ module Jsapi
     # Used to serialize a response.
     class Response
 
-      # Creates a new instance to serialize +object+ according to +response+.
-      # References are resolved to API components in +definitions+.
+      # Creates a new instance to serialize +object+ according to +response+. References are
+      # resolved to API components in +definitions+.
       def initialize(object, response, definitions)
         @object = object
         @response = response

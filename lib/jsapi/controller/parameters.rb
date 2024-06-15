@@ -8,13 +8,12 @@ module Jsapi
 
       attr_reader :raw_attributes
 
-      # Creates a new instance that wraps +params+ according to +operation+.
-      # References are resolved to API components in +definitions+.
+      # Creates a new instance that wraps +params+ according to +operation+. References are
+      # resolved to API components in +definitions+.
       #
-      # If +strong+ is true+ parameters that can be mapped are accepted only.
-      # That means that the instance created is invalid if +params+ contains
-      # any parameters that cannot be mapped to a parameter or a request body
-      # property of +operation+.
+      # If +strong+ is true+ parameters that can be mapped are accepted only. That means that
+      # the instance created is invalid if +params+ contains any parameters that can't be
+      # mapped to a parameter or a request body property of +operation+.
       def initialize(params, operation, definitions, strong: false)
         @params = params
         @strong = strong == true
@@ -43,8 +42,8 @@ module Jsapi
         "#{attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ')}>"
       end
 
-      # Validates the request parameters. Returns true if the parameters are
-      # valid, false otherwise. Detected errors are added to +errors+.
+      # Validates the request parameters. Returns true if the parameters are valid, false
+      # otherwise. Detected errors are added to +errors+.
       def validate(errors)
         [
           validate_attributes(errors),

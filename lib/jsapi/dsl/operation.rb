@@ -19,9 +19,8 @@ module Jsapi
       #     end
       #   end
       #
-      # +klass+ can be any subclass of Model::Base. If block is given, an
-      # anonymous class is created that inherits either from +klass+ or
-      # Model::Base.
+      # +klass+ can be any subclass of Model::Base. If block is given, an anonymous class
+      # is created that inherits either from +klass+ or Model::Base.
       def model(klass = nil, &block)
         if block
           klass = Class.new(klass || Model::Base)
@@ -43,8 +42,8 @@ module Jsapi
       #   # refer a reusable parameter
       #   parameter ref: 'foo'
       #
-      # Refers the reusable parameter with the same name if neither any
-      # keywords nor a block is specified.
+      # Refers the reusable parameter with the same name if neither any keywords nor a
+      # block is specified.
       #
       #   parameter 'foo'
       #

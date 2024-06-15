@@ -11,8 +11,7 @@ module Jsapi
 
         ##
         # :attr: external
-        # If true, +value+ is interpreted as a URI pointing to an external
-        # sample value.
+        # If true, +value+ is interpreted as a URI pointing to an external sample value.
         attribute :external, values: [true, false]
 
         ##

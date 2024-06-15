@@ -29,8 +29,8 @@ module Jsapi
         false
       end
 
-      # Validates it against #schema. Returns +true+ if it is valid, +false+
-      # otherwise. Detected errors are added to +errors+.
+      # Validates it against #schema. Returns +true+ if it is valid, +false+ otherwise.
+      # Detected errors are added to +errors+.
       def validate(errors)
         unless schema.existence.reach?(self)
           errors.add(:base, :blank)

@@ -55,8 +55,7 @@ module Jsapi
 
         ##
         # :attr: schemes
-        # The array of transfer protocols supported by the API. Possible
-        # values are:
+        # The array of transfer protocols supported by the API. Possible values are:
         #
         # - <code>"http"</code>
         # - <code>"https"</code>

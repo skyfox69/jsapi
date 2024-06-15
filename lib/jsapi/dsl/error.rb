@@ -5,8 +5,7 @@ module Jsapi
     # Raised when an error occurred while defining an API component.
     class Error < StandardError
 
-      # Creates a new error. +origin+ is the innermost position at where
-      # the error occurred.
+      # Creates a new error. +origin+ is the innermost position at where the error occurred.
       def initialize(error_or_message, origin = nil)
         @path = Array(origin)
         super(
@@ -18,9 +17,8 @@ module Jsapi
         )
       end
 
-      # Overrides <code>StandardError#message</code> to append the whole path of
-      # the position at where the error occurred, for example:
-      # <code>{message} (at foo / bar)</code>.
+      # Overrides <code>StandardError#message</code> to append the whole path of the position
+      # at where the error occurred, for example: <code>{message} (at foo / bar)</code>.
       def message
         message = super
         return message if @path.empty?

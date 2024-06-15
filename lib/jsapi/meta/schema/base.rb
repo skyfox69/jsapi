@@ -42,8 +42,7 @@ module Jsapi
 
         ##
         # :attr: existence
-        # The level of Existence. The default level of existence
-        # is +ALLOW_OMITTED+.
+        # The level of Existence. The default level of existence is +ALLOW_OMITTED+.
         attribute :existence, Existence, default: Existence::ALLOW_OMITTED
 
         ##
@@ -73,8 +72,7 @@ module Jsapi
           @enum = value
         end
 
-        # Returns true if and only if values can be +null+ as specified
-        # by \JSON \Schema.
+        # Returns true if and only if values can be +null+ as specified by \JSON \Schema.
         def nullable?
           existence <= Existence::ALLOW_NIL
         end

@@ -8,8 +8,8 @@ module Jsapi
       # The name of the referred object.
       attribute :ref, String
 
-      # Returns the name of the method to be invoked to look up the referred
-      # object in a Definitions instance.
+      # Returns the name of the method to be invoked to look up the referred object
+      # in a Definitions instance.
       def self.lookup_method_name
         @lookup_method_name ||=
           name.delete_suffix('::Reference').demodulize.underscore

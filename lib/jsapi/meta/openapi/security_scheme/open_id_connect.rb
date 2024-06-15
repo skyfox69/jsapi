@@ -6,9 +6,8 @@ module Jsapi
       module SecurityScheme
         # Represents a security scheme based on OpenID Connect.
         #
-        # OpenID Connect was introduced with \OpenAPI 3.0. Thus, a security
-        # scheme of this class is skipped when generating an \OpenAPI 2.0
-        # document.
+        # OpenID Connect was introduced with \OpenAPI 3.0. Thus, a security scheme of
+        # this class is skipped when generating an \OpenAPI 2.0 document.
         class OpenIDConnect < Base
           ##
           # :attr: open_id_connect_url

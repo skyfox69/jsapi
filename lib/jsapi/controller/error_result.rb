@@ -10,8 +10,7 @@ module Jsapi
 
       delegate :message, :to_s, to: :@exception
 
-      # Creates a new instance to produce an error response with the given
-      # HTTP status code.
+      # Creates a new instance to produce an error response with the given HTTP status code.
       def initialize(exception, status:)
         @exception = exception
         @status = status

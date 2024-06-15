@@ -34,8 +34,9 @@ module Jsapi
           @name = name
         end
 
-        # Casts +value+. Raises an InvalidArgumentError if the (casted)
-        # value is invalid.
+        # Casts +value+.
+        #
+        # Raises an InvalidArgumentError if the (casted) value is invalid.
         def cast(value)
           casted_value = @caster.call(value)
           return casted_value unless @values&.exclude?(casted_value)

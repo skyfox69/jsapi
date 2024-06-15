@@ -11,8 +11,7 @@ module Jsapi
         super('')
       end
 
-      # Overrides <code>StandardError#message</code> to lazily generate the
-      # error message.
+      # Overrides <code>StandardError#message</code> to lazily generate the error message.
       def message
         "#{
           @params.errors.full_messages.map do |message|

@@ -19,8 +19,7 @@ module Jsapi
 
       ##
       # :attr: source
-      # The alternative method to read a property value when serializing
-      # an object.
+      # The alternative method to read a property value when serializing an object.
       attribute :source, Symbol
 
       ##
@@ -42,8 +41,8 @@ module Jsapi
         @schema = Schema.new(keywords)
       end
 
-      # Returns true if the level of existence is greater than or equal to
-      # +ALLOW_NIL+, false otherwise.
+      # Returns true if the level of existence is greater than or equal to +ALLOW_NIL+,
+      # false otherwise.
       def required?
         schema.existence >= Existence::ALLOW_NIL
       end

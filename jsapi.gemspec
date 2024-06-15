@@ -12,8 +12,12 @@ Gem::Specification.new do |s|
   s.license = 'MIT'
   s.authors = ['Denis Göller']
   s.email = 'denis@dmgoeller.de'
-  s.homepage = 'https://github.com/dmgoeller/jsapi'
   s.files = Dir['lib/**/*.rb']
   s.require_paths = ['lib']
   s.required_ruby_version = '>= 2.7.0'
+  s.homepage = 'https://github.com/dmgoeller/jsapi'
+  s.metadata = {
+    'homepage_uri' => 'https://github.com/dmgoeller/jsapi',
+    'source_code_uri' => 'https://github.com/dmgoeller/jsapi'
+  }
 end

@@ -10,8 +10,7 @@ module Jsapi
 
       ##
       # :attr: consumed_mime_types
-      # The MIME types consumed by the operation.
-      # Applies to \OpenAPI 2.0 only.
+      # The MIME types consumed by the operation. Applies to \OpenAPI 2.0 only.
       attribute :consumed_mime_types, [String]
 
       alias :consumes :consumed_mime_types
@@ -52,8 +51,8 @@ module Jsapi
 
       ##
       # :attr: model
-      # The model class to access top-level parameters by. The default
-      # model class is Model::Base.
+      # The model class to access top-level parameters by. The default model class
+      # is Model::Base.
       attribute :model, Class, default: Model::Base
 
       ##
@@ -75,8 +74,7 @@ module Jsapi
 
       ##
       # :attr: consumed_mime_types
-      # The MIME types produced by the operation.
-      # Applies to \OpenAPI 2.0 only.
+      # The MIME types produced by the operation. Applies to \OpenAPI 2.0 only.
       attribute :produced_mime_types, [String]
 
       alias :produces :produced_mime_types
@@ -97,8 +95,7 @@ module Jsapi
 
       ##
       # :attr: schemes
-      # The transfer protocols supported by the operation. Possible
-      # values are:
+      # The transfer protocols supported by the operation. Possible values are:
       #
       # - <code>"http"</code>
       # - <code>"https"</code>

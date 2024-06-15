@@ -9,8 +9,7 @@ module Jsapi
 
         ##
         # :attr: existence
-        # The level of Existence. The default level of existence
-        # is +ALLOW_OMITTED+.
+        # The level of Existence. The default level of existence is +ALLOW_OMITTED+.
         attribute :existence, Existence, default: Existence::ALLOW_OMITTED
 
         def resolve(definitions) # :nodoc:

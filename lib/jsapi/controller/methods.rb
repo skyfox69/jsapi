@@ -3,8 +3,8 @@
 module Jsapi
   module Controller
     module Methods
-      # Returns the Meta::Definitions instance associated with the controller class.
-      # This method can be used to create an OpenAPI document, for example:
+      # Returns the Meta::Definitions instance associated with the controller class. In
+      # particular, this method can be used to create an OpenAPI document, for example:
       #
       #   render(json: api_definitions.openapi_document)
       #
@@ -12,10 +12,10 @@ module Jsapi
         self.class.api_definitions
       end
 
-      # Performs an API operation by calling the given block. The request parameters
-      # are passed as an instance of the operation's model class to the block. The
-      # object returned by the block is implicitly rendered according to the
-      # appropriate +response+ specification.
+      # Performs an API operation by calling the given block. The request parameters are
+      # passed as an instance of the operation's model class to the block. The object
+      # returned by the block is implicitly rendered according to the appropriate
+      # +response+ specification.
       #
       #   api_operation('foo') do |api_params|
       #     # ...
@@ -23,10 +23,9 @@ module Jsapi
       #
       # +operation_name+ can be +nil+ if the controller handles one operation only.
       #
-      # If +strong+ is +true+, parameters that can be mapped are accepted only.
-      # That means that the model passed to the block is invalid if there are any
-      # request parameters that cannot be mapped to a parameter or a request body
-      # property of the operation.
+      # If +strong+ is +true+, parameters that can be mapped are accepted only. That means
+      # that the model passed to the block is invalid if there are any request parameters
+      # that can't be mapped to a parameter or a request body property of the operation.
       #
       def api_operation(operation_name = nil, status: nil, strong: false, &block)
         _perform_api_operation(
@@ -37,8 +36,8 @@ module Jsapi
         )
       end
 
-      # Like +api_operation+, except that a ParametersInvalid exception is raised
-      # if the request parameters are invalid.
+      # Like +api_operation+, except that a ParametersInvalid exception is raised on
+      # invalid request parameters.
       #
       #   api_operation!('foo') do |api_params|
       #     # ...
@@ -59,13 +58,11 @@ module Jsapi
       #
       # +operation_name+ can be +nil+ if the controller handles one operation only.
       #
-      # If +strong+ is +true+, parameters that can be mapped are accepted only.
-      # That means that the model returned is invalid if there are any request
-      # parameters that cannot be mapped to a parameter or a request body property
-      # of the operation.
+      # If +strong+ is +true+, parameters that can be mapped are accepted only. That means
+      # that the model returned is invalid if there are any request parameters that can't be
+      # mapped to a parameter or a request body property of the operation.
       #
       # Note that each call of +api_params+ returns a newly created instance.
-      #
       def api_params(operation_name = nil, strong: false)
         definitions = api_definitions
         _api_params(
@@ -75,8 +72,8 @@ module Jsapi
         )
       end
 
-      # Returns a Response to serialize the JSON representation of +result+ according
-      # to the appropriate +response+ specification.
+      # Returns a Response to serialize the JSON representation of +result+ according to the
+      # appropriate +response+ specification.
       #
       #   render(json: api_response(bar, 'foo', status: 200))
       #

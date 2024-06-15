@@ -63,8 +63,8 @@ module Jsapi
         end
       end
 
-      # Specifies the HTTP status code of an error response rendered when an
-      # exception of any of +klasses+ has been raised.
+      # Specifies the HTTP status code of an error response rendered when an exception of
+      # any of +klasses+ has been raised.
       #
       #   rescue_from Jsapi::Controller::ParametersInvalid, with: 400
       #

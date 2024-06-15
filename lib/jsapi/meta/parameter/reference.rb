@@ -4,10 +4,9 @@ module Jsapi
   module Meta
     module Parameter
       class Reference < BaseReference
-        # Returns an array of hashes. Each element represents an \OpenAPI
-        # parameter object if the type of the referred parameter is
-        # <code>"object"</code>. Otherwise the array contains a single
-        # hash representing the \OpenAPI reference object.
+        # Returns an array of hashes. Each element represents an \OpenAPI parameter object
+        # if the type of the referred parameter is <code>"object"</code>. Otherwise the
+        # array contains a single hash representing the \OpenAPI reference object.
         #
         # Raises a ReferenceError if the reference could not be resolved.
         def to_openapi(version, definitions)

@@ -2,8 +2,8 @@
 
 module Jsapi
   module Model
-    # The base API model used to represent top-level parameters and nested
-    # object parameters by default.
+    # The base API model used to represent top-level parameters and nested object
+    # parameters by default.
     class Base
       extend Naming
 
