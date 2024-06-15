@@ -12,4 +12,3 @@ module Jsapi
     end
   end
 end
-
