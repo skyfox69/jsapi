@@ -5,24 +5,82 @@ module Jsapi
     # Used to specify details of a schema.
     class Schema < Node
 
-      # Includes all of the properties from +schemas+. Each argument must
-      # be the name of a schema defined by ClassMethods#api_schema or
-      # Definitions#schema.
+      # Includes all of the properties from +schemas+. Each argument must be the name of
+      # a schema defined by ClassMethods#api_schema or Definitions#schema.
       def all_of(*schemas)
         schemas.each { |schema| _meta_model.add_all_of({ schema: schema }) }
       end
 
-      # Specifies a sample matching the schema.
+      ##
+      # :method: conversion
+      # :args: method_or_proc
+      # Specifies the method or +Proc+ to convert values by.
+      #
+      #   conversion :upcase
+      #
+      #   conversion ->(value) { value.upcase }
+      #
+      # Raises an error if type is other than <code>"integer"</code>,
+      # <code>"number"</code> or <code>"string"</code>.
+
+      ##
+      # :method: default
+      # :args: value
+      # Specifies the default value.
+
+      ##
+      # :method: deprecated
+      # :args: arg
+      # Specifies whether or not the schema is deprecated.
+      #
+      #   deprecated true
+
+      ##
+      # :method: description
+      # :args: arg
+      # Specifies the description of the schema.
+
+      ##
+      # :method: enum
+      # :args: values
+      # Specifies the allowed values.
+      #
+      #   enum %w[foo bar]
+
+      ## :method: external_docs
+      ## :args: **keywords, &blocks
+      # Specifies the external documentation.
+      #
+      # See Meta::Schema::Base#external_docs for further information.
+
+      # Adds a sample matching the schema.
+      #
+      #   example 'foo'
       def example(example)
         _meta_model.add_example(example)
       end
 
-      # Overrides Kernel#format to handle +format+ as a keyword.
-      def format(format) # :nodoc:
+      ##
+      # :method: existence
+      # :args: level
+      # Specifies the level of existence.
+      #
+      #   existence :allow_nil
+      #
+      # See Meta::Schema::Base#existence for further information.
+
+      # Specifies the format of a string.
+      #
+      #   format 'date-time'
+      #
+      # Raises an Error if type is other than <code>"string"</code>.
+      #
+      # See Meta::Schema::String#format for further information.
+      def format(format)
         _keyword(:format, format)
       end
 
-      # Specifies the kind of items that can be contained in an array.
+      # Defines the kind of items that can be contained in an array.
       #
       #   items do
       #     property 'foo', type: 'string'
@@ -38,7 +96,57 @@ module Jsapi
         Schema.new(_meta_model.items, &block) if block
       end
 
-      # Specifies the model class to access nested object parameters by.
+      ##
+      # :method: max_items
+      # :args: value
+      # Specifies the maximum length of an array.
+      #
+      # Raises an Error if type is other than <code>"array"</code>.
+
+      ##
+      # :method: max_length
+      # :args: value
+      # Specifies the maximum length of a string.
+      #
+      # Raises an Error if type is other than <code>"string"</code>.
+
+      ##
+      # :method: maximum
+      # :args: value_or_keywords
+      # Specifies the maximum value of an integer or a number.
+      #
+      #   maximum 9
+      #
+      #   maximum value: 10, exclusive: true
+      #
+      # Raises an Error if type is other than <code>"integer"</code> or <code>"number"</code>.
+
+      ##
+      # :method: min_items
+      # :args: value
+      # Specifies the minimum length of an array.
+      #
+      # Raises an Error if type is other than <code>"array"</code>.
+
+      ##
+      # :method: min_length
+      # :args: min_length
+      # Specifies the minimum length of a string.
+      #
+      # Raises an Error if type is other than <code>"string"</code>.
+
+      ##
+      # :method: minimum
+      # :args: value_or_keywords
+      # Specifies the minimum value of an integer or a number.
+      #
+      #   minimum 1
+      #
+      #   minimum value: 0, exclusive: true
+      #
+      # Raises an Error if type is other than <code>"integer"</code> or <code>"number"</code>.
+
+      # Defines the model class to access nested object parameters by.
       #
       #   model Foo do
       #     def bar
@@ -46,9 +154,8 @@ module Jsapi
       #     end
       #   end
       #
-      # +klass+ can be any subclass of Model::Base. If block is given, an
-      # anonymous class is created that inherits either from +klass+ or
-      # Model::Base.
+      # +klass+ can be any subclass of Model::Base. If block is given, an anonymous class
+      # is created that inherits either from +klass+ or Model::Base.
       #
       # Raises an Error if type is other than <code>"object"</code>.
       def model(klass = nil, &block)
@@ -63,11 +170,25 @@ module Jsapi
         _meta_model.model = klass
       end
 
-      # Defines a property.
+      ##
+      # :method: multiple_of
+      # :args: value
+      # Specifies the value an integer or a number must be a multiple of.
+      #
+      # Raises an Error if type is other than <code>"integer"</code> or <code>"number"</code>.
+
+      ##
+      # :method: pattern
+      # :args: regex
+      # Specifies the regular expression a string must match.
+      #
+      # Raises an Error if type is other than <code>"string"</code>.
+
+      # Adds a property.
       #
       #   property 'foo', type: 'string'
       #
-      #   property 'foo' do
+      #   property 'foo', type: 'object' do
       #     property 'bar', type: 'string'
       #   end
       #
@@ -82,6 +203,11 @@ module Jsapi
           Schema.new(property_model, &block) if block
         end
       end
+
+      ##
+      # :method: title
+      # :args: arg
+      # Specifies the title of the schema.
     end
   end
 end

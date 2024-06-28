@@ -5,7 +5,7 @@ module Jsapi
     class Operation < Base
       ##
       # :attr: callbacks
-      # The optional callbacks. Applies to \OpenAPI 3.x.
+      # The optional callbacks. Applies to \OpenAPI 3.0 and higher.
       attribute :callbacks, { String => OpenAPI::Callback }
 
       ##
@@ -24,12 +24,12 @@ module Jsapi
 
       ##
       # :attr: description
-      # The optional description of the operation.
+      # The description of the operation.
       attribute :description, String
 
       ##
       # :attr: external_docs
-      # The optional OpenAPI::ExternalDocumentation object.
+      # The OpenAPI::ExternalDocumentation object.
       attribute :external_docs, OpenAPI::ExternalDocumentation
 
       ##
@@ -45,9 +45,7 @@ module Jsapi
       # - <code>"put"</code>
       #
       # The default HTTP verb is <code>"get"</code>.
-      attribute :method,
-                values: %w[delete get head options patch post put],
-                default: 'get'
+      attribute :method, values: %w[delete get head options patch post put], default: 'get'
 
       ##
       # :attr: model
@@ -63,9 +61,7 @@ module Jsapi
       ##
       # :attr: parameters
       # The parameters of the operation.
-      attribute :parameters, { String => Parameter },
-                default: {},
-                writer: false
+      attribute :parameters, { String => Parameter }, default: {}, writer: false
 
       ##
       # :attr: path
@@ -83,15 +79,13 @@ module Jsapi
 
       ##
       # :attr: request_body
-      # The optional request body of the operation.
+      # The request body of the operation.
       attribute :request_body, RequestBody
 
       ##
       # :attr: responses
       # The responses of the operation.
-      attribute :responses, { String => Response },
-                default: {},
-                default_key: 'default'
+      attribute :responses, { String => Response }, default: {}, default_key: 'default'
 
       ##
       # :attr: schemes
@@ -114,17 +108,17 @@ module Jsapi
 
       ##
       # :attr: servers
-      # The OpenAPI::Server objects. Applies to \OpenAPI 3.x.
+      # The OpenAPI::Server objects. Applies to \OpenAPI 3.0 and higher.
       attribute :servers, [OpenAPI::Server]
 
       ##
       # :attr: summary
-      # The optional summary of the operation.
+      # The short summary of the operation.
       attribute :summary, String
 
       ##
       # :attr: tags
-      # The tags used to group operations in an \OpenAPI document.
+      # The tags. Tags are used to group operations in an \OpenAPI document.
       attribute :tags, [String]
 
       def initialize(name = nil, keywords = {})

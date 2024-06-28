@@ -12,7 +12,7 @@ module Jsapi
         end
       end
 
-      # Defines the root of an OpenAPI document.
+      # Defines the root of an \OpenAPI document.
       #
       #   openapi do
       #     info title: 'Foo', version: '1'

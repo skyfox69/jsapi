@@ -11,12 +11,12 @@ module Jsapi
 
         ##
         # :attr: description
-        # The optional description of the parameter.
+        # The description of the parameter.
         attribute :description, String
 
         ##
         # :attr_reader: examples
-        # The optional examples.
+        # The examples.
         attribute :examples, { String => Example }, default_key: 'default'
 
         ##

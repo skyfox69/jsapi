@@ -2,9 +2,9 @@
 
 ## Why Jsapi?
 
-Jsapi is a good choice when you want to build a Rails application providing JSON APIs consumed
-by one ore more clients. You can use Jsapi to read requests, produce responses and create
-OpenAPI documents. All of that can be specified at one place.
+Jsapi can be used to build Rails application providing JSON APIs consumed by other client
+applications. It provides an easy way to read requests, produce responses and create
+OpenAPI documents.
 
 Jsapi supports OpenAPI 2.0, 3.0 and 3.1.
 
@@ -230,7 +230,7 @@ The OpenAPI document produced looks like:
 
 ## Jsapi DSL
 
-The following class methods are provided to define API components:
+The `Jsapi::DSL` module provides the following methods to define API components:
 
 - [api_operation](#defining-api-operations) - Defines a single API operation.
 - [api_parameter](#defining-reusable-parameters) - Defines a reusable parameter.
@@ -239,10 +239,6 @@ The following class methods are provided to define API components:
 - [api_schema](#defining-reusable-schemas) - Defines a reusable schema.
 - [api_rescue_from](#defining-rescue-handlers) - Defines a rescue handler.
 - api_include - Includes API definitions from other classes.
-
-These methods can be integrated into a controller class by inheriting from
-`Jsapi::Controller::Base` or including `Jsapi::DSL`. The `Jsapi::DSL` module can also be
-included in any other class.
 
 API components can also be defined inside an `api_definitions` block, for example:
 
@@ -263,14 +259,14 @@ api_definitions do
 end
 ```
 
-The names and types of API components can be strings or symbols. All options
-except `type` can also be specified inside the block, for example:
+The names and types of API components can be strings or symbols. All keywords except `type`
+can also be specified by a method call, for example:
 
 ```ruby
-# Define option as keyword argument
+# Define keyword by argument
 parameter 'foo', type: 'string', existence: true
 
-# Define option inside the block
+# Define keyword by method call
 parameter 'bar', type: 'string' do
   existence true
 end
@@ -293,13 +289,13 @@ The operation name can be omitted, if the controller handles one operation only.
 
 **Keywords**
 
-- `:model` - See [API models](#api-models).
-- `:method` - The HTTP verb of the operation.
-- `:path` - The relative path of the operation.
-- `:tags` - One or more tags used to group operations in an OpenAPI document.
-- `:summary` - A short summary of the operation.
-- `:description` - A desciption of the operation.
 - `:deprecated` - Specifies whether or not the operation is deprecated.
+- `:description` - The description of the operation.
+- `:method` - The HTTP verb of the operation.
+- `:model` - See [API models](#api-models).
+- `:path` - The relative path of the operation.
+- `:summary` - The short summary of the operation.
+- `:tags` - One or more tags used to group operations in an OpenAPI document.
 
 ### Defining parameters
 
@@ -311,7 +307,7 @@ api_operation 'foo' do
 end
 ```
 
-It is also possible to define nested object parameters in place.
+A nested parameter can be defined as below.
 
 ```ruby
 api_operation 'foo' do
@@ -323,22 +319,23 @@ end
 
 **Keywords**
 
-- `:schema` - See [Reusable schemas](#reusable-schemas)
-- `:type` - See [The type keyword](#the-type-keyword).
-- `:existence` - See [The existence keyword](#the-existence-keyword).
-- `:default` - The default value.
 - `:conversion` - See [The conversion keyword](#the-conversion-keyword).
-- `:model` - See [API models](#api-models).
+- `:default` - The default value.
+- `:deprecated` - Specifies whether or not the parameter is deprecated.
+- `:description` - The description of the parameter.
+- `:example` - See [Defining examples](#defining-examples).
+- `:existence` - See [The existence keyword](#the-existence-keyword).
+- `:in` - The location of the parameter. The location can be `"path"` or `"query"`.
+  The default location is `"query"`.
 - `:items` - See [The items keyword](#the-items-keyword).
 - `:format` - See [The format keyword](#the-format-keyword).
-- `:in` - The location of the parameter.
+- `:model` - See [API models](#api-models).
+- `:schema` - See [Reusable schemas](#reusable-schemas)
 - `:title` - The title of the parameter.
-- `:description` - A description of the parameter.
-- `:example` - See [Defining examples](#defining-examples).
-- `:deprecated` - Specifies whether or not the parameter is deprecated.
+- `:type` - See [The type keyword](#the-type-keyword).
 
-Additionally, all of the [validation keywords](#validation-keywords) can
-be specified to validate top-level parameter values.
+Additionally, all of the [validation keywords](#validation-keywords) can be specified to
+validate parameter values.
 
 ### Defining request bodies
 
@@ -354,13 +351,13 @@ end
 
 **Keywords**
 
-- `:schema` - See [Reusable schemas](#reusable-schemas)
-- `:existence` - See [The existence keyword](#the-existence-keyword).
 - `:default` - The default value.
-- `:title` - The title of the request body.
-- `:description` - A description of the request body.
-- `:example` - See [Defining examples](#defining-examples).
 - `:deprecated` - Specifies whether or not the request body is deprecated.
+- `:description` - The description of the request body.
+- `:example` - See [Defining examples](#defining-examples).
+- `:existence` - See [The existence keyword](#the-existence-keyword).
+- `:schema` - See [Reusable schemas](#reusable-schemas)
+- `:title` - The title of the request body.
 
 ### Defining responses
 
@@ -376,17 +373,17 @@ end
 
 **Keywords**
 
-- `:schema` - See [Reusable schemas](#reusable-schemas)
-- `:type` - See [The type keyword](#the-type-keyword).
+- `:deprecated` - Specifies whether or not the response is deprecated.
+- `:description` - The description of the response.
+- `:example` - See [Defining examples](#defining-examples).
 - `:existence` - See [The existence keyword](#the-existence-keyword).
 - `:items` - See [The items keyword](#the-items-keyword).
 - `:format` - See [The format keyword](#the-format-keyword).
-- `:locale` - The locale used when rendering the response.
-- `:title` - The title of the response.
-- `:description` - A description of the response.
-- `:example` - See [Defining examples](#defining-examples).
-- `:deprecated` - Specifies whether or not the response is deprecated.
 - `:links` - The linked operations.
+- `:locale` - The locale to be used when rendering a response.
+- `:schema` - See [Reusable schemas](#reusable-schemas)
+- `:title` - The title of the response.
+- `:type` - See [The type keyword](#the-type-keyword).
 
 ### Defining properties
 
@@ -396,8 +393,6 @@ A property can be defined as below.
 property 'foo', type: 'string'
 ```
 
-It is also possible to define nested objects in place.
-
 ```ruby
 property 'foo' do
   property 'bar', type: 'string'
@@ -406,24 +401,24 @@ end
 
 **Keywords**
 
-- `:schema` - See [Reusable schemas](#reusable-schemas)
-- `:type` - See [The type keyword](#the-type-keyword).
-- `:existence` - See [The existence keyword](#the-existence-keyword).
-- `:read_only` - Specifies whether or not the property is read only.
-- `:write_only` - Specifies whether or not the property is write only.
-- `:default` - The default value.
 - `:conversion` - See [The conversion keyword](#the-conversion-keyword).
-- `:source` - The method to read a property value.
-- `:model` - See [API models](#api-models).
+- `:default` - The default value.
+- `:deprecated` - Specifies whether or not the property is deprecated.
+- `:description` -  The description of the property.
+- `:example` - See [Defining examples](#defining-examples).
+- `:existence` - See [The existence keyword](#the-existence-keyword).
 - `:items` - See [The items keyword](#the-items-keyword).
 - `:format` - See [The format keyword](#the-format-keyword).
+- `:model` - See [API models](#api-models).
+- `:read_only` - Specifies whether or not the property is read only.
+- `:schema` - See [Reusable schemas](#reusable-schemas)
+- `:source` - The method to read a property value.
 - `:title` - The title of the property.
-- `:description` - A description of the property.
-- `:example` - See [Defining examples](#defining-examples).
-- `:deprecated` - Specifies whether or not the property is deprecated.
+- `:type` - See [The type keyword](#the-type-keyword).
+- `:write_only` - Specifies whether or not the property is write only.
 
-Additionally, all of the [validation keyword](#validation-keywords) can
-be specified to validate nested parameter values.
+Additionally, all of the [validation keyword](#validation-keywords) can be specified to
+validate nested parameter values.
 
 ### Defining examples
 
@@ -433,7 +428,7 @@ A simple sample value can be specified as below.
 property 'foo', type: 'string', example: 'bar'
 ```
 
-It is also possible to define multiple sample values.
+Multiple sample values can be specified as below.
 
 ```ruby
 schema 'Foo', type: 'object' do
@@ -446,15 +441,15 @@ end
 
 **Keywords**
 
-- `value` - The sample value
+- `description` - The description of the example.
 - `external` - Specifies whether `value` is the URI of an external example.
-- `summary` - A short summary of the example.
-- `description` - A description of the example.
+- `summary` - The short summary of the example.
+- `value` - The sample value
 
 ### Defining rescue handlers
 
-Rescue handlers are used to render error responses on errors. A rescue handler
-can be defined as below.
+Rescue handlers are used to render error responses when an exception is raised. A rescue
+handler can be defined as below.
 
 ```ruby
 api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
@@ -483,8 +478,8 @@ end
 
 ### Reusable schemas
 
-The `api_schema` method defines a schema that can be associated with
-parameters, request bodies, responses and properties.
+The `api_schema` method defines a schema that can be associated with parameters,
+request bodies, responses and properties.
 
 ```ruby
 api_schema 'Foo' do
@@ -496,8 +491,7 @@ api_operation do
 end
 ```
 
-The properties of a schema can be included in another schema by calling
-the `all_of` method.
+The properties of a schema can be included in another schema by calling the `all_of` method.
 
 ```ruby
 api_schema 'Bar' do
@@ -529,8 +523,7 @@ end
 
 ### Reusable parameters
 
-The `api_parameter` method defines a parameter that can be used in
-multiple operations.
+The `api_parameter` method defines a parameter that can be used in multiple operations.
 
 ```ruby
 api_parameter 'foo', type: 'string'
@@ -542,8 +535,7 @@ end
 
 ### Reusable request bodies
 
-The `api_request_body` method defines a request body that ca be used in
-multiple operations.
+The `api_request_body` method defines a request body that ca be used in multiple operations.
 
 ```ruby
 api_request_body 'foo' do
@@ -557,8 +549,7 @@ end
 
 ### Reusable responses
 
-The `api_response` method defines a response that can be used in
-multiple operations.
+The `api_response` method defines a response that can be used in multiple operations.
 
 ```ruby
 api_response 'foo' do
@@ -606,6 +597,8 @@ a method or a `Proc`, for example:
 
 ```ruby
 parameter 'foo', type: 'string', conversion: :upcase
+
+parameter 'foo', type: 'string', conversion: ->(value) { value.upcase }
 ```
 
 ### The `:items` keyword
@@ -641,14 +634,14 @@ The following keywords can be specified to validate parameter values. The
 validation keywords correspond to JSON Schema validations.
 
 - `:enum` - The valid values.
-- `:minimum` - The minimum value of an integer or a number.
-- `:maximum` - The maximum value of an integer or a number.
-- `:multiple_of` - The value an integer or a number must be a multiple of.
-- `:min_length` - The minimum length of a string.
-- `:max_length` - The maximum length of a string.
-- `:pattern` - The regular expression a string must match.
-- `:min_items` - The minimum length of an array.
 - `:max_items` - The maximum length of an array.
+- `:max_length` - The maximum length of a string.
+- `:maximum` - The maximum value of an integer or a number.
+- `:min_items` - The minimum length of an array.
+- `:min_length` - The minimum length of a string.
+- `:minimum` - The minimum value of an integer or a number.
+- `:multiple_of` - The value an integer or a number must be a multiple of.
+- `:pattern` - The regular expression a string must match.
 
 The minimum and maximum value can be specified as shown below.
 

@@ -6,6 +6,18 @@ module Jsapi
     class Response < Schema
       include Examples
 
+      ##
+      # :method: deprecated
+      # :args: arg
+      # Specifies whether or not the response is deprecated.
+      #
+      #   deprecated true
+
+      ##
+      # :method: description
+      # :args: arg
+      # Specifies the description of the response.
+
       # Defines a link or refers a reusable link object.
       #
       #   # define a link
@@ -28,6 +40,23 @@ module Jsapi
           Node.new(link_model, &block) if block
         end
       end
+
+      ##
+      # :method: locale
+      # :args: arg
+      # Specifies the locale to be used when rendering a response.
+      #
+      #   locale :en
+
+      ##
+      # :method: ref
+      # :args: name
+      # Specifies the name of the reusable response to be referred.
+
+      ##
+      # :method: schema
+      # :args: name
+      # Specifies the name of the reusable schema to be referred.
     end
   end
 end

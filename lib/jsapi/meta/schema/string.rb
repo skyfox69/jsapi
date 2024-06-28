@@ -8,7 +8,7 @@ module Jsapi
 
         ##
         # :attr: format
-        # The optional format of a string. Possible values are:
+        # The format of a string. Possible values are:
         #
         # - <code>"date"</code>
         # - <code>"date-time"</code>

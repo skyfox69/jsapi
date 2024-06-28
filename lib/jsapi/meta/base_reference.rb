@@ -2,6 +2,7 @@
 
 module Jsapi
   module Meta
+    # The base reference class.
     class BaseReference < Base
       ##
       # :attr: ref

@@ -12,7 +12,7 @@ module Jsapi
 
         ##
         # :attr: default
-        # The optional default value.
+        # The default value.
         attribute :default
 
         ##
@@ -22,7 +22,7 @@ module Jsapi
 
         ##
         # :attr: description
-        # The optional description of the schema.
+        # The description of the schema.
         attribute :description, ::String
 
         ##
@@ -32,12 +32,12 @@ module Jsapi
 
         ##
         # :attr: examples
-        # The optional examples.
+        # The samples matching the schema.
         attribute :examples, [::Object]
 
         ##
         # :attr: external_docs
-        # The optional OpenAPI::ExternalDocumentation object.
+        # The OpenAPI::ExternalDocumentation object.
         attribute :external_docs, OpenAPI::ExternalDocumentation
 
         ##
@@ -47,7 +47,7 @@ module Jsapi
 
         ##
         # :attr: title
-        # The optional title of the schema.
+        # The title of the schema.
         attribute :title, String
 
         ##

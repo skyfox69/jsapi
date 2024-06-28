@@ -6,12 +6,28 @@ module Jsapi
     class Operation < Node
       include Callbacks
 
-      # Overrides Object#method to handle +method+ as a keyword.
-      def method(method) # :nodoc:
-        _keyword(:method, method)
+      ##
+      # :method: deprecated
+      # :args: arg
+      # Specifies whether or not the operation is deprecated.
+      #
+      #   deprecated true
+
+      ##
+      # :method: description
+      # :args: arg
+      # Specifies the description of the operation.
+
+      # Specifies the HTTP verb of the operation.
+      #
+      #   method 'post'
+      #
+      # See Meta::Operation#method for further information.
+      def method(arg)
+        _keyword(:method, arg)
       end
 
-      # Specifies the model class to access top-level parameters by.
+      # Defines the model class to access top-level parameters by.
       #
       #   model Foo do
       #     def bar
@@ -29,7 +45,7 @@ module Jsapi
         _meta_model.model = klass
       end
 
-      # Defines a parameter or refers a reusable parameter.
+      # Adds a parameter or a reference to a reusable parameter.
       #
       #   # define a parameter
       #   parameter 'foo', type: 'string'
@@ -57,6 +73,11 @@ module Jsapi
         end
       end
 
+      ##
+      # :method: path
+      # :args: arg
+      # Specifies the relative path of the operation.
+
       # Defines the request body or refers a reusable request body.
       #
       #   # define a request body
@@ -79,7 +100,7 @@ module Jsapi
         end
       end
 
-      # Defines a response or refers a reusable response.
+      # Adds a response or a reference to a reusable response.
       #
       #   # define a response
       #   response 200, type: 'object' do
@@ -112,6 +133,25 @@ module Jsapi
           _eval(response_model, Response, &block)
         end
       end
+
+      ##
+      # :method: summary
+      # :args: arg
+      # Specifies the short summary of the operation.
+
+      ##
+      # :method: tag
+      # :args: name
+      # Adds a tag.
+      #
+      #   tag 'foo'
+
+      ##
+      # :method: tags
+      # :args: names
+      # Specifies all of the tags at once.
+      #
+      #   tags %w[foo bar]
     end
   end
 end

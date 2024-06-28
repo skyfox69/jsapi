@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       module Callback
-        # Represents a callback object. Applies to \OpenAPI 3.x.
+        # Represents a callback object. Applies to \OpenAPI 3.0 and higher.
         class Model < Base
           ##
           # :attr: operations

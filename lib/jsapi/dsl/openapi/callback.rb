@@ -6,7 +6,7 @@ module Jsapi
       # Used to specify details of a callback.
       class Callback < Node
 
-        # Defines a callback operation.
+        # Adds a callback operation.
         #
         #   operation '{$request.query.foo}' do
         #     parameter 'bar', type: 'string'

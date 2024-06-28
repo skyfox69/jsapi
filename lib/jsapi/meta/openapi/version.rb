@@ -4,6 +4,9 @@ module Jsapi
   module Meta
     module OpenAPI
       class Version
+        # Creates an \OpenAPI version from +version+.
+        #
+        # Raises an +ArgumentError+ if +version+ isn`t supported.
         def self.from(version)
           return version if version.is_a?(Version)
 

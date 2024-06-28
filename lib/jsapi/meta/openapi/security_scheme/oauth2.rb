@@ -16,8 +16,7 @@ module Jsapi
           # - <code>"password"</code>
           #
           # Values are OAuthFlow objects.
-          attribute :oauth_flows,
-                    { String => OAuthFlow },
+          attribute :oauth_flows, { String => OAuthFlow },
                     keys: %w[authorization_code client_credentials implicit password]
 
           # Returns a hash representing the security scheme object.

@@ -30,11 +30,11 @@ module Jsapi
               APIKey.new(keywords)
             when 'basic' # OpenAPI 2.0
               HTTP.new(keywords.merge(scheme: 'basic'))
-            when 'http' # OpenAPI 3.x
+            when 'http' # OpenAPI 3.0 and higher
               HTTP.new(keywords)
             when 'oauth2'
               OAuth2.new(keywords)
-            when 'open_id_connect' # OpenAPI 3.x
+            when 'open_id_connect' # OpenAPI 3.0 and higher
               OpenIDConnect.new(keywords)
             else
               raise InvalidArgumentError.new(

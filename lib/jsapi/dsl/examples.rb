@@ -3,7 +3,7 @@
 module Jsapi
   module DSL
     module Examples
-      # Defines an example.
+      # Adds an example.
       #
       #   example 'foo', value: 'bar'
       #

@@ -7,7 +7,7 @@ module Jsapi
       class Root < Base
         ##
         # :attr: callbacks
-        # The reusable Callback objects. Applies to \OpenAPI 3.x.
+        # The reusable Callback objects. Applies to \OpenAPI 3.0 and higher.
         attribute :callbacks, { String => Callback }
 
         ##
@@ -41,7 +41,7 @@ module Jsapi
 
         ##
         # :attr: links
-        # The reusable Link objects. Applies to \OpenAPI 3.x.
+        # The reusable Link objects. Applies to \OpenAPI 3.0 and higher.
         attribute :links, { String => Link }
 
         ##
@@ -79,7 +79,7 @@ module Jsapi
 
         ##
         # :attr: servers
-        # The array of Server objects. Applies to \OpenAPI 3.x.
+        # The array of Server objects. Applies to \OpenAPI 3.0 and higher.
         attribute :servers, [Server]
 
         ##

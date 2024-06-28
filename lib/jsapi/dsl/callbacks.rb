@@ -3,7 +3,7 @@
 module Jsapi
   module DSL
     module Callbacks
-      # Defines an OpenAPI callback or refers a reusable callback.
+      # Defines an \OpenAPI callback or refers a reusable callback.
       #
       #   # define a callback
       #   callback 'foo' do

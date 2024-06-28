@@ -16,7 +16,7 @@ module Jsapi
 
         ##
         # :attr_reader: schema
-        # The Schema of the parameter.
+        # The Schema of the request body.
         attribute :schema, writer: false
 
         delegate_missing_to :schema
