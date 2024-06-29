@@ -13,7 +13,7 @@ end
 RDoc::Task.new do |rdoc|
   rdoc.main = 'README.md'
   rdoc.rdoc_dir = 'rdoc'
-  rdoc.rdoc_files.include('lib', 'LICENSE', 'README.md')
+  rdoc.rdoc_files.include('lib', 'CHANGELOG.md', 'LICENSE', 'README.md')
 
   # rdoc.template = 'horo'
   # rdoc.options << '-f' << 'horo'
