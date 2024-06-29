@@ -5,7 +5,7 @@ module Jsapi
     class SchemaTest < Minitest::Test
       def test_all_of
         schema = define_schema { all_of 'foo' }
-        assert_equal(%w[foo], schema.all_of_references.map(&:schema))
+        assert_equal(%w[foo], schema.all_of_references.map(&:ref))
       end
 
       def test_example

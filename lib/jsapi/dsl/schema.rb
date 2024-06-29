@@ -8,7 +8,7 @@ module Jsapi
       # Includes all of the properties from +schemas+. Each argument must be the name of
       # a schema defined by ClassMethods#api_schema or Definitions#schema.
       def all_of(*schemas)
-        schemas.each { |schema| _meta_model.add_all_of({ schema: schema }) }
+        schemas.each { |schema| _meta_model.add_all_of({ ref: schema }) }
       end
 
       ##

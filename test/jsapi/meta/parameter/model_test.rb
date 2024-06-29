@@ -17,6 +17,11 @@ module Jsapi
           assert_equal('bar', parameter_model.example.value)
         end
 
+        def test_schema
+          parameter_model = Model.new('foo', schema: 'bar')
+          assert_equal('bar', parameter_model.schema.ref)
+        end
+
         def test_raises_exception_on_blank_parameter_name
           error = assert_raises(ArgumentError) { Model.new('') }
           assert_equal("parameter name can't be blank", error.message)

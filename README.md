@@ -259,14 +259,14 @@ api_definitions do
 end
 ```
 
-The names and types of API components can be strings or symbols. All keywords except `type`
-can also be specified by a method call, for example:
+The names and types of API components can be strings or symbols. All keywords except  `ref`,
+`schema` and `type` can also be specified by a method call within the block, for example:
 
 ```ruby
 # Define keyword by argument
 parameter 'foo', type: 'string', existence: true
 
-# Define keyword by method call
+# Define keyword by method call within the block
 parameter 'bar', type: 'string' do
   existence true
 end

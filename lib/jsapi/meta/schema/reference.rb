@@ -4,9 +4,6 @@ module Jsapi
   module Meta
     module Schema
       class Reference < BaseReference
-        alias :schema :ref
-        alias :schema= :ref=
-
         ##
         # :attr: existence
         # The level of Existence. The default level of existence is +ALLOW_OMITTED+.

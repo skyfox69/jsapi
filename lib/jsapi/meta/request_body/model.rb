@@ -26,6 +26,7 @@ module Jsapi
           super(keywords.extract!(:description, :examples))
 
           add_example(value: keywords.delete(:example)) if keywords.key?(:example)
+          keywords[:ref] = keywords.delete(:schema) if keywords.key?(:schema)
 
           @schema = Schema.new(keywords)
         end

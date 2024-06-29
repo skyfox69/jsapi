@@ -106,11 +106,11 @@ module Jsapi
           .add_property('type', type: 'string')
 
         definitions
-          .add_schema('foo', all_of: [{ schema: 'base' }])
+          .add_schema('foo', all_of: [{ ref: 'base' }])
           .add_property('foo', type: 'string')
 
         definitions
-          .add_schema('bar', all_of: [{ schema: 'base' }])
+          .add_schema('bar', all_of: [{ ref: 'base' }])
           .add_property('bar', type: 'string')
 
         response_model = Meta::Response.new(schema: 'base')

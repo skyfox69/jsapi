@@ -119,7 +119,7 @@ module Jsapi
           request_body schema: 'foo'
         end
         request_body = operation.request_body
-        assert_equal('foo', request_body.schema.schema)
+        assert_equal('foo', request_body.schema.ref)
       end
 
       def test_request_body_reference
@@ -170,7 +170,7 @@ module Jsapi
           response schema: 'foo'
         end
         response = operation.responses['default']
-        assert_equal('foo', response.schema.schema)
+        assert_equal('foo', response.schema.ref)
       end
 
       def test_response_reference

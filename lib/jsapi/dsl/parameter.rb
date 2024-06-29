@@ -24,16 +24,6 @@ module Jsapi
       # Specifies the location of the parameter.
       #
       # See Meta::Parameter::Model#in for further information.
-
-      ##
-      # :method: ref
-      # :args: name
-      # Specifies the name of the reusable parameter to be referred.
-
-      ##
-      # :method: schema
-      # :args: name
-      # Specifies the name of the reusable schema to be referred.
     end
   end
 end

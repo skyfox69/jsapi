@@ -17,16 +17,6 @@ module Jsapi
       # :method: description
       # :args: arg
       # Specifies the description of the request body.
-
-      ##
-      # :method: ref
-      # :args: name
-      # Specifies the name of the reusable request body to be referred.
-
-      ##
-      # :method: schema
-      # :args: name
-      # Specifies the name of the reusable schema to be referred.
     end
   end
 end

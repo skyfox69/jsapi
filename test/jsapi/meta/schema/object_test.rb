@@ -19,7 +19,7 @@ module Jsapi
           schema.add_property('foo', read_only: true)
 
           schema = Object.new
-          schema.add_all_of(schema: 'Foo')
+          schema.add_all_of(ref: 'Foo')
           schema.add_property('bar', write_only: true)
 
           properties = schema.resolve_properties(nil, definitions)
@@ -33,11 +33,11 @@ module Jsapi
         end
 
         def test_resolve_properties_raises_an_exception_on_circular_reference
-          definitions.add_schema('Foo').add_all_of(schema: 'Bar')
-          definitions.add_schema('Bar').add_all_of(schema: 'Foo')
+          definitions.add_schema('Foo').add_all_of(ref: 'Bar')
+          definitions.add_schema('Bar').add_all_of(ref: 'Foo')
 
           schema = Object.new
-          schema.add_all_of(schema: 'Foo')
+          schema.add_all_of(ref: 'Foo')
 
           error = assert_raises(RuntimeError) do
             schema.resolve_properties(nil, definitions)
@@ -60,7 +60,7 @@ module Jsapi
         end
 
         def test_json_schema_object
-          schema = Object.new(all_of: [{ schema: 'Foo' }])
+          schema = Object.new(all_of: [{ ref: 'Foo' }])
           schema.add_property('foo', type: 'string', existence: true)
           schema.add_property('bar', type: 'integer', existence: false)
 
@@ -111,7 +111,7 @@ module Jsapi
 
         def test_openapi_schema_object
           schema = Object.new(
-            all_of: [{ schema: 'Foo' }],
+            all_of: [{ ref: 'Foo' }],
             discriminator: { property_name: 'foo' }
           )
           schema.add_property('foo', type: 'string', existence: true)

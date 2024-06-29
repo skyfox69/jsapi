@@ -6,12 +6,6 @@ module Jsapi
   module Meta
     module Schema
       class ReferenceTest < Minitest::Test
-        def test_reference_by_schema
-          schema_reference = Reference.new(schema: 'foo')
-          assert_equal('foo', schema_reference.ref)
-          assert_equal('foo', schema_reference.schema)
-        end
-
         def test_resolve
           definitions = Definitions.new
           schema = definitions.add_schema('foo')

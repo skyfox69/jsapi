@@ -16,6 +16,11 @@ module Jsapi
           assert_equal('foo', request_body_model.example.value)
         end
 
+        def test_schema
+          request_body_model = Model.new(schema: 'bar')
+          assert_equal('bar', request_body_model.schema.ref)
+        end
+
         # Predicate methods tests
 
         def test_required_predicate

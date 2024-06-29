@@ -38,9 +38,6 @@ module Jsapi
       def test_new_reference
         schema = Schema.new(ref: 'foo')
         assert_kind_of(Schema::Reference, schema)
-
-        schema = Schema.new(schema: 'foo')
-        assert_kind_of(Schema::Reference, schema)
       end
 
       def test_new_string_schema

@@ -72,7 +72,7 @@ module Jsapi
           {}.tap do |properties|
             all_of_references.each do |reference|
               schema = reference.resolve(definitions)
-              raise "circular reference: #{reference.schema}" if schema.in?(path)
+              raise "circular reference: #{reference.ref}" if schema.in?(path)
 
               properties.merge!(schema.merge_properties(definitions, path + [self]))
             end

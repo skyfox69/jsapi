@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jsapi
-  # Holds the current GEM version
+  # Holds the current GEM version.
   module Version
     VERSION = '0.1.2'
 

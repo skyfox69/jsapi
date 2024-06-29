@@ -47,12 +47,14 @@ module Jsapi
         def initialize(name, keywords = {})
           raise ArgumentError, "parameter name can't be blank" if name.blank?
 
+          @name = name.to_s
+
           keywords = keywords.dup
           super(keywords.extract!(:deprecated, :description, :examples, :in))
 
           add_example(value: keywords.delete(:example)) if keywords.key?(:example)
+          keywords[:ref] = keywords.delete(:schema) if keywords.key?(:schema)
 
-          @name = name.to_s
           @schema = Schema.new(keywords)
         end
 

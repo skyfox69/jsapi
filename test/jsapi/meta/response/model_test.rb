@@ -16,6 +16,11 @@ module Jsapi
           assert_equal('foo', response_model.example.value)
         end
 
+        def test_schema
+          response_model = Model.new(schema: 'bar')
+          assert_equal('bar', response_model.schema.ref)
+        end
+
         # OpenAPI tests
 
         def test_minimal_openapi_response_object

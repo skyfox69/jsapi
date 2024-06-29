@@ -47,16 +47,6 @@ module Jsapi
       # Specifies the locale to be used when rendering a response.
       #
       #   locale :en
-
-      ##
-      # :method: ref
-      # :args: name
-      # Specifies the name of the reusable response to be referred.
-
-      ##
-      # :method: schema
-      # :args: name
-      # Specifies the name of the reusable schema to be referred.
     end
   end
 end

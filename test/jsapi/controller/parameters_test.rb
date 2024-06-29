@@ -17,7 +17,7 @@ module Jsapi
         definitions.add_schema('Foo').add_property('foo', type: 'string')
 
         parameter = operation.add_parameter('bar', type: 'object')
-        parameter.schema.add_all_of(schema: 'Foo')
+        parameter.schema.add_all_of(ref: 'Foo')
         parameter.schema.add_property('bar', type: 'string')
 
         parameters = parameters(bar: { 'foo' => 'FOO', 'bar' => 'BAR' })
@@ -30,7 +30,7 @@ module Jsapi
 
         operation.request_body = { type: 'object' }
         request_body = operation.request_body
-        request_body.schema.add_all_of(schema: 'Foo')
+        request_body.schema.add_all_of(ref: 'Foo')
         request_body.schema.add_property('bar', type: 'string')
 
         parameters = parameters(foo: 'foo', bar: 'bar')
