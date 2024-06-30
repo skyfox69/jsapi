@@ -96,12 +96,13 @@ module Jsapi
             end
 
           if version.major == 2
+            uri = servers&.first&.then { |server| URI(server.url) }
             {
               swagger: '2.0',
               info: info&.to_openapi,
-              host: host,
-              basePath: base_path,
-              schemes: schemes,
+              host: host || uri&.hostname,
+              basePath: base_path || uri&.path,
+              schemes: schemes || uri&.scheme&.then { |scheme| [scheme] },
               consumes: consumed_mime_types,
               produces: produced_mime_types,
               securityDefinitions: security_schemes,

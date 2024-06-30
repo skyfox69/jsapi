@@ -195,6 +195,19 @@ module Jsapi
             root.to_openapi(Version.from('3.1'), definitions)
           )
         end
+
+        def test_to_openapi_takes_the_url_parts_from_the_first_server_object
+          openapi_object = Root.new(
+            servers: [
+              { url: 'https://foo.bar/foo' }
+            ]
+          ).to_openapi(Version.from('2.0'), Definitions.new)
+
+          assert_equal(%w[https], openapi_object[:schemes])
+          assert_equal('foo.bar', openapi_object[:host])
+          assert_equal('/foo', openapi_object[:basePath])
+
+        end
       end
     end
   end

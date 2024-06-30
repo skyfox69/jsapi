@@ -8,6 +8,11 @@
   for example `schema 'foo', schema: 'bar'`. Instead, the `ref` keyword can be used,
   for example `schema 'foo', ref: 'bar'`.
 
+### New features
+
+- The `schemes`, `host` and `basPath` of an OpenAPI 2.0 object are taken from the URL
+  of the first server object if these attributes are not specified explicitly.
+
 ## 0.1.2 (2024-06-28)
 
 ### Changes
