@@ -6,6 +6,12 @@ module Jsapi
   module Meta
     module Schema
       class ArrayTest < Minitest::Test
+        def test_items
+          assert_equal('string', Array.new(items: { type: 'string' }).items.type)
+          assert_equal('foo', Array.new(items: { ref: 'foo' }).items.ref)
+          assert_equal('foo', Array.new(items: { schema: 'foo' }).items.ref)
+        end
+
         def test_max_items
           schema = Array.new(items: { type: 'string' }, max_items: 3)
           assert_equal(3, schema.max_items)

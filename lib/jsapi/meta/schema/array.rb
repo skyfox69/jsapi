@@ -7,7 +7,7 @@ module Jsapi
         ##
         # :attr: items
         # The Schema defining the kind of items.
-        attribute :items, Schema
+        attribute :items, Schema, writer: false
 
         ##
         # :attr: max_items
@@ -18,6 +18,14 @@ module Jsapi
         # :attr: min_items
         # The minimum length of an array.
         attribute :min_items, writer: false
+
+        def items=(keywords = {}) # :nodoc:
+          if keywords.key?(:schema)
+            keywords = keywords.dup
+            keywords[:ref] = keywords.delete(:schema)
+          end
+          @items = Schema.new(keywords)
+        end
 
         def max_items=(value) # :nodoc:
           add_validation('max_items', Validation::MaxItems.new(value))
