@@ -24,6 +24,12 @@ module Jsapi
         assert_equal(DateTime.new(2099, 12, 31), string.value)
       end
 
+      def test_duration_value
+        schema = Meta::Schema.new(type: 'string', format: 'duration')
+        string = String.new('P1D', schema)
+        assert_equal(ActiveSupport::Duration.build(86_400), string.value)
+      end
+
       def test_empty_predicate
         schema = Meta::Schema.new(type: 'string')
         assert_predicate(String.new('', schema), :empty?)

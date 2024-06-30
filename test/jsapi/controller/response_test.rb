@@ -61,6 +61,13 @@ module Jsapi
         assert_equal('"2099-12-31T00:00:00.000+00:00"', response.to_json)
       end
 
+      def test_serializes_a_string_on_duration_format
+        response_model = Meta::Response.new(type: 'string', format: 'duration')
+        duration = ActiveSupport::Duration.build(86_400)
+        response = Response.new(duration, response_model, definitions)
+        assert_equal('"P1D"', response.to_json)
+      end
+
       def test_converts_a_string
         response_model = Meta::Response.new(type: 'string', conversion: :upcase)
         response = Response.new('Foo', response_model, definitions)

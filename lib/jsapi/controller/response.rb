@@ -71,6 +71,8 @@ module Jsapi
               object.to_date
             when 'date-time'
               object.to_datetime
+            when 'duration'
+              object.iso8601
             else
               object.to_s
             end

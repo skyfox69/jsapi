@@ -12,8 +12,9 @@ module Jsapi
         #
         # - <code>"date"</code>
         # - <code>"date-time"</code>
+        # - <code>"duration"</code>
         #
-        attribute :format, ::String, values: %w[date date-time]
+        attribute :format, ::String, values: %w[date date-time duration]
 
         ##
         # :attr: max_length

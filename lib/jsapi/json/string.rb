@@ -14,6 +14,8 @@ module Jsapi
             value.to_date
           when 'date-time'
             value.to_datetime
+          when 'duration'
+            ActiveSupport::Duration.parse(value)
           else
             value.to_s
           end
