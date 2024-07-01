@@ -8,13 +8,8 @@ module Jsapi
 
         ##
         # :attr: format
-        # The format of a string. Possible values are:
-        #
-        # - <code>"date"</code>
-        # - <code>"date-time"</code>
-        # - <code>"duration"</code>
-        #
-        attribute :format, ::String, values: %w[date date-time duration]
+        # The format of a string.
+        attribute :format, ::String
 
         ##
         # :attr: max_length

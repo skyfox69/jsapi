@@ -4,14 +4,19 @@
 
 ### Breaking changes
 
-- The `schema` method no longer takes the `schema` keyword to refer another schema,
-  for example `schema 'foo', schema: 'bar'`. Instead, the `ref` keyword can be used,
+- The `schema` method no longer takes the `schema` keyword to refer another schema, for
+  example `schema 'foo', schema: 'bar'`. Instead, the `ref` keyword can be used,
   for example `schema 'foo', ref: 'bar'`.
 
-### New features
+### Changes
 
-- The `schemes`, `host` and `basPath` of an OpenAPI 2.0 object are taken from the URL
-  of the first server object if these attributes are not specified explicitly.
+- The `:format` keyword is no longer restricted to `"date"` and `"date-time"`.
+
+- A parameter or property value is casted to an instance of `ActiveSupport::Duration` when
+  type is `"string"` and format is `"duration"`.
+
+- The `schemes`, `host` and `basPath` fields of an OpenAPI 2.0 object are taken from the
+  URL of the first server object if they are not specified explicitly.
 
 ## 0.1.2 (2024-06-28)
 

@@ -620,14 +620,15 @@ end
 
 ### The `:format` keyword
 
-The `:format` keyword specifies the format of a string. Possible values are:
+The `:format` keyword specifies the format of a string. If the format is `"date"`,
+`"date-time"` or `"duration"`, parameter and property values are implicitly
+casted as below.
 
-- `date` - ISO 8601 formatted date. Parameter and property values are implicitly casted
-  to an instance of `Date`.
-- `date-time` - ISO 8601 formatted date and time. Parameter and property values are
-  implicitly casted to an instance of `DateTime`
-- `duration` - ISO 8601 formatted duration. Parameter and property values are implicitly
-  casted to an instance of `ActiveSupport::Duration`.
+- `"date"` - `Date`
+- `"date-time"` - `DateTime`
+- `"duration"` - `ActiveSupport::Duration`
+
+All other formats are only used for documentation.
 
 ### Validation keywords
 
