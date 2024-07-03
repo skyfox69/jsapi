@@ -14,7 +14,7 @@ module Jsapi
       end
 
       # Used by #validate to test whether or not it is empty.
-      # Returns +false+ by default.
+      # Returns false by default.
       def empty?
         false
       end
@@ -23,13 +23,13 @@ module Jsapi
         "#<#{self.class} #{value.inspect}>"
       end
 
-      # Used by #validate to test whether or not it is +null+.
-      # Returns +false+ by default.
+      # Used by #validate to test whether or not it is null.
+      # Returns false by default.
       def null?
         false
       end
 
-      # Validates it against #schema. Returns +true+ if it is valid, +false+ otherwise.
+      # Validates it against #schema. Returns true if it is valid, false otherwise.
       # Detected errors are added to +errors+.
       def validate(errors)
         unless schema.existence.reach?(self)

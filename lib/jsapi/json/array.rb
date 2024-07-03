@@ -11,7 +11,7 @@ module Jsapi
         end
       end
 
-      # Returns +true+ if it contains no elements, +false+ otherwise.
+      # Returns true if it contains no elements, false otherwise.
       def empty?
         @elements.empty?
       end
@@ -20,8 +20,7 @@ module Jsapi
         "#<#{self.class.name} [#{@elements.map(&:inspect).join(', ')}]>"
       end
 
-      # See Value#validate.
-      def validate(errors)
+      def validate(errors) # :nodoc:
         return false unless super
 
         @elements.map { |element| element.validate(errors) }.all?

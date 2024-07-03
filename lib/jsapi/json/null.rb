@@ -5,7 +5,7 @@ module Jsapi
     # Represents +null+.
     class Null < Value
 
-      # Returns allways +true+.
+      # Returns true.
       def empty?
         true
       end
@@ -14,7 +14,7 @@ module Jsapi
         "#<#{self.class}>"
       end
 
-      # Returns allways +true+.
+      # Returns true.
       def null?
         true
       end

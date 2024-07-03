@@ -8,6 +8,9 @@
   example `schema 'foo', schema: 'bar'`. Instead, the `ref` keyword can be used,
   for example `schema 'foo', ref: 'bar'`.
 
+- `api_operation!` raises an `Jsapi::Controller::ParametersInvalid` instead of a
+  `ParserError` if a string can't be converted to a `Date` or `DateTime`.
+
 ### Changes
 
 - The `:format` keyword is no longer restricted to `"date"` and `"date-time"`.

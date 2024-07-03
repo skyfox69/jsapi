@@ -25,7 +25,7 @@ module Jsapi
         super(schema)
       end
 
-      # Returns +true+ if all attributes are empty, +false+ otherwise.
+      # Returns true if all attributes are empty, false otherwise.
       def empty?
         @raw_attributes.values.all?(&:empty?)
       end
