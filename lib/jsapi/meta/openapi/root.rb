@@ -5,6 +5,8 @@ module Jsapi
     module OpenAPI
       # Represents an \OpenAPI object.
       class Root < Base
+        include Extensions
+
         ##
         # :attr: callbacks
         # The reusable Callback objects. Applies to \OpenAPI 3.0 and higher.
@@ -95,38 +97,40 @@ module Jsapi
               value.to_openapi(version)
             end
 
-          if version.major == 2
-            uri = servers&.first&.then { |server| URI(server.url) }
-            {
-              swagger: '2.0',
-              info: info&.to_openapi,
-              host: host || uri&.hostname,
-              basePath: base_path || uri&.path,
-              schemes: schemes || uri&.scheme&.then { |scheme| [scheme] },
-              consumes: consumed_mime_types,
-              produces: produced_mime_types,
-              securityDefinitions: security_schemes,
-              security: security_requirements&.map(&:to_openapi),
-              tags: tags&.map(&:to_openapi),
-              externalDocs: external_docs&.to_openapi
-            }
-          else
-            {
-              openapi: version.minor.zero? ? '3.0.3' : '3.1.0',
-              info: info&.to_openapi,
-              servers: servers&.map(&:to_openapi),
-              components: {
-                callbacks: callbacks&.transform_values do |callback|
-                  callback.to_openapi(version, definitions)
-                end,
-                links: links&.transform_values(&:to_openapi),
-                securitySchemes: security_schemes
-              }.compact.presence,
-              security: security_requirements&.map(&:to_openapi),
-              tags: tags&.map(&:to_openapi),
-              externalDocs: external_docs&.to_openapi
-            }
-          end.compact
+          with_openapi_extensions(
+            if version.major == 2
+              uri = servers&.first&.then { |server| URI(server.url) }
+              {
+                swagger: '2.0',
+                info: info&.to_openapi,
+                host: host || uri&.hostname,
+                basePath: base_path || uri&.path,
+                schemes: schemes || uri&.scheme&.then { |scheme| [scheme] },
+                consumes: consumed_mime_types,
+                produces: produced_mime_types,
+                securityDefinitions: security_schemes,
+                security: security_requirements&.map(&:to_openapi),
+                tags: tags&.map(&:to_openapi),
+                externalDocs: external_docs&.to_openapi
+              }
+            else
+              {
+                openapi: version.minor.zero? ? '3.0.3' : '3.1.0',
+                info: info&.to_openapi,
+                servers: servers&.map(&:to_openapi),
+                components: {
+                  callbacks: callbacks&.transform_values do |callback|
+                    callback.to_openapi(version, definitions)
+                  end,
+                  links: links&.transform_values(&:to_openapi),
+                  securitySchemes: security_schemes
+                }.compact.presence,
+                security: security_requirements&.map(&:to_openapi),
+                tags: tags&.map(&:to_openapi),
+                externalDocs: external_docs&.to_openapi
+              }
+            end
+          )
         end
       end
     end

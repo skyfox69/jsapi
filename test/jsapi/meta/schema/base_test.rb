@@ -164,6 +164,8 @@ module Jsapi
               url: 'https://foo.bar/docs'
             }
           )
+          schema.add_openapi_extension('foo', 'bar')
+
           # OpenAPI 2.0
           assert_equal(
             {
@@ -174,7 +176,8 @@ module Jsapi
               example: 'bar',
               externalDocs: {
                 url: 'https://foo.bar/docs'
-              }
+              },
+              'x-foo': 'bar'
             },
             schema.to_openapi('2.0')
           )
@@ -189,7 +192,8 @@ module Jsapi
               deprecated: true,
               externalDocs: {
                 url: 'https://foo.bar/docs'
-              }
+              },
+              'x-foo': 'bar'
             },
             schema.to_openapi('3.0')
           )
@@ -204,7 +208,8 @@ module Jsapi
               deprecated: true,
               externalDocs: {
                 url: 'https://foo.bar/docs'
-              }
+              },
+              'x-foo': 'bar'
             },
             schema.to_openapi('3.1')
           )

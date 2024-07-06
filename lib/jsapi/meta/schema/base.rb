@@ -4,6 +4,8 @@ module Jsapi
   module Meta
     module Schema
       class Base < Meta::Base
+        include OpenAPI::Extensions
+
         TYPES = %w[array boolean integer number object string].freeze # :nodoc:
 
         TYPES.each do |type|
@@ -96,37 +98,40 @@ module Jsapi
         # Returns a hash representing the \OpenAPI schema object.
         def to_openapi(version)
           version = OpenAPI::Version.from(version)
-          if version.major == 2
-            # OpenAPI 2.0
-            {
-              type: type,
-              example: examples&.first
-            }
-          elsif version.minor.zero?
-            # OpenAPI 3.0
-            {
-              type: type,
-              nullable: nullable?.presence,
-              examples: examples,
-              deprecated: deprecated?.presence
-            }
-          else
-            # OpenAPI 3.1
-            {
-              type: nullable? ? [type, 'null'] : type,
-              examples: examples,
-              deprecated: deprecated?.presence
-            }
-          end.tap do |hash|
-            hash[:title] = title
-            hash[:description] = description
-            hash[:default] = default
-            hash[:externalDocs] = external_docs&.to_openapi
 
-            validations.each_value do |validation|
-              hash.merge!(validation.to_openapi_validation(version))
+          with_openapi_extensions(
+            if version.major == 2
+              # OpenAPI 2.0
+              {
+                type: type,
+                example: examples&.first
+              }
+            elsif version.minor.zero?
+              # OpenAPI 3.0
+              {
+                type: type,
+                nullable: nullable?.presence,
+                examples: examples,
+                deprecated: deprecated?.presence
+              }
+            else
+              # OpenAPI 3.1
+              {
+                type: nullable? ? [type, 'null'] : type,
+                examples: examples,
+                deprecated: deprecated?.presence
+              }
+            end.tap do |hash|
+              hash[:title] = title
+              hash[:description] = description
+              hash[:default] = default
+              hash[:externalDocs] = external_docs&.to_openapi
+
+              validations.each_value do |validation|
+                hash.merge!(validation.to_openapi_validation(version))
+              end
             end
-          end.compact
+          )
         end
 
         def type # :nodoc:

@@ -4,6 +4,8 @@ module Jsapi
   module Meta
     module Example
       class Model < Base
+        include OpenAPI::Extensions
+
         ##
         # :attr: description
         # The optional description of the example.
@@ -26,10 +28,7 @@ module Jsapi
 
         # Returns a hash representing the \OpenAPI example object.
         def to_openapi(*)
-          {}.tap do |hash|
-            hash[:summary] = summary if summary.present?
-            hash[:description] = description if description.present?
-
+          with_openapi_extensions(summary: summary, description: description).tap do |hash|
             if external?
               hash[:external_value] = value
             else

@@ -57,6 +57,7 @@ module Jsapi
             example: 'foo'
           )
           response_model.add_link('foo', operation_id: 'foo')
+          response_model.add_openapi_extension('foo', 'bar')
 
           # OpenAPI 2.0
           assert_equal(
@@ -66,7 +67,8 @@ module Jsapi
               },
               examples: {
                 'application/json' => 'foo'
-              }
+              },
+              'x-foo': 'bar'
             },
             response_model.to_openapi('2.0', Definitions.new)
           )
@@ -90,7 +92,8 @@ module Jsapi
                 'foo' => {
                   operationId: 'foo'
                 }
-              }
+              },
+              'x-foo': 'bar'
             },
             response_model.to_openapi('3.0', Definitions.new)
           )

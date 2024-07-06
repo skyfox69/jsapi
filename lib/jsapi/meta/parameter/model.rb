@@ -4,6 +4,8 @@ module Jsapi
   module Meta
     module Parameter
       class Model < Base
+        include OpenAPI::Extensions
+
         ##
         # :attr: deprecated
         # Specifies whether or not the parameter is deprecated.
@@ -87,32 +89,34 @@ module Jsapi
           else
             parameter_name = schema.array? ? "#{name}[]" : name
             [
-              if version.major == 2
-                {
-                  name: parameter_name,
-                  in: self.in,
-                  description: description,
-                  required: required?.presence,
-                  allowEmptyValue: allow_empty_value?.presence,
-                  collectionFormat: ('multi' if schema.array?)
-                }.merge(schema.to_openapi(version))
-              else
-                {
-                  name: parameter_name,
-                  in: self.in,
-                  description: description,
-                  required: required?.presence,
-                  allowEmptyValue: allow_empty_value?.presence,
-                  deprecated: deprecated?.presence,
-                  schema: schema.to_openapi(version),
-                  examples: examples&.transform_values(&:to_openapi)
+              with_openapi_extensions(
+                if version.major == 2
+                  {
+                    name: parameter_name,
+                    in: self.in,
+                    description: description,
+                    required: required?.presence,
+                    allowEmptyValue: allow_empty_value?.presence,
+                    collectionFormat: ('multi' if schema.array?)
+                  }.merge(schema.to_openapi(version))
+                else
+                  {
+                    name: parameter_name,
+                    in: self.in,
+                    description: description,
+                    required: required?.presence,
+                    allowEmptyValue: allow_empty_value?.presence,
+                    deprecated: deprecated?.presence,
+                    schema: schema.to_openapi(version),
+                    examples: examples&.transform_values(&:to_openapi)
 
-                  # NOTE: collectionFormat is replaced by style and explode.
-                  #       The default values for query parameters are:
-                  #       - style: 'form'
-                  #       - explode: true
-                }
-              end.compact
+                    # NOTE: collectionFormat is replaced by style and explode.
+                    #       The default values for query parameters are:
+                    #       - style: 'form'
+                    #       - explode: true
+                  }
+                end
+              )
             ]
           end
         end
@@ -141,27 +145,29 @@ module Jsapi
               description = property_schema.description
               allow_empty_value = property.schema.existence <= Existence::ALLOW_EMPTY
               [
-                if version.major == 2
-                  {
-                    name: parameter_name,
-                    in: self.in,
-                    description: description,
-                    required: required,
-                    allowEmptyValue: allow_empty_value.presence,
-                    collectionFormat: ('multi' if property_schema.array?)
-                  }.merge(property_schema.to_openapi(version))
-                else
-                  {
-                    name: parameter_name,
-                    in: self.in,
-                    description: description,
-                    required: required,
-                    allowEmptyValue: allow_empty_value.presence,
-                    deprecated: deprecated,
-                    schema: property_schema.to_openapi(version).except(:deprecated),
-                    examples: examples&.transform_values(&:to_openapi)
-                  }
-                end.compact
+                with_openapi_extensions(
+                  if version.major == 2
+                    {
+                      name: parameter_name,
+                      in: self.in,
+                      description: description,
+                      required: required,
+                      allowEmptyValue: allow_empty_value.presence,
+                      collectionFormat: ('multi' if property_schema.array?)
+                    }.merge(property_schema.to_openapi(version))
+                  else
+                    {
+                      name: parameter_name,
+                      in: self.in,
+                      description: description,
+                      required: required,
+                      allowEmptyValue: allow_empty_value.presence,
+                      deprecated: deprecated,
+                      schema: property_schema.to_openapi(version).except(:deprecated),
+                      examples: examples&.transform_values(&:to_openapi)
+                    }
+                  end
+                )
               ]
             end
           end

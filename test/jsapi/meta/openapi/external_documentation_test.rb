@@ -11,15 +11,19 @@ module Jsapi
         end
 
         def test_full_external_documentation_object
+          external_documentation = ExternalDocumentation.new(
+            url: 'https://foo.bar/docs',
+            description: 'Foo'
+          )
+          external_documentation.add_openapi_extension('foo', 'bar')
+
           assert_equal(
             {
               url: 'https://foo.bar/docs',
-              description: 'Foo'
+              description: 'Foo',
+              'x-foo': 'bar'
             },
-            ExternalDocumentation.new(
-              url: 'https://foo.bar/docs',
-              description: 'Foo'
-            ).to_openapi
+            external_documentation.to_openapi
           )
         end
       end

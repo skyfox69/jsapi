@@ -5,6 +5,8 @@ module Jsapi
     module OpenAPI
       # Represents a server object.
       class Server < Base
+        include Extensions
+
         ##
         # :attr: description
         # The optional description of the server.
@@ -22,11 +24,11 @@ module Jsapi
 
         # Returns a hash representing the server object.
         def to_openapi(*)
-          {
+          with_openapi_extensions(
             url: url,
             description: description,
             variables: variables&.transform_values(&:to_openapi)
-          }.compact
+          )
         end
       end
     end

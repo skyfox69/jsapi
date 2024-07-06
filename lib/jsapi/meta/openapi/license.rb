@@ -5,6 +5,8 @@ module Jsapi
     module OpenAPI
       # Represents a license object.
       class License < Base
+        include Extensions
+
         ##
         # :attr: name
         # The name of the license.
@@ -17,10 +19,7 @@ module Jsapi
 
         # Returns a hash representing the license object.
         def to_openapi(*)
-          {
-            name: name,
-            url: url
-          }.compact
+          with_openapi_extensions(name: name, url: url)
         end
       end
     end

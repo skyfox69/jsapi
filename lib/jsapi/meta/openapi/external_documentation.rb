@@ -5,6 +5,8 @@ module Jsapi
     module OpenAPI
       # Represents an external documentation object.
       class ExternalDocumentation < Base
+        include Extensions
+
         ##
         # :attr: description
         # The optional description of the external documentation.
@@ -17,10 +19,7 @@ module Jsapi
 
         # Returns a hash representing the external documentation object.
         def to_openapi(*)
-          {
-            url: url,
-            description: description
-          }.compact
+          with_openapi_extensions(url: url, description: description)
         end
       end
     end

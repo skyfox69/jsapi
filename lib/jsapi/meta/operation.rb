@@ -3,6 +3,8 @@
 module Jsapi
   module Meta
     class Operation < Base
+      include OpenAPI::Extensions
+
       ##
       # :attr: callbacks
       # The optional callbacks. Applies to \OpenAPI 3.0 and higher.
@@ -133,7 +135,8 @@ module Jsapi
       # Returns a hash representing the \OpenAPI operation object.
       def to_openapi(version, definitions)
         version = OpenAPI::Version.from(version)
-        {
+
+        with_openapi_extensions(
           operationId: name,
           tags: tags,
           summary: summary,
@@ -141,7 +144,7 @@ module Jsapi
           externalDocs: external_docs&.to_openapi,
           deprecated: deprecated?.presence,
           security: security_requirements&.map(&:to_openapi)
-        }.tap do |hash|
+        ).tap do |hash|
           if version.major == 2
             hash[:consumes] = consumed_mime_types if consumed_mime_types
             hash[:produces] = produced_mime_types if produced_mime_types
@@ -170,7 +173,7 @@ module Jsapi
               callback.to_openapi(version, definitions)
             end
           end
-        end.compact
+        end
       end
     end
   end

@@ -4,6 +4,8 @@ module Jsapi
   module Meta
     module Response
       class Model < Base
+        include OpenAPI::Extensions
+
         ##
         # :attr: description
         # The optional description of the response.
@@ -44,28 +46,31 @@ module Jsapi
         # Returns a hash representing the \OpenAPI response object.
         def to_openapi(version, definitions)
           version = OpenAPI::Version.from(version)
-          if version.major == 2
-            {
-              description: description,
-              schema: schema.to_openapi(version),
-              examples: (
-                if (example = examples&.values&.first).present?
-                  { 'application/json' => example.resolve(definitions).value }
-                end
-              )
-            }
-          else
-            {
-              description: description,
-              content: {
-                'application/json' => {
-                  schema: schema.to_openapi(version),
-                  examples: examples&.transform_values(&:to_openapi)
-                }.compact
-              },
-              links: links&.transform_values(&:to_openapi)
-            }
-          end.compact
+
+          with_openapi_extensions(
+            if version.major == 2
+              {
+                description: description,
+                schema: schema.to_openapi(version),
+                examples: (
+                  if (example = examples&.values&.first).present?
+                    { 'application/json' => example.resolve(definitions).value }
+                  end
+                )
+              }
+            else
+              {
+                description: description,
+                content: {
+                  'application/json' => {
+                    schema: schema.to_openapi(version),
+                    examples: examples&.transform_values(&:to_openapi)
+                  }.compact
+                },
+                links: links&.transform_values(&:to_openapi)
+              }
+            end
+          )
         end
       end
     end

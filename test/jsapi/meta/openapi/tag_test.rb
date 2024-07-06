@@ -11,21 +11,25 @@ module Jsapi
         end
 
         def test_full_tag_object
+          tag = Tag.new(
+            name: 'Foo',
+            description: 'Description of Foo',
+            external_docs: {
+              url: 'https://foo.bar/docs'
+            }
+          )
+          tag.add_openapi_extension('foo', 'bar')
+
           assert_equal(
             {
               name: 'Foo',
               description: 'Description of Foo',
               externalDocs: {
                 url: 'https://foo.bar/docs'
-              }
+              },
+              'x-foo': 'bar'
             },
-            Tag.new(
-              name: 'Foo',
-              description: 'Description of Foo',
-              external_docs: {
-                url: 'https://foo.bar/docs'
-              }
-            ).to_openapi
+            tag.to_openapi
           )
         end
       end

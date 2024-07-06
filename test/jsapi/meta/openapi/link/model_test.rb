@@ -21,6 +21,7 @@ module Jsapi
               }
             )
             link_model.add_parameter(:bar, nil)
+            link_model.add_openapi_extension('foo', 'bar')
 
             assert_equal(
               {
@@ -32,7 +33,8 @@ module Jsapi
                 description: 'Description of foo',
                 server: {
                   url: 'https://foo.bar/foo'
-                }
+                },
+                'x-foo': 'bar'
               },
               link_model.to_openapi
             )

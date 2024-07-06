@@ -24,13 +24,16 @@ module Jsapi
               in: 'header',
               description: 'Foo'
             )
+            security_scheme.add_openapi_extension('foo', 'bar')
+
             %w[2.0 3.0].each do |version|
               assert_equal(
                 {
                   type: 'apiKey',
                   name: 'X-API-Key',
                   in: 'header',
-                  description: 'Foo'
+                  description: 'Foo',
+                  'x-foo': 'bar'
                 },
                 security_scheme.to_openapi(Version.from(version))
               )

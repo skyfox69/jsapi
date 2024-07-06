@@ -263,6 +263,7 @@ module Jsapi
             deprecated: true,
             example: 'bar'
           )
+          parameter_model.add_openapi_extension('foo', 'bar')
 
           # OpenAPI 2.0
           assert_equal(
@@ -272,7 +273,8 @@ module Jsapi
                 in: 'query',
                 description: 'Description of foo',
                 required: true,
-                type: 'string'
+                type: 'string',
+                'x-foo': 'bar'
               }
             ],
             parameter_model.to_openapi('2.0', Definitions.new)
@@ -293,7 +295,8 @@ module Jsapi
                   'default' => {
                     value: 'bar'
                   }
-                }
+                },
+                'x-foo': 'bar'
               }
             ],
             parameter_model.to_openapi('3.0', Definitions.new)
@@ -308,13 +311,16 @@ module Jsapi
             deprecated: true,
             example: 'bar'
           )
-          parameter_model.add_property(
+          parameter_model.add_openapi_extension('foo', 'bar')
+
+          property = parameter_model.add_property(
             'bar',
             type: 'string',
             existence: true,
             description: 'Description of foo',
-            deprecated: true # expected to be omitted
+            deprecated: true
           )
+          property.add_openapi_extension('bar', 'foo')
 
           # OpenAPI 2.0
           assert_equal(
@@ -324,7 +330,9 @@ module Jsapi
                 in: 'query',
                 description: 'Description of foo',
                 required: true,
-                type: 'string'
+                type: 'string',
+                'x-foo': 'bar',
+                'x-bar': 'foo'
               }
             ],
             parameter_model.to_openapi('2.0', Definitions.new)
@@ -340,13 +348,15 @@ module Jsapi
                 deprecated: true,
                 schema: {
                   type: 'string',
-                  description: 'Description of foo'
+                  description: 'Description of foo',
+                  'x-bar': 'foo'
                 },
                 examples: {
                   'default' => {
                     value: 'bar'
                   }
-                }
+                },
+                'x-foo': 'bar'
               }
             ],
             parameter_model.to_openapi('3.0', Definitions.new)

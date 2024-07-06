@@ -11,6 +11,20 @@ module Jsapi
         end
 
         def test_full_info_object
+          info = Info.new(
+            title: 'Foo',
+            version: 1,
+            description: 'Description of Foo',
+            terms_of_service: 'Terms of service',
+            contact: {
+              name: 'Bar'
+            },
+            license: {
+              name: 'MIT'
+            }
+          )
+          info.add_openapi_extension('foo', 'bar')
+
           assert_equal(
             {
               title: 'Foo',
@@ -22,20 +36,10 @@ module Jsapi
               },
               license: {
                 name: 'MIT'
-              }
-            },
-            Info.new(
-              title: 'Foo',
-              version: 1,
-              description: 'Description of Foo',
-              terms_of_service: 'Terms of service',
-              contact: {
-                name: 'Bar'
               },
-              license: {
-                name: 'MIT'
-              }
-            ).to_openapi
+              'x-foo': 'bar'
+            },
+            info.to_openapi
           )
         end
       end

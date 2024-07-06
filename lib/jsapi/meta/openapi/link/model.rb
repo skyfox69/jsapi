@@ -6,6 +6,8 @@ module Jsapi
       module Link
         # Represents a link object.
         class Model < Base
+          include Extensions
+
           ##
           # :attr: description
           # The optional description of the link.
@@ -33,13 +35,13 @@ module Jsapi
 
           # Returns a hash representing the link object.
           def to_openapi(*)
-            {
+            with_openapi_extensions(
               operationId: operation_id,
               parameters: parameters,
               requestBody: request_body,
               description: description,
               server: server&.to_openapi
-            }.compact
+            )
           end
         end
       end

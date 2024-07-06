@@ -28,12 +28,14 @@ module Jsapi
 
             def test_full_security_scheme_object
               security_scheme = Basic.new(description: 'Foo')
+              security_scheme.add_openapi_extension('foo', 'bar')
 
               # OpenAPI 2.0
               assert_equal(
                 {
                   type: 'basic',
-                  description: 'Foo'
+                  description: 'Foo',
+                  'x-foo': 'bar'
                 },
                 security_scheme.to_openapi(Version.from('2.0'))
               )
@@ -42,7 +44,8 @@ module Jsapi
                 {
                   type: 'http',
                   scheme: 'basic',
-                  description: 'Foo'
+                  description: 'Foo',
+                  'x-foo': 'bar'
                 },
                 security_scheme.to_openapi(Version.from('3.0'))
               )

@@ -57,6 +57,7 @@ module Jsapi
           root.add_link('foo', operation_id: 'foo')
           root.add_security_scheme('http_basic', type: 'basic')
           root.add_security.add_scheme('http_basic')
+          root.add_openapi_extension 'foo', 'bar'
 
           # OpenAPI 2.0
           assert_equal(
@@ -86,7 +87,8 @@ module Jsapi
               ],
               externalDocs: {
                 url: 'https://foo.bar/docs'
-              }
+              },
+              'x-foo': 'bar'
             },
             root.to_openapi(Version.from('2.0'), definitions)
           )
@@ -138,7 +140,8 @@ module Jsapi
               ],
               externalDocs: {
                 url: 'https://foo.bar/docs'
-              }
+              },
+              'x-foo': 'bar'
             },
             root.to_openapi(Version.from('3.0'), definitions)
           )
@@ -190,7 +193,8 @@ module Jsapi
               ],
               externalDocs: {
                 url: 'https://foo.bar/docs'
-              }
+              },
+              'x-foo': 'bar'
             },
             root.to_openapi(Version.from('3.1'), definitions)
           )

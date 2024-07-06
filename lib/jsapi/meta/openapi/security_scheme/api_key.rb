@@ -6,6 +6,8 @@ module Jsapi
       module SecurityScheme
         # Represents a security scheme based on an API key.
         class APIKey < Base
+          include Extensions
+
           ##
           # :attr: in
           # The location of the API key. Possible values are:
@@ -24,12 +26,12 @@ module Jsapi
 
           # Returns a hash representing the security scheme object.
           def to_openapi(*)
-            {
+            with_openapi_extensions(
               type: 'apiKey',
               name: name,
               in: self.in,
               description: description
-            }.compact
+            )
           end
         end
       end

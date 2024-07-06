@@ -6,6 +6,8 @@ module Jsapi
       module SecurityScheme
         # Represents a security scheme based on \OAuth2.
         class OAuth2 < Base
+          include Extensions
+
           ##
           # :attr: oauth_flows
           # The hash containing the OAuth flows. Possible keys are:
@@ -22,10 +24,8 @@ module Jsapi
           # Returns a hash representing the security scheme object.
           def to_openapi(version)
             version = Version.from(version)
-            {
-              type: 'oauth2',
-              description: description
-            }.tap do |h|
+
+            with_openapi_extensions(type: 'oauth2', description: description).tap do |h|
               if oauth_flows&.any?
                 if version.major == 2
                   key, oauth_flow = oauth_flows.first
@@ -37,7 +37,7 @@ module Jsapi
                   end
                 end
               end
-            end.compact
+            end
           end
         end
       end

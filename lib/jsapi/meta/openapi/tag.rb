@@ -5,6 +5,8 @@ module Jsapi
     module OpenAPI
       # Represents a tag object.
       class Tag < Base
+        include Extensions
+
         ##
         # :attr: description
         # The description of the tag.
@@ -22,11 +24,11 @@ module Jsapi
 
         # Returns a hash representing the tag object.
         def to_openapi(*)
-          {
+          with_openapi_extensions(
             name: name,
             description: description,
             externalDocs: external_docs&.to_openapi
-          }.compact
+          )
         end
       end
     end

@@ -1,5 +1,11 @@
 # Change log
 
+## 0.3.0 ()
+
+### New features
+
+- Support of OpenAPI extensions.
+
 ## 0.2.0 (2024-07-05)
 
 ### Breaking changes

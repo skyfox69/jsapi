@@ -21,11 +21,14 @@ module Jsapi
             description: 'Description of foo',
             value: 'foo'
           )
+          example_model.add_openapi_extension('foo', 'bar')
+
           assert_equal(
             {
               summary: 'Foo',
               description: 'Description of foo',
-              value: 'foo'
+              value: 'foo',
+              'x-foo': 'bar'
             },
             example_model.to_openapi
           )

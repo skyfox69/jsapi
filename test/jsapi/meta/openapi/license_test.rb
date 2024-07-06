@@ -11,15 +11,19 @@ module Jsapi
         end
 
         def test_full_license_object
+          license = License.new(
+            name: 'Foo',
+            url: 'https://foo.bar/license'
+          )
+          license.add_openapi_extension('foo', 'bar')
+
           assert_equal(
             {
               name: 'Foo',
-              url: 'https://foo.bar/license'
+              url: 'https://foo.bar/license',
+              'x-foo': 'bar'
             },
-            License.new(
-              name: 'Foo',
-              url: 'https://foo.bar/license'
-            ).to_openapi
+            license.to_openapi
           )
         end
       end

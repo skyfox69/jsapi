@@ -24,6 +24,8 @@ module Jsapi
               :implicit,
               authorization_url: 'https://foo.bar/api/oauth/dialog'
             )
+            security_scheme.add_openapi_extension('foo', 'bar')
+
             # OpenAPI 2.0
             assert_equal(
               {
@@ -31,7 +33,8 @@ module Jsapi
                 description: 'Foo',
                 flow: 'implicit',
                 authorizationUrl: 'https://foo.bar/api/oauth/dialog',
-                scopes: {}
+                scopes: {},
+                'x-foo': 'bar'
               },
               security_scheme.to_openapi(Version.from('2.0'))
             )
@@ -45,7 +48,8 @@ module Jsapi
                     authorizationUrl: 'https://foo.bar/api/oauth/dialog',
                     scopes: {}
                   }
-                }
+                },
+                'x-foo': 'bar'
               },
               security_scheme.to_openapi(Version.from('3.0'))
             )

@@ -5,6 +5,8 @@ module Jsapi
     module OpenAPI
       # Represents an info object.
       class Info < Base
+        include Extensions
+
         ##
         # :attr: contact
         # The optional Contact object.
@@ -37,14 +39,14 @@ module Jsapi
 
         # Returns a hash representing the info object.
         def to_openapi(*)
-          {
+          with_openapi_extensions(
             title: title,
             version: version,
             description: description,
             termsOfService: terms_of_service,
             contact: contact&.to_openapi,
             license: license&.to_openapi
-          }.compact
+          )
         end
       end
     end

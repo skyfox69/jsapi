@@ -11,17 +11,21 @@ module Jsapi
         end
 
         def test_full_server_object
+          server_variable = ServerVariable.new(
+            enum: %w[foo bar],
+            default: 'foo',
+            description: 'Foo'
+          )
+          server_variable.add_openapi_extension('foo', 'bar')
+
           assert_equal(
             {
               enum: %w[foo bar],
               default: 'foo',
-              description: 'Foo'
+              description: 'Foo',
+              'x-foo': 'bar'
             },
-            ServerVariable.new(
-              enum: %w[foo bar],
-              default: 'foo',
-              description: 'Foo'
-            ).to_openapi
+            server_variable.to_openapi
           )
         end
       end

@@ -11,6 +11,8 @@ module Jsapi
           # Thus, a security scheme of this class is skipped when generating
           # an \OpenAPI 2.0 document.
           class Bearer < Base
+            include Extensions
+
             ##
             # :attr: bearer_format
             # The optional format of the bearer token.
@@ -22,12 +24,12 @@ module Jsapi
               version = OpenAPI::Version.from(version)
               return if version.major == 2
 
-              {
+              with_openapi_extensions(
                 type: 'http',
                 scheme: 'bearer',
                 bearerFormat: bearer_format,
                 description: description
-              }.compact
+              )
             end
           end
         end

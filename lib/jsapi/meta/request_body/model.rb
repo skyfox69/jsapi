@@ -4,6 +4,8 @@ module Jsapi
   module Meta
     module RequestBody
       class Model < Base
+        include OpenAPI::Extensions
+
         ##
         # :attr: description
         # The optional description of the request body.
@@ -44,12 +46,12 @@ module Jsapi
             in: 'body',
             description: description,
             required: required?
-          }.merge(schema.to_openapi('2.0')).compact
+          }.merge(schema.to_openapi('2.0')).merge(openapi_extensions).compact
         end
 
         # Returns a hash representing the \OpenAPI 3.x request body object.
         def to_openapi(version)
-          {
+          with_openapi_extensions(
             description: description,
             content: {
               'application/json' => {
@@ -58,7 +60,7 @@ module Jsapi
               }.compact
             },
             required: required?
-          }.compact
+          )
         end
       end
     end

@@ -5,6 +5,8 @@ module Jsapi
     module OpenAPI
       # Represents an OAuth flow object.
       class OAuthFlow < Base
+        include Extensions
+
         class Scope < Base
           ##
           # :attr: description
@@ -37,12 +39,12 @@ module Jsapi
 
         # Returns a hash representing the OAuth flow object.
         def to_openapi(version)
-          {
+          with_openapi_extensions(
             authorizationUrl: authorization_url,
             tokenUrl: token_url,
             refreshUrl: (refresh_url if version.major > 2),
             scopes: scopes.transform_values(&:description)
-          }.compact
+          )
         end
       end
     end

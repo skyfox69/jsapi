@@ -5,6 +5,8 @@ module Jsapi
     module OpenAPI
       # Represents a contact object.
       class Contact < Base
+        include Extensions
+
         ##
         # :attr: email
         # The email address of the contact.
@@ -22,11 +24,7 @@ module Jsapi
 
         # Returns a hash representing the contact object.
         def to_openapi(*)
-          {
-            name: name,
-            url: url,
-            email: email
-          }.compact
+          with_openapi_extensions(name: name, url: url, email: email)
         end
       end
     end

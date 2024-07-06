@@ -66,6 +66,7 @@ module Jsapi
         operation.add_response(type: 'string')
         operation.add_security.add_scheme('http_basic')
         operation.add_callback('onBar').add_operation('{$request.query.bar}')
+        operation.add_openapi_extension('foo', 'bar')
 
         # OpenAPI 2.0
         assert_equal(
@@ -108,7 +109,8 @@ module Jsapi
             deprecated: true,
             security: [
               { 'http_basic' => [] }
-            ]
+            ],
+            'x-foo': 'bar'
           },
           operation.to_openapi('2.0', definitions)
         )
@@ -171,7 +173,8 @@ module Jsapi
             ],
             servers: [
               { url: 'https://foo.bar/foo' }
-            ]
+            ],
+            'x-foo': 'bar'
           },
           operation.to_openapi('3.0', definitions)
         )

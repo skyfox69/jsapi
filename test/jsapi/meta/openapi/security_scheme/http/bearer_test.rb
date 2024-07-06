@@ -30,6 +30,8 @@ module Jsapi
                 bearer_format: 'JWT',
                 description: 'Foo'
               )
+              security_scheme.add_openapi_extension('foo', 'bar')
+
               # OpenAPI 2.0
               assert_nil(
                 security_scheme.to_openapi(Version.from('2.0'))
@@ -40,7 +42,8 @@ module Jsapi
                   type: 'http',
                   scheme: 'bearer',
                   bearerFormat: 'JWT',
-                  description: 'Foo'
+                  description: 'Foo',
+                  'x-foo': 'bar'
                 },
                 security_scheme.to_openapi(Version.from('3.0'))
               )

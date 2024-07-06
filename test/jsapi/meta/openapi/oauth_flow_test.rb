@@ -20,6 +20,7 @@ module Jsapi
           )
           oauth_flow.add_scope('read:foo')
           oauth_flow.add_scope('write:foo', description: 'Description of write:foo')
+          oauth_flow.add_openapi_extension('foo', 'bar')
 
           hash = {
             authorizationUrl: 'https://foo.bar/api/oauth/dialog',
@@ -28,7 +29,8 @@ module Jsapi
             scopes: {
               'read:foo' => '',
               'write:foo' => 'Description of write:foo'
-            }
+            },
+            'x-foo': 'bar'
           }
           assert_equal(hash.except(:refreshUrl), oauth_flow.to_openapi(Version.from('2.0')))
           assert_equal(hash, oauth_flow.to_openapi(Version.from('3.0')))

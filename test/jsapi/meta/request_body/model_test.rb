@@ -35,6 +35,7 @@ module Jsapi
 
         def test_minimal_openapi_parameter_object
           request_body_model = Model.new(type: 'string', existence: true)
+
           assert_equal(
             {
               name: 'body',
@@ -48,13 +49,16 @@ module Jsapi
 
         def test_full_openapi_parameter_object
           request_body_model = Model.new(type: 'string', description: 'Foo')
+          request_body_model.add_openapi_extension('foo', 'bar')
+
           assert_equal(
             {
               name: 'body',
               in: 'body',
               description: 'Foo',
               required: false,
-              type: 'string'
+              type: 'string',
+              'x-foo': 'bar'
             },
             request_body_model.to_openapi_parameter
           )
@@ -62,6 +66,7 @@ module Jsapi
 
         def test_minimal_openapi_request_body_object
           request_body_model = Model.new(type: 'string', existence: true)
+
           assert_equal(
             {
               content: {
@@ -83,6 +88,8 @@ module Jsapi
             description: 'Foo',
             example: 'foo'
           )
+          request_body_model.add_openapi_extension('foo', 'bar')
+
           assert_equal(
             {
               description: 'Foo',
@@ -99,7 +106,8 @@ module Jsapi
                   }
                 }
               },
-              required: false
+              required: false,
+              'x-foo': 'bar'
             },
             request_body_model.to_openapi('3.0')
           )

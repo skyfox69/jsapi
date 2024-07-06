@@ -16,6 +16,7 @@ module Jsapi
             url: 'https://{subdomain}.foo.bar'
           )
           server.add_variable('subdomain', { default: 'api' })
+          server.add_openapi_extension('foo', 'bar')
 
           assert_equal(
             {
@@ -25,7 +26,8 @@ module Jsapi
                 'subdomain' => {
                   default: 'api'
                 }
-              }
+              },
+              'x-foo': 'bar'
             },
             server.to_openapi
           )
