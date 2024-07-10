@@ -11,16 +11,13 @@ module Jsapi
       def initialize(attributes, schema, definitions)
         # Select inherriting schema on polymorphism
         if (discriminator = schema.discriminator)
-          schema = discriminator.resolve(
-            attributes[discriminator.property_name],
-            definitions
-          )
+          schema = discriminator.resolve(attributes[discriminator.property_name], definitions)
         end
         # Wrap attribute values
-        @raw_attributes = schema.resolve_properties(:write, definitions)
-                                .transform_values do |property|
-          JSON.wrap(attributes[property.name], property.schema, definitions)
-        end
+        @raw_attributes =
+          schema.resolve_properties(:write, definitions).transform_values do |property|
+            JSON.wrap(attributes[property.name], property.schema, definitions)
+          end
 
         super(schema)
       end

@@ -94,17 +94,59 @@ module Jsapi
         assert_equal('null', response.to_json)
       end
 
-      # Object serialization tests
+      # Objects
 
       def test_serializes_an_object
         response_model = Meta::Response.new(type: 'object')
         response_model.schema.add_property('foo', type: 'string')
 
-        object = Object.new
-        object.define_singleton_method(:foo) { 'bar' }
+        dummy_class = Struct.new(:foo, keyword_init: true)
+        dummy = dummy_class.new(foo: 'bar')
 
-        response = Response.new(object, response_model, definitions)
+        response = Response.new(dummy, response_model, definitions)
         assert_equal('{"foo":"bar"}', response.to_json)
+      end
+
+      def test_reads_a_property_value_by_source
+        response_model = Meta::Response.new(type: 'object')
+        response_model.schema.add_property(:foo, type: 'string', source: :bar)
+
+        dummy_class = Struct.new(:bar, keyword_init: true)
+        dummy = dummy_class.new(bar: 'bar')
+
+        response = Response.new(dummy, response_model, definitions)
+        assert_equal('{"foo":"bar"}', response.to_json)
+      end
+
+      def test_serializes_an_object_with_additional_properties
+        response_model = Meta::Response.new(
+          type: 'object',
+          additional_properties: { type: 'string' }
+        )
+        response_model.schema.add_property('foo', type: 'string')
+
+        dummy_class = Struct.new(:additional_properties, :foo, keyword_init: true)
+        dummy = dummy_class.new(foo: 'bar', additional_properties: { foo: 'foo', bar: 'foo' })
+
+        response = Response.new(dummy, response_model, definitions)
+        assert_equal('{"foo":"bar","bar":"foo"}', response.to_json)
+
+        dummy = dummy_class.new(foo: 'bar', additional_properties: nil)
+
+        response = Response.new(dummy, response_model, definitions)
+        assert_equal('{"foo":"bar"}', response.to_json)
+      end
+
+      def test_reads_additional_properties_by_source
+        response_model = Meta::Response.new(
+          type: 'object',
+          additional_properties: { type: 'string', source: :foo }
+        )
+        dummy_class = Struct.new(:foo, keyword_init: true)
+        dummy = dummy_class.new(foo: { foo: 'bar', bar: 'foo' })
+
+        response = Response.new(dummy, response_model, definitions)
+        assert_equal('{"foo":"bar","bar":"foo"}', response.to_json)
       end
 
       def test_serializes_an_object_on_polymorphism
@@ -122,16 +164,14 @@ module Jsapi
 
         response_model = Meta::Response.new(schema: 'base')
 
-        foo = Object.new
-        foo.define_singleton_method(:type) { 'foo' }
-        foo.define_singleton_method(:foo) { 'bar' }
+        foo_class = Struct.new(:type, :foo, keyword_init: true)
+        foo = foo_class.new(type: 'foo', foo: 'bar')
 
         response = Response.new(foo, response_model, definitions)
         assert_equal('{"type":"foo","foo":"bar"}', response.to_json)
 
-        bar = Object.new
-        bar.define_singleton_method(:type) { 'bar' }
-        bar.define_singleton_method(:bar) { 'foo' }
+        bar_class = Struct.new(:type, :bar, keyword_init: true)
+        bar = bar_class.new(type: 'bar', bar: 'foo')
 
         response = Response.new(bar, response_model, definitions)
         assert_equal('{"type":"bar","bar":"foo"}', response.to_json)
@@ -149,18 +189,6 @@ module Jsapi
         assert_equal('null', response.to_json)
       end
 
-      def test_source
-        response_model = Meta::Response.new(type: 'object')
-        response_model.schema.add_property(:foo, type: 'string', source: :bar)
-
-        object = Object.new
-        object.define_singleton_method(:foo) { 'foo' }
-        object.define_singleton_method(:bar) { 'bar' }
-
-        response = Response.new(object, response_model, definitions)
-        assert_equal('{"foo":"bar"}', response.to_json)
-      end
-
       # Serialization error tests
 
       def test_raises_exception_on_invalid_response
@@ -176,28 +204,53 @@ module Jsapi
         response_model = Meta::Response.new(type: 'object')
         response_model.schema.add_property('foo', type: 'string', existence: true)
 
-        object = Object.new
-        object.define_singleton_method(:foo) { nil }
-
         error = assert_raises RuntimeError do
-          Response.new(object, response_model, definitions).to_json
+          Response.new(Struct.new(:foo).new, response_model, definitions).to_json
         end
         assert_equal("foo can't be nil", error.message)
       end
 
       def test_raises_exception_on_invalid_nested_object
         response_model = Meta::Response.new(type: 'object')
-        nested_schema = response_model.schema.add_property(:foo, type: 'object').schema
+        nested_schema = response_model.schema.add_property('foo', type: 'object').schema
         nested_schema.add_property(:bar, type: 'string', existence: true)
 
-        nested = Object.new
-        nested.define_singleton_method(:bar) { nil }
-
-        object = Object.new
-        object.define_singleton_method(:foo) { nested }
+        dummy_class = Struct.new(:foo, keyword_init: true)
+        dummy = dummy_class.new(foo: Struct.new(:bar).new)
 
         error = assert_raises RuntimeError do
-          Response.new(object, response_model, definitions).to_json
+          Response.new(dummy, response_model, definitions).to_json
+        end
+        assert_equal("foo.bar can't be nil", error.message)
+      end
+
+      def test_raises_exception_on_invalid_additional_property
+        response_model = Meta::Response.new(
+          type: 'object',
+          additional_properties: { type: 'string', existence: true }
+        )
+        dummy_class = Struct.new(:additional_properties, keyword_init: true)
+        dummy = dummy_class.new(additional_properties: { foo: nil })
+
+        error = assert_raises RuntimeError do
+          Response.new(dummy, response_model, definitions).to_json
+        end
+        assert_equal("foo can't be nil", error.message)
+      end
+
+      def test_raises_exception_on_invalid_nested_additional_property
+        response_model = Meta::Response.new(type: 'object')
+        response_model.add_property(
+          'foo',
+          type: 'object',
+          additional_properties: { type: 'string', existence: true }
+        )
+        dummy_class = Struct.new(:foo, keyword_init: true)
+        nested_class = Struct.new(:additional_properties, keyword_init: true)
+        dummy = dummy_class.new(foo: nested_class.new(additional_properties: { bar: nil }))
+
+        error = assert_raises RuntimeError do
+          Response.new(dummy, response_model, definitions).to_json
         end
         assert_equal("foo.bar can't be nil", error.message)
       end

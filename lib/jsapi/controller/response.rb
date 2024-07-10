@@ -5,8 +5,8 @@ module Jsapi
     # Used to serialize a response.
     class Response
 
-      # Creates a new instance to serialize +object+ according to +response+. References are
-      # resolved to API components in +definitions+.
+      # Creates a new instance to serialize +object+ according to +response+. References
+      # are resolved to API components in +definitions+.
       def initialize(object, response, definitions)
         @object = object
         @response = response
@@ -37,33 +37,13 @@ module Jsapi
 
         case schema.type
         when 'array'
-          item_schema = schema.items.resolve(@definitions)
-          Array(object).map { |item| serialize(item, item_schema, path) }
+          serialize_array(object, schema, path)
         when 'integer'
           schema.convert(object.to_i)
         when 'number'
           schema.convert(object.to_f)
         when 'object'
-          return if object.blank? # {}
-
-          # Select inherriting schema on polymorphism
-          if (discriminator = schema.discriminator)
-            discriminator_property = schema.properties[discriminator.property_name]
-            schema = discriminator.resolve(
-              object.public_send(
-                discriminator_property.source || discriminator_property.name
-              ),
-              @definitions
-            )
-          end
-          # Serialize properties
-          schema.resolve_properties(:read, @definitions).transform_values do |property|
-            serialize(
-              object.public_send(property.source || property.name),
-              property.schema.resolve(@definitions),
-              path.nil? ? property.name : "#{path}.#{property.name}"
-            )
-          end
+          serialize_object(object, schema, path)
         when 'string'
           schema.convert(
             case schema.format
@@ -80,6 +60,48 @@ module Jsapi
         else
           object
         end
+      end
+
+      def serialize_array(array, schema, path)
+        item_schema = schema.items.resolve(@definitions)
+        Array(array).map { |item| serialize(item, item_schema, path) }
+      end
+
+      def serialize_object(object, schema, path)
+        return if object.blank? # {}
+
+        # Select inherriting schema on polymorphism
+        if (discriminator = schema.discriminator)
+          discriminator_property = schema.properties[discriminator.property_name]
+          schema = discriminator.resolve(
+            object.public_send(discriminator_property.source || discriminator_property.name),
+            @definitions
+          )
+        end
+        # Serialize properties
+        properties = schema.resolve_properties(:read, @definitions).transform_values do |property|
+          serialize(
+            object.public_send(property.source || property.name),
+            property.schema.resolve(@definitions),
+            path.nil? ? property.name : "#{path}.#{property.name}"
+          )
+        end
+        if (additional_properties = schema.additional_properties&.resolve(@definitions))
+          additional_properties_schema = additional_properties.schema.resolve(@definitions)
+
+          object.public_send(additional_properties.source)&.each do |key, value|
+            # Don't replace the property with the same key
+            next if properties.key?(key = key.to_s)
+
+            # Serialize the additional property
+            properties[key] = serialize(
+              value,
+              additional_properties_schema,
+              path.nil? ? key : "#{path}.#{key}"
+            )
+          end
+        end
+        properties
       end
     end
   end

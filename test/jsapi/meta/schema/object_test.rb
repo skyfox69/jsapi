@@ -59,8 +59,11 @@ module Jsapi
           )
         end
 
-        def test_json_schema_object
-          schema = Object.new(all_of: [{ ref: 'Foo' }])
+        def test_full_json_schema_object
+          schema = Object.new(
+            all_of: [{ ref: 'Foo' }],
+            additional_properties: { type: 'string' }
+          )
           schema.add_property('foo', type: 'string', existence: true)
           schema.add_property('bar', type: 'integer', existence: false)
 
@@ -77,6 +80,9 @@ module Jsapi
                 'bar' => {
                   type: %w[integer null]
                 }
+              },
+              additionalProperties: {
+                type: %w[string null]
               },
               required: %w[foo]
             },
@@ -109,10 +115,11 @@ module Jsapi
           )
         end
 
-        def test_openapi_schema_object
+        def test_full_openapi_schema_object
           schema = Object.new(
             all_of: [{ ref: 'Foo' }],
-            discriminator: { property_name: 'foo' }
+            discriminator: { property_name: 'foo' },
+            additional_properties: { type: 'string' }
           )
           schema.add_property('foo', type: 'string', existence: true)
           schema.add_property('bar', type: 'integer', existence: false)
@@ -132,6 +139,9 @@ module Jsapi
                 'bar' => {
                   type: 'integer'
                 }
+              },
+              additionalProperties: {
+                type: 'string'
               },
               required: %w[foo]
             },
@@ -156,6 +166,10 @@ module Jsapi
                   type: 'integer',
                   nullable: true
                 }
+              },
+              additionalProperties: {
+                type: 'string',
+                nullable: true
               },
               required: %w[foo]
             },

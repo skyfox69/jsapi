@@ -210,7 +210,6 @@ module Jsapi
           assert_equal(%w[https], openapi_object[:schemes])
           assert_equal('foo.bar', openapi_object[:host])
           assert_equal('/foo', openapi_object[:basePath])
-
         end
       end
     end

@@ -5,14 +5,20 @@ module Jsapi
     module Schema
       class Object < Base
         ##
+        # :attr: additional_properties
+        # The AdditionalProperties.
+        attribute :additional_properties, AdditionalProperties
+
+        ##
         # :attr: all_of_references
         attribute :all_of_references, [Reference], default: []
 
-        alias :all_of= :all_of_references=
+        alias :all_of= :all_of_references= # :nodoc:
         alias :add_all_of :add_all_of_reference
 
         ##
         # :attr: discriminator
+        # The Discriminator.
         attribute :discriminator, Discriminator
 
         ##
@@ -47,6 +53,7 @@ module Jsapi
           super.merge(
             allOf: all_of_references.map(&:to_json_schema).presence,
             properties: properties.transform_values(&:to_json_schema),
+            additionalProperties: additional_properties&.to_json_schema,
             required: properties.values.select(&:required?).map(&:name)
           ).compact
         end
@@ -60,6 +67,7 @@ module Jsapi
             properties: properties.transform_values do |property|
               property.to_openapi(version)
             end,
+            additionalProperties: additional_properties&.to_openapi(version),
             required: properties.values.select(&:required?).map(&:name)
           ).compact
         end

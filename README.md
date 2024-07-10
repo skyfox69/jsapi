@@ -373,6 +373,8 @@ end
 
 **Keywords**
 
+- `:additional_properties` -
+  See [The additional_properties keyword](#the-additional-properties-keyword).
 - `:deprecated` - Specifies whether or not the response is deprecated.
 - `:description` - The description of the response.
 - `:example` - See [Defining examples](#defining-examples).
@@ -401,6 +403,8 @@ end
 
 **Keywords**
 
+- `:additional_properties` -
+  See [The additional_properties keyword](#the-additional-properties-keyword).
 - `:conversion` - See [The conversion keyword](#the-conversion-keyword).
 - `:default` - The default value.
 - `:deprecated` - Specifies whether or not the property is deprecated.
@@ -600,6 +604,19 @@ parameter 'foo', type: 'string', conversion: :upcase
 
 parameter 'foo', type: 'string', conversion: ->(value) { value.upcase }
 ```
+
+### The `:additional_properties` keyword
+
+The `:additional_properties` keyword defines the schema of properties that are not
+explicity specified, for example:
+
+```ruby
+  schema 'foo', additional_properties: { type: 'string', source: :bar }
+```
+
+When serializing an object additional properties are read by invoking the method specified
+by `:source`, or `additional_properties` if `:source` is omitted. This method must return
+a hash whose values must match the schema defined.
 
 ### The `:items` keyword
 

@@ -4,6 +4,8 @@
 
 ### New features
 
+- Responses may contain additional properties as specified by OpenAPI.
+
 - Support of OpenAPI extensions.
 
 ## 0.2.0 (2024-07-05)
