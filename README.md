@@ -325,8 +325,8 @@ end
 - `:description` - The description of the parameter.
 - `:example` - See [Defining examples](#defining-examples).
 - `:existence` - See [The existence keyword](#the-existence-keyword).
-- `:in` - The location of the parameter. The location can be `"path"` or `"query"`.
-  The default location is `"query"`.
+- `:in` - The location of the parameter. Possible values are `"path"` and
+  `"query"`. The default value is `"query"`.
 - `:items` - See [The items keyword](#the-items-keyword).
 - `:format` - See [The format keyword](#the-format-keyword).
 - `:model` - See [API models](#api-models).
