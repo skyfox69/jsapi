@@ -1,6 +1,6 @@
 # Change log
 
-## 0.3.0 ()
+## 0.3.0 (2024-07-14)
 
 ### Breaking changes
 
