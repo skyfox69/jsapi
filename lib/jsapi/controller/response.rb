@@ -74,14 +74,14 @@ module Jsapi
         if (discriminator = schema.discriminator)
           discriminator_property = schema.properties[discriminator.property_name]
           schema = discriminator.resolve(
-            object.public_send(discriminator_property.source || discriminator_property.name),
+            object.public_send(discriminator_property.source || discriminator_property.name.underscore),
             @definitions
           )
         end
         # Serialize properties
         properties = schema.resolve_properties(:read, @definitions).transform_values do |property|
           serialize(
-            object.public_send(property.source || property.name),
+            object.public_send(property.source || property.name.underscore),
             property.schema.resolve(@definitions),
             path.nil? ? property.name : "#{path}.#{property.name}"
           )

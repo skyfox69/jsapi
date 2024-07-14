@@ -2,6 +2,11 @@
 
 ## 0.3.0 ()
 
+### Breaking changes
+
+- When wrapping parameters and serializing objects, parameter and property names
+  are converted to snake case.
+
 ### New features
 
 - Responses may contain additional properties as specified by OpenAPI.

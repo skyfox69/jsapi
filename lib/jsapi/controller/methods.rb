@@ -13,9 +13,9 @@ module Jsapi
       end
 
       # Performs an API operation by calling the given block. The request parameters are
-      # passed as an instance of the operation's model class to the block. The object
-      # returned by the block is implicitly rendered according to the appropriate
-      # +response+ specification.
+      # passed as an instance of the operation's model class to the block. Parameter names
+      # are converted to snake case. The object returned by the block is implicitly rendered
+      # according to the appropriate +response+ specification.
       #
       #   api_operation('foo') do |api_params|
       #     # ...
@@ -53,6 +53,7 @@ module Jsapi
       end
 
       # Returns the request parameters as an instance of the operation's model class.
+      # Parameter names are converted to snake case.
       #
       #   params = api_params('foo')
       #

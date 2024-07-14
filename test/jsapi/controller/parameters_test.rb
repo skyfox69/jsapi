@@ -38,6 +38,12 @@ module Jsapi
         assert_equal('bar', parameters['bar'])
       end
 
+      def test_converts_camel_case_to_snake_case
+        operation.add_parameter('fooBar', type: 'string')
+        parameters = parameters(fooBar: 'foo')
+        assert_equal('foo', parameters['foo_bar'])
+      end
+
       # Attributes tests
 
       def test_bracket_operator

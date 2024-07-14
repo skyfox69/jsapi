@@ -109,13 +109,24 @@ module Jsapi
 
       def test_reads_a_property_value_by_source
         response_model = Meta::Response.new(type: 'object')
-        response_model.schema.add_property(:foo, type: 'string', source: :bar)
+        response_model.schema.add_property('foo', type: 'string', source: :bar)
 
         dummy_class = Struct.new(:bar, keyword_init: true)
         dummy = dummy_class.new(bar: 'bar')
 
         response = Response.new(dummy, response_model, definitions)
         assert_equal('{"foo":"bar"}', response.to_json)
+      end
+
+      def test_converts_camel_case_to_snake_case
+        response_model = Meta::Response.new(type: 'object')
+        response_model.schema.add_property('fooBar', type: 'string')
+
+        dummy_class = Struct.new(:foo_bar, keyword_init: true)
+        dummy = dummy_class.new(foo_bar: 'foo')
+
+        response = Response.new(dummy, response_model, definitions)
+        assert_equal('{"fooBar":"foo"}', response.to_json)
       end
 
       def test_serializes_an_object_with_additional_properties
