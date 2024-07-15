@@ -6,11 +6,11 @@ module Jsapi
   module Meta
     module OpenAPI
       class TagTest < Minitest::Test
-        def test_empty_tag_object
+        def test_empty_openapi_tag_object
           assert_equal({}, Tag.new.to_openapi)
         end
 
-        def test_full_tag_object
+        def test_full_openapi_tag_object
           tag = Tag.new(
             name: 'Foo',
             description: 'Description of Foo',

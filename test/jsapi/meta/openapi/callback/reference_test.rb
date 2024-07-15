@@ -7,7 +7,7 @@ module Jsapi
     module OpenAPI
       module Callback
         class ReferenceTest < Minitest::Test
-          def test_reference_object
+          def test_openapi_reference_object
             assert_equal(
               { '$ref': '#/components/callbacks/foo' },
               Reference.new(ref: 'foo').to_openapi

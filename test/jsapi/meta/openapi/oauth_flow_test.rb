@@ -6,13 +6,13 @@ module Jsapi
   module Meta
     module OpenAPI
       class OAuthFlowTest < Minitest::Test
-        def test_minimal_oauth_flow_object
+        def test_minimal_openapi_oauth_flow_object
           %w[2.0 3.0].each do |version|
             assert_equal({ scopes: {} }, OAuthFlow.new.to_openapi(Version.from(version)))
           end
         end
 
-        def test_oauth_flow_object
+        def test_full_openapi_oauth_flow_object
           oauth_flow = OAuthFlow.new(
             authorization_url: 'https://foo.bar/api/oauth/dialog',
             token_url: 'https://foo.bar/api/oauth/token',

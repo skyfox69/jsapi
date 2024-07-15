@@ -8,7 +8,7 @@ module Jsapi
       module SecurityScheme
         module HTTP
           class BearerTest < Minitest::Test
-            def test_minimal_security_scheme_object
+            def test_minimal_openapi_security_scheme_object
               security_scheme = Bearer.new
 
               # OpenAPI 2.0
@@ -25,7 +25,7 @@ module Jsapi
               )
             end
 
-            def test_full_security_scheme_object
+            def test_full_openapi_security_scheme_object
               security_scheme = Bearer.new(
                 bearer_format: 'JWT',
                 description: 'Foo'

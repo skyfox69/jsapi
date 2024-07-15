@@ -6,11 +6,11 @@ module Jsapi
   module Meta
     module OpenAPI
       class SecurityRequirementTest < Minitest::Test
-        def test_empty_security_requirement_object
+        def test_empty_openapi_security_requirement_object
           assert_equal({}, SecurityRequirement.new.to_openapi)
         end
 
-        def test_security_requirement_object_without_scopes
+        def test_openapi_security_requirement_object_without_scopes
           security_requirement = SecurityRequirement.new
           security_requirement.add_scheme('foo')
           security_requirement.add_scheme('bar')
@@ -24,7 +24,7 @@ module Jsapi
           )
         end
 
-        def test_security_requirement_object_with_scopes
+        def test_openapi_security_requirement_object_with_scopes
           security_requirement = SecurityRequirement.new
           security_requirement.add_scheme('foo', scopes: %w[read:foo])
           security_requirement.add_scheme('bar', scopes: %w[read:bar])

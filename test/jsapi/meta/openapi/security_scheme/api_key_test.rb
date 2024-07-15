@@ -7,7 +7,7 @@ module Jsapi
     module OpenAPI
       module SecurityScheme
         class APIKeyTest < Minitest::Test
-          def test_minimal_security_scheme_object
+          def test_minimal_openapi_security_scheme_object
             security_scheme = APIKey.new
 
             %w[2.0 3.0].each do |version|
@@ -18,7 +18,7 @@ module Jsapi
             end
           end
 
-          def test_full_security_scheme_object
+          def test_full_openapi_security_scheme_object
             security_scheme = APIKey.new(
               name: 'X-API-Key',
               in: 'header',

@@ -7,7 +7,7 @@ module Jsapi
     module OpenAPI
       module Link
         class ReferenceTest < Minitest::Test
-          def test_reference_object
+          def test_openapi_reference_object
             assert_equal(
               { '$ref': '#/components/links/foo' },
               Reference.new(ref: 'foo').to_openapi

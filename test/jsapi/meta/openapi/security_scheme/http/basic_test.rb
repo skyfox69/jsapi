@@ -8,7 +8,7 @@ module Jsapi
       module SecurityScheme
         module HTTP
           class BasicTest < Minitest::Test
-            def test_minimal_security_scheme_object
+            def test_minimal_openapi_security_scheme_object
               security_scheme = Basic.new
 
               # OpenAPI 2.0
@@ -26,7 +26,7 @@ module Jsapi
               )
             end
 
-            def test_full_security_scheme_object
+            def test_full_openapi_security_scheme_object
               security_scheme = Basic.new(description: 'Foo')
               security_scheme.add_openapi_extension('foo', 'bar')
 

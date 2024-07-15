@@ -7,7 +7,7 @@ module Jsapi
     module OpenAPI
       module SecurityScheme
         class OpenIDConnectTest < Minitest::Test
-          def test_minimal_security_scheme_object
+          def test_minimal_openapi_security_scheme_object
             security_scheme = OpenIDConnect.new
 
             # OpenAPI 2.0
@@ -21,7 +21,7 @@ module Jsapi
             )
           end
 
-          def test_full_security_scheme_object
+          def test_full_openapi_security_scheme_object
             security_scheme = OpenIDConnect.new(
               open_id_connect_url: 'https://foo.bar/openid',
               description: 'Foo'

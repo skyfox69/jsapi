@@ -7,7 +7,7 @@ module Jsapi
     module OpenAPI
       module SecurityScheme
         class OAuth2Test < Minitest::Test
-          def test_minimal_security_scheme_object
+          def test_minimal_openapi_security_scheme_object
             security_scheme = OAuth2.new
 
             %w[2.0 3.0].each do |version|
@@ -18,7 +18,7 @@ module Jsapi
             end
           end
 
-          def test_full_security_scheme_object
+          def test_full_openapi_security_scheme_object
             security_scheme = OAuth2.new(description: 'Foo')
             security_scheme.add_oauth_flow(
               :implicit,

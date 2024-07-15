@@ -7,11 +7,11 @@ module Jsapi
     module OpenAPI
       module Link
         class ModelTest < Minitest::Test
-          def test_empty_link_object
+          def test_empty_openapi_link_object
             assert_equal({}, Model.new.to_openapi)
           end
 
-          def test_full_link_object
+          def test_full_openapi_link_object
             link_model = Model.new(
               operation_id: 'foo',
               description: 'Description of foo',

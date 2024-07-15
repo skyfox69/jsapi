@@ -25,7 +25,7 @@ module Jsapi
             assert_equal("expression can't be blank", error.message)
           end
 
-          def test_callback_object
+          def test_openapi_callback_object
             expression = '{$request.query.foo}'
             callback_model = Model.new
             callback_model.add_operation(expression)

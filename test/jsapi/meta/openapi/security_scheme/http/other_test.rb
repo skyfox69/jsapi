@@ -8,7 +8,7 @@ module Jsapi
       module SecurityScheme
         module HTTP
           class OtherTest < Minitest::Test
-            def test_minimal_security_scheme_object
+            def test_minimal_openapi_security_scheme_object
               security_scheme = Other.new(scheme: 'digest')
 
               # OpenAPI 2.0
@@ -25,7 +25,7 @@ module Jsapi
               )
             end
 
-            def test_full_security_scheme_object
+            def test_full_openapi_security_scheme_object
               security_scheme = Other.new(
                 scheme: 'digest',
                 description: 'Foo'

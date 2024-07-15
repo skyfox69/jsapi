@@ -6,11 +6,11 @@ module Jsapi
   module Meta
     module OpenAPI
       class InfoTest < Minitest::Test
-        def test_empty_info_object
+        def test_empty_openapi_info_object
           assert_equal({}, Info.new.to_openapi)
         end
 
-        def test_full_info_object
+        def test_full_openapi_info_object
           info = Info.new(
             title: 'Foo',
             version: 1,
