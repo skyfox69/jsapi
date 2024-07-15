@@ -18,7 +18,7 @@ module Jsapi
             # The optional format of the bearer token.
             attribute :bearer_format, String
 
-            # Returns a hash representing the security scheme object, or
+            # Returns a hash representing the \OpenAPI security scheme object, or
             # +nil+ if <code>version.major</code> is 2.
             def to_openapi(version)
               version = OpenAPI::Version.from(version)

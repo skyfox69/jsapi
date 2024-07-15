@@ -15,7 +15,7 @@ module Jsapi
           # :attr: open_id_connect_url
           attribute :open_id_connect_url, String
 
-          # Returns a hash representing the security scheme object, or +nil+
+          # Returns a hash representing the \OpenAPI security scheme object, or +nil+
           # if <code>version.major</code> is 2.
           def to_openapi(version)
             version = Version.from(version)

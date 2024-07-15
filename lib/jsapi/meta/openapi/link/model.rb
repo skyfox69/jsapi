@@ -33,7 +33,7 @@ module Jsapi
           # The optional Server object.
           attribute :server, Server
 
-          # Returns a hash representing the link object.
+          # Returns a hash representing the \OpenAPI link object.
           def to_openapi(*)
             with_openapi_extensions(
               operationId: operation_id,

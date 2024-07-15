@@ -21,7 +21,7 @@ module Jsapi
           attribute :oauth_flows, { String => OAuthFlow },
                     keys: %w[authorization_code client_credentials implicit password]
 
-          # Returns a hash representing the security scheme object.
+          # Returns a hash representing the \OpenAPI security scheme object.
           def to_openapi(version)
             version = Version.from(version)
 

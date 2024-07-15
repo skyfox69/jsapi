@@ -22,7 +22,7 @@ module Jsapi
         # The URL of the contact.
         attribute :url, String
 
-        # Returns a hash representing the contact object.
+        # Returns a hash representing the \OpenAPI contact object.
         def to_openapi(*)
           with_openapi_extensions(name: name, url: url, email: email)
         end

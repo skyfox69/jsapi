@@ -19,7 +19,7 @@ module Jsapi
             # The mandatory \HTTP authentication scheme.
             attribute :scheme, String
 
-            # Returns a hash representing the security scheme object, or +nil+
+            # Returns a hash representing the \OpenAPI security scheme object, or +nil+
             # if <code>version.major</code> is 2.
             def to_openapi(version)
               version = OpenAPI::Version.from(version)

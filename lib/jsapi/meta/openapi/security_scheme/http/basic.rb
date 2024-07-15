@@ -9,7 +9,7 @@ module Jsapi
           class Basic < Base
             include Extensions
 
-            # Returns a hash representing the security scheme object.
+            # Returns a hash representing the \OpenAPI security scheme object.
             def to_openapi(version)
               version = OpenAPI::Version.from(version)
 

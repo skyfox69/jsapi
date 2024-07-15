@@ -24,7 +24,7 @@ module Jsapi
           # API key is sent by.
           attribute :name, String
 
-          # Returns a hash representing the security scheme object.
+          # Returns a hash representing the \OpenAPI security scheme object.
           def to_openapi(*)
             with_openapi_extensions(
               type: 'apiKey',

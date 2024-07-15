@@ -17,7 +17,7 @@ module Jsapi
         # The optional URL of the license.
         attribute :url, String
 
-        # Returns a hash representing the license object.
+        # Returns a hash representing the \OpenAPI license object.
         def to_openapi(*)
           with_openapi_extensions(name: name, url: url)
         end

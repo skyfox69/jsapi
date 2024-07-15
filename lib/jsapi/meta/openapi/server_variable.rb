@@ -22,7 +22,7 @@ module Jsapi
         # The values of the server variable.
         attribute :enum, [String]
 
-        # Returns a hash representing the server variable object.
+        # Returns a hash representing the \OpenAPI server variable object.
         def to_openapi(*)
           with_openapi_extensions(
             default: default,

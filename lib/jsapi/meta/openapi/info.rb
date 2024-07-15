@@ -37,7 +37,7 @@ module Jsapi
         # The version of the API.
         attribute :version, String
 
-        # Returns a hash representing the info object.
+        # Returns a hash representing the \OpenAPI info object.
         def to_openapi(*)
           with_openapi_extensions(
             title: title,

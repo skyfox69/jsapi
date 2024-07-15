@@ -23,7 +23,7 @@ module Jsapi
             @operations&.[](expression&.to_s)
           end
 
-          # Returns a hash representing the callback object.
+          # Returns a hash representing the \OpenAPI callback object.
           def to_openapi(version, definitions)
             operations.transform_values do |operation|
               { operation.method => operation.to_openapi(version, definitions) }
