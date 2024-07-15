@@ -14,7 +14,7 @@ module Jsapi
         ##
         # :attr: examples
         # The optional examples.
-        attribute :examples, { String => Example }, default_key: 'default'
+        attribute :examples, { String => OpenAPI::Example }, default_key: 'default'
 
         ##
         # :attr: links

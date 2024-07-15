@@ -19,7 +19,7 @@ module Jsapi
       end
 
       def add_example(name, keywords = {})
-        @examples[name.to_s] = Example.new(keywords)
+        @examples[name.to_s] = OpenAPI::Example.new(keywords)
       end
 
       def add_operation(name = nil, keywords = {})
