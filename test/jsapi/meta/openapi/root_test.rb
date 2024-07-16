@@ -54,6 +54,7 @@ module Jsapi
             }
           )
           root.add_callback('onFoo').add_operation('{$request.query.foo}')
+          root.add_header('X-Foo', type: 'string')
           root.add_link('foo', operation_id: 'foo')
           root.add_security_scheme('http_basic', type: 'basic')
           root.add_security.add_scheme('http_basic')
@@ -116,6 +117,14 @@ module Jsapi
                     }
                   }
                 },
+                headers: {
+                  'X-Foo' => {
+                    schema: {
+                      type: 'string',
+                      nullable: true
+                    }
+                  }
+                },
                 links: {
                   'foo' => {
                     operationId: 'foo'
@@ -166,6 +175,13 @@ module Jsapi
                         parameters: [],
                         responses: {}
                       }
+                    }
+                  }
+                },
+                headers: {
+                  'X-Foo' => {
+                    schema: {
+                      type: %w[string null]
                     }
                   }
                 },

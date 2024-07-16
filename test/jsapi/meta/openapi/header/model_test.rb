@@ -14,9 +14,7 @@ module Jsapi
 
             # OpenAPI 2.0
             assert_equal(
-              {
-                type: 'string'
-              },
+              { type: 'string' },
               header_model.to_openapi('2.0')
             )
             # OpenAPI 3.0

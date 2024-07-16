@@ -17,6 +17,11 @@ module Jsapi
         attribute :examples, { String => OpenAPI::Example }, default_key: 'default'
 
         ##
+        # :attr: headers
+        # The response headers.
+        attribute :headers, { String => OpenAPI::Header }
+
+        ##
         # :attr: links
         # The optional OpenAPI::Link objects.
         attribute :links, { String => OpenAPI::Link }
@@ -52,6 +57,9 @@ module Jsapi
               {
                 description: description,
                 schema: schema.to_openapi(version),
+                headers: headers&.transform_values do |header|
+                  header.to_openapi(version) unless header.reference?
+                end&.compact,
                 examples: (
                   if (example = examples&.values&.first).present?
                     { 'application/json' => example.resolve(definitions).value }
@@ -67,6 +75,7 @@ module Jsapi
                     examples: examples&.transform_values(&:to_openapi)
                   }.compact
                 },
+                headers: headers&.transform_values { |header| header.to_openapi(version) },
                 links: links&.transform_values(&:to_openapi)
               }
             end

@@ -56,6 +56,8 @@ module Jsapi
             existence: false,
             example: 'foo'
           )
+          response_model.add_header('X-Foo', type: 'string')
+          response_model.add_header('X-Bar', ref: 'X-Bar')
           response_model.add_link('foo', operation_id: 'foo')
           response_model.add_openapi_extension('foo', 'bar')
 
@@ -64,6 +66,11 @@ module Jsapi
             {
               schema: {
                 type: 'string'
+              },
+              headers: {
+                'X-Foo' => {
+                  type: 'string'
+                }
               },
               examples: {
                 'application/json' => 'foo'
@@ -86,6 +93,17 @@ module Jsapi
                       value: 'foo'
                     }
                   }
+                }
+              },
+              headers: {
+                'X-Foo' => {
+                  schema: {
+                    type: 'string',
+                    nullable: true
+                  }
+                },
+                'X-Bar' => {
+                  '$ref': '#/components/headers/X-Bar'
                 }
               },
               links: {

@@ -19,12 +19,12 @@ module Jsapi
 
           ##
           # :attr_reader: examples
-          # The examples.
+          # One or more example values.
           attribute :examples, { String => Example }, default_key: 'default'
 
           ##
           # :attr_reader: schema
-          # The Schema of the parameter.
+          # The Schema of the header.
           attribute :schema, writer: false
 
           delegate_missing_to :schema
@@ -34,20 +34,19 @@ module Jsapi
             super(keywords.extract!(:deprecated, :description, :examples))
 
             add_example(value: keywords.delete(:example)) if keywords.key?(:example)
-            keywords[:ref] = keywords.delete(:schema) if keywords.key?(:schema)
 
             @schema = Schema.new(keywords)
           end
 
+          # Returns a hash representing the \OpenAPI header object.
           def to_openapi(version)
             version = OpenAPI::Version.from(version)
 
             with_openapi_extensions(
               if version.major == 2
-                {
+                schema.to_openapi(version).merge(
                   description: description
-                  # TODO: collectionFormat
-                }.merge(schema.to_openapi(version))
+                )
               else
                 {
                   description: description,

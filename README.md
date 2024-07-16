@@ -379,6 +379,7 @@ end
 - `:description` - The description of the response.
 - `:example` - See [Defining examples](#defining-examples).
 - `:existence` - See [The existence keyword](#the-existence-keyword).
+- `:headers` - Specifies the HTTP headers of the response.
 - `:items` - See [The items keyword](#the-items-keyword).
 - `:format` - See [The format keyword](#the-format-keyword).
 - `:links` - The linked operations.

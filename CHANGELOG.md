@@ -1,5 +1,11 @@
 # Change log
 
+## 0.4.0 ()
+
+### New features
+
+- Support of OpenAPI header objects.
+
 ## 0.3.0 (2024-07-14)
 
 ### Breaking changes

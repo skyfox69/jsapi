@@ -32,6 +32,11 @@ module Jsapi
         attribute :external_docs, ExternalDocumentation
 
         ##
+        # :attr: headers
+        # The reusable Header objects. Applies to \OpenAPI 3.0 and higher.
+        attribute :headers, { String => Header }
+
+        ##
         # :attr: host
         # The host serving the API. Applies to \OpenAPI 2.0.
         attribute :host, String
@@ -121,6 +126,9 @@ module Jsapi
                 components: {
                   callbacks: callbacks&.transform_values do |callback|
                     callback.to_openapi(version, definitions)
+                  end,
+                  headers: headers&.transform_values do |header|
+                    header.to_openapi(version)
                   end,
                   links: links&.transform_values(&:to_openapi),
                   securitySchemes: security_schemes
