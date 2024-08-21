@@ -45,7 +45,7 @@ module Jsapi
         [
           validate_attributes(errors),
           !@strong || validate_parameters(
-            @params.except(:controller, :action),
+            @params.except(:controller, :action, :format),
             attributes,
             errors
           )

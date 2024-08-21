@@ -1,5 +1,11 @@
 # Change log
 
+## 0.4.1 (2024-08-21)
+
+- Changes
+
+- Strong parameter validation ignores `:format`.
+
 ## 0.4.0 (2024-08-21)
 
 ### New features
