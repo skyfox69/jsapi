@@ -20,6 +20,20 @@ module Jsapi
         assert_predicate(definitions.schema('Foo'), :present?)
       end
 
+      def test_on_rescue
+        definitions = self.definitions do
+          on_rescue :foo
+        end
+        assert_equal(:foo, definitions.on_rescue_callbacks.first)
+      end
+
+      def test_on_rescue_with_block
+        definitions = self.definitions do
+          on_rescue { |e| e }
+        end
+        assert_instance_of(Proc, definitions.on_rescue_callbacks.first)
+      end
+
       def test_openapi
         definitions = self.definitions do
           openapi(info: { title: 'Foo', version: '1' })

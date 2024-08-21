@@ -130,6 +130,15 @@ module Jsapi
             response = operation.response(status)&.resolve(definitions)
             raise e if response.nil?
 
+            # Call on_rescue callbacks
+            definitions.on_rescue_callbacks.each do |callback|
+              if callback.respond_to?(:call)
+                callback.call(e)
+              else
+                send(callback, e)
+              end
+            end
+
             ErrorResult.new(e, status: status)
           end
           render(json: Response.new(result, response, definitions), status: status)

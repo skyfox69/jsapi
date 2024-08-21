@@ -15,6 +15,11 @@ module Jsapi
         api_definitions { include(*klasses) }
       end
 
+      # Registers a callback to be called when rescuing an exception.
+      def api_on_rescue(method = nil, &block)
+        api_definitions { on_rescue(method, &block) }
+      end
+
       # Defines an operation.
       #
       #   api_operation 'foo', path: '/foo' do

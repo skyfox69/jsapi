@@ -4,6 +4,8 @@
 
 ### New features
 
+- `on_rescue` callback.
+
 - Support of OpenAPI header objects.
 
 ## 0.3.0 (2024-07-14)

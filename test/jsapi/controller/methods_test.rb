@@ -15,6 +15,9 @@ module Jsapi
         rescue_from NotFoundError, with: 404
         rescue_from RuntimeError, with: 500
 
+        on_rescue :notice_error
+        on_rescue {}
+
         operation do
           parameter :foo, type: 'string', existence: true
           response 200, type: 'string'
@@ -27,6 +30,10 @@ module Jsapi
 
       def setup
         self.params = ActionController::Parameters.new
+      end
+
+      def notice_error(error)
+        @last_error = error
       end
 
       # api_operation tests

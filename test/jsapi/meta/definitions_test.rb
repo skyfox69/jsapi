@@ -40,6 +40,13 @@ module Jsapi
         definitions.include(definitions)
       end
 
+      # Callbacks tests
+
+      def test_add_on_rescue
+        definitions.add_on_rescue(:foo)
+        assert_equal(:foo, definitions.on_rescue_callbacks.first)
+      end
+
       # Examples tests
 
       def test_add_example

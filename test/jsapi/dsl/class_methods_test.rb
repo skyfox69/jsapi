@@ -18,6 +18,24 @@ module Jsapi
         assert_predicate(definitions.schema('foo'), :present?)
       end
 
+      def test_api_on_rescue
+        foo_class = Class.new do
+          extend ClassMethods
+          api_on_rescue :foo
+        end
+        definitions = foo_class.api_definitions
+        assert_equal(:foo, definitions.on_rescue_callbacks.first)
+      end
+
+      def test_api_on_rescue_with_block
+        foo_class = Class.new do
+          extend ClassMethods
+          api_on_rescue { |e| e }
+        end
+        definitions = foo_class.api_definitions
+        assert_instance_of(Proc, definitions.on_rescue_callbacks.first)
+      end
+
       def test_api_operation
         foo_class = Class.new do
           extend ClassMethods

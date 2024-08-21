@@ -12,6 +12,13 @@ module Jsapi
         end
       end
 
+      # Registers a callback to be called when rescuing an exception.
+      def on_rescue(method = nil, &block)
+        _define('on_rescue') do
+          _meta_model.add_on_rescue(method || block)
+        end
+      end
+
       # Defines the root of an \OpenAPI document.
       #
       #   openapi do

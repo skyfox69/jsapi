@@ -232,12 +232,13 @@ The OpenAPI document produced looks like:
 
 The `Jsapi::DSL` module provides the following methods to define API components:
 
-- [api_operation](#defining-api-operations) - Defines a single API operation.
-- [api_parameter](#defining-reusable-parameters) - Defines a reusable parameter.
-- [api_response_body](#defining-reusable-request-bodies) - Defines a reusable request body.
-- [api_response](#defining-reusable-responses) - Defines a reusable response.
-- [api_schema](#defining-reusable-schemas) - Defines a reusable schema.
+- [api_operation](#defining-operations) - Defines a single API operation.
+- [api_parameter](#reusable-parameters) - Defines a reusable parameter.
+- [api_response_body](#reusable-request-bodies) - Defines a reusable request body.
+- [api_response](#reusable-responses) - Defines a reusable response.
+- [api_schema](#reusable-schemas) - Defines a reusable schema.
 - [api_rescue_from](#defining-rescue-handlers) - Defines a rescue handler.
+- [api_on_rescue](#defining-on_rescue-callbacks) - Defines an `on_rescue` callback.
 - api_include - Includes API definitions from other classes.
 
 API components can also be defined inside an `api_definitions` block, for example:
@@ -458,6 +459,18 @@ handler can be defined as below.
 
 ```ruby
 api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
+```
+
+### Defining `on_rescue` callbacks
+
+To notice exceptions rescued by a rescue handler a callback can be defined as below.
+
+```ruby
+api_on_rescue :foo
+
+api_on_rescue do |error|
+  # ...
+end
 ```
 
 ### Defining OpenAPI documents
@@ -765,8 +778,8 @@ the response to be selected. If `status` is not present, the default response of
 operation is selected.
 
 If an exception is raised while performing the block, an error response according to the first
-matching rescue handler is rendered. If no matching rescue handler could be found, the exception
-is raised again.
+matching rescue handler is rendered and all of the callbacks are called. If no matching rescue
+handler could be found, the exception is raised again.
 
 ### The `api_operation!` method
 

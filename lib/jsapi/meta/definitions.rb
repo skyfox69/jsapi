@@ -3,10 +3,11 @@
 module Jsapi
   module Meta
     class Definitions
-      attr_reader :examples, :openapi_root, :operations, :parameters,
+      attr_reader :callbacks, :examples, :openapi_root, :operations, :parameters,
                   :request_bodies, :rescue_handlers, :responses, :schemas
 
       def initialize(owner = nil)
+        @callbacks = { on_rescue: [] }
         @owner = owner
         @examples = {}
         @operations = {}
@@ -20,6 +21,10 @@ module Jsapi
 
       def add_example(name, keywords = {})
         @examples[name.to_s] = OpenAPI::Example.new(keywords)
+      end
+
+      def add_on_rescue(method_or_proc)
+        @callbacks[:on_rescue] << method_or_proc
       end
 
       def add_operation(name = nil, keywords = {})
@@ -83,6 +88,12 @@ module Jsapi
             .transform_values(&:to_json_schema)
 
           hash[:definitions] = definitions if definitions.any?
+        end
+      end
+
+      def on_rescue_callbacks
+        @self_and_included.flat_map do |definitions|
+          definitions.callbacks[:on_rescue]
         end
       end
 
