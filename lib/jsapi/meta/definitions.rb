@@ -112,15 +112,13 @@ module Jsapi
               responses: openapi_responses(version)
             )
           else
-            h.deep_merge!(
-              components: {
-                schemas: openapi_schemas(version),
-                parameters: openapi_parameters(version),
-                requestBodies: openapi_request_bodies(version),
-                responses: openapi_responses(version),
-                examples: openapi_examples
-              }.compact.presence
-            )
+            h[:components] = (h[:components] || {}).merge(
+              schemas: openapi_schemas(version),
+              parameters: openapi_parameters(version),
+              requestBodies: openapi_request_bodies(version),
+              responses: openapi_responses(version),
+              examples: openapi_examples
+            ).compact.presence
           end
         end.compact
       end
