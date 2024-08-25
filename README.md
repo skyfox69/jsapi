@@ -792,7 +792,8 @@ api_operation!('foo') do |api_params|
 end
 ```
 
-Note that the exception can be catched by a rescue handler to render an error response.
+The `errors` instance method of `Jsapi::Controller::ParametersInvalid` returns all of the
+validation errors encountered.
 
 ### The `api_definitions` method
 

@@ -1,5 +1,10 @@
 # Change log
 
+## 0.5.0 ()
+
+- Validation errors can be returned in error responses using the `errors` method of a
+  `Jsapi::Controller::ParametersInvalid` exception.
+
 ## 0.4.1 (2024-08-21)
 
 - Changes
