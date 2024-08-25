@@ -4,6 +4,8 @@ module Jsapi
   module Meta
     module Schema
       class AdditionalProperties < Meta::Base
+        delegate_missing_to :schema
+
         #
         # :attr: schema
         # The Schema of additional properties.
@@ -14,8 +16,6 @@ module Jsapi
         # The method to read additional properties when serializing an object.
         # The default method is +additional_properties+.
         attribute :source, Symbol, default: :additional_properties
-
-        delegate_missing_to :schema
 
         def initialize(keywords = {})
           keywords = keywords.dup

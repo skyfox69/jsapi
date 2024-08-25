@@ -5,10 +5,10 @@ module Jsapi
     module Schema
       # Used by Reference to delegate method calls to the referred schema.
       class Delegator
+        delegate_missing_to :@schema
+
         # The level of Existence.
         attr_reader :existence
-
-        delegate_missing_to :@schema
 
         def initialize(schema, existence)
           @schema = schema

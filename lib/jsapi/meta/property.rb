@@ -3,6 +3,8 @@
 module Jsapi
   module Meta
     class Property < Base
+      delegate_missing_to :schema
+
       ##
       # :attr_reader: name
       # The name of the property.
@@ -25,8 +27,6 @@ module Jsapi
       ##
       # :attr: write_only
       attribute :write_only, values: [true, false]
-
-      delegate_missing_to :schema
 
       # Creates a new property.
       #

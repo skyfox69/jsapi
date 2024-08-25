@@ -4,9 +4,9 @@ module Jsapi
   module Model
     # Wraps an error related to a nested model.
     class NestedError
-      attr_reader :attribute, :error
-
       delegate_missing_to :error
+
+      attr_reader :attribute, :error
 
       def initialize(attribute, error)
         @attribute = attribute

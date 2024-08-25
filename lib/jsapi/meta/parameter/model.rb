@@ -6,6 +6,8 @@ module Jsapi
       class Model < Base
         include OpenAPI::Extensions
 
+        delegate_missing_to :schema
+
         ##
         # :attr: deprecated
         # Specifies whether or not the parameter is deprecated.
@@ -40,8 +42,6 @@ module Jsapi
         # :attr_reader: schema
         # The Schema of the parameter.
         attribute :schema, writer: false
-
-        delegate_missing_to :schema
 
         # Creates a new parameter.
         #

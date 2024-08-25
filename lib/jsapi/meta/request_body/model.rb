@@ -6,6 +6,8 @@ module Jsapi
       class Model < Base
         include OpenAPI::Extensions
 
+        delegate_missing_to :schema
+
         ##
         # :attr: description
         # The optional description of the request body.
@@ -20,8 +22,6 @@ module Jsapi
         # :attr_reader: schema
         # The Schema of the request body.
         attribute :schema, writer: false
-
-        delegate_missing_to :schema
 
         def initialize(keywords = {})
           keywords = keywords.dup
