@@ -5,170 +5,253 @@ require 'test_helper'
 module Jsapi
   module Controller
     class MethodsTest < Minitest::Test
-      include DSL
-      include Methods
+      # api_operation and api_operation!
 
-      # To test that an exception is reraised
-      class NotFoundError < StandardError; end
+      %i[api_operation api_operation!].each do |method|
+        name = method.to_s.gsub('!', 'bang')
 
-      api_definitions do
-        rescue_from NotFoundError, with: 404
-        rescue_from RuntimeError, with: 500
+        define_method("test_#{name}") do
+          controller = dummy_controller do
+            api_operation do
+              response 200, type: 'string'
+            end
+          end
+          # Method call without block
+          controller.send(method, status: 200)
+          assert_equal(200, controller.status)
+          assert_nil(controller.response_body)
 
-        on_rescue :notice_error
-        on_rescue {}
+          # Method call with block
+          controller.send(method, status: 200) { 'foo' }
+          assert_equal(200, controller.status)
+          assert_equal('"foo"', controller.response_body)
 
-        operation do
-          parameter :foo, type: 'string', existence: true
-          response 200, type: 'string'
-          response 400, type: 'string'
-          response 500, type: 'string'
+          # Errors
+          error = assert_raises RuntimeError do
+            controller.send(method, :foo)
+          end
+          assert_equal('operation not defined: foo', error.message)
+
+          error = assert_raises RuntimeError do
+            controller.send(method, status: 204)
+          end
+          assert_equal('status code not defined: 204', error.message)
+
+          error = assert_raises RuntimeError do
+            controller.send(method, status: 200) { raise 'foo' }
+          end
+          assert_equal('foo', error.message)
+        end
+
+        define_method("test_#{name}_passes_params_to_the_block") do
+          controller = dummy_controller do
+            api_operation do
+              parameter 'foo', type: 'string'
+              response 200, type: 'string'
+            end
+          end
+          controller.params['foo'] = 'bar'
+
+          controller.send(method, status: 200) do |api_params|
+            assert_equal('bar', api_params.foo)
+          end
+        end
+
+        define_method("test_#{name}_renders_an_error_response_when_rescuing_an_exception") do
+          controller = dummy_controller do
+            api_definitions do
+              rescue_from RuntimeError, with: 500
+
+              operation do
+                response 200, type: 'string'
+                response 500, type: 'string'
+              end
+            end
+          end
+          controller.send(method, status: 200) { raise 'foo' }
+
+          assert_equal(500, controller.status)
+          assert_equal('"foo"', controller.response_body)
+        end
+
+        define_method("test_#{name}_calls_an_on_rescue_callback_as_a_method") do
+          controller = dummy_controller do
+            api_definitions do
+              rescue_from RuntimeError, with: 500
+              on_rescue :notice_error
+
+              operation do
+                response 200, type: 'string'
+                response 500, type: 'string'
+              end
+            end
+
+            attr_reader :error
+
+            def notice_error(error)
+              @error = error
+            end
+          end
+          controller.api_operation(status: 200) { raise 'foo' }
+          error = controller.error
+
+          assert_kind_of(RuntimeError, error)
+          assert_equal('foo', error.message)
+        end
+
+        define_method("test_#{name}_calls_an_on_rescue_callback_as_a_block") do
+          error = nil
+
+          controller = dummy_controller do
+            api_definitions do
+              rescue_from RuntimeError, with: 500
+              on_rescue { |e| error = e }
+
+              operation do
+                response 200, type: 'string'
+                response 500, type: 'string'
+              end
+            end
+          end
+          controller.api_operation(status: 200) { raise 'foo' }
+
+          assert_kind_of(RuntimeError, error)
+          assert_equal('foo', error.message)
+        end
+
+        define_method("test_#{name}_reraises_an_exception_if_error_response_does_not_exist") do
+          controller = dummy_controller do
+            api_definitions do
+              rescue_from RuntimeError, with: 500
+
+              operation do
+                response 200, type: 'string'
+              end
+            end
+          end
+          error = assert_raises(RuntimeError) do
+            controller.api_operation(status: 200) { raise 'foo' }
+          end
+          assert_equal('foo', error.message)
         end
       end
 
-      attr_accessor :params
+      # api_params
 
-      def setup
-        self.params = ActionController::Parameters.new
-      end
-
-      def notice_error(error)
-        @last_error = error
-      end
-
-      # api_operation tests
-
-      def test_api_operation
-        params['foo'] = 'bar'
-        api_operation(status: 200, &:foo)
-
-        assert_equal(200, @render_options[:status])
-        assert_equal('"bar"', @render_options[:json].to_json)
-      end
-
-      def test_api_operation_on_strong
-        params['foo'] = 'bar' # allowed
-        api_operation(status: 200, strong: true) do |api_params|
-          assert_predicate(api_params, :valid?)
+      def test_api_params
+        controller = dummy_controller do
+          api_operation do
+            parameter 'foo', type: 'string'
+            response 200, type: 'string'
+          end
         end
+        controller.params['foo'] = 'bar'
+        assert_equal('bar', controller.api_params.foo)
 
-        params['bar'] = 'foo' # forbidden
-        api_operation(status: 200, strong: true) do |api_params|
-          assert_predicate(api_params, :invalid?)
-          assert(api_params.errors.added?(:base, "'bar' isn't allowed"))
-        end
-      end
-
-      def test_api_operation_without_block
-        api_operation(status: 200)
-        assert_equal([200], @head_arguments)
-      end
-
-      def test_api_operation_renders_an_error_response
-        api_operation status: 200 do
-          raise 'bar'
-        end
-        assert_equal(500, @render_options[:status])
-        assert_equal('"bar"', @render_options[:json].to_json)
-      end
-
-      def test_api_operation_raises_an_exception_on_undefined_name
+        # Errors
         error = assert_raises RuntimeError do
-          api_operation(:foo) {}
+          controller.api_params('foo')
         end
         assert_equal('operation not defined: foo', error.message)
       end
 
-      def test_api_operation_raises_an_exception_on_undefined_status_code
+      # api_response
+
+      def test_api_response
+        controller = dummy_controller do
+          api_operation do
+            response 200, type: 'string'
+          end
+        end
+        response = controller.api_response('foo', status: 200)
+        assert_equal('"foo"', response.to_json)
+
+        # Errors
         error = assert_raises RuntimeError do
-          api_operation(status: 204) {}
+          controller.api_response('foo', 'foo', status: 200)
+        end
+        assert_equal('operation not defined: foo', error.message)
+
+        error = assert_raises RuntimeError do
+          controller.api_response('foo', status: 204)
         end
         assert_equal('status code not defined: 204', error.message)
       end
 
-      def test_api_operation_reraises_an_exception
-        assert_raises NotFoundError do
-          api_operation status: 200 do
-            raise NotFoundError
+      # Strong parameters
+
+      def test_strong_parameters
+        controller = dummy_controller do
+          api_operation do
+            parameter 'foo', type: 'string'
+            response 200, type: 'string'
           end
         end
-      end
+        # Allowed parameters only
+        controller.params['foo'] = 'bar'
+        controller.params[:controller] = 'Foo'
+        controller.params[:action] = 'foo'
+        controller.params[:format] = 'application/json'
 
-      # api_operation! tests
+        # api_params
+        assert_predicate(controller.api_params(strong: true), :valid?)
 
-      def test_api_operation_bang
-        params['foo'] = 'bar'
-        api_operation!(status: 200, &:foo)
+        # api_operation
+        controller.api_operation(status: 200, strong: true) do |api_params|
+          assert_predicate(api_params, :valid?)
+        end
+        # api_operation!
+        controller.api_operation!(status: 200, strong: true) do |api_params|
+          assert_predicate(api_params, :valid?)
+        end
 
-        assert_equal(200, @render_options[:status])
-        assert_equal('"bar"', @render_options[:json].to_json)
-      end
+        # At least one forbidden parameter
+        controller.params['bar'] = 'foo'
 
-      def test_api_operation_bang_on_strong
-        params['foo'] = 'bar' # allowed
-        api_operation!(status: 200, strong: true, &:foo)
-        assert_equal(200, @render_options[:status])
-
-        params['bar'] = 'foo' # forbidden
-        error = assert_raises ParametersInvalid do
-          api_operation!(status: 200, strong: true, &:foo)
+        # api_params
+        controller.api_params(strong: true).tap do |api_params|
+          assert_predicate(api_params, :invalid?)
+          assert(api_params.errors.added?(:base, "'bar' isn't allowed"))
+        end
+        # api_operation
+        controller.api_operation(status: 200, strong: true) do |api_params|
+          assert_predicate(api_params, :invalid?)
+          assert(api_params.errors.added?(:base, "'bar' isn't allowed"))
+        end
+        # api_operation!
+        error = assert_raises Jsapi::Controller::ParametersInvalid do
+          controller.api_operation!(status: 200, strong: true) do
+            assert(false) # Expected this line to not be reached
+          end
         end
         assert_equal("'bar' isn't allowed.", error.message)
       end
 
-      # api_parameters tests
-
-      def test_api_parameters
-        params['foo'] = 'bar'
-        assert_equal('bar', api_params.foo)
-      end
-
-      def test_api_parameters_on_strong_parameters
-        params['foo'] = 'bar' # allowed
-        assert_predicate(api_params(strong: true), :valid?)
-
-        params['bar'] = 'foo' # forbidden
-        api_params = api_params(strong: true)
-        assert_predicate(api_params, :invalid?)
-        assert(api_params.errors.added?(:base, "'bar' isn't allowed"))
-      end
-
-      def test_api_parameters_raises_an_exception_on_undefined_operation_name
-        error = assert_raises RuntimeError do
-          api_params(:foo)
-        end
-        assert_equal('operation not defined: foo', error.message)
-      end
-
-      # api_response tests
-
-      def test_api_response
-        response = api_response('foo', status: 200)
-        assert_equal('"foo"', response.to_json)
-      end
-
-      def test_api_response_raises_an_exception_on_undefined_operation_name
-        error = assert_raises RuntimeError do
-          api_response('bar', :foo)
-        end
-        assert_equal('operation not defined: foo', error.message)
-      end
-
-      def test_api_response_raises_an_exception_on_undefined_status_code
-        error = assert_raises RuntimeError do
-          api_response('foo', status: 204)
-        end
-        assert_equal('status code not defined: 204', error.message)
-      end
-
       private
 
-      def head(*args)
-        @head_arguments = args
-      end
+      def dummy_controller(&block)
+        controller_class = Class.new do
+          include DSL
+          include Methods
 
-      def render(**options)
-        @render_options = options
+          attr_reader :response_body, :status
+
+          def head(*args)
+            @status = args.first
+            @response_body = nil
+          end
+
+          def params
+            @params ||= ActionController::Parameters.new
+          end
+
+          def render(**options)
+            @status = options[:status]
+            @response_body = options[:json]&.to_json
+          end
+        end
+        controller_class.class_eval(&block)
+        controller_class.new
       end
     end
   end
