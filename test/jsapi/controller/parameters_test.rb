@@ -99,6 +99,11 @@ module Jsapi
         assert(parameters(strong: true).validate(errors))
         assert_predicate(errors, :empty?)
 
+        %i[controller action format].each do |key|
+          assert(parameters(**{ key => 'foo', ':strong' => true }).validate(errors))
+          assert_predicate(errors, :empty?)
+        end
+
         assert(!parameters(bar: 'foo', strong: true).validate(errors))
         assert(errors.added?(:base, "'bar' isn't allowed"))
 

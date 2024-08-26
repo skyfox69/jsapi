@@ -21,7 +21,9 @@ require 'active_support'
 require 'active_support/core_ext/object'
 require 'active_support/core_ext/enumerable'
 require 'active_support/core_ext/array'
+require 'active_support/core_ext/hash'
 require 'active_support/core_ext/string'
+require 'active_support/hash_with_indifferent_access'
 
 # Locales
 ActiveSupport.on_load(:i18n) do

@@ -188,10 +188,9 @@ module Jsapi
           end
         end
         # Allowed parameters only
-        controller.params['foo'] = 'bar'
+        controller.params[:foo] = 'bar'
         controller.params[:controller] = 'Foo'
-        controller.params[:action] = 'foo'
-        controller.params[:format] = 'application/json'
+        controller.params[:action] = 'bar'
 
         # api_params
         assert_predicate(controller.api_params(strong: true), :valid?)
@@ -206,7 +205,7 @@ module Jsapi
         end
 
         # At least one forbidden parameter
-        controller.params['bar'] = 'foo'
+        controller.params[:bar] = 'foo'
 
         # api_params
         controller.api_params(strong: true).tap do |api_params|
