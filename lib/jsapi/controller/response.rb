@@ -81,7 +81,11 @@ module Jsapi
         # Serialize properties
         properties = schema.resolve_properties(:read, @definitions).transform_values do |property|
           serialize(
-            object.public_send(property.source || property.name.underscore),
+            if (method_chain = property.source).present?
+              method_chain.call(object)
+            else
+              object.public_send(property.name.underscore)
+            end,
             property.schema.resolve(@definitions),
             path.nil? ? property.name : "#{path}.#{property.name}"
           )
@@ -89,7 +93,7 @@ module Jsapi
         if (additional_properties = schema.additional_properties&.resolve(@definitions))
           additional_properties_schema = additional_properties.schema.resolve(@definitions)
 
-          object.public_send(additional_properties.source)&.each do |key, value|
+          additional_properties.source&.call(object)&.each do |key, value|
             # Don't replace the property with the same key
             next if properties.key?(key = key.to_s)
 

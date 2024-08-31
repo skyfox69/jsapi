@@ -2,6 +2,10 @@
 
 ## 0.5.0 ()
 
+### New features
+
+- Property sources can be chained methods, for example `foo.bar`.
+
 - Validation errors can be returned in error responses using the `errors` method of a
   `Jsapi::Controller::ParametersInvalid` exception.
 

@@ -21,8 +21,8 @@ module Jsapi
 
       ##
       # :attr: source
-      # The alternative method to read a property value when serializing an object.
-      attribute :source, Symbol
+      # The MethodChain to be called when reading a property value.
+      attribute :source, MethodChain
 
       ##
       # :attr: write_only

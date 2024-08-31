@@ -418,7 +418,7 @@ end
 - `:model` - See [API models](#api-models).
 - `:read_only` - Specifies whether or not the property is read only.
 - `:schema` - See [Reusable schemas](#reusable-schemas)
-- `:source` - The method to read a property value.
+- `:source` - See [The source keyword](#the-source-keyword)
 - `:title` - The title of the property.
 - `:type` - See [The type keyword](#the-type-keyword).
 - `:write_only` - Specifies whether or not the property is write only.
@@ -628,9 +628,20 @@ explicity specified, for example:
   schema 'foo', additional_properties: { type: 'string', source: :bar }
 ```
 
-When serializing an object additional properties are read by invoking the method specified
-by `:source`, or `additional_properties` if `:source` is omitted. This method must return
-a hash whose values must match the schema defined.
+The default source is `:additional_properties`.
+
+### The `:source` keyword
+
+The `:source` keyword specifies the method (chain) to be called to read property values.
+The value of `:source` can be a string, a symbol or an array of both, for example:
+
+```ruby
+property 'foo', source: 'bar.foo'
+```
+
+```ruby
+property 'foo', source: %i[bar foo]
+```
 
 ### The `:items` keyword
 
