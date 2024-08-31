@@ -6,6 +6,34 @@ module Jsapi
   module Meta
     module Schema
       class DiscriminatorTest < Minitest::Test
+        # mapping
+
+        def test_mapping_on_string_keys
+          discriminator = Discriminator.new
+          discriminator.add_mapping('foo', 'Foo')
+          discriminator.add_mapping('bar', 'Bar')
+
+          assert_equal({ 'foo' => 'Foo', 'bar' => 'Bar' }, discriminator.mappings)
+        end
+
+        def test_mapping_on_integer_keys
+          discriminator = Discriminator.new
+          discriminator.add_mapping(1, 'Foo')
+          discriminator.add_mapping(2, 'Bar')
+
+          assert_equal({ 1 => 'Foo', 2 => 'Bar' }, discriminator.mappings)
+        end
+
+        def test_mapping_on_boolean_keys
+          discriminator = Discriminator.new
+          discriminator.add_mapping(false, 'Foo')
+          discriminator.add_mapping(true, 'Bar')
+
+          assert_equal({ false => 'Foo', true => 'Bar' }, discriminator.mappings)
+        end
+
+        # resolve
+
         def test_resolve
           schema = definitions.add_schema('Foo', type: 'object')
 
@@ -47,8 +75,8 @@ module Jsapi
 
         def test_full_openapi_discriminator_object
           discriminator = Discriminator.new(property_name: 'type')
-          discriminator.add_mapping('foo', 'Foo')
-          discriminator.add_mapping('bar', 'Bar')
+          discriminator.add_mapping(false, 'Foo')
+          discriminator.add_mapping(true, 'Bar')
 
           # OpenAPI 2.0
           assert_equal('type', discriminator.to_openapi('2.0'))
@@ -57,7 +85,7 @@ module Jsapi
           assert_equal(
             {
               propertyName: 'type',
-              mapping: { 'foo' => 'Foo', 'bar' => 'Bar' }
+              mapping: { 'false' => 'Foo', 'true' => 'Bar' }
             },
             discriminator.to_openapi('3.0')
           )

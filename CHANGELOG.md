@@ -1,10 +1,11 @@
 # Change log
 
-## 0.5.0 ()
+## 0.5.0 (2024-08-31)
 
-### New features
+### Changes
 
-- Property sources can be chained methods, for example `foo.bar`.
+- Property values can be read by chained methods by specifying the source as an array
+  or a string like `foo.bar`.
 
 - Validation errors can be returned in error responses using the `errors` method of a
   `Jsapi::Controller::ParametersInvalid` exception.

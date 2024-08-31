@@ -54,7 +54,8 @@ module Jsapi
 
             # hash value reader
             define_method(singular_name) do |key = nil|
-              send(name)&.[](key_type_caster.cast(key) || default_key)
+              key = default_key if key.to_s.empty?
+              send(name)&.[](key_type_caster.cast(key))
             end
 
             if writer
@@ -66,9 +67,10 @@ module Jsapi
                   key = default_key
                   value = key_or_value
                 else
-                  key = key_or_value || default_key
+                  key = key_or_value
+                  key = default_key if key.to_s.empty?
                 end
-                raise ArgumentError, "key can't be blank" if key.blank?
+                raise ArgumentError, "key can't be blank" if key.to_s.empty?
 
                 casted_key = key_type_caster.cast(key)
                 casted_value = value_type_caster.cast(value)

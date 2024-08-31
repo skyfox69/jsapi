@@ -6,7 +6,7 @@ module Jsapi
       class Discriminator < Meta::Base
         ##
         # :attr: mappings
-        attribute :mappings, { String => String }
+        attribute :mappings, { Object => String }
 
         ##
         # :attr: property_name
@@ -27,7 +27,7 @@ module Jsapi
 
           {
             propertyName: property_name,
-            mapping: mappings
+            mapping: mappings&.transform_keys(&:to_s)
           }.compact
         end
       end

@@ -93,7 +93,7 @@ module Jsapi
         if (additional_properties = schema.additional_properties&.resolve(@definitions))
           additional_properties_schema = additional_properties.schema.resolve(@definitions)
 
-          additional_properties.source&.call(object)&.each do |key, value|
+          additional_properties.source.call(object)&.each do |key, value|
             # Don't replace the property with the same key
             next if properties.key?(key = key.to_s)
 
