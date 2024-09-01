@@ -16,6 +16,9 @@ Lint/NestedMethodDefinition:
 Metrics/AbcSize:
   Enabled: false
 
+Metrics/BlockNesting:
+  Enabled: false
+
 Metrics/ClassLength:
   Enabled: false
 
