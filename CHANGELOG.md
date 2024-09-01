@@ -1,5 +1,12 @@
 # Change log
 
+## 0.6.0
+
+### Breaking changes
+
+- Starting with this version, reusable OpenAPI example objects are defined under `openapi`
+  instead of `api_definitions`.
+
 ## 0.5.0 (2024-08-31)
 
 ### Changes

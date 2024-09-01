@@ -54,11 +54,12 @@ module Jsapi
             }
           )
           root.add_callback('onFoo').add_operation('{$request.query.foo}')
+          root.add_example('foo', value: 'bar')
           root.add_header('X-Foo', type: 'string')
           root.add_link('foo', operation_id: 'foo')
+          root.add_openapi_extension('foo', 'bar')
           root.add_security_scheme('http_basic', type: 'basic')
           root.add_security.add_scheme('http_basic')
-          root.add_openapi_extension 'foo', 'bar'
 
           # OpenAPI 2.0
           assert_equal(
@@ -115,6 +116,11 @@ module Jsapi
                         responses: {}
                       }
                     }
+                  }
+                },
+                examples: {
+                  'foo' => {
+                    value: 'bar'
                   }
                 },
                 headers: {
@@ -176,6 +182,11 @@ module Jsapi
                         responses: {}
                       }
                     }
+                  }
+                },
+                examples: {
+                  'foo' => {
+                    value: 'bar'
                   }
                 },
                 headers: {

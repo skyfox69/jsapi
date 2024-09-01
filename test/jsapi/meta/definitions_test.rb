@@ -16,7 +16,6 @@ module Jsapi
           'request_bodies: {}, ' \
           'responses: {}, ' \
           'schemas: {}, ' \
-          'examples: {}, ' \
           'openapi_root: nil, ' \
           'rescue_handlers: []>',
           Definitions.new(FooBarController).inspect
@@ -45,21 +44,6 @@ module Jsapi
       def test_add_on_rescue
         definitions.add_on_rescue(:foo)
         assert_equal(:foo, definitions.on_rescue_callbacks.first)
-      end
-
-      # Examples tests
-
-      def test_add_example
-        definitions.add_example('foo', value: 'bar')
-        assert(definitions.examples.key?('foo'))
-      end
-
-      def test_example
-        assert_nil(definitions.example(nil))
-        assert_nil(definitions.example('foo'))
-
-        definitions.add_example('foo', value: 'bar')
-        assert_equal('bar', definitions.example('foo').value)
       end
 
       # Operations tests
@@ -250,7 +234,6 @@ module Jsapi
 
       def test_full_openapi_document
         definitions.openapi_root = { info: { title: 'Foo', version: '1' } }
-        definitions.add_example('example', value: 'foo')
         definitions.add_operation('operation', path: '/bar')
         definitions.add_parameter('parameter', type: 'string')
         definitions.add_request_body('request_body', type: 'string')
@@ -359,11 +342,6 @@ module Jsapi
                       }
                     }
                   }
-                }
-              },
-              examples: {
-                'example' => {
-                  value: 'foo'
                 }
               }
             }

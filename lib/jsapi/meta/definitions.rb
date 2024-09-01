@@ -3,24 +3,19 @@
 module Jsapi
   module Meta
     class Definitions
-      attr_reader :callbacks, :examples, :openapi_root, :operations, :parameters,
-                  :request_bodies, :rescue_handlers, :responses, :schemas
+      attr_reader :callbacks, :openapi_root, :operations, :parameters, :request_bodies,
+                  :rescue_handlers, :responses, :schemas
 
       def initialize(owner = nil)
-        @callbacks = { on_rescue: [] }
         @owner = owner
-        @examples = {}
+        @callbacks = { on_rescue: [] }
         @operations = {}
         @parameters = {}
         @request_bodies = {}
+        @rescue_handlers = []
         @responses = {}
         @schemas = {}
-        @rescue_handlers = []
         @self_and_included = [self]
-      end
-
-      def add_example(name, keywords = {})
-        @examples[name.to_s] = OpenAPI::Example.new(keywords)
       end
 
       def add_on_rescue(method_or_proc)
@@ -55,13 +50,6 @@ module Jsapi
         @schemas[name] = Schema.new(keywords)
       end
 
-      def example(name)
-        return unless (name = name.to_s).present?
-
-        definitions = @self_and_included.find { |d| d.examples.key?(name) }
-        definitions.examples[name] if definitions
-      end
-
       def include(definitions)
         return if @self_and_included.include?(definitions)
 
@@ -71,7 +59,7 @@ module Jsapi
       def inspect # :nodoc:
         "#<#{self.class.name} #{
           %i[owner operations parameters request_bodies responses schemas
-             examples openapi_root rescue_handlers].map do |name|
+             openapi_root rescue_handlers].map do |name|
             "#{name}: #{instance_variable_get("@#{name}").inspect}"
           end.join(', ')
         }>"
@@ -116,8 +104,7 @@ module Jsapi
               schemas: openapi_schemas(version),
               parameters: openapi_parameters(version),
               requestBodies: openapi_request_bodies(version),
-              responses: openapi_responses(version),
-              examples: openapi_examples
+              responses: openapi_responses(version)
             ).compact.presence
           end
         end.compact
@@ -183,13 +170,6 @@ module Jsapi
 
       def default_path
         @default_path ||= "/#{default_operation_name}"
-      end
-
-      def openapi_examples
-        @self_and_included
-          .map(&:examples).reduce(&:merge)
-          .transform_values(&:to_openapi)
-          .presence
       end
 
       def openapi_parameters(version)

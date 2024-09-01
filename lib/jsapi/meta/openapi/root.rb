@@ -27,8 +27,13 @@ module Jsapi
         alias :add_consumes :add_consumed_mime_type
 
         ##
+        # :attr: examples
+        # The reusable Example objects. Applies to \OpenAPI 3.0 and higher.
+        attribute :examples, { String => Example }
+
+        ##
         # :attr: external_docs
-        # The optional ExternalDocumentation object.
+        # The ExternalDocumentation object.
         attribute :external_docs, ExternalDocumentation
 
         ##
@@ -127,6 +132,7 @@ module Jsapi
                   callbacks: callbacks&.transform_values do |callback|
                     callback.to_openapi(version, definitions)
                   end,
+                  examples: examples&.transform_values(&:to_openapi),
                   headers: headers&.transform_values do |header|
                     header.to_openapi(version)
                   end,
