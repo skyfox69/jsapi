@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    class Property < Base
+    class Property < Base::Model
       delegate_missing_to :schema
 
       ##

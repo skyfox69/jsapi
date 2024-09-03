@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents a license object.
-      class License < Base
+      class License < Meta::Base::Model
         include Extensions
 
         ##

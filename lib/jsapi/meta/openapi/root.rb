@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents an \OpenAPI object.
-      class Root < Base
+      class Root < Meta::Base::Model
         include Extensions
 
         ##

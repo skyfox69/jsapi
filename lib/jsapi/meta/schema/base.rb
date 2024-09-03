@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Schema
-      class Base < Meta::Base
+      class Base < Meta::Base::Model
         include OpenAPI::Extensions
 
         TYPES = %w[array boolean integer number object string].freeze # :nodoc:

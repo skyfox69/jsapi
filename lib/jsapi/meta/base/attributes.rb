@@ -2,8 +2,8 @@
 
 module Jsapi
   module Meta
-    module Attributes
-      module ClassMethods
+    module Base
+      module Attributes
         # Defines an attribute.
         def attribute(name, type = Object,
                       keys: nil,

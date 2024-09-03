@@ -4,10 +4,10 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents an OAuth flow object.
-      class OAuthFlow < Base
+      class OAuthFlow < Base::Model
         include Extensions
 
-        class Scope < Base
+        class Scope < Meta::Base::Model
           ##
           # :attr: description
           # The optional description of the scope.

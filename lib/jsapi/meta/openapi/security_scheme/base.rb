@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       module SecurityScheme
-        class Base < Meta::Base
+        class Base < Meta::Base::Model
           ##
           # :attr: description
           # The optional description of the security scheme.

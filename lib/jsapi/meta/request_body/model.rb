@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module RequestBody
-      class Model < Base
+      class Model < Base::Model
         include OpenAPI::Extensions
 
         delegate_missing_to :schema

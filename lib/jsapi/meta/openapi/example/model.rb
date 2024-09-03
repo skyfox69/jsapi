@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       module Example
-        class Model < Base
+        class Model < Meta::Base::Model
           include Extensions
 
           ##

@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents a contact object.
-      class Contact < Base
+      class Contact < Meta::Base::Model
         include Extensions
 
         ##

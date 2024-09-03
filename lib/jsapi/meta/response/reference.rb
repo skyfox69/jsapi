@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Response
-      class Reference < BaseReference
+      class Reference < Base::Reference
         # Returns a hash representing the \OpenAPI reference object.
         def to_openapi(version, *)
           version = OpenAPI::Version.from(version)

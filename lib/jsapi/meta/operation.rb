@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    class Operation < Base
+    class Operation < Base::Model
       include OpenAPI::Extensions
 
       ##

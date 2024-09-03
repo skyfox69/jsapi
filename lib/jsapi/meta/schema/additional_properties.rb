@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Schema
-      class AdditionalProperties < Meta::Base
+      class AdditionalProperties < Meta::Base::Model
         DEFAULT_METHOD_CHAIN = MethodChain.new(:additional_properties) # :nodoc:
 
         delegate_missing_to :schema

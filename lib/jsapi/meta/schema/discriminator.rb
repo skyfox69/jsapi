@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Schema
-      class Discriminator < Meta::Base
+      class Discriminator < Meta::Base::Model
         ##
         # :attr: mappings
         attribute :mappings, { Object => String }

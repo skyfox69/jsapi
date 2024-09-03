@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents a tag object.
-      class Tag < Base
+      class Tag < Meta::Base::Model
         include Extensions
 
         ##

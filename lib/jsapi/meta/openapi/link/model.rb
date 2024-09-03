@@ -5,7 +5,7 @@ module Jsapi
     module OpenAPI
       module Link
         # Represents a link object.
-        class Model < Base
+        class Model < Meta::Base::Model
           include Extensions
 
           ##

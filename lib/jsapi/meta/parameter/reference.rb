@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Parameter
-      class Reference < BaseReference
+      class Reference < Base::Reference
         # Returns an array of hashes. Each element represents an \OpenAPI parameter object
         # if the type of the referred parameter is <code>"object"</code>. Otherwise the
         # array contains a single hash representing the \OpenAPI reference object.

@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents a server object.
-      class Server < Base
+      class Server < Meta::Base::Model
         include Extensions
 
         ##

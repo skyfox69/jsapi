@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       module Header
-        class Model < Base
+        class Model < Meta::Base::Model
           include Extensions
 
           delegate_missing_to :schema

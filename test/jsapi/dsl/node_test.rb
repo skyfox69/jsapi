@@ -4,7 +4,7 @@ module Jsapi
   module DSL
     class NodeTest < Minitest::Test
       def test_method_missing
-        model = Class.new(Meta::Base) do
+        model = Class.new(Meta::Base::Model) do
           attribute :foo, String
         end.new
 
@@ -13,7 +13,7 @@ module Jsapi
       end
 
       def test_method_missing_on_array
-        model = Class.new(Meta::Base) do
+        model = Class.new(Meta::Base::Model) do
           attribute :foos, [String]
         end.new
 
@@ -22,7 +22,7 @@ module Jsapi
       end
 
       def test_method_missing_on_hash
-        model = Class.new(Meta::Base) do
+        model = Class.new(Meta::Base::Model) do
           attribute :foos, { String => String }
         end.new
 
@@ -31,9 +31,9 @@ module Jsapi
       end
 
       def test_method_missing_with_block
-        model = Class.new(Meta::Base) do
+        model = Class.new(Meta::Base::Model) do
           attribute :foo, (
-            Class.new(Meta::Base) do
+            Class.new(Meta::Base::Model) do
               attribute :bar, String
             end
           )
@@ -44,9 +44,9 @@ module Jsapi
       end
 
       def test_method_missing_with_block_on_array
-        model = Class.new(Meta::Base) do
+        model = Class.new(Meta::Base::Model) do
           attribute :foos, [
-            Class.new(Meta::Base) do
+            Class.new(Meta::Base::Model) do
               attribute :bar, String
             end
           ]
@@ -57,9 +57,9 @@ module Jsapi
       end
 
       def test_method_missing_with_block_on_hash
-        model = Class.new(Meta::Base) do
+        model = Class.new(Meta::Base::Model) do
           attribute :foos, {
-            String => Class.new(Meta::Base) do
+            String => Class.new(Meta::Base::Model) do
               attribute :bar, String
             end
           }
@@ -70,7 +70,7 @@ module Jsapi
       end
 
       def test_respond_to
-        model = Class.new(Meta::Base) do
+        model = Class.new(Meta::Base::Model) do
           attribute :foo
         end.new
 
@@ -80,7 +80,7 @@ module Jsapi
       end
 
       def test_raises_exception_on_unsupported_method
-        model = Meta::Base.new
+        model = Meta::Base::Model.new
 
         error = assert_raises do
           Node.new(model) { foo 'bar' }
@@ -89,8 +89,8 @@ module Jsapi
       end
 
       def test_raises_exception_on_reference_with_block
-        model = Class.new(Meta::Base) do
-          attribute :foo, Meta::BaseReference
+        model = Class.new(Meta::Base::Model) do
+          attribute :foo, Meta::Base::Reference
         end.new
 
         error = assert_raises do

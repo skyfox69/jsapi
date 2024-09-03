@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents an info object.
-      class Info < Base
+      class Info < Meta::Base::Model
         include Extensions
 
         ##

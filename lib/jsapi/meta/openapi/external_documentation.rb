@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module OpenAPI
       # Represents an external documentation object.
-      class ExternalDocumentation < Base
+      class ExternalDocumentation < Meta::Base::Model
         include Extensions
 
         ##

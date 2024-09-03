@@ -2,9 +2,7 @@
 
 require_relative 'meta/invalid_argument_error'
 require_relative 'meta/reference_error'
-require_relative 'meta/attributes'
 require_relative 'meta/base'
-require_relative 'meta/base_reference'
 require_relative 'meta/openapi'
 require_relative 'meta/existence'
 require_relative 'meta/method_chain'
