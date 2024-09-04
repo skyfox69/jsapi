@@ -28,13 +28,25 @@ module Jsapi
 
       def test_call_on_single_method
         object = Struct.new(:foo).new('bar')
-        assert_equal('bar', MethodChain.new('foo').call(object))
+
+        method_chain = MethodChain.new('foo')
+        assert_equal('bar', method_chain.call(object))
+
+        method_chain = MethodChain.new('bar')
+        assert_nil(method_chain.call(object, safe_send: true))
+        assert_raises(NoMethodError) { method_chain.call(object) }
       end
 
       def test_call_on_multiple_methods
         nested = Struct.new(:bar).new('foo')
         object = Struct.new(:foo).new(nested)
-        assert_equal('foo', MethodChain.new('foo.bar').call(object))
+
+        method_chain = MethodChain.new('foo.bar')
+        assert_equal('foo', method_chain.call(object))
+
+        method_chain = MethodChain.new('foo.foo')
+        assert_nil(method_chain.call(object, safe_send: true))
+        assert_raises(NoMethodError) { method_chain.call(object) }
       end
     end
   end

@@ -19,10 +19,12 @@ module Jsapi
       end
 
       # Calls the chained methods on +object+.
-      def call(object)
+      def call(object, safe_send: false)
         return if methods.blank?
 
         methods.each do |method|
+          return nil if safe_send && !object.respond_to?(method)
+
           object = object.public_send(method)
         end
         object

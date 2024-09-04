@@ -70,7 +70,7 @@ module Jsapi
       def serialize_object(object, schema, path)
         return if object.blank? # {}
 
-        # Select inherriting schema on polymorphism
+        # Select inheriting schema on polymorphism
         if (discriminator = schema.discriminator)
           discriminator_property = schema.properties[discriminator.property_name]
           schema = discriminator.resolve(
@@ -80,15 +80,10 @@ module Jsapi
         end
         # Serialize properties
         properties = schema.resolve_properties(:read, @definitions).transform_values do |property|
-          serialize(
-            if (method_chain = property.source).present?
-              method_chain.call(object)
-            else
-              object.public_send(property.name.underscore)
-            end,
-            property.schema.resolve(@definitions),
-            path.nil? ? property.name : "#{path}.#{property.name}"
-          )
+          property_schema = property.schema.resolve(@definitions)
+          property_value = property.method_chain.call(object, safe_send: property_schema.nullable?)
+
+          serialize(property_value, property_schema, path.nil? ? property.name : "#{path}.#{property.name}")
         end
         if (additional_properties = schema.additional_properties&.resolve(@definitions))
           additional_properties_schema = additional_properties.schema.resolve(@definitions)

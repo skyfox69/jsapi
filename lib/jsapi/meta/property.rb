@@ -21,7 +21,7 @@ module Jsapi
 
       ##
       # :attr: source
-      # The MethodChain to be called when reading a property value.
+      # The alternative MethodChain to be called when reading a property value.
       attribute :source, MethodChain
 
       ##
@@ -41,6 +41,11 @@ module Jsapi
         keywords[:ref] = keywords.delete(:schema) if keywords.key?(:schema)
 
         @schema = Schema.new(keywords)
+      end
+
+      # Returns the MethodChain to be called when reading a property value.
+      def method_chain
+        source || (@method_chain ||= MethodChain.new(name.underscore))
       end
 
       # Returns true if the level of existence is greater than or equal to +ALLOW_NIL+,

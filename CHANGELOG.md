@@ -7,6 +7,11 @@
 - Starting with this version, reusable OpenAPI example objects are defined under `openapi`
   instead of `api_definitions`.
 
+### Changes
+
+- `Response#to_json` only raises a `NoMethodError` when a property's level of existence is at
+  least `:allow_empty` and the method to be called to read a property value isn't defined.
+
 ## 0.5.0 (2024-08-31)
 
 ### Changes
