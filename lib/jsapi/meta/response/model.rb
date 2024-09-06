@@ -9,6 +9,11 @@ module Jsapi
         delegate_missing_to :schema
 
         ##
+        # :attr: content_type
+        # The content type. <code>"application/json"</code> by default.
+        attribute :content_type, String, default: 'application/json'
+
+        ##
         # :attr: description
         # The optional description of the response.
         attribute :description, String
@@ -40,7 +45,7 @@ module Jsapi
 
         def initialize(keywords = {})
           keywords = keywords.dup
-          super(keywords.extract!(:description, :examples, :locale))
+          super(keywords.extract!(:content_type, :description, :examples, :locale))
 
           add_example(value: keywords.delete(:example)) if keywords.key?(:example)
           keywords[:ref] = keywords.delete(:schema) if keywords.key?(:schema)
@@ -62,7 +67,7 @@ module Jsapi
                 end&.compact,
                 examples: (
                   if (example = examples&.values&.first).present?
-                    { 'application/json' => example.resolve(definitions).value }
+                    { content_type => example.resolve(definitions).value }
                   end
                 )
               }
@@ -70,7 +75,7 @@ module Jsapi
               {
                 description: description,
                 content: {
-                  'application/json' => {
+                  content_type => {
                     schema: schema.to_openapi(version),
                     examples: examples&.transform_values(&:to_openapi)
                   }.compact

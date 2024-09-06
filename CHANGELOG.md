@@ -2,6 +2,10 @@
 
 ## 0.6.0
 
+### New Features
+
+- The content type of a response can be any MIME type.
+
 ### Breaking changes
 
 - Starting with this version, reusable OpenAPI example objects are defined under `openapi`

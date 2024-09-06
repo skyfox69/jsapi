@@ -13,18 +13,24 @@ module Jsapi
         define_method("test_#{name}") do
           controller = dummy_controller do
             api_operation do
-              response 200, type: 'string'
+              response 200, type: 'string', content_type: 'application/foo'
             end
           end
           # Method call without block
           controller.send(method, status: 200)
-          assert_equal(200, controller.status)
-          assert_nil(controller.response_body)
+          response = controller.response
+
+          assert_equal(200, response.status)
+          assert_equal('application/foo', response.content_type)
+          assert_nil(response.body)
 
           # Method call with block
           controller.send(method, status: 200) { 'foo' }
-          assert_equal(200, controller.status)
-          assert_equal('"foo"', controller.response_body)
+          response = controller.response
+
+          assert_equal(200, response.status)
+          assert_equal('application/foo', response.content_type)
+          assert_equal('"foo"', response.body)
 
           # Errors
           error = assert_raises RuntimeError do
@@ -64,14 +70,16 @@ module Jsapi
 
               operation do
                 response 200, type: 'string'
-                response 500, type: 'string'
+                response 500, type: 'string', content_type: 'application/problem+json'
               end
             end
           end
           controller.send(method, status: 200) { raise 'foo' }
+          response = controller.response
 
-          assert_equal(500, controller.status)
-          assert_equal('"foo"', controller.response_body)
+          assert_equal(500, response.status)
+          assert_equal('application/problem+json', response.content_type)
+          assert_equal('"foo"', response.body)
         end
 
         define_method("test_#{name}_calls_an_on_rescue_callback_as_a_method") do
@@ -233,11 +241,12 @@ module Jsapi
           include DSL
           include Methods
 
-          attr_reader :response_body, :status
+          def content_type=(content_type)
+            response.content_type = content_type
+          end
 
           def head(*args)
-            @status = args.first
-            @response_body = nil
+            response.status = args.first
           end
 
           def params
@@ -245,8 +254,12 @@ module Jsapi
           end
 
           def render(**options)
-            @status = options[:status]
-            @response_body = options[:json]&.to_json
+            response.status = options[:status]
+            response.body = options[:json]&.to_json
+          end
+
+          def response
+            @response ||= ActionDispatch::Response.new
           end
         end
         controller_class.class_eval(&block)

@@ -352,6 +352,7 @@ end
 
 **Keywords**
 
+- `:content_type`- The content type, `"application/json"` by default.
 - `:default` - The default value.
 - `:deprecated` - Specifies whether or not the request body is deprecated.
 - `:description` - The description of the request body.
@@ -376,6 +377,7 @@ end
 
 - `:additional_properties` -
   See [The additional_properties keyword](#the-additional-properties-keyword).
+- `:content_type`- The content type, `"application/json"` by default.
 - `:deprecated` - Specifies whether or not the response is deprecated.
 - `:description` - The description of the response.
 - `:example` - See [Defining examples](#defining-examples).

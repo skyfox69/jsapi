@@ -84,6 +84,7 @@ module Jsapi
 
         def test_full_openapi_request_body_object
           request_body_model = Model.new(
+            content_type: 'application/foo',
             type: 'string',
             description: 'Foo',
             example: 'foo'
@@ -94,7 +95,7 @@ module Jsapi
             {
               description: 'Foo',
               content: {
-                'application/json' => {
+                'application/foo' => {
                   schema: {
                     type: 'string',
                     nullable: true

@@ -145,6 +145,7 @@ module Jsapi
         else
           head(status)
         end
+        self.content_type = response.content_type
       end
     end
   end

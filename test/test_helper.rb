@@ -33,6 +33,7 @@ end
 
 # Dummies
 require 'dummies/action_controller'
+require 'dummies/action_dispatch'
 require 'dummies/active_model'
 
 # This gem

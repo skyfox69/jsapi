@@ -52,6 +52,7 @@ module Jsapi
 
         def test_full_openapi_response_object
           response_model = Model.new(
+            content_type: 'application/foo',
             type: 'string',
             existence: false,
             example: 'foo'
@@ -73,7 +74,7 @@ module Jsapi
                 }
               },
               examples: {
-                'application/json' => 'foo'
+                'application/foo' => 'foo'
               },
               'x-foo': 'bar'
             },
@@ -83,7 +84,7 @@ module Jsapi
           assert_equal(
             {
               content: {
-                'application/json' => {
+                'application/foo' => {
                   schema: {
                     type: 'string',
                     nullable: true
