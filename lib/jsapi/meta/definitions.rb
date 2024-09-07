@@ -99,6 +99,13 @@ module Jsapi
               parameters: openapi_parameters(version),
               responses: openapi_responses(version)
             )
+            operations = @self_and_included.map(&:operations).reduce(&:reverse_merge).values
+
+            consumes = operations.filter_map { |operation| operation.consumes(self) }
+            h[:consumes] = consumes.uniq.sort if consumes.present?
+
+            produces = operations.flat_map { |operation| operation.produces(self) }
+            h[:produces] = produces.uniq.sort if produces.present?
           else
             h[:components] = (h[:components] || {}).merge(
               schemas: openapi_schemas(version),

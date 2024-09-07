@@ -234,11 +234,22 @@ module Jsapi
 
       def test_full_openapi_document
         definitions.openapi_root = { info: { title: 'Foo', version: '1' } }
-        definitions.add_operation('operation', path: '/bar')
+
+        operation = definitions.add_operation('operation', path: '/bar', method: 'post')
+        operation.add_parameter('parameter', ref: 'parameter')
+        operation.request_body = { ref: 'request_body' }
+        operation.add_response(200, ref: 'response')
+        operation.add_response(400, ref: 'error_response')
+
         definitions.add_parameter('parameter', type: 'string')
         definitions.add_request_body('request_body', type: 'string')
-        definitions.add_response('response', type: 'string')
-        definitions.add_schema('schema')
+        definitions.add_response('response', schema: 'response_schema')
+        definitions.add_response(
+          'error_response',
+          type: 'string',
+          content_type: 'application/problem+json'
+        )
+        definitions.add_schema('response_schema')
 
         # OpenAPI 2.0
         assert_equal(
@@ -248,17 +259,38 @@ module Jsapi
               title: 'Foo',
               version: '1'
             },
+            consumes: %w[application/json],
+            produces: %w[application/json application/problem+json],
             paths: {
               '/bar' => {
-                'get' => {
+                'post' => {
                   operationId: 'operation',
-                  parameters: [],
-                  responses: {}
+                  consumes: %w[application/json],
+                  produces: %w[application/json application/problem+json],
+                  parameters: [
+                    {
+                      '$ref': '#/parameters/parameter'
+                    },
+                    {
+                      name: 'body',
+                      in: 'body',
+                      required: false,
+                      type: 'string'
+                    }
+                  ],
+                  responses: {
+                    '200' => {
+                      '$ref': '#/responses/response'
+                    },
+                    '400' => {
+                      '$ref': '#/responses/error_response'
+                    }
+                  }
                 }
               }
             },
             definitions: {
-              'schema' => {
+              'response_schema' => {
                 type: 'object',
                 properties: {},
                 required: []
@@ -274,6 +306,11 @@ module Jsapi
             },
             responses: {
               'response' => {
+                schema: {
+                  '$ref': '#/definitions/response_schema'
+                }
+              },
+              'error_response' => {
                 schema: {
                   type: 'string'
                 }
@@ -292,16 +329,30 @@ module Jsapi
             },
             paths: {
               '/bar' => {
-                'get' => {
+                'post' => {
                   operationId: 'operation',
-                  parameters: [],
-                  responses: {}
+                  parameters: [
+                    {
+                      '$ref': '#/components/parameters/parameter'
+                    }
+                  ],
+                  request_body: {
+                    '$ref': '#/components/requestBodies/request_body'
+                  },
+                  responses: {
+                    '200' => {
+                      '$ref': '#/components/responses/response'
+                    },
+                    '400' => {
+                      '$ref': '#/components/responses/error_response'
+                    }
+                  }
                 }
               }
             },
             components: {
               schemas: {
-                'schema' => {
+                'response_schema' => {
                   type: 'object',
                   nullable: true,
                   properties: {},
@@ -336,6 +387,15 @@ module Jsapi
                 'response' => {
                   content: {
                     'application/json' => {
+                      schema: {
+                        '$ref': '#/components/schemas/response_schema'
+                      }
+                    }
+                  }
+                },
+                'error_response' => {
+                  content: {
+                    'application/problem+json' => {
                       schema: {
                         type: 'string',
                         nullable: true

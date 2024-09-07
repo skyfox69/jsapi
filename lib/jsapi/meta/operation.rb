@@ -11,15 +11,6 @@ module Jsapi
       attribute :callbacks, { String => OpenAPI::Callback }
 
       ##
-      # :attr: consumed_mime_types
-      # The MIME types consumed by the operation. Applies to \OpenAPI 2.0 only.
-      attribute :consumed_mime_types, [String]
-
-      alias :consumes :consumed_mime_types
-      alias :consumes= :consumed_mime_types=
-      alias :add_consumes :add_consumed_mime_type
-
-      ##
       # :attr: deprecated
       # Specifies whether or not the operation is deprecated.
       attribute :deprecated, values: [true, false]
@@ -51,8 +42,7 @@ module Jsapi
 
       ##
       # :attr: model
-      # The model class to access top-level parameters by. The default model class
-      # is Model::Base.
+      # The model class to access top-level parameters by. Model::Base by default.
       attribute :model, Class, default: Model::Base
 
       ##
@@ -69,15 +59,6 @@ module Jsapi
       # :attr: path
       # The relative path of the operation.
       attribute :path, String
-
-      ##
-      # :attr: consumed_mime_types
-      # The MIME types produced by the operation. Applies to \OpenAPI 2.0 only.
-      attribute :produced_mime_types, [String]
-
-      alias :produces :produced_mime_types
-      alias :produces= :produced_mime_types=
-      alias :add_produces :add_produced_mime_type
 
       ##
       # :attr: request_body
@@ -120,7 +101,7 @@ module Jsapi
 
       ##
       # :attr: tags
-      # The tags. Tags are used to group operations in an \OpenAPI document.
+      # The tags used to group operations in an \OpenAPI document.
       attribute :tags, [String]
 
       def initialize(name = nil, keywords = {})
@@ -130,6 +111,18 @@ module Jsapi
 
       def add_parameter(name, keywords = {}) # :nodoc:
         (@parameters ||= {})[name.to_s] = Parameter.new(name, keywords)
+      end
+
+      # Returns the MIME type consumed by the operation.
+      def consumes(definitions)
+        request_body&.resolve(definitions)&.content_type
+      end
+
+      # Returns an array containing the MIME types produced by the operation.
+      def produces(definitions)
+        responses.values.filter_map do |response|
+          response.resolve(definitions).content_type
+        end.uniq.sort
       end
 
       # Returns a hash representing the \OpenAPI operation object.
@@ -146,8 +139,12 @@ module Jsapi
           security: security_requirements&.map(&:to_openapi)
         ).tap do |hash|
           if version.major == 2
-            hash[:consumes] = consumed_mime_types if consumed_mime_types
-            hash[:produces] = produced_mime_types if produced_mime_types
+            if (consumes = consumes(definitions)).present?
+              hash[:consumes] = [consumes]
+            end
+            if (produces = produces(definitions)).present?
+              hash[:produces] = produces
+            end
             hash[:schemes] = schemes if schemes
           elsif servers
             hash[:servers] = servers.map(&:to_openapi)

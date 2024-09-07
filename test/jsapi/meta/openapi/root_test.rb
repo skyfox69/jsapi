@@ -37,8 +37,6 @@ module Jsapi
             host: 'https://foo.bar',
             base_path: '/foo',
             schemes: %w[https],
-            consumes: %w[application/json],
-            produces: %w[application/json],
             servers: [
               {
                 url: 'https://foo.bar/foo'
@@ -72,8 +70,6 @@ module Jsapi
               host: 'https://foo.bar',
               basePath: '/foo',
               schemes: %w[https],
-              consumes: %w[application/json],
-              produces: %w[application/json],
               securityDefinitions: {
                 'http_basic' => {
                   type: 'basic'

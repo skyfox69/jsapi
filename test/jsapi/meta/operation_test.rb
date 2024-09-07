@@ -53,8 +53,6 @@ module Jsapi
           deprecated: true,
 
           # OpenAPI 2.0 only:
-          consumes: %w[application/json],
-          produces: %w[application/json],
           schemes: %w[https],
 
           # OpenAPI 3.0 only:

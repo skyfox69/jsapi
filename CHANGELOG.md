@@ -4,12 +4,15 @@
 
 ### New Features
 
-- The content type of a response can be any MIME type.
+- The content type of a request body or response can be specified by the `:content_type`
+  keyword.
 
 ### Breaking changes
 
 - Starting with this version, reusable OpenAPI example objects are defined under `openapi`
   instead of `api_definitions`.
+
+- The `:consumes` and `:produces` keywords have been removed.
 
 ### Changes
 

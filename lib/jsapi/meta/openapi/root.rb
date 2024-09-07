@@ -18,15 +18,6 @@ module Jsapi
         attribute :base_path, String
 
         ##
-        # :attr: consumes
-        # The MIME types the API can consume. Applies to \OpenAPI 2.0.
-        attribute :consumed_mime_types, [String]
-
-        alias :consumes :consumed_mime_types
-        alias :consumes= :consumed_mime_types=
-        alias :add_consumes :add_consumed_mime_type
-
-        ##
         # :attr: examples
         # The reusable Example objects. Applies to \OpenAPI 3.0 and higher.
         attribute :examples, { String => Example }
@@ -55,15 +46,6 @@ module Jsapi
         # :attr: links
         # The reusable Link objects. Applies to \OpenAPI 3.0 and higher.
         attribute :links, { String => Link }
-
-        ##
-        # :attr: produces
-        # The MIME types the API can produce. Applies to \OpenAPI 2.0.
-        attribute :produced_mime_types, [String]
-
-        alias :produces :produced_mime_types
-        alias :produces= :produced_mime_types=
-        alias :add_produces :add_produced_mime_type
 
         ##
         # :attr: schemes
@@ -116,8 +98,6 @@ module Jsapi
                 host: host || uri&.hostname,
                 basePath: base_path || uri&.path,
                 schemes: schemes || uri&.scheme&.then { |scheme| [scheme] },
-                consumes: consumed_mime_types,
-                produces: produced_mime_types,
                 securityDefinitions: security_schemes,
                 security: security_requirements&.map(&:to_openapi),
                 tags: tags&.map(&:to_openapi),
