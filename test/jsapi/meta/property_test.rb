@@ -16,15 +16,21 @@ module Jsapi
         assert_equal("property name can't be blank", error.message)
       end
 
-      def test_method_chain
-        property = Property.new('foo_bar')
-        assert_equal(%i[foo_bar], property.method_chain.methods)
+      # Reader tests
 
+      def test_reader
+        property = Property.new('foo')
+        assert_equal('bar', property.reader.call({ foo: 'bar' }))
+      end
+
+      def test_reader_on_camel_case
         property = Property.new('fooBar')
-        assert_equal(%i[foo_bar], property.method_chain.methods)
+        assert_equal('bar', property.reader.call({ foo_bar: 'bar' }))
+      end
 
+      def test_reader_on_alternative_source
         property = Property.new('foo', source: 'bar')
-        assert_equal(%i[bar], property.method_chain.methods)
+        assert_equal('bar', property.reader.call({ bar: 'bar' }))
       end
 
       # Predicate methods tests

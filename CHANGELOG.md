@@ -4,6 +4,8 @@
 
 ### New Features
 
+- A response can also be produced from a hash whose keys are symbols.
+
 - The content type of a request body or response can be specified by the `:content_type`
   keyword.
 
@@ -16,8 +18,8 @@
 
 ### Changes
 
-- `Response#to_json` only raises a `NoMethodError` when a property's level of existence is at
-  least `:allow_empty` and the method to be called to read a property value isn't defined.
+- `Response#to_json` doesn't raise a `NoMethodError` when the method to be called to read a
+  property value is missing.
 
 ## 0.5.0 (2024-08-31)
 

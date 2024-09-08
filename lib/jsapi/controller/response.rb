@@ -68,23 +68,23 @@ module Jsapi
       end
 
       def serialize_object(object, schema, path)
-        return if object.blank? # {}
-
         # Select inheriting schema on polymorphism
         if (discriminator = schema.discriminator)
           discriminator_property = schema.properties[discriminator.property_name]
-          schema = discriminator.resolve(
-            object.public_send(discriminator_property.source || discriminator_property.name.underscore),
-            @definitions
-          )
+          discriminator_value = discriminator_property.reader.call(object)
+          discriminator_value = discriminator_property.default if discriminator_value.nil?
+
+          schema = discriminator.resolve(discriminator_value, @definitions)
         end
         # Serialize properties
         properties = schema.resolve_properties(:read, @definitions).transform_values do |property|
           property_schema = property.schema.resolve(@definitions)
-          property_value = property.method_chain.call(object, safe_send: property_schema.nullable?)
+          property_value = property.reader.call(object)
+          property_value = property.default if property_value.nil?
 
           serialize(property_value, property_schema, path.nil? ? property.name : "#{path}.#{property.name}")
         end
+        # Serialize additional properties
         if (additional_properties = schema.additional_properties&.resolve(@definitions))
           additional_properties_schema = additional_properties.schema.resolve(@definitions)
 
@@ -92,7 +92,6 @@ module Jsapi
             # Don't replace the property with the same key
             next if properties.key?(key = key.to_s)
 
-            # Serialize the additional property
             properties[key] = serialize(
               value,
               additional_properties_schema,
@@ -100,7 +99,8 @@ module Jsapi
             )
           end
         end
-        properties
+        # Return properties if present, otherwise nil
+        properties if properties.present?
       end
     end
   end

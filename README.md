@@ -45,7 +45,7 @@ class EchoController < Jsapi::Controller::Base
   api_operation path: '/echo' do
     parameter 'call', type: 'string', existence: true
     response 200 do
-      property 'echo', type: 'string', source: :to_s
+      property 'echo', type: 'string'
     end
     response 400 do
       property 'status', type: 'integer'
@@ -61,7 +61,7 @@ Create the action performing the API operation:
 class EchoController < Jsapi::Controller::Base
   def index
     api_operation! status: 200 do |api_params|
-      "#{api_params.call}, again"
+      { echo: "#{api_params.call}, again" }
     end
   end
 end
@@ -86,7 +86,7 @@ class EchoController < Jsapi::Controller::Base
   api_operation path: '/echo' do
     parameter 'call', type: 'string', existence: true
     response 200 do
-      property 'echo', type: 'string', source: :to_s
+      property 'echo', type: 'string'
     end
     response 400 do
       property 'status', type: 'integer'
@@ -96,7 +96,7 @@ class EchoController < Jsapi::Controller::Base
 
   def index
     api_operation! status: 200 do |api_params|
-      "#{api_params.call}, again"
+      { echo: "#{api_params.call}, again" }
     end
   end
 end
@@ -634,8 +634,8 @@ The default source is `:additional_properties`.
 
 ### The `:source` keyword
 
-The `:source` keyword specifies the method (chain) to be called to read property values.
-The value of `:source` can be a string, a symbol or an array of both, for example:
+The `:source` keyword specifies the sequence of methods or the `Proc` to be called to read
+property values. A source can be a string, a symbol, an array or a `Proc`, for example:
 
 ```ruby
 property 'foo', source: 'bar.foo'
@@ -643,6 +643,10 @@ property 'foo', source: 'bar.foo'
 
 ```ruby
 property 'foo', source: %i[bar foo]
+```
+
+```ruby
+property 'foo', source: ->(bar) { bar.foo }
 ```
 
 ### The `:items` keyword

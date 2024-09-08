@@ -21,8 +21,8 @@ module Jsapi
 
       ##
       # :attr: source
-      # The alternative MethodChain to be called when reading a property value.
-      attribute :source, MethodChain
+      # The alternative Callable used to read property values.
+      attribute :source, Callable
 
       ##
       # :attr: write_only
@@ -43,9 +43,10 @@ module Jsapi
         @schema = Schema.new(keywords)
       end
 
-      # Returns the MethodChain to be called when reading a property value.
-      def method_chain
-        source || (@method_chain ||= MethodChain.new(name.underscore))
+      # Returns the Callable used to read a property value. By default, a property value is
+      # read by calling the method whose name matches the property name.
+      def reader
+        source || (@reader ||= Callable::Symbol.new(name.underscore.to_sym))
       end
 
       # Returns true if the level of existence is greater than or equal to +ALLOW_NIL+,

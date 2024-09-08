@@ -2,10 +2,10 @@
 
 require_relative 'meta/invalid_argument_error'
 require_relative 'meta/reference_error'
+require_relative 'meta/callable'
+require_relative 'meta/existence'
 require_relative 'meta/base'
 require_relative 'meta/openapi'
-require_relative 'meta/existence'
-require_relative 'meta/method_chain'
 require_relative 'meta/property'
 require_relative 'meta/schema'
 require_relative 'meta/request_body'

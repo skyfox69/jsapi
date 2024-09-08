@@ -4,8 +4,6 @@ module Jsapi
   module Meta
     module Schema
       class AdditionalProperties < Meta::Base::Model
-        DEFAULT_METHOD_CHAIN = MethodChain.new(:additional_properties) # :nodoc:
-
         delegate_missing_to :schema
 
         ##
@@ -15,9 +13,10 @@ module Jsapi
 
         ##
         # :attr: source
-        # The MethodChain to be called when reading additional properties.
-        # The default method is +additional_properties+.
-        attribute :source, MethodChain, default: DEFAULT_METHOD_CHAIN
+        # The Callable used to read additional properties. By default, additional properties
+        # are read by calling the +additional_properties+ method or retrieving the value
+        # assigned to the +:additional_properties+ key.
+        attribute :source, Callable, default: Callable.from(:additional_properties)
 
         def initialize(keywords = {})
           keywords = keywords.dup
