@@ -6,12 +6,6 @@ module Jsapi
       class Base < Meta::Base::Model
         include OpenAPI::Extensions
 
-        TYPES = %w[array boolean integer number object string].freeze # :nodoc:
-
-        TYPES.each do |type|
-          define_method("#{type}?") { self.type == type }
-        end
-
         ##
         # :attr: default
         # The default value.

@@ -1,24 +1,31 @@
 # frozen_string_literal: true
 
+require_relative 'schema/additional_properties'
 require_relative 'schema/conversion'
 require_relative 'schema/boundary'
 require_relative 'schema/delegator'
+require_relative 'schema/discriminator'
 require_relative 'schema/reference'
+require_relative 'schema/validation'
+
 require_relative 'schema/base'
-require_relative 'schema/boolean'
 require_relative 'schema/array'
+require_relative 'schema/boolean'
 require_relative 'schema/numeric'
 require_relative 'schema/integer'
 require_relative 'schema/number'
-require_relative 'schema/additional_properties'
-require_relative 'schema/discriminator'
 require_relative 'schema/object'
 require_relative 'schema/string'
-require_relative 'schema/validation'
 
 module Jsapi
   module Meta
     module Schema
+      TYPES = %w[array boolean integer number object string].freeze # :nodoc:
+
+      TYPES.each do |type|
+        Base.define_method("#{type}?") { self.type == type }
+      end
+
       class << self
         # Creates a new schema model or reference. The +:type+ keyword determines
         # the type of the schema to be created. Possible types are:
@@ -51,7 +58,7 @@ module Jsapi
           when 'string'
             String
           else
-            raise InvalidArgumentError.new('type', type, Base::TYPES)
+            raise InvalidArgumentError.new('type', type, TYPES)
           end.new(keywords.except(:type))
         end
       end
