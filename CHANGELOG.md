@@ -4,7 +4,7 @@
 
 ### New Features
 
-- A response can also be produced from a hash whose keys are symbols.
+- Responses can also be created from hashes whose keys are symbols.
 
 - The general default values of parameters and properties can be configured per type.
 
@@ -13,52 +13,52 @@
 
 ### Breaking changes
 
+- The `:consumes` and `:produces` keywords have been removed. The MIME types are now
+  derived from the content types of the request bodies and responses.
+
 - Starting with this version, reusable OpenAPI example objects are defined under `openapi`
   instead of `api_definitions`.
 
-- The `:consumes` and `:produces` keywords have been removed.
-
 ### Changes
 
-- `Response#to_json` doesn't raise a `NoMethodError` when the method to be called to read a
-  property value is missing.
+- `Jsapi::Controller::Response#to_json` doesn't raise a `NoMethodError` when the method to
+  read a property value isn't defined.
 
 ## 0.5.0 (2024-08-31)
 
 ### Changes
 
-- Property values can be read by chained methods by specifying the source as an array
-  or a string like `foo.bar`.
+- Property values can be read by a sequence of methods specified as an array or a string
+  like `foo.bar`.
 
-- Validation errors can be returned in error responses using the `errors` method of a
+- Validation errors can be added to error responses using the `errors` method of a
   `Jsapi::Controller::ParametersInvalid` exception.
 
 ## 0.4.1 (2024-08-21)
 
 - Changes
 
-- Strong parameter validation ignores `:format`.
+- Strong parameter validation ignores the `:format` parameter.
 
 ## 0.4.0 (2024-08-21)
 
 ### New features
 
-- `on_rescue` callback.
+- Implicitly rescued exceptions can be sent to `on_rescue` callbacks.
 
-- Support of OpenAPI header objects.
+- OpenAPI header objects are supported from this version.
 
 ## 0.3.0 (2024-07-14)
 
 ### Breaking changes
 
-- When wrapping parameters and serializing objects, parameter and property names
-  are converted to snake case.
+- Parameter and property names in camel case are converted to method names in snake case.
 
 ### New features
 
 - Responses may contain additional properties as specified by OpenAPI.
 
-- Support of OpenAPI extensions.
+- OpenAPI extensions are supported from this version.
 
 ## 0.2.0 (2024-07-05)
 
@@ -85,7 +85,7 @@
 
 ### Changes
 
-- Add meta data to gemspec
+- Added meta data to gemspec.
 
 ## 0.1.1 (2024-05-27)
 
