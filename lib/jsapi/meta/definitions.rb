@@ -3,6 +3,10 @@
 module Jsapi
   module Meta
     class Definitions
+      extend Base::Attributes
+
+      attribute :defaults, { String => Defaults }, keys: Schema::TYPES, default: {}
+
       attr_reader :callbacks, :openapi_root, :operations, :parameters, :request_bodies,
                   :rescue_handlers, :responses, :schemas
 
@@ -48,6 +52,16 @@ module Jsapi
       def add_schema(name, keywords = {})
         name = name.to_s
         @schemas[name] = Schema.new(keywords)
+      end
+
+      def default(type)
+        return unless (type = type.to_s).present?
+
+        @self_and_included.each do |definitions|
+          default = definitions.defaults[type]
+          return default unless default.nil?
+        end
+        nil
       end
 
       def include(definitions)

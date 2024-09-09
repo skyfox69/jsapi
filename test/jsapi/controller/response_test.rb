@@ -11,97 +11,165 @@ module Jsapi
 
       # Serialization tests
 
-      def test_serializes_a_boolean
+      def test_serializes_booleans
         response_model = Meta::Response.new(type: 'boolean')
+
         response = Response.new(true, response_model, definitions)
         assert_equal('true', response.to_json)
+
+        response = Response.new(false, response_model, definitions)
+        assert_equal('false', response.to_json)
+
+        response = Response.new(nil, response_model, definitions)
+        assert_equal('null', response.to_json)
       end
 
-      def test_serializes_an_integer
+      def test_serializes_integers
         response_model = Meta::Response.new(type: 'integer')
+
+        response = Response.new(1, response_model, definitions)
+        assert_equal('1', response.to_json)
+
         response = Response.new(1.0, response_model, definitions)
         assert_equal('1', response.to_json)
+
+        response = Response.new(nil, response_model, definitions)
+        assert_equal('null', response.to_json)
       end
 
-      def test_converts_an_integer
+      def test_converts_integers
         response_model = Meta::Response.new(type: 'integer', conversion: :abs)
+
         response = Response.new(-1.0, response_model, definitions)
         assert_equal('1', response.to_json)
       end
 
-      def test_serializes_a_number
+      def test_serializes_numbers
         response_model = Meta::Response.new(type: 'number')
+
+        response = Response.new(1.0, response_model, definitions)
+        assert_equal('1.0', response.to_json)
+
         response = Response.new(1, response_model, definitions)
         assert_equal('1.0', response.to_json)
+
+        response = Response.new(nil, response_model, definitions)
+        assert_equal('null', response.to_json)
       end
 
-      def test_converts_a_number
+      def test_converts_numbers
         response_model = Meta::Response.new(type: 'number', conversion: :abs)
+
         response = Response.new(-1, response_model, definitions)
         assert_equal('1.0', response.to_json)
       end
 
       # Strings
 
-      def test_serializes_a_string
+      def test_serializes_strings
         response_model = Meta::Response.new(type: 'string')
-        response = Response.new('Foo', response_model, definitions)
-        assert_equal('"Foo"', response.to_json)
+
+        response = Response.new('foo', response_model, definitions)
+        assert_equal('"foo"', response.to_json)
+
+        response = Response.new('', response_model, definitions)
+        assert_equal('""', response.to_json)
+
+        response = Response.new(nil, response_model, definitions)
+        assert_equal('null', response.to_json)
+
+        definitions.add_default('string', write: '')
+        assert_equal('""', response.to_json)
       end
 
-      def test_serializes_a_string_on_date_format
+      def test_serializes_strings_on_date_format
         response_model = Meta::Response.new(type: 'string', format: 'date')
+
         response = Response.new('2099-12-31T23:59:59+00:00', response_model, definitions)
         assert_equal('"2099-12-31"', response.to_json)
       end
 
-      def test_serializes_a_string_on_datetime_format
+      def test_serializes_strings_on_datetime_format
         response_model = Meta::Response.new(type: 'string', format: 'date-time')
+
         response = Response.new('2099-12-31', response_model, definitions)
         assert_equal('"2099-12-31T00:00:00.000+00:00"', response.to_json)
       end
 
-      def test_serializes_a_string_on_duration_format
+      def test_serializes_strings_on_duration_format
         response_model = Meta::Response.new(type: 'string', format: 'duration')
+
         duration = ActiveSupport::Duration.build(86_400)
         response = Response.new(duration, response_model, definitions)
         assert_equal('"P1D"', response.to_json)
       end
 
-      def test_converts_a_string
+      def test_converts_strings
         response_model = Meta::Response.new(type: 'string', conversion: :upcase)
+
         response = Response.new('Foo', response_model, definitions)
         assert_equal('"FOO"', response.to_json)
       end
 
       # Arrays
 
-      def test_serializes_an_array
+      def test_serializes_arrays
         response_model = Meta::Response.new(type: 'array', items: { type: 'string' })
-        response = Response.new(%w[Foo Bar], response_model, definitions)
-        assert_equal('["Foo","Bar"]', response.to_json)
-      end
 
-      def test_serializes_empty_arrays
-        response_model = Meta::Response.new(type: 'array', items: { type: 'string' })
+        response = Response.new(%w[foo bar], response_model, definitions)
+        assert_equal('["foo","bar"]', response.to_json)
+
         response = Response.new([], response_model, definitions)
         assert_equal('[]', response.to_json)
 
         response = Response.new(nil, response_model, definitions)
         assert_equal('null', response.to_json)
+
+        definitions.add_default('array', write: [])
+        assert_equal('[]', response.to_json)
       end
 
       # Objects
 
-      def test_serializes_an_object
+      def test_serializes_objects
         response_model = Meta::Response.new(type: 'object')
         response_model.schema.add_property('foo', type: 'string')
 
         response = Response.new({ foo: 'bar' }, response_model, definitions)
         assert_equal('{"foo":"bar"}', response.to_json)
+
+        response = Response.new({}, response_model, definitions)
+        assert_equal('{"foo":null}', response.to_json)
+
+        response = Response.new(nil, response_model, definitions)
+        assert_equal('null', response.to_json)
+
+        definitions.add_default('object', write: {})
+        assert_equal('{"foo":null}', response.to_json)
       end
 
       def test_serializes_objects_with_additional_properties
+        response_model = Meta::Response.new(
+          type: 'object',
+          additional_properties: { type: 'string' }
+        )
+        response = Response.new(
+          {
+            additional_properties: {
+              foo: 'bar',
+              bar: 'foo'
+            }
+          },
+          response_model,
+          definitions
+        )
+        assert_equal('{"foo":"bar","bar":"foo"}', response.to_json)
+
+        response = Response.new({}, response_model, definitions)
+        assert_equal('null', response.to_json)
+      end
+
+      def test_serializes_objects_with_fixed_and_additional_properties
         response_model = Meta::Response.new(
           type: 'object',
           additional_properties: { type: 'string' }
@@ -145,15 +213,6 @@ module Jsapi
 
         response = Response.new({ type: 'bar', bar: 'foo' }, response_model, definitions)
         assert_equal('{"type":"bar","bar":"foo"}', response.to_json)
-      end
-
-      def test_serializes_empty_objects
-        response_model = Meta::Response.new(type: 'object')
-        response = Response.new({}, response_model, definitions)
-        assert_equal('null', response.to_json)
-
-        response = Response.new(nil, response_model, definitions)
-        assert_equal('null', response.to_json)
       end
 
       # Serialization error tests

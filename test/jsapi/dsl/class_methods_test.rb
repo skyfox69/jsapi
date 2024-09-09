@@ -5,6 +5,17 @@ require 'test_helper'
 module Jsapi
   module DSL
     class ClassMethodsTest < Minitest::Test
+      def test_api_default
+        definitions = Class.new do
+          extend ClassMethods
+          api_default 'array', write: []
+        end.api_definitions
+
+        default = definitions.default('array')
+        assert_predicate(default, :present?)
+        assert_equal([], default.write)
+      end
+
       def test_api_include
         foo_class = Class.new do
           extend ClassMethods
@@ -19,85 +30,86 @@ module Jsapi
       end
 
       def test_api_on_rescue
-        foo_class = Class.new do
+        definitions = Class.new do
           extend ClassMethods
           api_on_rescue :foo
-        end
-        definitions = foo_class.api_definitions
+        end.api_definitions
+
         assert_equal(:foo, definitions.on_rescue_callbacks.first)
       end
 
       def test_api_on_rescue_with_block
-        foo_class = Class.new do
+        definitions = Class.new do
           extend ClassMethods
           api_on_rescue { |e| e }
-        end
-        definitions = foo_class.api_definitions
+        end.api_definitions
+
         assert_instance_of(Proc, definitions.on_rescue_callbacks.first)
       end
 
       def test_api_operation
-        foo_class = Class.new do
+        definitions = Class.new do
           extend ClassMethods
           api_operation 'foo'
-        end
-        definitions = foo_class.api_definitions
+        end.api_definitions
+
         assert_predicate(definitions.operation('foo'), :present?)
       end
 
       def test_api_parameter
-        foo_class = Class.new do
+        definitions = Class.new do
           extend ClassMethods
           api_parameter 'foo'
-        end
-        definitions = foo_class.api_definitions
+        end.api_definitions
+
         assert_predicate(definitions.parameter('foo'), :present?)
       end
 
       def test_api_request_body
-        foo_class = Class.new do
+        definitions = Class.new do
           extend ClassMethods
           api_request_body 'foo'
-        end
-        definitions = foo_class.api_definitions
+        end.api_definitions
+
         assert_predicate(definitions.request_body('foo'), :present?)
       end
 
       def test_api_rescue_from
-        foo_class = Class.new do
+        definitions = Class.new do
           extend ClassMethods
           api_rescue_from StandardError
-        end
-        definitions = foo_class.api_definitions
+        end.api_definitions
+
         rescue_handler = definitions.rescue_handler_for(StandardError.new)
         assert_predicate(rescue_handler, :present?)
       end
 
       def test_api_response
-        foo_class = Class.new do
+        definitions = Class.new do
           extend ClassMethods
           api_response 'foo'
-        end
-        definitions = foo_class.api_definitions
+        end.api_definitions
+
         assert_predicate(definitions.response('foo'), :present?)
       end
 
       def test_api_schema
-        foo_class = Class.new do
+        definitions = Class.new do
           extend ClassMethods
           api_schema 'foo'
-        end
-        definitions = foo_class.api_definitions
+        end.api_definitions
+
         assert_predicate(definitions.schema('foo'), :present?)
       end
 
       def test_openapi
-        foo_class = Class.new do
+        definitions = Class.new do
           extend ClassMethods
           openapi do
             info title: 'foo', version: '1'
           end
-        end
+        end.api_definitions
+
         assert_equal(
           {
             swagger: '2.0',
@@ -106,7 +118,7 @@ module Jsapi
               version: '1'
             }
           },
-          foo_class.api_definitions.openapi_document('2.0')
+          definitions.openapi_document('2.0')
         )
       end
     end

@@ -46,6 +46,24 @@ module Jsapi
         assert_equal(:foo, definitions.on_rescue_callbacks.first)
       end
 
+      # Default tests
+
+      def test_add_default
+        definitions.add_default('array')
+        assert(definitions.defaults.key?('array'))
+      end
+
+      def test_default
+        assert_nil(definitions.default(nil))
+        assert_nil(definitions.default('array'))
+
+        definitions.add_default('array', read: [], write: [])
+        default = definitions.default('array')
+        assert_predicate(default, :present?)
+        assert_equal([], default.read)
+        assert_equal([], default.write)
+      end
+
       # Operations tests
 
       def test_add_operation

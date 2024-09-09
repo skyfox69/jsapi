@@ -3,6 +3,14 @@
 module Jsapi
   module DSL
     module ClassMethods
+      # Specifies the general default values for +type+.
+      #
+      #   api_default 'array', read: [], write: []
+      #
+      def api_default(type, **keywords, &block)
+        api_definitions { default(type, **keywords, &block) }
+      end
+
       # The API definitions of the current class.
       def api_definitions(&block)
         @api_definitions ||= Meta::Definitions.new(self)
@@ -30,24 +38,24 @@ module Jsapi
       #   end
       #
       # +name+ can be +nil+ if the controller handles one operation only.
-      def api_operation(name = nil, **options, &block)
-        api_definitions { operation(name, **options, &block) }
+      def api_operation(name = nil, **keywords, &block)
+        api_definitions { operation(name, **keywords, &block) }
       end
 
       # Defines a reusable parameter.
       #
       #   api_parameter 'foo', type: 'string'
       #
-      def api_parameter(name, **options, &block)
-        api_definitions { parameter(name, **options, &block) }
+      def api_parameter(name, **keywords, &block)
+        api_definitions { parameter(name, **keywords, &block) }
       end
 
       # Defines a reusable request body.
       #
       #   api_request_body 'foo', type: 'string'
       #
-      def api_request_body(name, **options, &block)
-        api_definitions { request_body(name, **options, &block) }
+      def api_request_body(name, **keywords, &block)
+        api_definitions { request_body(name, **keywords, &block) }
       end
 
       # Specifies the HTTP status code of an error response rendered when an
@@ -64,8 +72,8 @@ module Jsapi
       #   api_response 'Foo', type: 'object' do
       #     property 'bar', type: 'string'
       #   end
-      def api_response(name, **options, &block)
-        api_definitions { response(name, **options, &block) }
+      def api_response(name, **keywords, &block)
+        api_definitions { response(name, **keywords, &block) }
       end
 
       # Defines a reusable schema.
@@ -73,8 +81,8 @@ module Jsapi
       #   api_schema 'Foo' do
       #     property 'bar', type: 'string'
       #   end
-      def api_schema(name, **options, &block)
-        api_definitions { schema(name, **options, &block) }
+      def api_schema(name, **keywords, &block)
+        api_definitions { schema(name, **keywords, &block) }
       end
 
       # Defines the root of an OpenAPI document.

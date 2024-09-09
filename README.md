@@ -239,6 +239,7 @@ The `Jsapi::DSL` module provides the following methods to define API components:
 - [api_schema](#reusable-schemas) - Defines a reusable schema.
 - [api_rescue_from](#defining-rescue-handlers) - Defines a rescue handler.
 - [api_on_rescue](#defining-on_rescue-callbacks) - Defines an `on_rescue` callback.
+- [api_default](#defining-default-values) - Defines default values.
 - api_include - Includes API definitions from other classes.
 
 API components can also be defined inside an `api_definitions` block, for example:
@@ -474,6 +475,19 @@ api_on_rescue do |error|
   # ...
 end
 ```
+
+### Defining default values
+
+The general default values for a type can be defined as below.
+
+```ruby
+api_default 'array', read: [], write: []
+```
+
+**Keywords**
+
+- `:read` - The general default value of a parameter or property when reading a request.
+- `:write` - The general default value of a property when writing a response.
 
 ### Defining OpenAPI documents
 

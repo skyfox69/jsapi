@@ -29,6 +29,15 @@ module Jsapi
       assert_kind_of(JSON::Null, json_null)
     end
 
+    def test_wrap_nil_on_default
+      definitions = Meta::Definitions.new
+      definitions.add_default('array', read: [])
+
+      json_array = JSON.wrap(nil, Meta::Schema.new(type: 'array'), definitions)
+      assert_kind_of(JSON::Array, json_array)
+      assert_equal([], json_array.value)
+    end
+
     def test_wrap_number
       json_number = JSON.wrap(0, Meta::Schema.new(type: 'number'))
       assert_kind_of(JSON::Number, json_number)

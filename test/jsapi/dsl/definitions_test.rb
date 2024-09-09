@@ -3,11 +3,31 @@
 module Jsapi
   module DSL
     class DefinitionsTest < Minitest::Test
+      def test_default
+        definitions = self.definitions do
+          default 'array', write: []
+        end
+        default = definitions.default('array')
+        assert_predicate(default, :present?)
+        assert_equal([], default.write)
+      end
+
+      def test_default_with_block
+        definitions = self.definitions do
+          default 'array' do
+            write []
+          end
+        end
+        default = definitions.default('array')
+        assert_predicate(default, :present?)
+        assert_equal([], default.write)
+      end
+
       def test_include
         foo_class = Class.new do
           extend ClassMethods
           api_definitions do
-            schema 'Foo'
+            schema 'Foo', description: 'Description of foo'
           end
         end
         bar_class = Class.new do
@@ -16,8 +36,9 @@ module Jsapi
             include foo_class
           end
         end
-        definitions = bar_class.api_definitions
-        assert_predicate(definitions.schema('Foo'), :present?)
+        schema = bar_class.api_definitions.schema('Foo')
+        assert_predicate(schema, :present?)
+        assert_equal('Description of foo', schema.description)
       end
 
       def test_on_rescue
@@ -52,7 +73,9 @@ module Jsapi
 
       def test_openapi_with_block
         definitions = self.definitions do
-          openapi { info title: 'Foo', version: '1' }
+          openapi do
+            info title: 'Foo', version: '1'
+          end
         end
         assert_equal(
           {
@@ -67,22 +90,26 @@ module Jsapi
       end
 
       def test_operation_with_name
-        definitions = self.definitions { operation 'foo' }
+        definitions = self.definitions do
+          operation 'foo'
+        end
         assert_predicate(definitions.operation('foo'), :present?)
       end
 
       def test_operation_without_name
-        definitions = definitions('Foo') { operation }
+        definitions = definitions('Foo') do
+          operation
+        end
         assert_predicate(definitions.operation('foo'), :present?)
       end
 
       def test_parameter
         definitions = self.definitions do
-          parameter 'foo', type: 'string'
+          parameter 'foo', description: 'Description of foo'
         end
         parameter = definitions.parameter('foo')
         assert_predicate(parameter, :present?)
-        assert_equal('string', parameter.type)
+        assert_equal('Description of foo', parameter.description)
       end
 
       def test_parameter_with_block
@@ -98,11 +125,11 @@ module Jsapi
 
       def test_request_body
         definitions = self.definitions do
-          request_body 'foo', type: 'string'
+          request_body 'foo', description: 'Description of foo'
         end
         request_body = definitions.request_body('foo')
         assert_predicate(request_body, :present?)
-        assert_equal('string', request_body.type)
+        assert_equal('Description of foo', request_body.description)
       end
 
       def test_request_body_with_block
@@ -125,8 +152,12 @@ module Jsapi
       end
 
       def test_response
-        definitions = self.definitions { response 'foo' }
-        assert_predicate(definitions.response('foo'), :present?)
+        definitions = self.definitions do
+          response 'foo', description: 'Description of foo'
+        end
+        response = definitions.response('foo')
+        assert_predicate(response, :present?)
+        assert_equal('Description of foo', response.description)
       end
 
       def test_response_with_block
@@ -141,8 +172,12 @@ module Jsapi
       end
 
       def test_schema
-        definitions = self.definitions { schema 'foo' }
-        assert_predicate(definitions.schema('foo'), :present?)
+        definitions = self.definitions do
+          schema 'foo', description: 'Description of foo'
+        end
+        schema = definitions.schema('foo')
+        assert_predicate(schema, :present?)
+        assert_equal('Description of foo', schema.description)
       end
 
       def test_schema_with_block

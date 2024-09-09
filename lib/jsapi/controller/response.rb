@@ -32,7 +32,9 @@ module Jsapi
       private
 
       def serialize(object, schema, path = nil)
+        object = @definitions.default(schema.type)&.write if object.nil?
         return if object.nil? && schema.nullable?
+
         raise "#{path || 'response'} can't be nil" if object.nil?
 
         case schema.type
@@ -92,11 +94,7 @@ module Jsapi
             # Don't replace the property with the same key
             next if properties.key?(key = key.to_s)
 
-            properties[key] = serialize(
-              value,
-              additional_properties_schema,
-              path.nil? ? key : "#{path}.#{key}"
-            )
+            properties[key] = serialize(value, additional_properties_schema, path.nil? ? key : "#{path}.#{key}")
           end
         end
         # Return properties if present, otherwise nil

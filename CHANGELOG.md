@@ -6,6 +6,8 @@
 
 - A response can also be produced from a hash whose keys are symbols.
 
+- The general default values of parameters and properties can be configured per type.
+
 - The content type of a request body or response can be specified by the `:content_type`
   keyword.
 
