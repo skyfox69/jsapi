@@ -7,6 +7,13 @@ module Jsapi
     module OpenAPI
       module Header
         class ModelTest < Minitest::Test
+          def test_raises_an_exception_on_object
+            error = assert_raises(ArgumentError) do
+              Model.new(type: 'object')
+            end
+            assert_equal("type can't be object", error.message)
+          end
+
           # OpenAPI tests
 
           def test_minimal_openapi_header_object
@@ -31,7 +38,11 @@ module Jsapi
 
           def test_full_openapi_header_object
             header_model = Model.new(
-              type: 'string',
+              type: 'array',
+              items: {
+                type: 'string'
+              },
+              collection_format: 'pipes',
               description: 'foo',
               deprecated: true,
               example: 'bar'
@@ -41,7 +52,11 @@ module Jsapi
             # OpenAPI 2.0
             assert_equal(
               {
-                type: 'string',
+                type: 'array',
+                items: {
+                  type: 'string'
+                },
+                collection_format: 'pipes',
                 description: 'foo',
                 'x-foo': 'bar'
               },
@@ -51,8 +66,12 @@ module Jsapi
             assert_equal(
               {
                 schema: {
-                  type: 'string',
-                  nullable: true
+                  type: 'array',
+                  nullable: true,
+                  items: {
+                    type: 'string',
+                    nullable: true
+                  }
                 },
                 description: 'foo',
                 deprecated: true,
