@@ -362,6 +362,17 @@ module Jsapi
             parameter_model.to_openapi('3.0', Definitions.new)
           )
         end
+
+        def test_openapi_parameter_object_on_read_only_and_write_only_attributes
+          parameter_model = Model.new('foo', type: 'object', in: 'query')
+          parameter_model.add_property('read_only_attr', type: 'string', read_only: true)
+          parameter_model.add_property('write_only_attr', type: 'string', write_only: true)
+
+          assert_equal(
+            %w[foo[write_only_attr]],
+            parameter_model.to_openapi('3.0', Definitions.new).map { |p| p[:name] }
+          )
+        end
       end
     end
   end
