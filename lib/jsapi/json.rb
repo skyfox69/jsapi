@@ -17,7 +17,7 @@ module Jsapi
         schema = schema.resolve(definitions) unless definitions.nil?
 
         object = schema.default if object.nil?
-        object = definitions&.default(schema.type)&.read if object.nil?
+        object = definitions&.default(schema.type)&.value(:request) if object.nil?
         return Null.new(schema) if object.nil?
 
         case schema.type

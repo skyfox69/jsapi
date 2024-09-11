@@ -3,12 +3,12 @@
 module Jsapi
   module Meta
     module Callable
-      class SymbolSequence
+      class SymbolSequenceEvaluator
         attr_reader :symbols
 
         def initialize(*symbols)
           @symbols = symbols
-          @callables = symbols.map { |symbol| Symbol.new(symbol) }
+          @callables = symbols.map { |symbol| SymbolEvaluator.new(symbol) }
         end
 
         def inspect # :nodoc:

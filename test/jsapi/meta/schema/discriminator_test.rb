@@ -32,32 +32,6 @@ module Jsapi
           assert_equal({ false => 'Foo', true => 'Bar' }, discriminator.mappings)
         end
 
-        # resolve
-
-        def test_resolve
-          schema = definitions.add_schema('Foo', type: 'object')
-
-          discriminator = Discriminator.new
-          assert(schema.equal?(discriminator.resolve('Foo', definitions)))
-        end
-
-        def test_resolve_on_mapping
-          schema = definitions.add_schema('Foo', type: 'object')
-
-          discriminator = Discriminator.new
-          discriminator.add_mapping('foo', 'Foo')
-
-          assert(schema.equal?(discriminator.resolve('foo', definitions)))
-        end
-
-        def test_resolve_raises_an_error_on
-          discriminator = Discriminator.new
-          error = assert_raises(RuntimeError) do
-            discriminator.resolve('foo', definitions)
-          end
-          assert_equal('inherriting schema not found: "foo"', error.message)
-        end
-
         # OpenAPI tests
 
         def test_minimal_openapi_discriminator_object

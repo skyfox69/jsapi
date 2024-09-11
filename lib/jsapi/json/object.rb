@@ -9,13 +9,11 @@ module Jsapi
       attr_reader :raw_attributes
 
       def initialize(attributes, schema, definitions)
-        # Select inherriting schema on polymorphism
-        if (discriminator = schema.discriminator)
-          schema = discriminator.resolve(attributes[discriminator.property_name], definitions)
-        end
+        schema = schema.resolve_schema(attributes, definitions, context: :request)
+
         # Wrap attribute values
         @raw_attributes =
-          schema.resolve_properties(:write, definitions).transform_values do |property|
+          schema.resolve_properties(definitions, context: :request).transform_values do |property|
             JSON.wrap(attributes[property.name], property.schema, definitions)
           end
 

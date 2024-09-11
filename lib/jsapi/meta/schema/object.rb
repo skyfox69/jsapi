@@ -36,17 +36,36 @@ module Jsapi
           (@properties ||= {})[name.to_s] = Property.new(name, **keywords)
         end
 
-        def resolve_properties(access, definitions)
+        def resolve_properties(definitions, context: nil)
           properties = merge_properties(definitions, [])
 
-          case access
-          when :read
+          case context
+          when :response
             properties.reject { |_k, v| v.write_only? }
-          when :write
+          when :request
             properties.reject { |_k, v| v.read_only? }
           else
             properties
           end
+        end
+
+        def resolve_schema(object, definitions, context: nil)
+          return self if discriminator.nil?
+
+          property_name = discriminator.property_name
+
+          property = resolve_properties(definitions, context: context)[property_name]
+          raise "missing discriminator property: #{property_name}" if property.nil?
+
+          value = property.reader.call(object)
+          value = property.default if value.nil?
+          # value = definitions.default(property.type)&.value(context) if value.nil?
+          raise "#{property_name} can't be blank" if value.blank?
+
+          schema = definitions.schema(discriminator.mapping(value) || value)
+          raise "inheriting schema not found: #{value.inspect}" if schema.nil?
+
+          schema.resolve(definitions).resolve_schema(object, definitions, context: context)
         end
 
         def to_json_schema # :nodoc:

@@ -25,7 +25,7 @@ module Jsapi
         end
         request_body = operation.request_body&.resolve(definitions)
         if request_body && request_body.schema.respond_to?(:properties)
-          meta_models.merge!(request_body.schema.resolve_properties(:write, definitions))
+          meta_models.merge!(request_body.schema.resolve_properties(definitions, context: :request))
         end
 
         # Wrap params

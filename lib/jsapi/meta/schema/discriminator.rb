@@ -12,14 +12,6 @@ module Jsapi
         # :attr: property_name
         attribute :property_name, String
 
-        # Looks up the inherriting schema for +value+ in +definitions+.
-        def resolve(value, definitions)
-          schema = definitions.schema(mapping(value) || value)
-          raise "inherriting schema not found: #{value.inspect}" unless schema
-
-          schema.resolve(definitions)
-        end
-
         # Returns a hash representing the \OpenAPI discriminator object.
         def to_openapi(version)
           version = OpenAPI::Version.from(version)

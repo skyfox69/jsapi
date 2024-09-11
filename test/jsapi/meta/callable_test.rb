@@ -12,23 +12,23 @@ module Jsapi
 
       def test_from_symbol
         callable = Callable.from(:foo)
-        assert_kind_of(Callable::Symbol, callable)
+        assert_kind_of(Callable::SymbolEvaluator, callable)
         assert_equal(:foo, callable.symbol)
       end
 
       def test_from_symbol_sequence
         callable = Callable.from(%i[foo bar])
-        assert_kind_of(Callable::SymbolSequence, callable)
+        assert_kind_of(Callable::SymbolSequenceEvaluator, callable)
         assert_equal(%i[foo bar], callable.symbols)
       end
 
       def test_from_string
         callable = Callable.from('foo')
-        assert_kind_of(Callable::Symbol, callable)
+        assert_kind_of(Callable::SymbolEvaluator, callable)
         assert_equal(:foo, callable.symbol)
 
         callable = Callable.from('foo.bar')
-        assert_kind_of(Callable::SymbolSequence, callable)
+        assert_kind_of(Callable::SymbolSequenceEvaluator, callable)
         assert_equal(%i[foo bar], callable.symbols)
       end
 

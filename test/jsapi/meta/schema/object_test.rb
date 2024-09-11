@@ -6,13 +6,13 @@ module Jsapi
   module Meta
     module Schema
       class ObjectTest < Minitest::Test
-        def test_properties
+        def test_add_property
           schema = Object.new
           property = schema.add_property('foo', type: 'string')
           assert(property.equal?(schema.property('foo')))
         end
 
-        # resolve_properties tests
+        # #resolve_properties tests
 
         def test_resolve_properties
           schema = definitions.add_schema('Foo')
@@ -22,13 +22,13 @@ module Jsapi
           schema.add_all_of(ref: 'Foo')
           schema.add_property('bar', write_only: true)
 
-          properties = schema.resolve_properties(nil, definitions)
+          properties = schema.resolve_properties(definitions)
           assert_equal(%w[foo bar], properties.keys)
 
-          properties = schema.resolve_properties(:read, definitions)
+          properties = schema.resolve_properties(definitions, context: :response)
           assert_equal(%w[foo], properties.keys)
 
-          properties = schema.resolve_properties(:write, definitions)
+          properties = schema.resolve_properties(definitions, context: :request)
           assert_equal(%w[bar], properties.keys)
         end
 
@@ -40,9 +40,52 @@ module Jsapi
           schema.add_all_of(ref: 'Foo')
 
           error = assert_raises(RuntimeError) do
-            schema.resolve_properties(nil, definitions)
+            schema.resolve_properties(definitions)
           end
           assert_equal('circular reference: Foo', error.message)
+        end
+
+        # #resolve_schema tests
+
+        def test_resolve_schema
+          base_schema = Object.new(discriminator: { property_name: 'foo' })
+          base_schema.add_property('foo', type: 'string', default: 'Foo')
+
+          foo_schema = definitions.add_schema('Foo')
+          bar_schema = definitions.add_schema('Bar')
+
+          assert_equal(foo_schema, base_schema.resolve_schema({ foo: 'Foo' }, definitions))
+          assert_equal(bar_schema, base_schema.resolve_schema({ foo: 'Bar' }, definitions))
+          assert_equal(foo_schema, base_schema.resolve_schema({ foo: nil }, definitions))
+        end
+
+        def test_resolve_schema_raises_an_exception_on_missing_discriminator_property
+          schema = Object.new(discriminator: { property_name: 'foo' })
+
+          error = assert_raises(RuntimeError) do
+            schema.resolve_schema({}, definitions)
+          end
+          assert_equal('missing discriminator property: foo', error.message)
+        end
+
+        def test_resolve_schema_raises_an_exception_on_blank_value
+          schema = Object.new(discriminator: { property_name: 'foo' })
+          schema.add_property('foo', type: 'string')
+
+          error = assert_raises(RuntimeError) do
+            schema.resolve_schema({}, definitions)
+          end
+          assert_equal("foo can't be blank", error.message)
+        end
+
+        def test_resolve_schema_raises_an_exception_on_missing_inheriting_schema
+          schema = Object.new(discriminator: { property_name: 'foo' })
+          schema.add_property('foo', type: 'string')
+
+          error = assert_raises(RuntimeError) do
+            schema.resolve_schema({ foo: 'Bar' }, definitions)
+          end
+          assert_equal('inheriting schema not found: "Bar"', error.message)
         end
 
         # JSON Schema tests

@@ -46,7 +46,7 @@ module Jsapi
       # Returns the Callable used to read a property value. By default, a property value is
       # read by calling the method whose name matches the property name.
       def reader
-        source || (@reader ||= Callable::Symbol.new(name.underscore.to_sym))
+        source || (@reader ||= Callable.from(name.underscore.to_sym))
       end
 
       # Returns true if the level of existence is greater than or equal to +ALLOW_NIL+,

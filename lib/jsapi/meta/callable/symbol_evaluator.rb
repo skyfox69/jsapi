@@ -3,11 +3,12 @@
 module Jsapi
   module Meta
     module Callable
-      class Symbol
+      class SymbolEvaluator
         attr_reader :symbol
 
         def initialize(symbol)
           @symbol = symbol
+          @keys = [@symbol, @symbol.to_s]
         end
 
         def inspect # :nodoc:
@@ -18,8 +19,9 @@ module Jsapi
         def call(object)
           if object.respond_to?(@symbol)
             object.public_send(@symbol)
-          elsif object.respond_to?(:[])
-            object[@symbol]
+          elsif object.respond_to?(:[]) && object.respond_to?(:key?)
+            @keys.each { |key| return object[key] if object.key?(key) }
+            nil
           end
         end
       end

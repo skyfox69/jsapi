@@ -124,7 +124,7 @@ module Jsapi
         private
 
         def explode_object_parameter(name, schema, version, definitions, **options)
-          schema.resolve_properties(:write, definitions).values.flat_map do |property|
+          schema.resolve_properties(definitions, context: :request).values.flat_map do |property|
             property_schema = property.schema.resolve(definitions)
             parameter_name = "#{name}[#{property.name}]"
 

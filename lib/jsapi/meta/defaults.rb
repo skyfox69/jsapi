@@ -13,6 +13,15 @@ module Jsapi
       # :attr: write
       # The default value when writing responses.
       attribute :write, Object
+
+      def value(context)
+        case context
+        when :request
+          read
+        when :response
+          write
+        end
+      end
     end
   end
 end

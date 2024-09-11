@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require_relative 'callable/symbol'
-require_relative 'callable/symbol_sequence'
+require_relative 'callable/symbol_evaluator'
+require_relative 'callable/symbol_sequence_evaluator'
 
 module Jsapi
   module Meta
@@ -13,12 +13,14 @@ module Jsapi
           return arg if arg.respond_to?(:call) # e.g. a Proc
 
           symbols = Array.wrap(arg).flat_map do |symbol|
-            next symbol if symbol.is_a?(::Symbol)
+            next symbol if symbol.is_a?(Symbol)
 
             symbol.to_s.split('.')
           end.map(&:to_sym)
 
-          symbols.one? ? Symbol.new(symbols.first) : SymbolSequence.new(*symbols)
+          return SymbolEvaluator.new(symbols.first) if symbols.one?
+
+          SymbolSequenceEvaluator.new(*symbols)
         end
       end
     end
