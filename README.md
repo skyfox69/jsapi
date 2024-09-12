@@ -481,13 +481,14 @@ end
 The general default values for a type can be defined as below.
 
 ```ruby
-api_default 'array', read: [], write: []
+api_default 'array', within_requests: [], within_responses: []
 ```
 
 **Keywords**
 
-- `:read` - The general default value of a parameter or property when reading a request.
-- `:write` - The general default value of a property when writing a response.
+- `:within_requests` - The general default value of parameters and properties when
+  reading requests.
+- `:within_responses` - The general default value of properties when writing responses.
 
 ### Defining OpenAPI documents
 

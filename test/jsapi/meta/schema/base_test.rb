@@ -19,7 +19,7 @@ module Jsapi
 
         def test_default_value_on_general_default
           definitions = Definitions.new
-          definitions.add_default('string', read: 'foo')
+          definitions.add_default('string', within_requests: 'foo')
 
           schema = Schema.new(type: 'string')
           assert_equal('foo', schema.default_value(definitions, context: :request))

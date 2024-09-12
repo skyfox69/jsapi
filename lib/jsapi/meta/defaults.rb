@@ -6,21 +6,21 @@ module Jsapi
     class Defaults < Base::Model
       ##
       # :attr: read
-      # The default value when reading requests.
-      attribute :read, Object
+      # The default value of parameters and properties when reading requests.
+      attribute :within_requests, Object
 
       ##
       # :attr: write
-      # The default value when writing responses.
-      attribute :write, Object
+      # The default value of properties when writing responses.
+      attribute :within_responses, Object
 
       # Returns the default value within +context+.
       def value(context:)
         case context
         when :request
-          read
+          within_requests
         when :response
-          write
+          within_responses
         end
       end
     end

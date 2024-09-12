@@ -8,12 +8,12 @@ module Jsapi
       def test_api_default
         definitions = Class.new do
           extend ClassMethods
-          api_default 'array', write: []
+          api_default 'array', within_responses: []
         end.api_definitions
 
         default = definitions.default('array')
         assert_predicate(default, :present?)
-        assert_equal([], default.write)
+        assert_equal([], default.within_responses)
       end
 
       def test_api_include

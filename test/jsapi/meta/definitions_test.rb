@@ -54,7 +54,7 @@ module Jsapi
       end
 
       def test_default_value
-        definitions.add_default('array', read: [])
+        definitions.add_default('array', within_requests: [])
 
         assert_equal([], definitions.default_value('array', context: :request))
 

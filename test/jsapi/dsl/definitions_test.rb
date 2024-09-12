@@ -5,22 +5,22 @@ module Jsapi
     class DefinitionsTest < Minitest::Test
       def test_default
         definitions = self.definitions do
-          default 'array', write: []
+          default 'array', within_requests: []
         end
         default = definitions.default('array')
         assert_predicate(default, :present?)
-        assert_equal([], default.write)
+        assert_equal([], default.within_requests)
       end
 
       def test_default_with_block
         definitions = self.definitions do
           default 'array' do
-            write []
+            within_requests []
           end
         end
         default = definitions.default('array')
         assert_predicate(default, :present?)
-        assert_equal([], default.write)
+        assert_equal([], default.within_requests)
       end
 
       def test_include

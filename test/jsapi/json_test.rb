@@ -31,7 +31,7 @@ module Jsapi
 
     def test_wrap_nil_on_default
       definitions = Meta::Definitions.new
-      definitions.add_default('array', read: [])
+      definitions.add_default('array', within_requests: [])
 
       json_array = JSON.wrap(nil, Meta::Schema.new(type: 'array'), definitions)
       assert_kind_of(JSON::Array, json_array)

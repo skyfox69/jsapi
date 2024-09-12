@@ -78,7 +78,7 @@ module Jsapi
         response = Response.new(nil, response_model, definitions)
         assert_equal('null', response.to_json)
 
-        definitions.add_default('string', write: '')
+        definitions.add_default('string', within_responses: '')
         assert_equal('""', response.to_json)
       end
 
@@ -125,7 +125,7 @@ module Jsapi
         response = Response.new(nil, response_model, definitions)
         assert_equal('null', response.to_json)
 
-        definitions.add_default('array', write: [])
+        definitions.add_default('array', within_responses: [])
         assert_equal('[]', response.to_json)
       end
 
@@ -144,7 +144,7 @@ module Jsapi
         response = Response.new(nil, response_model, definitions)
         assert_equal('null', response.to_json)
 
-        definitions.add_default('object', write: {})
+        definitions.add_default('object', within_responses: {})
         assert_equal('{"foo":null}', response.to_json)
       end
 
