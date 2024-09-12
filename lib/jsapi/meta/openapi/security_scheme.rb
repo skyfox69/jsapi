@@ -40,7 +40,7 @@ module Jsapi
               raise InvalidArgumentError.new(
                 'type',
                 type,
-                %w[api_key basic http oauth2 open_id_connect]
+                valid_values: %w[api_key basic http oauth2 open_id_connect]
               )
             end
           end

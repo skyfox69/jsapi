@@ -41,7 +41,7 @@ module Jsapi
           casted_value = @caster.call(value)
           return casted_value unless @values&.exclude?(casted_value)
 
-          raise InvalidArgumentError.new(@name, casted_value, @values)
+          raise InvalidArgumentError.new(@name, casted_value, valid_values: @values)
         end
       end
     end

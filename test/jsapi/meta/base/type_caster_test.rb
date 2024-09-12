@@ -25,7 +25,7 @@ module Jsapi
           assert_equal(:foo, type_caster.cast(:foo))
 
           error = assert_raises(InvalidArgumentError) { type_caster.cast(nil) }
-          assert_equal('value must be one of [:foo, :bar], is nil', error.message)
+          assert_equal('value must be one of :foo or :bar, is nil', error.message)
         end
 
         def test_cast_to_object

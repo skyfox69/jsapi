@@ -4,9 +4,9 @@ require 'test_helper'
 
 module Jsapi
   module Meta
-    class InvalidArgumentErrorTest < Minitest::Test
+    class InvalidValueErrorTest < Minitest::Test
       def test_message
-        error = InvalidArgumentError.new('foo', 'bar')
+        error = InvalidValueError.new('foo', 'bar')
         assert_equal('foo must not be "bar"', error.message)
       end
     end

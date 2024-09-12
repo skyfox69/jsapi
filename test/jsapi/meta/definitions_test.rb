@@ -53,15 +53,13 @@ module Jsapi
         assert(definitions.defaults.key?('array'))
       end
 
-      def test_default
-        assert_nil(definitions.default(nil))
-        assert_nil(definitions.default('array'))
+      def test_default_value
+        definitions.add_default('array', read: [])
 
-        definitions.add_default('array', read: [], write: [])
-        default = definitions.default('array')
-        assert_predicate(default, :present?)
-        assert_equal([], default.read)
-        assert_equal([], default.write)
+        assert_equal([], definitions.default_value('array', context: :request))
+
+        assert_nil(definitions.default_value(nil))
+        assert_nil(definitions.default_value('object'))
       end
 
       # Operations tests

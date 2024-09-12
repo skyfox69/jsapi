@@ -49,21 +49,25 @@ module Jsapi
           end
         end
 
+        # Resolves the schema within +context+.
+        #
+        # Raises a +RuntimeError+ when the schema couldn't be resolved.
         def resolve_schema(object, definitions, context: nil)
           return self if discriminator.nil?
 
-          property_name = discriminator.property_name
+          properties = resolve_properties(definitions, context: context)
 
-          property = resolve_properties(definitions, context: context)[property_name]
-          raise "missing discriminator property: #{property_name}" if property.nil?
+          property = properties[discriminator.property_name]
+          raise InvalidValueError.new('discriminator property',
+                                      discriminator.property_name,
+                                      valid_values: properties.keys) if property.nil?
 
           value = property.reader.call(object)
-          value = property.default if value.nil?
-          # value = definitions.default(property.type)&.value(context) if value.nil?
-          raise "#{property_name} can't be blank" if value.blank?
+          value = property.default_value(definitions, context: context) if value.nil?
+          raise "#{discriminator.property_name} can't be blank" if value.blank?
 
           schema = definitions.schema(discriminator.mapping(value) || value)
-          raise "inheriting schema not found: #{value.inspect}" if schema.nil?
+          raise "inheriting schema couldn't be found: #{value.inspect}" if schema.nil?
 
           schema.resolve(definitions).resolve_schema(object, definitions, context: context)
         end

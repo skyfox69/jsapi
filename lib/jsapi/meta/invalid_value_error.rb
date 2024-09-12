@@ -2,8 +2,8 @@
 
 module Jsapi
   module Meta
-    # Raised when an argument isn't contained in the list of valid values.
-    class InvalidArgumentError < ArgumentError
+    # Raised when a value isn't contained in the list of valid values.
+    class InvalidValueError < RuntimeError
       include InvalidValueHelper
 
       def initialize(name, value, valid_values: [])

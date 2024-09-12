@@ -32,7 +32,7 @@ module Jsapi
       private
 
       def serialize(object, schema, path = nil)
-        object = @definitions.default(schema.type)&.write if object.nil?
+        object = schema.default_value(@definitions, context: :response) if object.nil?
         return if object.nil? && schema.nullable?
 
         raise "#{path || 'response'} can't be nil" if object.nil?

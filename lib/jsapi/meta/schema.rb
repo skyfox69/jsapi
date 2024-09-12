@@ -58,7 +58,7 @@ module Jsapi
           when 'string'
             String
           else
-            raise InvalidArgumentError.new('type', type, TYPES)
+            raise InvalidArgumentError.new('type', type, valid_values: TYPES)
           end.new(keywords.except(:type))
         end
       end

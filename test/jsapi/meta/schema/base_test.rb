@@ -12,6 +12,19 @@ module Jsapi
           assert_equal(%w[foo bar], schema.examples)
         end
 
+        def test_default_value
+          schema = Schema.new(type: 'string', default: 'foo')
+          assert_equal('foo', schema.default_value)
+        end
+
+        def test_default_value_on_general_default
+          definitions = Definitions.new
+          definitions.add_default('string', read: 'foo')
+
+          schema = Schema.new(type: 'string')
+          assert_equal('foo', schema.default_value(definitions, context: :request))
+        end
+
         def test_enum
           schema = Base.new(enum: %w[foo bar])
           assert_equal(%w[foo bar], schema.enum)

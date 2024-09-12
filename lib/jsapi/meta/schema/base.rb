@@ -63,6 +63,13 @@ module Jsapi
           super(keywords)
         end
 
+        # Returns the default value within +context+.
+        def default_value(definitions = nil, context: nil)
+          return default unless default.nil?
+
+          definitions&.default_value(type, context: context)
+        end
+
         def enum=(value) # :nodoc:
           add_validation('enum', Validation::Enum.new(value))
           @enum = value

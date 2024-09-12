@@ -8,9 +8,9 @@ module Jsapi
       def test_value
         defaults = Defaults.new(read: 'foo', write: 'bar')
 
-        assert_equal('foo', defaults.value(:request))
-        assert_equal('bar', defaults.value(:response))
-        assert_nil(defaults.value(nil))
+        assert_equal('foo', defaults.value(context: :request))
+        assert_equal('bar', defaults.value(context: :response))
+        assert_nil(defaults.value(context: nil))
       end
     end
   end

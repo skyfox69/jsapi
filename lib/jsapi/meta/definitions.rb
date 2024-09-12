@@ -54,12 +54,12 @@ module Jsapi
         @schemas[name] = Schema.new(keywords)
       end
 
-      def default(type)
+      def default_value(type, context: nil)
         return unless (type = type.to_s).present?
 
         @self_and_included.each do |definitions|
-          default = definitions.defaults[type]
-          return default unless default.nil?
+          default = definitions.default(type)
+          return default.value(context: context) if default
         end
         nil
       end

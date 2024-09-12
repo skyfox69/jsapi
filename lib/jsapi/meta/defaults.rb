@@ -14,7 +14,8 @@ module Jsapi
       # The default value when writing responses.
       attribute :write, Object
 
-      def value(context)
+      # Returns the default value within +context+.
+      def value(context:)
         case context
         when :request
           read

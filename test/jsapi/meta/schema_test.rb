@@ -50,8 +50,8 @@ module Jsapi
           Schema.new(type: 'foo')
         end
         assert_equal(
-          'type must be one of ["array", "boolean", "integer", ' \
-          '"number", "object", "string"], is "foo"',
+          'type must be one of "array", "boolean", "integer", ' \
+          '"number", "object" or "string", is "foo"',
           error.message
         )
       end

@@ -59,13 +59,14 @@ module Jsapi
           assert_equal(foo_schema, base_schema.resolve_schema({ foo: nil }, definitions))
         end
 
-        def test_resolve_schema_raises_an_exception_on_missing_discriminator_property
+        def test_resolve_schema_raises_an_exception_on_unknown_discriminator_property
           schema = Object.new(discriminator: { property_name: 'foo' })
+          schema.add_property('bar', type: 'string')
 
           error = assert_raises(RuntimeError) do
             schema.resolve_schema({}, definitions)
           end
-          assert_equal('missing discriminator property: foo', error.message)
+          assert_equal('discriminator property must be "bar", is "foo"', error.message)
         end
 
         def test_resolve_schema_raises_an_exception_on_blank_value
@@ -85,7 +86,7 @@ module Jsapi
           error = assert_raises(RuntimeError) do
             schema.resolve_schema({ foo: 'Bar' }, definitions)
           end
-          assert_equal('inheriting schema not found: "Bar"', error.message)
+          assert_equal("inheriting schema couldn't be found: \"Bar\"", error.message)
         end
 
         # JSON Schema tests
