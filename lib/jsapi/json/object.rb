@@ -18,9 +18,9 @@ module Jsapi
 
         @raw_additional_attributes =
           if (additional_properties = schema.additional_properties)
-            additional_properties_schema = additional_properties.resolve(definitions)
+            additional_properties_schema = additional_properties.schema.resolve(definitions)
 
-            attributes.except(*properties.keys).to_h.transform_values do |value|
+            attributes.except(*properties.keys).transform_values do |value|
               JSON.wrap(value, additional_properties_schema, definitions)
             end
           end || {}
