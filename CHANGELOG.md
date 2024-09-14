@@ -4,6 +4,8 @@
 
 ### New Features
 
+- Objects within requests may include additional properties as specified by OpenAPI.
+
 - Responses can also be created from hashes whose keys are symbols or strings.
 
 - The general default values of parameters and properties can be configured per type.
