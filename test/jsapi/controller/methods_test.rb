@@ -249,6 +249,10 @@ module Jsapi
             response.status = args.first
           end
 
+          def headers
+            {}
+          end
+
           def params
             @params ||= ActionController::Parameters.new
           end

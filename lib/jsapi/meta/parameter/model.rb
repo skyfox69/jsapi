@@ -27,11 +27,12 @@ module Jsapi
         # :attr: in
         # The location of the parameter. Possible values are:
         #
+        # - <code>"header"</code>
         # - <code>"path"</code>
         # - <code>"query"</code>
         #
         # The default location is <code>"query"</code>.
-        attribute :in, String, values: %w[path query], default: 'query'
+        attribute :in, String, values: %w[header path query], default: 'query'
 
         ##
         # :attr_reader: name

@@ -9,8 +9,8 @@ module Jsapi
 
       def test_initialize_on_scalar_parameter
         operation.add_parameter('foo', type: 'string')
-        parameters = parameters(foo: 'foo')
-        assert_equal('foo', parameters['foo'])
+        params = parameters(foo: 'foo')
+        assert_equal('foo', params['foo'])
       end
 
       def test_initialize_on_object_parameter
@@ -19,8 +19,8 @@ module Jsapi
 
         operation.add_parameter('bar', ref: 'FooParameter')
 
-        parameters = parameters(bar: { 'foo' => 'FOO' })
-        assert_equal('FOO', parameters['bar'].foo)
+        params = parameters(bar: { 'foo' => 'FOO' })
+        assert_equal('FOO', params['bar'].foo)
       end
 
       def test_initialize_on_request_body
@@ -29,14 +29,20 @@ module Jsapi
 
         operation.request_body = { ref: 'FooBody' }
 
-        parameters = parameters(foo: 'bar')
-        assert_equal('bar', parameters['foo'])
+        params = parameters(foo: 'bar')
+        assert_equal('bar', params['foo'])
+      end
+
+      def test_initialize_on_header_parameter
+        operation.add_parameter('x-foo', type: 'string', in: 'header')
+        params = parameters(headers: { 'x-foo' => 'bar' })
+        assert_equal('bar', params['x_foo'])
       end
 
       def test_converts_camel_case_to_snake_case
         operation.add_parameter('fooBar', type: 'string')
-        parameters = parameters(fooBar: 'foo')
-        assert_equal('foo', parameters['foo_bar'])
+        params = parameters(fooBar: 'foo')
+        assert_equal('foo', params['foo_bar'])
       end
 
       # Attributes
@@ -49,28 +55,28 @@ module Jsapi
 
       def test_attribute_predicate
         operation.add_parameter('foo', type: 'string')
-        parameters = parameters(foo: nil)
+        params = parameters(foo: nil)
 
-        assert(parameters.attribute?(:foo))
-        assert(!parameters.attribute?(:bar))
-        assert(!parameters.attribute?(nil))
+        assert(params.attribute?(:foo))
+        assert(!params.attribute?(:bar))
+        assert(!params.attribute?(nil))
       end
 
       def test_attributes
         operation.add_parameter('foo', type: 'string')
-        parameters = parameters(foo: 'bar')
-        assert_equal({ 'foo' => 'bar' }, parameters.attributes)
+        params = parameters(foo: 'bar')
+        assert_equal({ 'foo' => 'bar' }, params.attributes)
       end
 
       def test_additional_attributes
         operation.add_parameter('foo', type: 'string')
         operation.request_body = { additional_properties: { type: 'string' } }
 
-        parameters = self.parameters(foo: 'bar')
-        assert_equal({}, parameters.additional_attributes)
+        params = parameters(foo: 'bar')
+        assert_equal({}, params.additional_attributes)
 
-        parameters = parameters(foo: 'bar', bar: 'foo')
-        assert_equal({ 'bar' => 'foo' }, parameters.additional_attributes)
+        params = parameters(foo: 'bar', bar: 'foo')
+        assert_equal({ 'bar' => 'foo' }, params.additional_attributes)
       end
 
       # Validation
@@ -130,9 +136,9 @@ module Jsapi
         @operation ||= definitions.add_operation('operation')
       end
 
-      def parameters(strong: false, **args)
+      def parameters(headers: {}, strong: false, **args)
         params = ActionController::Parameters.new(**args)
-        Parameters.new(params, operation, definitions, strong: strong)
+        Parameters.new(params, headers, operation, definitions, strong: strong)
       end
     end
   end

@@ -98,7 +98,7 @@ module Jsapi
 
       def _api_params(operation, definitions, strong:)
         (operation.model || Model::Base).new(
-          Parameters.new(params, operation, definitions, strong: strong)
+          Parameters.new(params, headers, operation, definitions, strong: strong)
         )
       end
 

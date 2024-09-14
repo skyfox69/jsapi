@@ -14,7 +14,7 @@ module Jsapi
       # If +strong+ is true+ parameters that can be mapped are accepted only. That means that
       # the instance created is invalid if +params+ contains any parameters that can't be
       # mapped to a parameter or a request body property of +operation+.
-      def initialize(params, operation, definitions, strong: false)
+      def initialize(params, headers, operation, definitions, strong: false)
         @params = params.except(:action, :controller, :format)
         @strong = strong == true
         @raw_attributes = {}
@@ -22,9 +22,11 @@ module Jsapi
 
         # Wrap parameters
         operation.parameters.each do |name, parameter_model|
+          parameter_model = parameter_model.resolve(definitions)
+
           @raw_attributes[name.underscore] = JSON.wrap(
-            @params[name],
-            parameter_model.resolve(definitions).schema.resolve(definitions),
+            parameter_model.in == 'header' ? headers[name] : @params[name],
+            parameter_model.schema.resolve(definitions),
             definitions
           )
         end
