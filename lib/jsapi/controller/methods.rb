@@ -98,7 +98,13 @@ module Jsapi
 
       def _api_params(operation, definitions, strong:)
         (operation.model || Model::Base).new(
-          Parameters.new(params, headers, operation, definitions, strong: strong)
+          Parameters.new(
+            params.except(:action, :controller, :format).permit!,
+            headers,
+            operation,
+            definitions,
+            strong: strong
+          )
         )
       end
 

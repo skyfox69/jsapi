@@ -19,13 +19,8 @@ module Jsapi
         @raw_additional_attributes =
           if (additional_properties = schema.additional_properties)
             additional_properties_schema = additional_properties.resolve(definitions)
-            additional_attributes = attributes.except(*properties.keys)
 
-            if additional_attributes.respond_to?(:permit)
-              additional_attributes = additional_attributes.permit(*additional_attributes.keys)
-            end
-
-            additional_attributes.to_h.transform_values do |value|
+            attributes.except(*properties.keys).to_h.transform_values do |value|
               JSON.wrap(value, additional_properties_schema, definitions)
             end
           end || {}

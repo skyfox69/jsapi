@@ -64,32 +64,18 @@ module Jsapi
           definitions.schema('base'),
           definitions
         )
-        assert_equal(
-          { 'type' => 'foo', 'foo' => 'bar' },
-          object.attributes
-        )
+        assert_equal({ 'type' => 'foo', 'foo' => 'bar' }, object.attributes)
       end
 
       def test_additional_attributes
         schema = Meta::Schema.new(type: 'object', additional_properties: { type: 'string' })
         schema.add_property('foo', type: 'string')
 
-        object = Object.new(
-          { 'foo' => 'bar', 'bar' => 'foo' },
-          schema,
-          definitions
-        )
-        assert_equal({ 'bar' => 'foo' }, object.additional_attributes)
-
-        object = Object.new(
-          ActionController::Parameters.new(foo: 'bar', bar: 'foo'),
-          schema,
-          definitions
-        )
+        object = Object.new({ 'foo' => 'bar', 'bar' => 'foo' }, schema, definitions)
         assert_equal({ 'bar' => 'foo' }, object.additional_attributes)
       end
 
-      # Validation tests
+      # Validation
 
       def test_validates_self_against_schema
         schema = Meta::Schema.new(type: 'object', existence: true)

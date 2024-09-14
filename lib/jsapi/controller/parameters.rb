@@ -15,12 +15,12 @@ module Jsapi
       # the instance created is invalid if +params+ contains any parameters that can't be
       # mapped to a parameter or a request body property of +operation+.
       def initialize(params, headers, operation, definitions, strong: false)
-        @params = params.except(:action, :controller, :format)
+        @params = params.to_h
         @strong = strong == true
         @raw_attributes = {}
         @raw_additional_attributes = {}
 
-        # Wrap parameters
+        # Parameters
         operation.parameters.each do |name, parameter_model|
           parameter_model = parameter_model.resolve(definitions)
 
@@ -31,7 +31,7 @@ module Jsapi
           )
         end
 
-        # Wrap request body
+        # Request body
         request_body_schema = operation.request_body&.resolve(definitions)
                                        &.schema&.resolve(definitions)
         if request_body_schema&.object?
