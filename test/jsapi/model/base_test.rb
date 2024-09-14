@@ -16,6 +16,9 @@ module Jsapi
       end
 
       def test_inspect
+        model = Base.new(JSON.wrap({}, Meta::Schema.new(type: 'object')))
+        assert_equal('#<Jsapi::Model::Base>', model.inspect)
+
         # nil and integer
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'integer')

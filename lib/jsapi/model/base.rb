@@ -22,7 +22,7 @@ module Jsapi
       end
 
       def inspect # :nodoc:
-        "#<#{self.class.name} " \
+        "#<#{self.class.name}#{' ' if attributes.any?}" \
         "#{attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ')}>"
       end
 
