@@ -81,7 +81,7 @@ module Jsapi
           serialize(property_value, property_schema, path.nil? ? property.name : "#{path}.#{property.name}")
         end
         # Serialize additional properties
-        if (additional_properties = schema.additional_properties&.resolve(@definitions))
+        if (additional_properties = schema.additional_properties)
           additional_properties_schema = additional_properties.schema.resolve(@definitions)
 
           additional_properties.source.call(object)&.each do |key, value|

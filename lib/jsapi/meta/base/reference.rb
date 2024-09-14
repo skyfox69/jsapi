@@ -13,8 +13,7 @@ module Jsapi
         # Returns the name of the method to be called to look up the referred object
         # in a Definitions instance.
         def self.lookup_method_name
-          @lookup_method_name ||=
-            name.delete_suffix('::Reference').demodulize.underscore
+          @lookup_method_name ||= name.delete_suffix('::Reference').demodulize.underscore
         end
 
         # Returns true.

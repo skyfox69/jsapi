@@ -36,6 +36,20 @@ module Jsapi
 
         model = Base.new(JSON.wrap({ 'foo' => 'bar' }, schema))
         assert_equal({ 'foo' => 'bar' }, model.attributes)
+
+        model.additional_attributes
+      end
+
+      def test_additional_attributes
+        schema = Meta::Schema.new(
+          type: 'object',
+          additional_properties: { type: 'string' }
+        )
+        model = Base.new(JSON.wrap({}, schema))
+        assert_equal({}, model.additional_attributes)
+
+        model = Base.new(JSON.wrap({ 'foo' => 'bar' }, schema))
+        assert_equal({ 'foo' => 'bar' }, model.additional_attributes)
       end
 
       def test_method_missing_and_respond_to

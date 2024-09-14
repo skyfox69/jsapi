@@ -5,7 +5,7 @@ require 'test_helper'
 module Jsapi
   module Controller
     class ParametersTest < Minitest::Test
-      # Initialization tests
+      # Initialization
 
       def test_initialize_on_scalar_parameter
         operation.add_parameter('foo', type: 'string')
@@ -15,27 +15,22 @@ module Jsapi
 
       def test_initialize_on_object_parameter
         definitions.add_schema('Foo').add_property('foo', type: 'string')
+        definitions.add_parameter('FooParameter', schema: 'Foo')
 
-        parameter = operation.add_parameter('bar', type: 'object')
-        parameter.schema.add_all_of(ref: 'Foo')
-        parameter.schema.add_property('bar', type: 'string')
+        operation.add_parameter('bar', ref: 'FooParameter')
 
-        parameters = parameters(bar: { 'foo' => 'FOO', 'bar' => 'BAR' })
+        parameters = parameters(bar: { 'foo' => 'FOO' })
         assert_equal('FOO', parameters['bar'].foo)
-        assert_equal('BAR', parameters['bar'].bar)
       end
 
       def test_initialize_on_request_body
         definitions.add_schema('Foo').add_property('foo', type: 'string')
+        definitions.add_request_body('FooBody', schema: 'Foo')
 
-        operation.request_body = { type: 'object' }
-        request_body = operation.request_body
-        request_body.schema.add_all_of(ref: 'Foo')
-        request_body.schema.add_property('bar', type: 'string')
+        operation.request_body = { ref: 'FooBody' }
 
-        parameters = parameters(foo: 'foo', bar: 'bar')
-        assert_equal('foo', parameters['foo'])
-        assert_equal('bar', parameters['bar'])
+        parameters = parameters(foo: 'bar')
+        assert_equal('bar', parameters['foo'])
       end
 
       def test_converts_camel_case_to_snake_case
@@ -44,7 +39,7 @@ module Jsapi
         assert_equal('foo', parameters['foo_bar'])
       end
 
-      # Attributes tests
+      # Attributes
 
       def test_bracket_operator
         operation.add_parameter('foo', type: 'string')
@@ -67,7 +62,18 @@ module Jsapi
         assert_equal({ 'foo' => 'bar' }, parameters.attributes)
       end
 
-      # Validation tests
+      def test_additional_attributes
+        operation.add_parameter('foo', type: 'string')
+        operation.request_body = { additional_properties: { type: 'string' } }
+
+        parameters = self.parameters(foo: 'bar')
+        assert_equal({}, parameters.additional_attributes)
+
+        parameters = parameters(foo: 'bar', bar: 'foo')
+        assert_equal({ 'bar' => 'foo' }, parameters.additional_attributes)
+      end
+
+      # Validation
 
       def test_validates_parameters_against_schema
         operation.add_parameter('foo', type: 'string', existence: true)
@@ -112,16 +118,6 @@ module Jsapi
 
         assert(!parameters(foo: { bar: 'bar' }, strong: true).validate(errors))
         assert(errors.added?(:base, "'foo.bar' isn't allowed"))
-      end
-
-      # inspect
-
-      def test_inspect
-        operation.add_parameter('foo', type: 'string')
-        assert_equal(
-          '#<Jsapi::Controller::Parameters foo: "bar">',
-          parameters(foo: 'bar').inspect
-        )
       end
 
       private

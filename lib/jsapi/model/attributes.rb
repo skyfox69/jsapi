@@ -6,7 +6,7 @@ module Jsapi
       extend ActiveSupport::Concern
 
       included do
-        delegate :[], :attribute?, :attributes, to: :nested
+        delegate :[], :additional_attributes, :attribute?, :attributes, to: :nested
       end
 
       def method_missing(*args) # :nodoc:

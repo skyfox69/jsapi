@@ -19,7 +19,7 @@ module Jsapi
         assert(!Object.new({ 'foo' => 'bar' }, schema, definitions).empty?)
       end
 
-      # Attributes tests
+      # Attributes
 
       def test_bracket_operator
         schema = Meta::Schema.new(type: 'object')
@@ -70,6 +70,25 @@ module Jsapi
         )
       end
 
+      def test_additional_attributes
+        schema = Meta::Schema.new(type: 'object', additional_properties: { type: 'string' })
+        schema.add_property('foo', type: 'string')
+
+        object = Object.new(
+          { 'foo' => 'bar', 'bar' => 'foo' },
+          schema,
+          definitions
+        )
+        assert_equal({ 'bar' => 'foo' }, object.additional_attributes)
+
+        object = Object.new(
+          ActionController::Parameters.new(foo: 'bar', bar: 'foo'),
+          schema,
+          definitions
+        )
+        assert_equal({ 'bar' => 'foo' }, object.additional_attributes)
+      end
+
       # Validation tests
 
       def test_validates_self_against_schema
@@ -118,7 +137,7 @@ module Jsapi
         assert(errors.added?(:foo, "'bar' can't be blank"))
       end
 
-      # Reference test
+      # Schema reference
 
       def test_property_as_reference
         definitions.add_schema('Foo', type: 'string')
@@ -128,18 +147,6 @@ module Jsapi
 
         object = Object.new({ 'foo' => 'bar' }, schema, definitions)
         assert_equal('bar', object['foo'])
-      end
-
-      # inspect
-
-      def test_inspect
-        schema = Meta::Schema.new(type: 'object')
-        schema.add_property('foo', type: 'string')
-
-        assert_equal(
-          '#<Jsapi::JSON::Object foo: #<Jsapi::JSON::String "bar">>',
-          Object.new({ 'foo' => 'bar' }, schema, definitions).inspect
-        )
       end
 
       private

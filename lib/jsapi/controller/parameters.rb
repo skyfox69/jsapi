@@ -6,7 +6,7 @@ module Jsapi
     class Parameters
       include Model::Nestable
 
-      attr_reader :raw_attributes
+      attr_reader :raw_additional_attributes, :raw_attributes
 
       # Creates a new instance that wraps +params+ according to +operation+. References are
       # resolved to API components in +definitions+.
@@ -15,28 +15,32 @@ module Jsapi
       # the instance created is invalid if +params+ contains any parameters that can't be
       # mapped to a parameter or a request body property of +operation+.
       def initialize(params, operation, definitions, strong: false)
-        @params = params
+        @params = params.except(:action, :controller, :format)
         @strong = strong == true
         @raw_attributes = {}
+        @raw_additional_attributes = {}
 
-        # Merge parameters and request body properties
-        meta_models = operation.parameters.transform_values do |parameter|
-          parameter.resolve(definitions)
-        end
-        request_body = operation.request_body&.resolve(definitions)
-        if request_body && request_body.schema.respond_to?(:properties)
-          meta_models.merge!(request_body.schema.resolve_properties(definitions, context: :request))
+        # Wrap parameters
+        operation.parameters.each do |name, parameter_model|
+          @raw_attributes[name.underscore] = JSON.wrap(
+            @params[name],
+            parameter_model.resolve(definitions).schema.resolve(definitions),
+            definitions
+          )
         end
 
-        # Wrap params
-        meta_models.each do |name, meta_model|
-          @raw_attributes[name.underscore] = JSON.wrap(params[name], meta_model.schema, definitions)
+        # Wrap request body
+        request_body_schema = operation.request_body&.resolve(definitions)
+                                       &.schema&.resolve(definitions)
+        if request_body_schema&.object?
+          request_body = JSON.wrap(
+            @params.except(*operation.parameters.keys),
+            request_body_schema,
+            definitions
+          )
+          @raw_attributes.merge!(request_body.raw_attributes.transform_keys!(&:underscore))
+          @raw_additional_attributes = request_body.raw_additional_attributes
         end
-      end
-
-      def inspect # :nodoc:
-        "#<#{self.class.name} " \
-        "#{attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ')}>"
       end
 
       # Validates the request parameters. Returns true if the parameters are valid, false
@@ -44,11 +48,7 @@ module Jsapi
       def validate(errors)
         [
           validate_attributes(errors),
-          !@strong || validate_parameters(
-            @params.except(:controller, :action, :format),
-            attributes,
-            errors
-          )
+          !@strong || validate_parameters(@params, attributes, errors)
         ].all?
       end
 
