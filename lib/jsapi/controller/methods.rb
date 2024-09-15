@@ -13,9 +13,9 @@ module Jsapi
       end
 
       # Performs an API operation by calling the given block. The request parameters are
-      # passed as an instance of the operation's model class to the block. Parameter names
-      # are converted to snake case. The object returned by the block is implicitly rendered
-      # according to the appropriate +response+ specification.
+      # passed as an instance of the operation's model class to the block. The object
+      # returned by the block is implicitly rendered according to the appropriate +response+
+      # specification.
       #
       #   api_operation('foo') do |api_params|
       #     # ...
@@ -23,13 +23,22 @@ module Jsapi
       #
       # +operation_name+ can be +nil+ if the controller handles one operation only.
       #
-      # If +strong+ is +true+, parameters that can be mapped are accepted only. That means
+      # If +:strong+ is +true+, parameters that can be mapped are accepted only. That means
       # that the model passed to the block is invalid if there are any request parameters
       # that can't be mapped to a parameter or a request body property of the operation.
       #
-      def api_operation(operation_name = nil, status: nil, strong: false, &block)
+      # The +:omit+ option specifies on which conditions properties are omitted.
+      # Possible values are:
+      #
+      # - +:empty+ - All of the  properties whose value is empty are omitted.
+      # - +:nil+ - All of the properties whose value is +nil+ are omitted.
+      #
+      # Raises an InvalidArgumentError when the value of +:omit+ is invalid.
+      def api_operation(operation_name = nil, omit: nil, status: nil, strong: false, &block)
         _perform_api_operation(
-          operation_name, false,
+          operation_name,
+          bang: false,
+          omit: omit,
           status: status,
           strong: strong,
           &block
@@ -43,9 +52,11 @@ module Jsapi
       #     # ...
       #   end
       #
-      def api_operation!(operation_name = nil, status: nil, strong: false, &block)
+      def api_operation!(operation_name = nil, omit: nil, status: nil, strong: false, &block)
         _perform_api_operation(
-          operation_name, true,
+          operation_name,
+          bang: true,
+          omit: omit,
           status: status,
           strong: strong,
           &block
@@ -79,12 +90,20 @@ module Jsapi
       #   render(json: api_response(bar, 'foo', status: 200))
       #
       # +operation_name+ can be +nil+ if the controller handles one operation only.
-      def api_response(result, operation_name = nil, status: nil)
+      #
+      # The +:omit+ option specifies on which conditions properties are omitted.
+      # Possible values are:
+      #
+      # - +:empty+ - All of the  properties whose value is empty are omitted.
+      # - +:nil+ - All of the properties whose value is +nil+ are omitted.
+      #
+      # Raises an InvalidArgumentError when the value of +:omit+ is invalid.
+      def api_response(result, operation_name = nil, omit: nil, status: nil)
         definitions = api_definitions
         operation = _api_operation(operation_name, definitions)
         response = _api_response(operation, status, definitions)
 
-        Response.new(result, response, api_definitions)
+        Response.new(result, response, api_definitions, omit: omit)
       end
 
       private
@@ -115,7 +134,7 @@ module Jsapi
         raise "status code not defined: #{status}"
       end
 
-      def _perform_api_operation(operation_name, bang, status:, strong:, &block)
+      def _perform_api_operation(operation_name, bang:, omit:, status:, strong:, &block)
         definitions = api_definitions
         operation = _api_operation(operation_name, definitions)
         response = _api_response(operation, status, definitions)
@@ -147,7 +166,7 @@ module Jsapi
 
             ErrorResult.new(e, status: status)
           end
-          render(json: Response.new(result, response, definitions), status: status)
+          render(json: Response.new(result, response, definitions, omit: omit), status: status)
         else
           head(status)
         end

@@ -3,13 +3,22 @@
 module Jsapi
   module Controller
     class ResponseTest < Minitest::Test
+      def test_raises_an_exception_on_invalid_omit
+        response_model = Meta::Response.new(type: 'boolean')
+
+        error = assert_raises(InvalidArgumentError) do
+          Response.new({}, response_model, definitions, omit: :foo)
+        end
+        assert_equal('omit must be one of :empty or :nil, is :foo', error.message)
+      end
+
       def test_inspect
         response_model = Meta::Response.new(type: 'string')
         response = Response.new('foo', response_model, definitions)
         assert_equal('#<Jsapi::Controller::Response "foo">', response.inspect)
       end
 
-      # Serialization tests
+      # Serialization
 
       def test_serializes_booleans
         response_model = Meta::Response.new(type: 'boolean')
@@ -133,7 +142,7 @@ module Jsapi
 
       def test_serializes_objects
         response_model = Meta::Response.new(type: 'object')
-        response_model.schema.add_property('foo', type: 'string')
+        response_model.add_property('foo', type: 'string')
 
         response = Response.new({ foo: 'bar' }, response_model, definitions)
         assert_equal('{"foo":"bar"}', response.to_json)
@@ -153,28 +162,7 @@ module Jsapi
           type: 'object',
           additional_properties: { type: 'string' }
         )
-        response = Response.new(
-          {
-            additional_properties: {
-              foo: 'bar',
-              bar: 'foo'
-            }
-          },
-          response_model,
-          definitions
-        )
-        assert_equal('{"foo":"bar","bar":"foo"}', response.to_json)
-
-        response = Response.new({}, response_model, definitions)
-        assert_equal('null', response.to_json)
-      end
-
-      def test_serializes_objects_with_fixed_and_additional_properties
-        response_model = Meta::Response.new(
-          type: 'object',
-          additional_properties: { type: 'string' }
-        )
-        response_model.schema.add_property('foo', type: 'string')
+        response_model.add_property('foo', type: 'string')
 
         response = Response.new(
           {
@@ -191,6 +179,27 @@ module Jsapi
 
         response = Response.new({ foo: 'bar' }, response_model, definitions)
         assert_equal('{"foo":"bar"}', response.to_json)
+      end
+
+      def test_serializes_objects_with_additional_properties_only
+        response_model = Meta::Response.new(
+          type: 'object',
+          additional_properties: { type: 'string' }
+        )
+        response = Response.new(
+          {
+            additional_properties: {
+              foo: 'bar',
+              bar: 'foo'
+            }
+          },
+          response_model,
+          definitions
+        )
+        assert_equal('{"foo":"bar","bar":"foo"}', response.to_json)
+
+        response = Response.new({}, response_model, definitions)
+        assert_equal('null', response.to_json)
       end
 
       def test_serializes_objects_on_polymorphism
@@ -215,9 +224,49 @@ module Jsapi
         assert_equal('{"type":"bar","bar":"foo"}', response.to_json)
       end
 
-      # Serialization error tests
+      def test_serializes_objects_on_omit_nil
+        response_model = Meta::Response.new(type: 'object')
+        response_model.add_property(
+          'foo',
+          type: 'string',
+          existence: :allow_nil
+        )
+        response_model.add_property(
+          'bar',
+          type: 'string',
+          existence: :allow_omitted
+        )
+        response = Response.new({}, response_model, definitions, omit: :nil)
+        assert_equal('{"foo":null}', response.to_json)
 
-      def test_raises_exception_on_invalid_response
+        response = Response.new({}, response_model, definitions)
+        assert_equal('{"foo":null,"bar":null}', response.to_json)
+      end
+
+      def test_serializes_objects_on_omit_empty
+        response_model = Meta::Response.new(type: 'object')
+        response_model.add_property(
+          'foo',
+          type: 'string',
+          existence: :allow_empty
+        )
+        response_model.add_property(
+          'bar',
+          type: 'string',
+          existence: :allow_omitted
+        )
+        object = { foo: '', bar: '' }
+
+        response = Response.new(object, response_model, definitions, omit: :empty)
+        assert_equal('{"foo":""}', response.to_json)
+
+        response = Response.new(object, response_model, definitions)
+        assert_equal('{"foo":"","bar":""}', response.to_json)
+      end
+
+      # Serialization errors
+
+      def test_raises_an_exception_on_invalid_response
         response_model = Meta::Response.new(type: 'string', existence: true)
 
         error = assert_raises RuntimeError do
@@ -226,7 +275,7 @@ module Jsapi
         assert_equal("response can't be nil", error.message)
       end
 
-      def test_raises_exception_on_invalid_object
+      def test_raises_an_exception_on_invalid_object
         response_model = Meta::Response.new(type: 'object')
         response_model.schema.add_property('foo', type: 'string', existence: true)
 
@@ -236,7 +285,7 @@ module Jsapi
         assert_equal("foo can't be nil", error.message)
       end
 
-      def test_raises_exception_on_invalid_nested_object
+      def test_raises_an_exception_on_invalid_nested_object
         response_model = Meta::Response.new(type: 'object')
         nested_schema = response_model.schema.add_property('foo', type: 'object').schema
         nested_schema.add_property(:bar, type: 'string', existence: true)
@@ -247,7 +296,7 @@ module Jsapi
         assert_equal("foo.bar can't be nil", error.message)
       end
 
-      def test_raises_exception_on_invalid_additional_property
+      def test_raises_an_exception_on_invalid_additional_property
         response_model = Meta::Response.new(
           type: 'object',
           additional_properties: { type: 'string', existence: true }
@@ -262,7 +311,7 @@ module Jsapi
         assert_equal("foo can't be nil", error.message)
       end
 
-      def test_raises_exception_on_invalid_nested_additional_property
+      def test_raises_an_exception_on_invalid_nested_additional_property
         response_model = Meta::Response.new(type: 'object')
         response_model.add_property(
           'foo',
@@ -279,7 +328,7 @@ module Jsapi
         assert_equal("foo.bar can't be nil", error.message)
       end
 
-      # I18n tests
+      # I18n
 
       def test_i18n
         object = Object.new

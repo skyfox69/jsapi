@@ -791,8 +791,7 @@ If `status` is not present, the default response of the API operation is selecte
 ### The `api_operation` method
 
 `api_operation` performs an API operation by calling the given block. The request parameters
-are passed as an instance of the operation's model class to the block. Parameter names are
-converted to snake case.
+are passed as an instance of the operation's model class to the block.
 
 This method implicitly renders the JSON representation of the object returned by the block.
 

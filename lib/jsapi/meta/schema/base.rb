@@ -80,6 +80,11 @@ module Jsapi
           existence <= Existence::ALLOW_NIL
         end
 
+        # Returns true if and only if values can be omitted.
+        def omittable?
+          existence <= Existence::ALLOW_OMITTED
+        end
+
         # Returns a hash representing the \JSON \Schema object.
         def to_json_schema
           {

@@ -7,10 +7,23 @@ module Jsapi
 
       # Creates a new instance to serialize +object+ according to +response+. References
       # are resolved to API components in +definitions+.
-      def initialize(object, response, definitions)
+      #
+      # The +:omit+ option specifies on which conditions properties are omitted.
+      # Possible values are:
+      #
+      # - +:empty+ - All of the  properties whose value is empty are omitted.
+      # - +:nil+ - All of the properties whose value is +nil+ are omitted.
+      #
+      # Raises an InvalidArgumentError when the value of +:omit+ is invalid.
+      def initialize(object, response, definitions, omit: nil)
+        if [:empty, :nil, nil].exclude?(omit)
+          raise InvalidArgumentError.new('omit', omit, valid_values: %i[empty nil])
+        end
+
         @object = object
         @response = response
         @definitions = definitions
+        @omit = omit
       end
 
       def inspect # :nodoc:
@@ -71,14 +84,23 @@ module Jsapi
 
       def serialize_object(object, schema, path)
         schema = schema.resolve_schema(object, @definitions, context: :response)
+        properties = {}
 
         # Serialize properties
-        properties = schema.resolve_properties(@definitions, context: :response).transform_values do |property|
+        schema.resolve_properties(@definitions, context: :response).each do |key, property|
           property_schema = property.schema.resolve(@definitions)
           property_value = property.reader.call(object)
           property_value = property.default if property_value.nil?
 
-          serialize(property_value, property_schema, path.nil? ? property.name : "#{path}.#{property.name}")
+          next if ((@omit == :empty && property_value.try(:empty?)) ||
+                   (@omit == :nil && property_value.nil?)) &&
+                  property_schema.omittable?
+
+          properties[key] = serialize(
+            property_value,
+            property_schema,
+            path.nil? ? property.name : "#{path}.#{property.name}"
+          )
         end
         # Serialize additional properties
         if (additional_properties = schema.additional_properties)
@@ -88,7 +110,11 @@ module Jsapi
             # Don't replace the property with the same key
             next if properties.key?(key = key.to_s)
 
-            properties[key] = serialize(value, additional_properties_schema, path.nil? ? key : "#{path}.#{key}")
+            properties[key] = serialize(
+              value,
+              additional_properties_schema,
+              path.nil? ? key : "#{path}.#{key}"
+            )
           end
         end
         # Return properties if present, otherwise nil
