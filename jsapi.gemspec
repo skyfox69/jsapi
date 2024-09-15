@@ -17,7 +17,6 @@ Gem::Specification.new do |s|
   s.required_ruby_version = '>= 2.7.0'
   s.homepage = 'https://github.com/dmgoeller/jsapi'
   s.metadata = {
-    'homepage_uri' => 'https://github.com/dmgoeller/jsapi',
-    'source_code_uri' => 'https://github.com/dmgoeller/jsapi'
+    'homepage_uri' => 'https://github.com/dmgoeller/jsapi'
   }
 end
