@@ -1,8 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'meta/invalid_value_helper'
-require_relative 'meta/invalid_value_error'
-require_relative 'meta/invalid_argument_error'
 require_relative 'meta/reference_error'
 require_relative 'meta/callable'
 require_relative 'meta/existence'
