@@ -2,7 +2,7 @@
 
 module Jsapi
   module DSL
-    module Concerns
+    module OpenAPI
       class ExamplesTest < Minitest::Test
         class Dummy < Node
           include Examples

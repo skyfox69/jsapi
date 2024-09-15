@@ -4,7 +4,7 @@ module Jsapi
   module DSL
     # Used to specify details of a request body.
     class RequestBody < Schema
-      include Examples
+      include OpenAPI::Examples
 
       ##
       # :method: deprecated

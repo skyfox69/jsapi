@@ -4,7 +4,7 @@ module Jsapi
   module DSL
     # Used to specify details of an operation.
     class Operation < Node
-      include Callbacks
+      include OpenAPI::Callbacks
 
       ##
       # :method: deprecated
