@@ -50,7 +50,7 @@ module Jsapi
           assert_equal(2, multiple_of.value)
         end
 
-        # JSON Schema tests
+        # JSON Schema objects
 
         def test_json_schema_object
           schema = Numeric.new(type: 'integer')
@@ -60,7 +60,7 @@ module Jsapi
           )
         end
 
-        # OpenAPI tests
+        # OpenAPI objects
 
         def test_openapi_schema_object
           schema = Numeric.new(type: 'integer')

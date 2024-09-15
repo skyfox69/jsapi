@@ -6,7 +6,7 @@ module Jsapi
   module Meta
     module Schema
       class DiscriminatorTest < Minitest::Test
-        # mapping
+        # Mapping
 
         def test_mapping_on_string_keys
           discriminator = Discriminator.new
@@ -32,7 +32,7 @@ module Jsapi
           assert_equal({ false => 'Foo', true => 'Bar' }, discriminator.mappings)
         end
 
-        # OpenAPI tests
+        # OpenAPI objects
 
         def test_minimal_openapi_discriminator_object
           discriminator = Discriminator.new(property_name: 'type')

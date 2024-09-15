@@ -5,7 +5,7 @@ require 'test_helper'
 module Jsapi
   module Controller
     class MethodsTest < Minitest::Test
-      # api_operation and api_operation!
+      # #api_operation and #api_operation!
 
       %i[api_operation api_operation!].each do |method|
         name = method.to_s.gsub('!', 'bang')
@@ -144,7 +144,7 @@ module Jsapi
         end
       end
 
-      # api_params
+      # #api_params
 
       def test_api_params
         controller = dummy_controller do
@@ -163,7 +163,7 @@ module Jsapi
         assert_equal('operation not defined: foo', error.message)
       end
 
-      # api_response
+      # #api_response
 
       def test_api_response
         controller = dummy_controller do

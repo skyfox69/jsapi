@@ -21,7 +21,7 @@ module Jsapi
           assert_equal('bar', request_body_model.schema.ref)
         end
 
-        # Predicate methods tests
+        # Predicate methods
 
         def test_required_predicate
           request_body_model = Model.new(type: 'string', existence: true)
@@ -31,7 +31,7 @@ module Jsapi
           assert(!request_body_model.required?)
         end
 
-        # OpenAPI tests
+        # OpenAPI objects
 
         def test_minimal_openapi_parameter_object
           request_body_model = Model.new(type: 'string', existence: true)

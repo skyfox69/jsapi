@@ -20,7 +20,7 @@ module Jsapi
         assert(not_found_response.equal?(operation.response(404)))
       end
 
-      # OpenAPI tests
+      # OpenAPI objects
 
       def test_minimal_openapi_operation_object
         operation = Operation.new('foo')

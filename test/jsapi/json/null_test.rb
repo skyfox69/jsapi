@@ -17,7 +17,7 @@ module Jsapi
         assert_predicate(Null.new(Meta::Schema.new), :empty?)
       end
 
-      # inspect
+      # #inspect
 
       def test_inspect
         assert_equal('#<Jsapi::JSON::Null>', Null.new(Meta::Schema.new).inspect)

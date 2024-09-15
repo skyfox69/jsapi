@@ -18,7 +18,7 @@ module Jsapi
         assert_equal('date', schema.format)
       end
 
-      # Items tests
+      # Items
 
       def test_items
         schema = define_schema(type: 'array') { items type: 'string' }
@@ -42,7 +42,7 @@ module Jsapi
         assert_equal("items isn't supported for 'object'", error.message)
       end
 
-      # Model tests
+      # Models
 
       def test_model
         klass = Class.new(Model::Base)
@@ -84,7 +84,7 @@ module Jsapi
         assert_equal("model isn't supported for 'array'", error.message)
       end
 
-      # Property tests
+      # Properties
 
       def test_property
         schema = define_schema(type: 'object') do

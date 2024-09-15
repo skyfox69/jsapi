@@ -13,7 +13,7 @@ module Jsapi
         assert(!Value.new(nil).null?)
       end
 
-      # Validation tests
+      # Validation
 
       def test_validates_presence
         schema = Meta::Schema.new(type: 'string', existence: true)
@@ -55,7 +55,7 @@ module Jsapi
         assert(errors.added?(:base, 'is invalid'))
       end
 
-      # inspect
+      # #inspect
 
       def test_inspect
         assert_equal(

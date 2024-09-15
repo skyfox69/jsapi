@@ -21,7 +21,7 @@ module Jsapi
           assert_equal('bar', response_model.schema.ref)
         end
 
-        # OpenAPI tests
+        # OpenAPI objects
 
         def test_minimal_openapi_response_object
           response_model = Model.new(type: 'string', existence: true)

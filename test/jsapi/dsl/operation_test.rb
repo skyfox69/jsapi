@@ -13,7 +13,7 @@ module Jsapi
         assert_predicate(operation.callback('onFoo'), :present?)
       end
 
-      # Model tests
+      # Models
 
       def test_model
         klass = Class.new(Model::Base)
@@ -48,7 +48,7 @@ module Jsapi
         assert_equal('bar', model.foo)
       end
 
-      # Parameter tests
+      # Parameters
 
       def test_parameter
         operation = define_operation do
@@ -99,7 +99,7 @@ module Jsapi
         assert_equal('unsupported keyword: type (at parameter "foo")', error.message)
       end
 
-      # Request body tests
+      # Request bodies
 
       def test_request_body
         operation = define_operation do
@@ -143,7 +143,7 @@ module Jsapi
         assert_equal('unsupported keyword: type (at request body)', error.message)
       end
 
-      # Response tests
+      # Responses
 
       def test_default_response
         operation = define_operation do

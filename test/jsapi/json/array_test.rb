@@ -21,7 +21,7 @@ module Jsapi
         assert(!array.empty?)
       end
 
-      # Validation tests
+      # Validation
 
       def test_validates_self_against_schema
         schema = Meta::Schema.new(
@@ -56,7 +56,7 @@ module Jsapi
         assert(errors.added?(:base, "can't be blank"))
       end
 
-      # inspect
+      # #inspect
 
       def test_inspect
         schema = Meta::Schema.new(type: 'array', items: { type: 'string' })

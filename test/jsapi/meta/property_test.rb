@@ -16,7 +16,7 @@ module Jsapi
         assert_equal("property name can't be blank", error.message)
       end
 
-      # Reader tests
+      # Readers
 
       def test_reader
         property = Property.new('foo')
@@ -33,7 +33,7 @@ module Jsapi
         assert_equal('bar', property.reader.call({ bar: 'bar' }))
       end
 
-      # Predicate methods tests
+      # Predicate methods
 
       def test_required_predicate
         property = Property.new('foo', existence: true)
@@ -43,7 +43,7 @@ module Jsapi
         assert(!property.required?)
       end
 
-      # OpenAPI tests
+      # OpenAPI objects
 
       def test_openapi_schema_object_on_read_only
         property = Property.new(

@@ -41,7 +41,7 @@ module Jsapi
             assert(errors.added?(:base, 'must be less than 0'))
           end
 
-          # JSON Schema tests
+          # JSON Schema objects
 
           def test_to_json_schema_on_maximum
             assert_equal(
@@ -57,7 +57,7 @@ module Jsapi
             )
           end
 
-          # OpenAPI tests
+          # OpenAPI objects
 
           def test_to_openapi_3_0_on_maximum
             assert_equal(

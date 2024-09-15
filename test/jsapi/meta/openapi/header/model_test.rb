@@ -14,7 +14,7 @@ module Jsapi
             assert_equal("type can't be object", error.message)
           end
 
-          # OpenAPI tests
+          # OpenAPI objects
 
           def test_minimal_openapi_header_object
             header_model = Model.new(type: 'string')

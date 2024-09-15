@@ -33,7 +33,7 @@ module Jsapi
           assert_equal(Existence::PRESENT, resolved.existence)
         end
 
-        # JSON Schema tests
+        # JSON Schema objects
 
         def test_json_schema_reference_object
           schema_reference = Reference.new(ref: 'foo')
@@ -43,7 +43,7 @@ module Jsapi
           )
         end
 
-        # OpenAPI tests
+        # OpenAPI objects
 
         def test_openapi_reference_object
           schema_reference = Reference.new(ref: 'foo')

@@ -30,7 +30,7 @@ module Jsapi
           assert_equal(3, validation.value)
         end
 
-        # JSON Schema tests
+        # JSON Schema objects
 
         def test_minimal_json_schema_object
           schema = Array.new(existence: true)
@@ -56,7 +56,7 @@ module Jsapi
           )
         end
 
-        # OpenAPI tests
+        # OpenAPI objects
 
         def test_minimal_openapi_schema_object
           schema = Array.new(existence: true)

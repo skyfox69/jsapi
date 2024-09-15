@@ -12,7 +12,7 @@ module Jsapi
           assert_equal(parameter, parameter_reference.resolve(definitions))
         end
 
-        # OpenAPI tests
+        # OpenAPI objects
 
         def test_openapi_reference_object
           definitions.add_parameter('foo', type: 'string')

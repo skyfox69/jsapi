@@ -12,7 +12,7 @@ module Jsapi
           assert(property.equal?(schema.property('foo')))
         end
 
-        # #resolve_properties tests
+        # #resolve_properties
 
         def test_resolve_properties
           schema = definitions.add_schema('Foo')
@@ -45,7 +45,7 @@ module Jsapi
           assert_equal('circular reference: Foo', error.message)
         end
 
-        # #resolve_schema tests
+        # #resolve_schema
 
         def test_resolve_schema
           base_schema = Object.new(discriminator: { property_name: 'foo' })
@@ -89,7 +89,7 @@ module Jsapi
           assert_equal("inheriting schema couldn't be found: \"Bar\"", error.message)
         end
 
-        # JSON Schema tests
+        # JSON Schema objects
 
         def test_minimal_json_schema_object
           schema = Object.new(existence: true)
@@ -134,7 +134,7 @@ module Jsapi
           )
         end
 
-        # OpenAPI tests
+        # OpenAPI objects
 
         def test_minimal_openapi_schema_object
           schema = Object.new(existence: true)

@@ -14,7 +14,7 @@ module Jsapi
           assert_equal(response, response_reference.resolve(definitions))
         end
 
-        # OpenAPI tests
+        # OpenAPI objects
 
         def test_openapi_reference_object
           response_reference = Reference.new(ref: 'foo')

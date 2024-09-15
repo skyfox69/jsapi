@@ -39,7 +39,7 @@ module Jsapi
           assert schema.nullable?
         end
 
-        # JSON Schema tests
+        # JSON Schema objects
 
         def test_minimal_json_schema_object
           schema = Schema.new(
@@ -96,7 +96,7 @@ module Jsapi
           )
         end
 
-        # OpenAPI tests
+        # OpenAPI objects
 
         def test_minimal_openapi_schema_object
           schema = Schema.new(type: 'string', existence: true)

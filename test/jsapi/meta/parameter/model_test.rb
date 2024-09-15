@@ -27,7 +27,7 @@ module Jsapi
           assert_equal("parameter name can't be blank", error.message)
         end
 
-        # Predicate methods tests
+        # Predicate methods
 
         def test_required_predicate
           parameter_model = Model.new('foo', existence: true)
@@ -40,7 +40,7 @@ module Jsapi
           assert(!parameter_model.required?)
         end
 
-        # OpenAPI tests
+        # OpenAPI objects
 
         def test_minimal_openapi_parameter_object_on_query_parameter
           parameter_model = Model.new('foo', type: 'string', in: 'query')

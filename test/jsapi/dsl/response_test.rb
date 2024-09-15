@@ -8,7 +8,7 @@ module Jsapi
         assert_equal('foo', response.example('default').value)
       end
 
-      # Link tests
+      # Links
 
       def test_link
         response = define_response do

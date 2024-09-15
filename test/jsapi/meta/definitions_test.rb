@@ -22,7 +22,7 @@ module Jsapi
         )
       end
 
-      # Include tests
+      # #include
 
       def test_include
         foo_definitions = Definitions.new
@@ -39,14 +39,14 @@ module Jsapi
         definitions.include(definitions)
       end
 
-      # Callbacks tests
+      # Callbacks
 
       def test_add_on_rescue
         definitions.add_on_rescue(:foo)
         assert_equal(:foo, definitions.on_rescue_callbacks.first)
       end
 
-      # Default tests
+      # Default values
 
       def test_add_default
         definitions.add_default('array')
@@ -62,7 +62,7 @@ module Jsapi
         assert_nil(definitions.default_value('object'))
       end
 
-      # Operations tests
+      # Operations
 
       def test_add_operation
         definitions.add_operation('foo')
@@ -87,7 +87,7 @@ module Jsapi
         assert_equal('foo', definitions.operation('foo').name)
       end
 
-      # Reusable parameters tests
+      # Reusable parameters
 
       def test_add_parameter
         definitions.add_parameter('foo')
@@ -102,7 +102,7 @@ module Jsapi
         assert_equal('foo', definitions.parameter('foo').name)
       end
 
-      # Reusable request bodies tests
+      # Reusable request bodies
 
       def test_add_request_body
         definitions.add_request_body('foo')
@@ -117,7 +117,7 @@ module Jsapi
         assert_predicate(definitions.request_body('foo'), :present?)
       end
 
-      # Reusable responses tests
+      # Reusable responses
 
       def test_add_response
         definitions.add_response('Foo')
@@ -132,7 +132,7 @@ module Jsapi
         assert_predicate(definitions.response('Foo'), :present?)
       end
 
-      # Reusable schemas tests
+      # Reusable schemas
 
       def test_add_schema
         definitions.add_schema('Foo')
@@ -147,7 +147,7 @@ module Jsapi
         assert_predicate(definitions.schema('Foo'), :present?)
       end
 
-      # Rescue handlers tests
+      # Rescue handlers
 
       def test_rescue_handler_for
         definitions.add_rescue_handler(Controller::ParametersInvalid, status: 400)
@@ -163,7 +163,7 @@ module Jsapi
         assert_nil(definitions.rescue_handler_for(error))
       end
 
-      # JSON Schema document tests
+      # JSON Schema documents
 
       def test_json_schema_document
         definitions.add_schema('Foo').add_property('bar', type: 'string')
@@ -240,7 +240,7 @@ module Jsapi
         )
       end
 
-      # OpenAPI document tests
+      # OpenAPI documents
 
       def test_empty_openapi_document
         %w[2.0 3.0 3.1].each do |version|
