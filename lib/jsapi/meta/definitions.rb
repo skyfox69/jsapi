@@ -5,6 +5,9 @@ module Jsapi
     class Definitions
       extend Base::Attributes
 
+      ##
+      # :attr: defaults
+      # The general default values.
       attribute :defaults, { String => Defaults }, keys: Schema::TYPES, default: {}
 
       attr_reader :callbacks, :openapi_root, :operations, :parameters, :request_bodies,
@@ -79,7 +82,7 @@ module Jsapi
         }>"
       end
 
-      # Returns the JSON Schema document for the given schema as a +Hash+.
+      # Returns a hash representing the \JSON \Schema document for +name+.
       def json_schema_document(name)
         schema(name)&.to_json_schema&.tap do |hash|
           definitions =
@@ -99,7 +102,8 @@ module Jsapi
         end
       end
 
-      # Returns a hash representing the OpenAPI document for +version+.
+      # Returns a hash representing the \OpenAPI document for +version+.
+
       # Raises an +ArgumentError+ if +version+ is not supported.
       def openapi_document(version = nil)
         version = OpenAPI::Version.from(version)
