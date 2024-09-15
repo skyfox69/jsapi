@@ -36,13 +36,7 @@ module Jsapi
       def test_initialize_on_header_parameter
         operation.add_parameter('x-foo', type: 'string', in: 'header')
         params = parameters(headers: { 'x-foo' => 'bar' })
-        assert_equal('bar', params['x_foo'])
-      end
-
-      def test_converts_camel_case_to_snake_case
-        operation.add_parameter('fooBar', type: 'string')
-        params = parameters(fooBar: 'foo')
-        assert_equal('foo', params['foo_bar'])
+        assert_equal('bar', params['x-foo'])
       end
 
       # Attributes

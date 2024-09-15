@@ -15,6 +15,9 @@
 
 ### Breaking changes
 
+- The `attributes`, `attribute?` and `[]` methods of the `Jsapi::Model::Base` retrieve
+  parameters and properties by the original name instead of the snake case form.
+
 - The `:consumes` and `:produces` keywords have been removed. The MIME types are now
   derived from the content types of the request bodies and responses.
 

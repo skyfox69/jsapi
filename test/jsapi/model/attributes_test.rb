@@ -52,15 +52,37 @@ module Jsapi
         assert_equal({ 'foo' => 'bar' }, model.additional_attributes)
       end
 
-      def test_method_missing_and_respond_to
+      def test_attribute_reader
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
+
         model = Base.new(JSON.wrap({ 'foo' => 'bar' }, schema))
+        assert_equal('bar', model.foo)
+      end
+
+      def test_attribute_reader_on_camel_case
+        schema = Meta::Schema.new(type: 'object')
+        schema.add_property('fooBar', type: 'string')
+
+        model = Base.new(JSON.wrap({ 'fooBar' => 'bar' }, schema))
+        assert_equal('bar', model.foo_bar)
+      end
+
+      def test_respond_to
+        schema = Meta::Schema.new(type: 'object')
+        schema.add_property('foo', type: 'string')
+
+        model = Base.new(JSON.wrap({}, schema))
 
         assert(model.respond_to?(:foo))
-        assert_equal('bar', model.foo)
-
         assert(!model.respond_to?(:bar))
+      end
+
+      def test_raises_an_exception_on_missing_attribute
+        schema = Meta::Schema.new(type: 'object')
+        schema.add_property('foo', type: 'string')
+
+        model = Base.new(JSON.wrap({}, schema))
         assert_raises(NoMethodError) { model.bar }
       end
     end

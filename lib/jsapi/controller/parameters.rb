@@ -24,7 +24,7 @@ module Jsapi
         operation.parameters.each do |name, parameter_model|
           parameter_model = parameter_model.resolve(definitions)
 
-          @raw_attributes[name.underscore] = JSON.wrap(
+          @raw_attributes[name] = JSON.wrap(
             parameter_model.in == 'header' ? headers[name] : @params[name],
             parameter_model.schema.resolve(definitions),
             definitions
@@ -40,7 +40,7 @@ module Jsapi
             request_body_schema,
             definitions
           )
-          @raw_attributes.merge!(request_body.raw_attributes.transform_keys!(&:underscore))
+          @raw_attributes.merge!(request_body.raw_attributes)
           @raw_additional_attributes = request_body.raw_additional_attributes
         end
       end
