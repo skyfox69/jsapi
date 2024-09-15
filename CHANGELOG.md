@@ -1,6 +1,6 @@
 # Change log
 
-## 0.6.0
+## 0.6.0 (2024-08-15)
 
 ### New Features
 
