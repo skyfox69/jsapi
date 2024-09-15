@@ -108,34 +108,62 @@ module Jsapi
       end
 
       # Returns a hash representing the \OpenAPI document for +version+.
-
+      #
       # Raises an +ArgumentError+ if +version+ is not supported.
       def openapi_document(version = nil)
         version = OpenAPI::Version.from(version)
 
+        operations = @self_and_included.map(&:operations).reduce(&:reverse_merge).values
+
+        components = if version.major == 2
+                       {
+                         definitions: :schemas,
+                         parameters: :parameters,
+                         responses: :responses
+                       }
+                     else
+                       {
+                         schemas: :schemas,
+                         parameters: :parameters,
+                         requestBodies: :request_bodies,
+                         responses: :responses
+                       }
+                     end
+
+        openapi_components = @self_and_included.map do |definitions|
+          components.transform_values do |method|
+            definitions.send(method).transform_values do |component|
+              case method
+              when :parameters
+                component.to_openapi(version, self).first
+              when :responses
+                component.to_openapi(version, self)
+              else
+                component.to_openapi(version)
+              end
+            end.presence
+          end.compact
+        end.reduce(&:reverse_merge)
+
         (openapi_root&.to_openapi(version, self) || {}).tap do |h|
-          h[:paths] = openapi_paths(version)
+          h[:paths] = operations
+                      .group_by { |operation| operation.path || default_path }
+                      .transform_values do |op|
+                        op.index_by(&:method).transform_values do |operation|
+                          operation.to_openapi(version, self)
+                        end
+                      end.presence
 
           if version.major == 2
-            h.merge!(
-              definitions: openapi_schemas(version),
-              parameters: openapi_parameters(version),
-              responses: openapi_responses(version)
-            )
-            operations = @self_and_included.map(&:operations).reduce(&:reverse_merge).values
-
             consumes = operations.filter_map { |operation| operation.consumes(self) }
             h[:consumes] = consumes.uniq.sort if consumes.present?
 
             produces = operations.flat_map { |operation| operation.produces(self) }
             h[:produces] = produces.uniq.sort if produces.present?
-          else
-            h[:components] = (h[:components] || {}).merge(
-              schemas: openapi_schemas(version),
-              parameters: openapi_parameters(version),
-              requestBodies: openapi_request_bodies(version),
-              responses: openapi_responses(version)
-            ).compact.presence
+
+            h.merge!(openapi_components)
+          elsif openapi_components.any?
+            (h[:components] ||= {}).merge!(openapi_components)
           end
         end.compact
       end
@@ -196,46 +224,6 @@ module Jsapi
 
       def default_path
         @default_path ||= "/#{default_operation_name}"
-      end
-
-      def openapi_parameters(version)
-        @self_and_included
-          .map(&:parameters).reduce(&:merge)
-          .transform_values do |parameter|
-          parameter.to_openapi(version, self).first
-        end.presence
-      end
-
-      def openapi_paths(version)
-        @self_and_included
-          .map(&:operations).reduce(&:merge).values
-          .group_by { |operation| operation.path || default_path }
-          .transform_values do |operations|
-          operations.index_by(&:method).transform_values do |operation|
-            operation.to_openapi(version, self)
-          end
-        end.presence
-      end
-
-      def openapi_request_bodies(version)
-        @self_and_included
-          .map(&:request_bodies).reduce(&:merge).transform_values do |request_body|
-            request_body.to_openapi(version)
-          end.presence
-      end
-
-      def openapi_responses(version)
-        @self_and_included
-          .map(&:responses).reduce(&:merge).transform_values do |response|
-          response.to_openapi(version, self)
-        end.presence
-      end
-
-      def openapi_schemas(version)
-        @self_and_included
-          .map(&:schemas).reduce(&:merge).transform_values do |schema|
-          schema.to_openapi(version)
-        end.presence
       end
     end
   end
