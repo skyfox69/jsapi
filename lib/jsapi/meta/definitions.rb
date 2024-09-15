@@ -10,7 +10,12 @@ module Jsapi
       # The general default values.
       attribute :defaults, { String => Defaults }, keys: Schema::TYPES, default: {}
 
-      attr_reader :callbacks, :openapi_root, :operations, :parameters, :request_bodies,
+      ##
+      # :attr: openapi_root
+      # The OpenAPI::Root.
+      attribute :openapi_root, OpenAPI::Root
+
+      attr_reader :callbacks, :operations, :parameters, :request_bodies,
                   :rescue_handlers, :responses, :schemas
 
       def initialize(owner = nil)
@@ -133,10 +138,6 @@ module Jsapi
             ).compact.presence
           end
         end.compact
-      end
-
-      def openapi_root=(keywords = {})
-        @openapi_root = OpenAPI::Root.new(**keywords)
       end
 
       def operation(name = nil)
