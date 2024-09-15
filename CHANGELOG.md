@@ -2,7 +2,7 @@
 
 ## 0.6.0 (2024-09-15)
 
-### New Features
+### New features
 
 - Objects within requests may include additional properties as specified by OpenAPI.
 
