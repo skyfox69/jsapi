@@ -16,19 +16,22 @@ module Jsapi
       attribute :on_rescues, [Object], default: []
 
       ##
+      # :attr: rescue_handlers
+      # The rescue handlers.
+      attribute :rescue_handlers, [RescueHandler], default: []
+
+      ##
       # :attr: openapi_root
       # The OpenAPI::Root.
       attribute :openapi_root, OpenAPI::Root
 
-      attr_reader :operations, :parameters, :request_bodies, :rescue_handlers,
-                  :responses, :schemas
+      attr_reader :operations, :parameters, :request_bodies, :responses, :schemas
 
       def initialize(owner = nil)
         @owner = owner
         @operations = {}
         @parameters = {}
         @request_bodies = {}
-        @rescue_handlers = []
         @responses = {}
         @schemas = {}
         @self_and_included = [self]
@@ -46,10 +49,6 @@ module Jsapi
 
       def add_request_body(name, keywords = {})
         @request_bodies[name.to_s] = RequestBody.new(keywords)
-      end
-
-      def add_rescue_handler(klass, status: nil)
-        @rescue_handlers << RescueHandler.new(klass, status: status)
       end
 
       def add_response(name, keywords = {})
@@ -103,6 +102,7 @@ module Jsapi
         end
       end
 
+      # Returns the methods or procs to be called when rescuing an exception.
       def on_rescue_callbacks
         @self_and_included.flat_map(&:on_rescues)
       end

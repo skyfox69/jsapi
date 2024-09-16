@@ -88,7 +88,7 @@ module Jsapi
       #
       def rescue_from(*klasses, with: nil)
         klasses.each do |klass|
-          _meta_model.add_rescue_handler(klass, status: with)
+          _meta_model.add_rescue_handler({ error_class: klass, status: with })
         end
       end
 
