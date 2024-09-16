@@ -91,12 +91,11 @@ module Jsapi
       # Returns a hash representing the \JSON \Schema document for +name+.
       def json_schema_document(name)
         schema(name)&.to_json_schema&.tap do |hash|
-          definitions =
-            @self_and_included
-            .map(&:schemas)
-            .reduce(&:merge)
-            .except(name.to_s)
-            .transform_values(&:to_json_schema)
+          definitions = @self_and_included
+                        .map(&:schemas)
+                        .reduce(&:merge)
+                        .except(name.to_s)
+                        .transform_values(&:to_json_schema)
 
           hash[:definitions] = definitions if definitions.any?
         end
