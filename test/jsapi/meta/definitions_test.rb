@@ -17,7 +17,8 @@ module Jsapi
           'responses: {}, ' \
           'schemas: {}, ' \
           'openapi_root: nil, ' \
-          'rescue_handlers: []>',
+          'rescue_handlers: [], ' \
+          'defaults: {}>',
           Definitions.new(FooBarController).inspect
         )
       end

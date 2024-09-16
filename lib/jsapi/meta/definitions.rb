@@ -62,6 +62,7 @@ module Jsapi
         @schemas[name] = Schema.new(keywords)
       end
 
+      # Returns the default value for +type+ within +context+.
       def default_value(type, context: nil)
         return unless (type = type.to_s).present?
 
@@ -72,6 +73,7 @@ module Jsapi
         nil
       end
 
+      # Includes +definitions+.
       def include(definitions)
         return if @self_and_included.include?(definitions)
 
@@ -79,10 +81,10 @@ module Jsapi
       end
 
       def inspect # :nodoc:
-        "#<#{self.class.name} #{
-          %i[owner operations parameters request_bodies responses schemas
-             openapi_root rescue_handlers].map do |name|
-            "#{name}: #{instance_variable_get("@#{name}").inspect}"
+        "#<#{self.class.name} owner: #{@owner.inspect}, #{
+          %i[operations parameters request_bodies responses schemas
+             openapi_root rescue_handlers defaults].map do |name|
+            "#{name}: #{send(name).inspect}"
           end.join(', ')
         }>"
       end
