@@ -11,16 +11,20 @@ module Jsapi
       attribute :defaults, { String => Defaults }, keys: Schema::TYPES, default: {}
 
       ##
+      # :attr: on_rescues
+      # The methods or procs to be called when rescuing an exception.
+      attribute :on_rescues, [Object], default: []
+
+      ##
       # :attr: openapi_root
       # The OpenAPI::Root.
       attribute :openapi_root, OpenAPI::Root
 
-      attr_reader :callbacks, :operations, :parameters, :request_bodies,
-                  :rescue_handlers, :responses, :schemas
+      attr_reader :operations, :parameters, :request_bodies, :rescue_handlers,
+                  :responses, :schemas
 
       def initialize(owner = nil)
         @owner = owner
-        @callbacks = { on_rescue: [] }
         @operations = {}
         @parameters = {}
         @request_bodies = {}
@@ -28,10 +32,6 @@ module Jsapi
         @responses = {}
         @schemas = {}
         @self_and_included = [self]
-      end
-
-      def add_on_rescue(method_or_proc)
-        @callbacks[:on_rescue] << method_or_proc
       end
 
       def add_operation(name = nil, keywords = {})
@@ -104,9 +104,7 @@ module Jsapi
       end
 
       def on_rescue_callbacks
-        @self_and_included.flat_map do |definitions|
-          definitions.callbacks[:on_rescue]
-        end
+        @self_and_included.flat_map(&:on_rescues)
       end
 
       # Returns a hash representing the \OpenAPI document for +version+.
