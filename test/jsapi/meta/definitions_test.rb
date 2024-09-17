@@ -14,26 +14,21 @@ module Jsapi
         foo_definitions.add_schema('Foo')
 
         bar_definitions = Definitions.new
-        bar_definitions.include(foo_definitions)
+        return_value = bar_definitions.include(bar_definitions)
+        assert_nil(return_value)
+
+        return_value = bar_definitions.include(foo_definitions)
+        assert_predicate(return_value, :present?)
 
         schema = bar_definitions.find_component(:schema, 'Foo')
         assert_predicate(schema, :present?)
       end
 
-      def test_include_self
-        definitions = Definitions.new
-        definitions.include(definitions)
-      end
-
       # Default values
-
-      def test_add_default
-        definitions.add_default('array')
-        assert(definitions.defaults.key?('array'))
-      end
 
       def test_default_value
         definitions.add_default('array', within_requests: [])
+        assert(definitions.defaults.key?('array'))
 
         assert_equal([], definitions.default_value('array', context: :request))
 

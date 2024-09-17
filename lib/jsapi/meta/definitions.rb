@@ -55,7 +55,7 @@ module Jsapi
       def initialize(owner = nil)
         @owner = owner
         @self_and_included = [self]
-        super({})
+        super()
       end
 
       def add_operation(name = nil, keywords = {}) # :nodoc:
