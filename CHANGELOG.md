@@ -1,6 +1,12 @@
 # Change log
 
-## 0.6.0 (2024-09-15)
+## 0.6.2 (2024-09-17)
+
+### Changes
+
+- The value of a discriminator property can be `false`.
+
+## 0.6.1 (2024-09-17)
 
 ### New features
 

@@ -64,7 +64,7 @@ module Jsapi
 
           value = property.reader.call(object)
           value = property.default_value(definitions, context: context) if value.nil?
-          raise "#{discriminator.property_name} can't be blank" if value.blank?
+          raise "#{discriminator.property_name} can't be nil" if value.nil?
 
           schema = definitions.find_component(:schema, discriminator.mapping(value) || value)
           raise "inheriting schema couldn't be found: #{value.inspect}" if schema.nil?
