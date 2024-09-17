@@ -76,7 +76,7 @@ module Jsapi
           error = assert_raises(RuntimeError) do
             schema.resolve_schema({}, definitions)
           end
-          assert_equal("foo can't be blank", error.message)
+          assert_equal("foo can't be nil", error.message)
         end
 
         def test_resolve_schema_raises_an_exception_on_missing_inheriting_schema
