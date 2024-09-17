@@ -90,7 +90,7 @@ module Jsapi
         schema.resolve_properties(@definitions, context: :response).each do |key, property|
           property_schema = property.schema.resolve(@definitions)
           property_value = property.reader.call(object)
-          property_value = property.default if property_value.nil?
+          property_value = property_schema.default if property_value.nil?
 
           next if ((@omit == :empty && property_value.try(:empty?)) ||
                    (@omit == :nil && property_value.nil?)) &&
