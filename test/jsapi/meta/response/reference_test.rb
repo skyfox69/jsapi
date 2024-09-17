@@ -6,6 +6,10 @@ module Jsapi
   module Meta
     module Response
       class ReferenceTest < Minitest::Test
+        def test_component_type
+          assert_equal('response', Reference.component_type)
+        end
+
         def test_resolve
           definitions = Definitions.new
           response = definitions.add_response('foo')

@@ -26,7 +26,9 @@ module Jsapi
           api_include foo_class
         end
         definitions = bar_class.api_definitions
-        assert_predicate(definitions.schema('foo'), :present?)
+
+        schema = definitions.find_component(:schema, 'foo')
+        assert_predicate(schema, :present?)
       end
 
       def test_api_on_rescue
@@ -53,7 +55,8 @@ module Jsapi
           api_operation 'foo'
         end.api_definitions
 
-        assert_predicate(definitions.operation('foo'), :present?)
+        operation = definitions.operation('foo')
+        assert_predicate(operation, :present?)
       end
 
       def test_api_parameter
@@ -62,7 +65,8 @@ module Jsapi
           api_parameter 'foo'
         end.api_definitions
 
-        assert_predicate(definitions.parameter('foo'), :present?)
+        parameter = definitions.parameter('foo')
+        assert_predicate(parameter, :present?)
       end
 
       def test_api_request_body
@@ -71,7 +75,8 @@ module Jsapi
           api_request_body 'foo'
         end.api_definitions
 
-        assert_predicate(definitions.request_body('foo'), :present?)
+        request_body = definitions.request_body('foo')
+        assert_predicate(request_body, :present?)
       end
 
       def test_api_rescue_from
@@ -90,7 +95,8 @@ module Jsapi
           api_response 'foo'
         end.api_definitions
 
-        assert_predicate(definitions.response('foo'), :present?)
+        response = definitions.response('foo')
+        assert_predicate(response, :present?)
       end
 
       def test_api_schema
@@ -99,7 +105,8 @@ module Jsapi
           api_schema 'foo'
         end.api_definitions
 
-        assert_predicate(definitions.schema('foo'), :present?)
+        schema = definitions.schema('foo')
+        assert_predicate(schema, :present?)
       end
 
       def test_openapi

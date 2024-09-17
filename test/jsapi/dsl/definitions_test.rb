@@ -36,7 +36,7 @@ module Jsapi
             include foo_class
           end
         end
-        schema = bar_class.api_definitions.schema('Foo')
+        schema = bar_class.api_definitions.find_component(:schema, 'Foo')
         assert_predicate(schema, :present?)
         assert_equal('Description of foo', schema.description)
       end
@@ -89,18 +89,20 @@ module Jsapi
         )
       end
 
-      def test_operation_with_name
+      def test_named_operation
         definitions = self.definitions do
           operation 'foo'
         end
-        assert_predicate(definitions.operation('foo'), :present?)
+        operation = definitions.operation('foo')
+        assert_predicate(operation, :present?)
       end
 
-      def test_operation_without_name
+      def test_nameless_operation
         definitions = definitions('Foo') do
           operation
         end
-        assert_predicate(definitions.operation('foo'), :present?)
+        operation = definitions.operation('foo')
+        assert_predicate(operation, :present?)
       end
 
       def test_parameter

@@ -14,7 +14,7 @@ module Jsapi
           end
         end.new
         api_definitions = controller.api_definitions
-        assert_predicate(api_definitions.operation('foo'), :present?)
+        assert_predicate(api_definitions.find_operation('foo'), :present?)
       end
     end
   end

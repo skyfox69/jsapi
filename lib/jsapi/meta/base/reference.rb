@@ -10,10 +10,9 @@ module Jsapi
         # The name of the referred object.
         attribute :ref, String
 
-        # Returns the name of the method to be called to look up the referred object
-        # in a Definitions instance.
-        def self.lookup_method_name
-          @lookup_method_name ||= name.delete_suffix('::Reference').demodulize.underscore
+        # Derrives the component type from the inner most module name.
+        def self.component_type
+          @component_type ||= name.split('::')[-2].underscore
         end
 
         # Returns true.
@@ -25,7 +24,7 @@ module Jsapi
         #
         # Raises a ReferenceError if +ref+ could not be resolved.
         def resolve(definitions)
-          object = definitions.send(self.class.lookup_method_name, ref)
+          object = definitions.find_component(self.class.component_type, ref)
           raise ReferenceError, ref if object.nil?
 
           object.resolve(definitions)

@@ -6,6 +6,10 @@ module Jsapi
   module Meta
     module Parameter
       class ReferenceTest < Minitest::Test
+        def test_component_type
+          assert_equal('parameter', Reference.component_type)
+        end
+
         def test_resolve
           parameter = definitions.add_parameter('foo')
           parameter_reference = Reference.new(ref: 'foo')

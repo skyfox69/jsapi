@@ -16,7 +16,7 @@ module Jsapi
               @args = args.stringify_keys
             end
 
-            def base(name)
+            def find_component(_type, name)
               @args[name]
             end
           end.new(foo: model = Model.new)

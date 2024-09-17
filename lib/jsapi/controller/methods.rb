@@ -35,7 +35,7 @@ module Jsapi
       #
       # Raises an InvalidArgumentError when the value of +:omit+ is invalid.
       def api_operation(operation_name = nil, omit: nil, status: nil, strong: false, &block)
-        _perform_api_operation(
+        _api_operation(
           operation_name,
           bang: false,
           omit: omit,
@@ -53,7 +53,7 @@ module Jsapi
       #   end
       #
       def api_operation!(operation_name = nil, omit: nil, status: nil, strong: false, &block)
-        _perform_api_operation(
+        _api_operation(
           operation_name,
           bang: true,
           omit: omit,
@@ -78,7 +78,7 @@ module Jsapi
       def api_params(operation_name = nil, strong: false)
         definitions = api_definitions
         _api_params(
-          _api_operation(operation_name, definitions),
+          _find_api_operation(operation_name, definitions),
           definitions,
           strong: strong
         )
@@ -100,7 +100,7 @@ module Jsapi
       # Raises an InvalidArgumentError when the value of +:omit+ is invalid.
       def api_response(result, operation_name = nil, omit: nil, status: nil)
         definitions = api_definitions
-        operation = _api_operation(operation_name, definitions)
+        operation = _find_api_operation(operation_name, definitions)
         response = _api_response(operation, status, definitions)
 
         Response.new(result, response, api_definitions, omit: omit)
@@ -108,35 +108,9 @@ module Jsapi
 
       private
 
-      def _api_operation(operation_name, definitions)
-        operation = definitions.operation(operation_name)
-        return operation if operation
-
-        raise "operation not defined: #{operation_name}"
-      end
-
-      def _api_params(operation, definitions, strong:)
-        (operation.model || Model::Base).new(
-          Parameters.new(
-            params.except(:action, :controller, :format).permit!,
-            headers,
-            operation,
-            definitions,
-            strong: strong
-          )
-        )
-      end
-
-      def _api_response(operation, status, definitions)
-        response = operation.response(status)
-        return response.resolve(definitions) if response
-
-        raise "status code not defined: #{status}"
-      end
-
-      def _perform_api_operation(operation_name, bang:, omit:, status:, strong:, &block)
+      def _api_operation(operation_name, bang:, omit:, status:, strong:, &block)
         definitions = api_definitions
-        operation = _api_operation(operation_name, definitions)
+        operation = _find_api_operation(operation_name, definitions)
         response = _api_response(operation, status, definitions)
 
         if block
@@ -171,6 +145,32 @@ module Jsapi
           head(status)
         end
         self.content_type = response.content_type
+      end
+
+      def _api_params(operation, definitions, strong:)
+        (operation.model || Model::Base).new(
+          Parameters.new(
+            params.except(:action, :controller, :format).permit!,
+            headers,
+            operation,
+            definitions,
+            strong: strong
+          )
+        )
+      end
+
+      def _api_response(operation, status, definitions)
+        response = operation.response(status)
+        return response.resolve(definitions) if response
+
+        raise "status code not defined: #{status}"
+      end
+
+      def _find_api_operation(operation_name, definitions)
+        operation = definitions.find_operation(operation_name)
+        return operation if operation
+
+        raise "operation not defined: #{operation_name}"
       end
     end
   end

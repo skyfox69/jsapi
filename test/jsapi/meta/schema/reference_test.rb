@@ -6,6 +6,10 @@ module Jsapi
   module Meta
     module Schema
       class ReferenceTest < Minitest::Test
+        def test_component_type
+          assert_equal('schema', Reference.component_type)
+        end
+
         def test_resolve
           definitions = Definitions.new
           schema = definitions.add_schema('foo')

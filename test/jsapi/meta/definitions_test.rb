@@ -7,22 +7,6 @@ module Jsapi
     class DefinitionsTest < Minitest::Test
       class FooBarController; end
 
-      def test_inspect
-        assert_equal(
-          '#<Jsapi::Meta::Definitions ' \
-          'owner: Jsapi::Meta::DefinitionsTest::FooBarController, ' \
-          'operations: {}, ' \
-          'parameters: {}, ' \
-          'request_bodies: {}, ' \
-          'responses: {}, ' \
-          'schemas: {}, ' \
-          'openapi_root: nil, ' \
-          'rescue_handlers: [], ' \
-          'defaults: {}>',
-          Definitions.new(FooBarController).inspect
-        )
-      end
-
       # #include
 
       def test_include
@@ -32,19 +16,13 @@ module Jsapi
         bar_definitions = Definitions.new
         bar_definitions.include(foo_definitions)
 
-        assert_predicate(bar_definitions.schema('Foo'), :present?)
+        schema = bar_definitions.find_component(:schema, 'Foo')
+        assert_predicate(schema, :present?)
       end
 
       def test_include_self
         definitions = Definitions.new
         definitions.include(definitions)
-      end
-
-      # Callbacks
-
-      def test_add_on_rescue
-        definitions.add_on_rescue(:foo)
-        assert_equal(:foo, definitions.on_rescue_callbacks.first)
       end
 
       # Default values
@@ -77,75 +55,30 @@ module Jsapi
 
       def test_default_operation_path
         definitions.add_operation
-        assert_equal('/foo_bar', definitions.operation.path)
+        assert_equal('/foo_bar', definitions.find_operation.path)
       end
 
-      def test_operation
-        assert_nil(definitions.operation(nil))
+      def test_find_operation
+        assert_nil(definitions.find_operation(nil))
 
         definitions.add_operation('foo')
-        assert_equal('foo', definitions.operation.name)
-        assert_equal('foo', definitions.operation('foo').name)
+        assert_equal('foo', definitions.find_operation.name)
+        assert_equal('foo', definitions.find_operation('foo').name)
       end
 
-      # Reusable parameters
+      # Components
 
       def test_add_parameter
         definitions.add_parameter('foo')
         assert(definitions.parameters.key?('foo'))
       end
 
-      def test_parameter
-        assert_nil(definitions.parameter(nil))
-        assert_nil(definitions.parameter('foo'))
+      def test_find_component
+        assert_nil(definitions.find_component(:parameter, nil))
+        assert_nil(definitions.find_component(:parameter, 'foo'))
 
         definitions.add_parameter('foo')
-        assert_equal('foo', definitions.parameter('foo').name)
-      end
-
-      # Reusable request bodies
-
-      def test_add_request_body
-        definitions.add_request_body('foo')
-        assert(definitions.request_bodies.key?('foo'))
-      end
-
-      def test_request_body
-        assert_nil(definitions.request_body(nil))
-        assert_nil(definitions.request_body('foo'))
-
-        definitions.add_request_body('foo')
-        assert_predicate(definitions.request_body('foo'), :present?)
-      end
-
-      # Reusable responses
-
-      def test_add_response
-        definitions.add_response('Foo')
-        assert(definitions.responses.key?('Foo'))
-      end
-
-      def test_response
-        assert_nil(definitions.response(nil))
-        assert_nil(definitions.response('Foo'))
-
-        definitions.add_response('Foo')
-        assert_predicate(definitions.response('Foo'), :present?)
-      end
-
-      # Reusable schemas
-
-      def test_add_schema
-        definitions.add_schema('Foo')
-        assert(definitions.schemas.key?('Foo'))
-      end
-
-      def test_schema
-        assert_nil(definitions.schema(nil))
-        assert_nil(definitions.schema('Foo'))
-
-        definitions.add_schema('Foo')
-        assert_predicate(definitions.schema('Foo'), :present?)
+        assert_equal('foo', definitions.find_component(:parameter, 'foo').name)
       end
 
       # Rescue handlers

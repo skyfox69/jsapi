@@ -61,7 +61,7 @@ module Jsapi
 
         object = Object.new(
           { 'type' => 'foo', 'foo' => 'bar' },
-          definitions.schema('base'),
+          definitions.find_component(:schema, 'base'),
           definitions
         )
         assert_equal({ 'type' => 'foo', 'foo' => 'bar' }, object.attributes)
