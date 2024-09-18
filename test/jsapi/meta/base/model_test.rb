@@ -16,14 +16,6 @@ module Jsapi
           assert_equal('unsupported keyword: bar', error.message)
         end
 
-        def test_inspect
-          klass = Class.new(Model) do
-            attribute :foo
-            attribute :bar
-          end
-          assert_equal('#< foo: "Foo", bar: nil>', klass.new(foo: 'Foo').inspect)
-        end
-
         def test_reference_predicate
           assert(!Model.new.reference?)
         end
@@ -31,6 +23,15 @@ module Jsapi
         def test_resolve
           model = Model.new
           assert(model.equal?(model.resolve))
+        end
+
+        def test_inspect
+          klass = Class.new(Model) do
+            attribute :foo
+            attribute :bar
+          end
+          assert_equal('#< foo: "Foo", bar: nil>', klass.new(foo: 'Foo').inspect)
+          assert_equal('#< foo: "Foo">', klass.new(foo: 'Foo').inspect(:foo))
         end
       end
     end

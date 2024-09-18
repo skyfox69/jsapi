@@ -20,12 +20,13 @@ module Jsapi
           end
         end
 
-        def inspect # :nodoc:
+        def inspect(*attributes) # :nodoc:
           klass = self.class
+          attribute_names = klass.attribute_names
+          attribute_names = attributes & attribute_names if attributes.any?
+
           "#<#{klass.name} #{
-            klass.attribute_names.map do |name|
-              "#{name}: #{send(name).inspect}"
-            end.join(', ')
+            attribute_names.map { |name| "#{name}: #{send(name).inspect}" }.join(', ')
           }>"
         end
 

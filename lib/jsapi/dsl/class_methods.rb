@@ -13,7 +13,10 @@ module Jsapi
 
       # The API definitions of the current class.
       def api_definitions(&block)
-        @api_definitions ||= Meta::Definitions.new(self)
+        @api_definitions ||= Meta::Definitions.new(
+          owner: self,
+          parent: superclass.try(:api_definitions)
+        )
         Definitions.new(@api_definitions, &block) if block
         @api_definitions
       end

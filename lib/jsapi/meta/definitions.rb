@@ -9,6 +9,11 @@ module Jsapi
       attribute :defaults, { String => Defaults }, keys: Schema::TYPES, default: {}
 
       ##
+      # :attr: included
+      # The included definitions.
+      attribute :included, [Definitions], default: []
+
+      ##
       # :attr: on_rescues
       # The methods or procs to be called when rescuing an exception.
       attribute :on_rescues, [Object], default: []
@@ -25,12 +30,16 @@ module Jsapi
 
       ##
       # :attr_reader: owner
-      attribute :owner, writer: false
+      attribute :owner, Class, writer: false
 
       ##
       # :attr: parameters
       # The reusable Parameter objects.
       attribute :parameters, { String => Parameter }, default: {}, writer: false
+
+      ##
+      # :attr_reader: parent
+      attribute :parent, Definitions, writer: false
 
       ##
       # :attr: rescue_handlers
@@ -52,10 +61,11 @@ module Jsapi
       # The reusable Schema objects.
       attribute :schemas, { String => Schema }, default: {}
 
-      def initialize(owner = nil)
-        @owner = owner
-        @self_and_included = [self]
-        super()
+      def initialize(keywords = {})
+        @owner = keywords.delete(:owner)
+        @parent = keywords.delete(:parent)
+
+        super(keywords)
       end
 
       def add_operation(name = nil, keywords = {}) # :nodoc:
@@ -69,11 +79,21 @@ module Jsapi
         (@parameters ||= {})[name] = Parameter.new(name, keywords)
       end
 
+      def ancestors
+        [self].tap do |ancestors|
+          (included + Array(parent)).each do |included_or_parent|
+            included_or_parent.ancestors.each do |definitions|
+              ancestors << definitions
+            end
+          end
+        end.uniq
+      end
+
       # Returns the default value for +type+ within +context+.
       def default_value(type, context: nil)
         return unless (type = type.to_s).present?
 
-        @self_and_included.each do |definitions|
+        ancestors.each do |definitions|
           default = definitions.default(type)
           return default.value(context: context) if default
         end
@@ -83,7 +103,7 @@ module Jsapi
       def find_component(type, name)
         return unless (name = name.to_s).present?
 
-        @self_and_included.each do |definitions|
+        ancestors.each do |definitions|
           component = definitions.send(type, name)
           return component if component.present?
         end
@@ -97,17 +117,14 @@ module Jsapi
         operations.values.first if operations.one?
       end
 
-      # Includes +definitions+.
-      def include(definitions)
-        return if @self_and_included.include?(definitions)
-
-        @self_and_included << definitions
+      def inspect(*attributes) # :nodoc:
+        super(*(attributes.presence || %i[owner parent included]))
       end
 
       # Returns a hash representing the \JSON \Schema document for +name+.
       def json_schema_document(name)
         find_component(:schema, name)&.to_json_schema&.tap do |hash|
-          definitions = @self_and_included
+          definitions = ancestors
                         .map(&:schemas)
                         .reduce(&:merge)
                         .except(name.to_s)
@@ -119,7 +136,7 @@ module Jsapi
 
       # Returns the methods or procs to be called when rescuing an exception.
       def on_rescue_callbacks
-        @self_and_included.flat_map(&:on_rescues)
+        ancestors.flat_map(&:on_rescues)
       end
 
       # Returns a hash representing the \OpenAPI document for +version+.
@@ -128,7 +145,7 @@ module Jsapi
       def openapi_document(version = nil)
         version = OpenAPI::Version.from(version)
 
-        operations = @self_and_included.map(&:operations).reduce(&:reverse_merge).values
+        operations = ancestors.map(&:operations).reduce(&:reverse_merge).values
 
         components = if version.major == 2
                        {
@@ -145,7 +162,7 @@ module Jsapi
                        }
                      end
 
-        openapi_components = @self_and_included.map do |definitions|
+        openapi_components = ancestors.map do |definitions|
           components.transform_values do |method|
             definitions.send(method).transform_values do |component|
               case method
@@ -185,7 +202,7 @@ module Jsapi
 
       # Returns the first RescueHandler to handle +exception+, or nil if no one could be found.
       def rescue_handler_for(exception)
-        @self_and_included.each do |definitions|
+        ancestors.each do |definitions|
           definitions.rescue_handlers.each do |rescue_handler|
             return rescue_handler if rescue_handler.match?(exception)
           end

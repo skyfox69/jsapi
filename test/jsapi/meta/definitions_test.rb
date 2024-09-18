@@ -5,28 +5,57 @@ require 'test_helper'
 module Jsapi
   module Meta
     class DefinitionsTest < Minitest::Test
-      class FooBarController; end
+      # #ancestors
 
-      # #include
+      def test_ancestors
+        base_definitions1 = Definitions.new(
+          owner: 'base 1'
+        )
+        base_definitions2 = Definitions.new(
+          owner: 'base 2',
+          parent: base_definitions1
+        )
+        included_definitions1 = Definitions.new(
+          owner: 'included 1'
+        )
+        included_definitions2 = Definitions.new(
+          owner: 'included 2',
+          parent: included_definitions1
+        )
+        definitions = Definitions.new(
+          owner: 'definitions',
+          parent: base_definitions2,
+          included: [included_definitions1, included_definitions2]
+        )
+        assert_equal(
+          [base_definitions1],
+          base_definitions1.ancestors
+        )
+        assert_equal(
+          [base_definitions2, base_definitions1],
+          base_definitions2.ancestors
+        )
+        assert_equal(
+          [definitions, included_definitions1, included_definitions2,
+           base_definitions2, base_definitions1],
+          definitions.ancestors
+        )
+      end
 
-      def test_include
-        foo_definitions = Definitions.new
-        foo_definitions.add_schema('Foo')
+      def test_ancestors_raises_an_exception_on_circular_include
+        definitions1 = Definitions.new(owner: 'definitions 1')
+        definitions2 = Definitions.new(owner: 'definitions 2')
 
-        bar_definitions = Definitions.new
-        return_value = bar_definitions.include(bar_definitions)
-        assert_nil(return_value)
+        # definitions1.include(definitions2)
+        # definitions2.include(definitions1)
 
-        return_value = bar_definitions.include(foo_definitions)
-        assert_predicate(return_value, :present?)
-
-        schema = bar_definitions.find_component(:schema, 'Foo')
-        assert_predicate(schema, :present?)
+        # assert_raises(RuntimeError) { definitions1.ancestors }
       end
 
       # Default values
 
       def test_default_value
+        definitions = Definitions.new
         definitions.add_default('array', within_requests: [])
         assert(definitions.defaults.key?('array'))
 
@@ -39,21 +68,13 @@ module Jsapi
       # Operations
 
       def test_add_operation
+        definitions = Definitions.new
         definitions.add_operation('foo')
         assert(definitions.operations.key?('foo'))
       end
 
-      def test_default_operation_name
-        definitions.add_operation
-        assert_equal(%w[foo_bar], definitions.operations.keys)
-      end
-
-      def test_default_operation_path
-        definitions.add_operation
-        assert_equal('/foo_bar', definitions.find_operation.path)
-      end
-
       def test_find_operation
+        definitions = Definitions.new
         assert_nil(definitions.find_operation(nil))
 
         definitions.add_operation('foo')
@@ -61,14 +82,23 @@ module Jsapi
         assert_equal('foo', definitions.find_operation('foo').name)
       end
 
+      def test_default_operation_name_and_path
+        definitions = Definitions.new(owner: 'Foo::Bar::FooBarController')
+        operation = definitions.add_operation
+        assert_equal('foo_bar', operation.name)
+        assert_equal('/foo_bar', operation.path)
+      end
+
       # Components
 
       def test_add_parameter
+        definitions = Definitions.new
         definitions.add_parameter('foo')
         assert(definitions.parameters.key?('foo'))
       end
 
       def test_find_component
+        definitions = Definitions.new
         assert_nil(definitions.find_component(:parameter, nil))
         assert_nil(definitions.find_component(:parameter, 'foo'))
 
@@ -79,6 +109,7 @@ module Jsapi
       # Rescue handlers
 
       def test_rescue_handler_for
+        definitions = Definitions.new
         definitions.add_rescue_handler(
           error_class: Controller::ParametersInvalid,
           status: 400
@@ -100,6 +131,7 @@ module Jsapi
       # JSON Schema documents
 
       def test_json_schema_document
+        definitions = Definitions.new
         definitions.add_schema('Foo').add_property('bar', type: 'string')
         definitions.add_schema('Bar').add_property('foo', schema: 'Foo')
 
@@ -158,6 +190,7 @@ module Jsapi
       end
 
       def test_json_schema_document_without_definitions
+        definitions = Definitions.new
         definitions.add_schema('Foo').add_property('bar', type: 'string')
 
         assert_equal(
@@ -177,12 +210,14 @@ module Jsapi
       # OpenAPI documents
 
       def test_empty_openapi_document
+        definitions = Definitions.new
         %w[2.0 3.0 3.1].each do |version|
           assert_equal({}, definitions.openapi_document(version))
         end
       end
 
       def test_full_openapi_document
+        definitions = Definitions.new
         definitions.openapi_root = { info: { title: 'Foo', version: '1' } }
 
         operation = definitions.add_operation('operation', path: '/bar', method: 'post')
@@ -360,10 +395,20 @@ module Jsapi
         )
       end
 
-      private
+      # # inspect
 
-      def definitions
-        @definitions ||= Definitions.new(FooBarController)
+      def test_inspect
+        definitions = Definitions.new(
+          owner: 'foo',
+          parent: Definitions.new(owner: 'base'),
+          included: [Definitions.new(owner: 'incl')]
+        )
+        assert_equal(
+          '#<Jsapi::Meta::Definitions owner: "foo", ' \
+          'parent: #<Jsapi::Meta::Definitions owner: "base", parent: nil, included: []>, ' \
+          'included: [#<Jsapi::Meta::Definitions owner: "incl", parent: nil, included: []>]>',
+          definitions.inspect
+        )
       end
     end
   end

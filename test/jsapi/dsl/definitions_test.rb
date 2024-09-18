@@ -98,7 +98,7 @@ module Jsapi
       end
 
       def test_nameless_operation
-        definitions = definitions('Foo') do
+        definitions = definitions(owner: 'Foo') do
           operation
         end
         operation = definitions.operation('foo')
@@ -195,8 +195,8 @@ module Jsapi
 
       private
 
-      def definitions(owner = nil, &block)
-        Meta::Definitions.new(owner).tap do |definitions|
+      def definitions(keywords = {}, &block)
+        Meta::Definitions.new(keywords).tap do |definitions|
           Definitions.new(definitions, &block)
         end
       end

@@ -5,6 +5,17 @@ require 'test_helper'
 module Jsapi
   module DSL
     class ClassMethodsTest < Minitest::Test
+      def test_api_definitions
+        base_klass = Class.new do
+          extend ClassMethods
+        end
+        klass = Class.new(base_klass)
+        definitions = klass.api_definitions
+
+        assert_equal(klass, definitions.owner)
+        assert_equal(base_klass, definitions.parent.owner)
+      end
+
       def test_api_default
         definitions = Class.new do
           extend ClassMethods
