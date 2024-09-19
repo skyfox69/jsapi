@@ -39,7 +39,7 @@ module Jsapi
           ##
           # :attr_reader: schema
           # The Schema of the header.
-          attribute :schema, writer: false
+          attribute :schema, read_only: true
 
           def initialize(keywords = {})
             raise ArgumentError, "type can't be object" if keywords[:type] == 'object'

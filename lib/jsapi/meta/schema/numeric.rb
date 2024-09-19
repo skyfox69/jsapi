@@ -9,16 +9,18 @@ module Jsapi
         ##
         # :attr: maximum
         # The (exclusive) maximum.
-        attribute :maximum, writer: false
+        attribute :maximum
 
         ##
         # :attr: minimum
         # The (exclusive) minimum.
-        attribute :minimum, writer: false
+        attribute :minimum
 
         ##
         # :attr: multiple_of
-        attribute :multiple_of, writer: false
+        attribute :multiple_of
+
+        undef maximum=, minimum=, multiple_of=
 
         def maximum=(value) # :nodoc:
           boundary = Boundary.from(value)

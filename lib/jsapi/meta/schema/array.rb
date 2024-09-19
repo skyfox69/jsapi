@@ -7,17 +7,19 @@ module Jsapi
         ##
         # :attr: items
         # The Schema defining the kind of items.
-        attribute :items, Schema, writer: false
+        attribute :items, Schema
 
         ##
         # :attr: max_items
         # The maximum length of an array.
-        attribute :max_items, writer: false
+        attribute :max_items
 
         ##
         # :attr: min_items
         # The minimum length of an array.
-        attribute :min_items, writer: false
+        attribute :min_items
+
+        undef items=, max_items=, min_items=
 
         def items=(keywords = {}) # :nodoc:
           if keywords.key?(:schema)

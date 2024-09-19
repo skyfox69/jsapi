@@ -18,7 +18,7 @@ module Jsapi
 
         # Simple attributes
 
-        def test_simple_attribute
+        def test_attribute
           model = Class.new do
             extend Attributes
             attribute :foo, String, values: %w[foo bar]
@@ -37,7 +37,7 @@ module Jsapi
           assert_raises(InvalidArgumentError) { model.foo = 'foo_bar' }
         end
 
-        def test_simple_attribute_with_default_value
+        def test_attribute_with_default_value
           default_value = 'bar'
 
           model = Class.new do
@@ -48,10 +48,10 @@ module Jsapi
           assert_equal(default_value, model.foo)
         end
 
-        def test_simple_attribute_without_writer
+        def test_read_only_attribute
           model = Class.new do
             extend Attributes
-            attribute :foo, String, writer: false
+            attribute :foo, String, read_only: true
           end.new
 
           assert(model.respond_to?(:foo))
@@ -80,10 +80,10 @@ module Jsapi
           assert(!model.foo?)
         end
 
-        def test_boolean_attribute_without_writer
+        def test_read_only_boolean_attribute
           model = Class.new do
             extend Attributes
-            attribute :foo, values: [true, false], writer: false
+            attribute :foo, values: [true, false], read_only: true
           end.new
 
           assert(model.respond_to?(:foo))
@@ -128,10 +128,10 @@ module Jsapi
           assert_equal(default_value, model.foos)
         end
 
-        def test_array_attribute_without_writer
+        def test_read_only_array_attribute
           model = Class.new do
             extend Attributes
-            attribute :foos, [String], writer: false
+            attribute :foos, [String], read_only: true
           end.new
 
           assert(model.respond_to?(:foos))
@@ -179,10 +179,10 @@ module Jsapi
           assert_equal(default_value, model.foos)
         end
 
-        def test_hash_attribute_without_writer
+        def test_read_only_hash_attribute
           model = Class.new do
             extend Attributes
-            attribute :foos, { String => String }, writer: false
+            attribute :foos, { String => String }, read_only: true
           end.new
 
           assert(model.respond_to?(:foos))

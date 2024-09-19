@@ -31,7 +31,7 @@ module Jsapi
       ##
       # :attr_reader: owner
       # The class to which it is assigned.
-      attribute :owner, Class, writer: false
+      attribute :owner, Class, read_only: true
 
       ##
       # :attr: parameters
@@ -41,7 +41,7 @@ module Jsapi
       ##
       # :attr_reader: parent
       # The Definitions from which it inherits.
-      attribute :parent, Definitions, writer: false
+      attribute :parent, Definitions, read_only: true
 
       ##
       # :attr: rescue_handlers
@@ -63,14 +63,14 @@ module Jsapi
       # The reusable Schema objects.
       attribute :schemas, { String => Schema }, default: {}
 
+      undef add_included, add_operation, add_parameter
+
       def initialize(keywords = {})
         @owner = keywords.delete(:owner)
         @parent = keywords.delete(:parent)
 
         super(keywords)
       end
-
-      undef add_included, add_operation, add_parameter
 
       def add_included(definitions) # :nodoc:
         if circular_dependency?(definitions)

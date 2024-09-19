@@ -26,7 +26,7 @@ module Jsapi
         ##
         # :attr_reader: schema
         # The Schema of the request body.
-        attribute :schema, writer: false
+        attribute :schema, read_only: true
 
         def initialize(keywords = {})
           keywords = keywords.dup

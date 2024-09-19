@@ -48,12 +48,12 @@ module Jsapi
       ##
       # :attr_reader: name
       # The name of the operation.
-      attribute :name, writer: false
+      attribute :name, read_only: true
 
       ##
       # :attr: parameters
       # The parameters of the operation.
-      attribute :parameters, { String => Parameter }, default: {}, writer: false
+      attribute :parameters, { String => Parameter }, default: {}
 
       ##
       # :attr: path
@@ -103,6 +103,8 @@ module Jsapi
       # :attr: tags
       # The tags used to group operations in an \OpenAPI document.
       attribute :tags, [String]
+
+      undef :add_parameter
 
       def initialize(name = nil, keywords = {})
         @name = name&.to_s

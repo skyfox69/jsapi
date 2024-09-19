@@ -6,11 +6,11 @@ module Jsapi
       module Attributes
         # Defines an attribute.
         def attribute(name, type = Object,
-                      keys: nil,
-                      values: nil,
                       default: nil,
                       default_key: nil,
-                      writer: true)
+                      keys: nil,
+                      read_only: false,
+                      values: nil)
 
           (@attribute_names ||= []) << name.to_sym
 
@@ -24,20 +24,19 @@ module Jsapi
 
           case type
           when Array
-            if writer
+            unless read_only
               singular_name = name.to_s.singularize
+              adder_name = "add_#{singular_name}"
+
               type_caster = TypeCaster.new(type.first, values: values, name: singular_name)
 
               # Attribute writer
               define_method("#{name}=") do |argument|
-                instance_variable_set(
-                  instance_variable_name,
-                  Array.wrap(argument).map { |element| type_caster.cast(element) }
-                )
+                Array.wrap(argument).each { |element| send(adder_name, element) }
               end
 
               # add_{singular_name} method
-              define_method("add_#{singular_name}") do |argument = nil|
+              define_method(adder_name) do |argument = nil|
                 type_caster.cast(argument).tap do |casted_argument|
                   if instance_variable_defined?(instance_variable_name)
                     instance_variable_get(instance_variable_name)
@@ -58,7 +57,7 @@ module Jsapi
               send(name)&.[](key_type_caster.cast(key))
             end
 
-            if writer
+            unless read_only
               value_type_caster = TypeCaster.new(value_type, values: values)
 
               # add_{singular_name} method
@@ -89,7 +88,7 @@ module Jsapi
               value.nil? ? default || false : value
             end if values == [true, false]
 
-            if writer
+            unless read_only
               type_caster = TypeCaster.new(type, values: values, name: name)
 
               # Attribute writer

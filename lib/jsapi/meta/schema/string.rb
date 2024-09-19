@@ -14,17 +14,19 @@ module Jsapi
         ##
         # :attr: max_length
         # The maximum length of a string.
-        attribute :max_length, writer: false
+        attribute :max_length
 
         ##
         # :attr: min_length
         # The minimum length of a string.
-        attribute :min_length, writer: false
+        attribute :min_length
 
         ##
         # :attr: pattern
         # The regular expression a string must match.
-        attribute :pattern, writer: false
+        attribute :pattern
+
+        undef max_length=, min_length=, pattern=
 
         def max_length=(value) # :nodoc:
           add_validation('max_length', Validation::MaxLength.new(value))

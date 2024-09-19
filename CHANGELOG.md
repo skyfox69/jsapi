@@ -1,5 +1,11 @@
 # Change log
 
+## 0.7.0 ()
+
+### New features
+
+- Definitions from superclasses are inherited.
+
 ## 0.6.2 (2024-09-17)
 
 ### Changes

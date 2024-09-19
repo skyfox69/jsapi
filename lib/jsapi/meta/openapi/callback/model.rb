@@ -8,7 +8,9 @@ module Jsapi
         class Model < Meta::Base::Model
           ##
           # :attr: operations
-          attribute :operations, writer: false, default: {}
+          attribute :operations, { String => Object }, default: {}
+
+          undef add_operation
 
           # Adds a callback operation.
           #
@@ -17,10 +19,6 @@ module Jsapi
             raise ArgumentError, "expression can't be blank" if expression.blank?
 
             (@operations ||= {})[expression.to_s] = Operation.new(nil, keywords)
-          end
-
-          def operation(expression) # :nodoc:
-            @operations&.[](expression&.to_s)
           end
 
           # Returns a hash representing the \OpenAPI callback object.
