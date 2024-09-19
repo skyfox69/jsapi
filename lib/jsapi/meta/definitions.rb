@@ -5,12 +5,12 @@ module Jsapi
     class Definitions < Base::Model
       ##
       # :attr: defaults
-      # The general default values.
+      # The Defaults.
       attribute :defaults, { String => Defaults }, keys: Schema::TYPES, default: {}
 
       ##
       # :attr: included
-      # The included definitions.
+      # The Definitions included.
       attribute :included, [Definitions], default: []
 
       ##
@@ -26,24 +26,26 @@ module Jsapi
       ##
       # :attr: operations
       # The Operation objects.
-      attribute :operations, { String => Operation }, default: {}, writer: false
+      attribute :operations, { String => Operation }, default: {}
 
       ##
       # :attr_reader: owner
+      # The class to which it is assigned.
       attribute :owner, Class, writer: false
 
       ##
       # :attr: parameters
       # The reusable Parameter objects.
-      attribute :parameters, { String => Parameter }, default: {}, writer: false
+      attribute :parameters, { String => Parameter }, default: {}
 
       ##
       # :attr_reader: parent
+      # The Definitions from which it inherits.
       attribute :parent, Definitions, writer: false
 
       ##
       # :attr: rescue_handlers
-      # The rescue handlers.
+      # The RescueHandler objects.
       attribute :rescue_handlers, [RescueHandler], default: []
 
       ##
@@ -68,6 +70,19 @@ module Jsapi
         super(keywords)
       end
 
+      undef add_included, add_operation, add_parameter
+
+      def add_included(definitions) # :nodoc:
+        if circular_dependency?(definitions)
+          raise ArgumentError, 'detected circular dependency between ' \
+                               "#{owner.inspect} and " \
+                               "#{definitions.owner.inspect}"
+        end
+
+        (@included ||= []) << definitions
+        self
+      end
+
       def add_operation(name = nil, keywords = {}) # :nodoc:
         name = name.nil? ? default_operation_name : name.to_s
         keywords = keywords.reverse_merge(path: default_path)
@@ -79,6 +94,7 @@ module Jsapi
         (@parameters ||= {})[name] = Parameter.new(name, keywords)
       end
 
+      # Returns an array containing itself and all of the definitions inherited/included.
       def ancestors
         [self].tap do |ancestors|
           (included + Array(parent)).each do |included_or_parent|
@@ -100,6 +116,7 @@ module Jsapi
         nil
       end
 
+      # Returns the component with the specified type and name.
       def find_component(type, name)
         return unless (name = name.to_s).present?
 
@@ -110,6 +127,7 @@ module Jsapi
         nil
       end
 
+      # Returns the operation with the specified name.
       def find_operation(name = nil)
         return find_component(:operation, name) if name.present?
 
@@ -211,6 +229,13 @@ module Jsapi
       end
 
       private
+
+      def circular_dependency?(other)
+        return true if other == self
+        return false if other.included.none?
+
+        other.included.any? { |included| circular_dependency?(included) }
+      end
 
       def default_operation_name
         @default_operation_name ||=

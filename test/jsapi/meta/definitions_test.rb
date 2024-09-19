@@ -42,16 +42,6 @@ module Jsapi
         )
       end
 
-      def test_ancestors_raises_an_exception_on_circular_include
-        definitions1 = Definitions.new(owner: 'definitions 1')
-        definitions2 = Definitions.new(owner: 'definitions 2')
-
-        # definitions1.include(definitions2)
-        # definitions2.include(definitions1)
-
-        # assert_raises(RuntimeError) { definitions1.ancestors }
-      end
-
       # Default values
 
       def test_default_value
@@ -63,6 +53,62 @@ module Jsapi
 
         assert_nil(definitions.default_value(nil))
         assert_nil(definitions.default_value('object'))
+      end
+
+      # Included
+
+      def test_detects_circular_dependencies
+        definitions1 = Definitions.new(owner: 'definitions 1')
+        definitions2 = Definitions.new(owner: 'definitions 2', included: definitions1)
+        definitions3 = Definitions.new(owner: 'definitions 3', included: definitions2)
+
+        error = assert_raises(ArgumentError) { definitions1.add_included(definitions3) }
+        assert_equal(
+          'detected circular dependency between "definitions 1" and "definitions 3"',
+          error.message
+        )
+      end
+
+      def test_would_not_raise_an_exception_when_including_parent
+        base_definitions = Definitions.new
+
+        definitions = Definitions.new(parent: base_definitions)
+        definitions.add_included(base_definitions)
+
+        assert_equal([definitions, base_definitions], definitions.ancestors)
+      end
+
+      # Components
+
+      def test_add_parameter
+        definitions = Definitions.new
+        definitions.add_parameter('foo')
+        assert(definitions.parameters.key?('foo'))
+      end
+
+      def test_find_component
+        definitions = Definitions.new
+        assert_nil(definitions.find_component(:schema, nil))
+        assert_nil(definitions.find_component(:schema, 'foo'))
+
+        schema = definitions.add_schema('foo')
+        assert_equal(schema, definitions.find_component(:schema, 'foo'))
+      end
+
+      def test_find_component_on_inheritance
+        base_definitions = Definitions.new
+        schema = base_definitions.add_schema('foo')
+
+        definitions = Definitions.new(parent: base_definitions)
+        assert_equal(schema, definitions.find_component(:schema, 'foo'))
+      end
+
+      def test_find_component_on_inclusion
+        included_definitions = Definitions.new
+        schema = included_definitions.add_schema('foo')
+
+        definitions = Definitions.new(included: [included_definitions])
+        assert_equal(schema, definitions.find_component(:schema, 'foo'))
       end
 
       # Operations
@@ -87,23 +133,6 @@ module Jsapi
         operation = definitions.add_operation
         assert_equal('foo_bar', operation.name)
         assert_equal('/foo_bar', operation.path)
-      end
-
-      # Components
-
-      def test_add_parameter
-        definitions = Definitions.new
-        definitions.add_parameter('foo')
-        assert(definitions.parameters.key?('foo'))
-      end
-
-      def test_find_component
-        definitions = Definitions.new
-        assert_nil(definitions.find_component(:parameter, nil))
-        assert_nil(definitions.find_component(:parameter, 'foo'))
-
-        definitions.add_parameter('foo')
-        assert_equal('foo', definitions.find_component(:parameter, 'foo').name)
       end
 
       # Rescue handlers
