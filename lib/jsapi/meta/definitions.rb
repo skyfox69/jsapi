@@ -31,7 +31,7 @@ module Jsapi
       ##
       # :attr_reader: owner
       # The class to which it is assigned.
-      attribute :owner, Class, read_only: true
+      attribute :owner, read_only: true
 
       ##
       # :attr: parameters
@@ -41,7 +41,7 @@ module Jsapi
       ##
       # :attr_reader: parent
       # The Definitions from which it inherits.
-      attribute :parent, Definitions, read_only: true
+      attribute :parent, read_only: true
 
       ##
       # :attr: rescue_handlers
