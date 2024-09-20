@@ -240,7 +240,7 @@ The `Jsapi::DSL` module provides the following methods to define API components:
 - [api_rescue_from](#defining-rescue-handlers) - Defines a rescue handler.
 - [api_on_rescue](#defining-on_rescue-callbacks) - Defines an `on_rescue` callback.
 - [api_default](#defining-default-values) - Defines default values.
-- api_include - Includes API definitions from other classes.
+- [api_include](#sharing-api-components) - Includes API definitions from other classes.
 
 API components can also be defined inside an `api_definitions` block, for example:
 
@@ -593,6 +593,34 @@ end
 
 api_operation do
   response 'foo'
+end
+```
+
+### Sharing API components
+
+API components can be used in multiple classes by inheritance or inclusion. A controller
+class inherits all API components from the parent class, for example:
+
+```ruby
+class FooController < Jsapi::Controller::Base
+  api_schema 'Foo'
+end
+
+class BarController < FooController
+  api_response 'Bar', schema: 'Foo'
+end
+```
+
+In addition, API components from other classes can be included as below.
+
+```ruby
+class FooController < Jsapi::Controller::Base
+  api_schema 'Foo'
+end
+
+class BarController < FooController
+  api_include FooController
+  api_response 'Bar', schema: 'Foo'
 end
 ```
 
