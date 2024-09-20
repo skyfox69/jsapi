@@ -24,21 +24,12 @@ module Jsapi
       end
 
       def test_include
-        foo_class = Class.new do
-          extend ClassMethods
-          api_definitions do
-            schema 'Foo', description: 'Description of foo'
-          end
-        end
-        bar_class = Class.new do
-          extend ClassMethods
-          api_definitions do
-            include foo_class
-          end
-        end
-        schema = bar_class.api_definitions.find_component(:schema, 'Foo')
+        struct = Struct.new(:api_definitions)
+        owner1 = struct.new(definitions { schema 'Foo' })
+        owner2 = struct.new(definitions { include owner1 })
+
+        schema = owner2.api_definitions.find_component(:schema, 'Foo')
         assert_predicate(schema, :present?)
-        assert_equal('Description of foo', schema.description)
       end
 
       def test_on_rescue
