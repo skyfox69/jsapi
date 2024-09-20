@@ -16,7 +16,7 @@ module Jsapi
           assert_equal(%i[foo bar], bar_class.attribute_names)
         end
 
-        # Simple attributes
+        # String attributes
 
         def test_attribute
           model = Class.new do
@@ -27,7 +27,6 @@ module Jsapi
           assert(model.respond_to?(:foo))
           assert(model.respond_to?(:foo=))
 
-          # Attribute writer and reader
           assert_nil(model.foo)
 
           model.foo = 'bar'
@@ -70,7 +69,6 @@ module Jsapi
           assert(model.respond_to?(:foo?))
           assert(model.respond_to?(:foo=))
 
-          # Attribute writer and reader
           assert(!model.foo?)
 
           model.foo = true
@@ -103,7 +101,6 @@ module Jsapi
           assert(model.respond_to?(:foos=))
           assert(model.respond_to?(:add_foo))
 
-          # 'add' method  and attribute writer and reader
           assert_nil(model.foos)
 
           model.foos = %w[foo]
@@ -144,21 +141,22 @@ module Jsapi
         def test_hash_attribute
           model = Class.new do
             extend Attributes
-            attribute :foos, { String => String }, keys: %w[foo bar], values: %w[FOO BAR]
+            attribute :foos, { String => String },
+                      keys: %w[foo bar],
+                      values: %w[FOO BAR]
           end.new
 
           assert(model.respond_to?(:foos))
           assert(model.respond_to?(:add_foo))
 
-          # 'add' method and attribute reader
           assert_nil(model.foos)
           assert_nil(model.foo('foo'))
 
-          model.add_foo('foo', 'BAR')
-          assert_equal({ 'foo' => 'BAR' }, model.foos)
+          model.foos = { 'foo' => 'FOO' }
+          assert_equal('FOO', model.foo('foo'))
 
-          assert_equal('BAR', model.foo('foo'))
-          assert_equal('BAR', model.foo(:foo))
+          model.add_foo('bar', 'BAR')
+          assert_equal('BAR', model.foo('bar'))
 
           # Errors
           error = assert_raises(ArgumentError) { model.add_foo('', 'bar') }

@@ -26,17 +26,17 @@ module Jsapi
           when Array
             unless read_only
               singular_name = name.to_s.singularize
-              adder_name = "add_#{singular_name}"
+              add_method = "add_#{singular_name}"
 
               type_caster = TypeCaster.new(type.first, values: values, name: singular_name)
 
               # Attribute writer
               define_method("#{name}=") do |argument|
-                Array.wrap(argument).each { |element| send(adder_name, element) }
+                Array.wrap(argument).each { |element| send(add_method, element) }
               end
 
-              # add_{singular_name} method
-              define_method(adder_name) do |argument = nil|
+              # Add method
+              define_method(add_method) do |argument = nil|
                 type_caster.cast(argument).tap do |casted_argument|
                   if instance_variable_defined?(instance_variable_name)
                     instance_variable_get(instance_variable_name)
@@ -48,10 +48,12 @@ module Jsapi
             end
           when Hash
             singular_name = name.to_s.singularize
+            add_method = "add_#{singular_name}"
+
             key_type, value_type = type.first
             key_type_caster = TypeCaster.new(key_type, values: keys, name: 'key')
 
-            # hash value reader
+            # Hash value reader
             define_method(singular_name) do |key = nil|
               key = default_key if key.to_s.empty?
               send(name)&.[](key_type_caster.cast(key))
@@ -60,8 +62,13 @@ module Jsapi
             unless read_only
               value_type_caster = TypeCaster.new(value_type, values: values)
 
-              # add_{singular_name} method
-              define_method("add_#{singular_name}") do |key_or_value, value = nil|
+              # Attribute writer
+              define_method("#{name}=") do |argument|
+                argument.each { |key, value| send(add_method, key, value) }
+              end
+
+              # Add method
+              define_method(add_method) do |key_or_value, value = nil|
                 if value.nil? && default_key
                   key = default_key
                   value = key_or_value
