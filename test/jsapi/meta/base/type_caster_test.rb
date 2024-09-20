@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module Base
       class TypeCasterTest < Minitest::Test
-        def test_cast_to_string
+        def test_string_typecaster
           type_caster = TypeCaster.new(String)
           assert_equal('foo', type_caster.cast('foo'))
           assert_equal('foo', type_caster.cast(:foo))
@@ -12,7 +12,7 @@ module Jsapi
           assert_nil(type_caster.cast(nil))
         end
 
-        def test_cast_to_symbol
+        def test_symbol_typecaster
           type_caster = TypeCaster.new(Symbol)
           assert_equal(:foo, type_caster.cast('foo'))
           assert_equal(:foo, type_caster.cast(:foo))
@@ -20,7 +20,7 @@ module Jsapi
           assert_nil(type_caster.cast(nil))
         end
 
-        def test_cast_to_enum
+        def test_enum_typecaster
           type_caster = TypeCaster.new(Symbol, values: %i[foo bar])
           assert_equal(:foo, type_caster.cast(:foo))
 
@@ -28,7 +28,7 @@ module Jsapi
           assert_equal('value must be one of :foo or :bar, is nil', error.message)
         end
 
-        def test_cast_to_object
+        def test_generic_typecaster
           type_caster = TypeCaster.new(
             foo_class = Class.new do
               def initialize(keywords = {})
@@ -51,7 +51,7 @@ module Jsapi
           assert foo.equal?(type_caster.cast(foo))
         end
 
-        def test_cast_to_object_on_from
+        def test_generic_typecaster_on_from
           type_caster = TypeCaster.new(
             foo_class = Class.new do
               attr_accessor :bar
@@ -64,6 +64,12 @@ module Jsapi
           foo = type_caster.cast({ bar: 'Bar' })
           assert_kind_of(foo_class, foo)
           assert_equal('Bar', foo.bar)
+        end
+
+        def test_typeless_generic_typecaster
+          type_caster = TypeCaster.new
+          assert_equal('foo', type_caster.cast('foo'))
+          assert_equal(1, type_caster.cast(1))
         end
       end
     end

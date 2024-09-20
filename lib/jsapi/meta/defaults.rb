@@ -7,12 +7,12 @@ module Jsapi
       ##
       # :attr: read
       # The default value of parameters and properties when reading requests.
-      attribute :within_requests, Object
+      attribute :within_requests
 
       ##
       # :attr: write
       # The default value of properties when writing responses.
-      attribute :within_responses, Object
+      attribute :within_responses
 
       # Returns the default value within +context+.
       def value(context:)

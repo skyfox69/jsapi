@@ -16,7 +16,7 @@ module Jsapi
       ##
       # :attr: on_rescues
       # The methods or procs to be called when rescuing an exception.
-      attribute :on_rescues, [Object], default: []
+      attribute :on_rescues, [], default: []
 
       ##
       # :attr: openapi_root

@@ -14,7 +14,8 @@ module Jsapi
         }
 
         # Creates a new type caster for +klass+.
-        def initialize(klass, name: 'value', values: nil)
+        def initialize(klass = nil, name: 'value', values: nil)
+          klass = Object if klass.nil?
           @caster =
             case klass.name
             when 'String'

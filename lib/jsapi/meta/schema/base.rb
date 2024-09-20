@@ -29,7 +29,7 @@ module Jsapi
         ##
         # :attr: examples
         # The samples matching the schema.
-        attribute :examples, [::Object]
+        attribute :examples, []
 
         ##
         # :attr: external_docs
