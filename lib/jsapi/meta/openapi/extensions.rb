@@ -4,6 +4,10 @@ module Jsapi
   module Meta
     module OpenAPI
       module Extensions
+        ##
+        # :attr: openapi_extensions
+        # The \OpenAPI extensions.
+
         # Adds an \OpenAPI extension.
         #
         # Raises an +ArgumentError+ if +name+ is blank.
@@ -13,12 +17,13 @@ module Jsapi
           openapi_extensions["x-#{name}".to_sym] = value
         end
 
-        # Returns a hash containing the \OpenAPI extensions.
         def openapi_extensions
           @openapi_extensions ||= {}
         end
 
         def openapi_extensions=(extensions)
+          @openapi_extensions = {}
+
           extensions.each do |name, value|
             add_openapi_extension(name, value)
           end
