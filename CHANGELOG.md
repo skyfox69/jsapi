@@ -1,10 +1,10 @@
 # Change log
 
-## 0.7.0 ()
+## 0.7.0 (2024-09-21)
 
 ### New features
 
-- Definitions from superclasses are inherited.
+- API components are inherited from parent class.
 
 ## 0.6.2 (2024-09-17)
 
