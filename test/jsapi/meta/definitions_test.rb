@@ -65,39 +65,6 @@ module Jsapi
         assert_equal([definitions, base_definitions], definitions.ancestors)
       end
 
-      # Components
-
-      def test_add_parameter
-        definitions = Definitions.new
-        definitions.add_parameter('foo')
-        assert(definitions.parameters.key?('foo'))
-      end
-
-      def test_find_component
-        definitions = Definitions.new
-        assert_nil(definitions.find_component(:schema, nil))
-        assert_nil(definitions.find_component(:schema, 'foo'))
-
-        schema = definitions.add_schema('foo')
-        assert_equal(schema, definitions.find_component(:schema, 'foo'))
-      end
-
-      def test_find_component_on_inheritance
-        base_definitions = Definitions.new
-        schema = base_definitions.add_schema('foo')
-
-        definitions = Definitions.new(parent: base_definitions)
-        assert_equal(schema, definitions.find_component(:schema, 'foo'))
-      end
-
-      def test_find_component_on_inclusion
-        included_definitions = Definitions.new
-        schema = included_definitions.add_schema('foo')
-
-        definitions = Definitions.new(included: [included_definitions])
-        assert_equal(schema, definitions.find_component(:schema, 'foo'))
-      end
-
       # Operations
 
       def test_add_operation
@@ -120,6 +87,34 @@ module Jsapi
         operation = definitions.add_operation
         assert_equal('foo_bar', operation.name)
         assert_equal('/foo_bar', operation.path)
+      end
+
+      # Components
+
+      %i[parameter request_body response schema].each do |name|
+        define_method("test_add_and_find_#{name}") do
+          definitions = Definitions.new
+          schema = definitions.send("add_#{name}", 'foo')
+
+          assert_equal(schema, definitions.send("find_#{name}", 'foo'))
+          assert_nil(definitions.send("find_#{name}", nil))
+        end
+
+        define_method("test_find_#{name}_on_inheritance") do
+          base_definitions = Definitions.new
+          schema = base_definitions.send("add_#{name}", 'foo')
+
+          definitions = Definitions.new(parent: base_definitions)
+          assert_equal(schema, definitions.send("find_#{name}", 'foo'))
+        end
+
+        define_method("test_find_#{name}_on_inclusion") do
+          included_definitions = Definitions.new
+          schema = included_definitions.send("add_#{name}", 'foo')
+
+          definitions = Definitions.new(included: [included_definitions])
+          assert_equal(schema, definitions.send("find_#{name}", 'foo'))
+        end
       end
 
       # #rescue_handler_for

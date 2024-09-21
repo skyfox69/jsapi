@@ -38,7 +38,7 @@ module Jsapi
         end
         definitions = bar_class.api_definitions
 
-        schema = definitions.find_component(:schema, 'foo')
+        schema = definitions.find_schema('foo')
         assert_predicate(schema, :present?)
       end
 

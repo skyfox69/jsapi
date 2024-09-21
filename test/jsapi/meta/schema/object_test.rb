@@ -75,15 +75,15 @@ module Jsapi
             }
           )
           assert_equal(
-            definitions.find_component(:schema, 'Foo'),
+            definitions.find_schema('Foo'),
             schema.resolve_schema({ foo: 'Foo' }, definitions)
           )
           assert_equal(
-            definitions.find_component(:schema, 'Bar'),
+            definitions.find_schema('Bar'),
             schema.resolve_schema({ foo: 'Bar' }, definitions)
           )
           assert_equal(
-            definitions.find_component(:schema, 'Foo'),
+            definitions.find_schema('Foo'),
             schema.resolve_schema({ foo: nil }, definitions)
           )
         end

@@ -68,7 +68,7 @@ module Jsapi
           value = property.default_value(definitions, context: context) if value.nil?
           raise "#{discriminator.property_name} can't be nil" if value.nil?
 
-          schema = definitions.find_component(:schema, discriminator.mapping(value) || value)
+          schema = definitions.find_schema(discriminator.mapping(value) || value)
           raise "inheriting schema couldn't be found: #{value.inspect}" if schema.nil?
 
           schema.resolve(definitions).resolve_schema(object, definitions, context: context)

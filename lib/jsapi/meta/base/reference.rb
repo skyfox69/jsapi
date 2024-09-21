@@ -24,7 +24,7 @@ module Jsapi
         #
         # Raises a ReferenceError if +ref+ could not be resolved.
         def resolve(definitions)
-          object = definitions.find_component(self.class.component_type, ref)
+          object = definitions.send("find_#{self.class.component_type}", ref)
           raise ReferenceError, ref if object.nil?
 
           object.resolve(definitions)

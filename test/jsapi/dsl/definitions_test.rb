@@ -28,7 +28,7 @@ module Jsapi
         owner1 = struct.new(definitions { schema 'Foo' })
         owner2 = struct.new(definitions { include owner1 })
 
-        schema = owner2.api_definitions.find_component(:schema, 'Foo')
+        schema = owner2.api_definitions.find_schema('Foo')
         assert_predicate(schema, :present?)
       end
 

@@ -116,17 +116,6 @@ module Jsapi
         nil
       end
 
-      # Returns the component with the specified type and name.
-      def find_component(type, name)
-        return unless (name = name.to_s).present?
-
-        ancestors.each do |definitions|
-          component = definitions.send(type, name)
-          return component if component.present?
-        end
-        nil
-      end
-
       # Returns the operation with the specified name.
       def find_operation(name = nil)
         return find_component(:operation, name) if name.present?
@@ -135,13 +124,19 @@ module Jsapi
         operations.values.first if operations.one?
       end
 
+      %i[parameter request_body response schema].each do |type|
+        define_method("find_#{type}") do |name|
+          find_component(type, name)
+        end
+      end
+
       def inspect(*attributes) # :nodoc:
         super(*(attributes.presence || %i[owner parent included]))
       end
 
       # Returns a hash representing the \JSON \Schema document for +name+.
       def json_schema_document(name)
-        find_component(:schema, name)&.to_json_schema&.tap do |hash|
+        find_schema(name)&.to_json_schema&.tap do |hash|
           definitions = ancestors
                         .map(&:schemas)
                         .reduce(&:merge)
@@ -244,6 +239,16 @@ module Jsapi
 
       def default_path
         @default_path ||= "/#{default_operation_name}"
+      end
+
+      def find_component(type, name)
+        return unless (name = name.to_s).present?
+
+        ancestors.each do |definitions|
+          component = definitions.send(type, name)
+          return component if component.present?
+        end
+        nil
       end
     end
   end

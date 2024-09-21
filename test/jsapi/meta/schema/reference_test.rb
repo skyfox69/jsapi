@@ -17,7 +17,7 @@ module Jsapi
             }
           )
           assert_equal(
-            definitions.find_component(:schema, 'foo'),
+            definitions.find_schema('foo'),
             Reference.new(ref: 'foo').resolve(definitions)
           )
         end
