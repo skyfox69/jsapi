@@ -55,13 +55,16 @@ module Jsapi
             content_type: 'application/foo',
             type: 'string',
             existence: false,
-            example: 'foo'
+            example: 'foo',
+            headers: {
+              'X-Foo' => { type: 'string' },
+              'X-Bar' => { ref: 'X-Bar' }
+            },
+            links: {
+              'foo' => { operation_id: 'foo' }
+            },
+            openapi_extensions: { 'foo' => 'bar' }
           )
-          response_model.add_header('X-Foo', type: 'string')
-          response_model.add_header('X-Bar', ref: 'X-Bar')
-          response_model.add_link('foo', operation_id: 'foo')
-          response_model.add_openapi_extension('foo', 'bar')
-
           # OpenAPI 2.0
           assert_equal(
             {

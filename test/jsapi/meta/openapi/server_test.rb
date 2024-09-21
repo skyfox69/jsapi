@@ -13,11 +13,12 @@ module Jsapi
         def test_full_openapi_server_object
           server = Server.new(
             description: 'Foo',
-            url: 'https://{subdomain}.foo.bar'
+            url: 'https://{subdomain}.foo.bar',
+            variables: {
+              'subdomain' => { default: 'api' }
+            },
+            openapi_extensions: { 'foo' => 'bar' }
           )
-          server.add_variable('subdomain', { default: 'api' })
-          server.add_openapi_extension('foo', 'bar')
-
           assert_equal(
             {
               description: 'Foo',

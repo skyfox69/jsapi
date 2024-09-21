@@ -53,7 +53,7 @@ module Jsapi
           @name = name.to_s
 
           keywords = keywords.dup
-          super(keywords.extract!(:deprecated, :description, :examples, :in))
+          super(keywords.extract!(:deprecated, :description, :examples, :in, :openapi_extensions))
 
           add_example(value: keywords.delete(:example)) if keywords.key?(:example)
           keywords[:ref] = keywords.delete(:schema) if keywords.key?(:schema)

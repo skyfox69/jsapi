@@ -45,12 +45,16 @@ module Jsapi
 
         def initialize(keywords = {})
           keywords = keywords.dup
-          super(keywords.extract!(:content_type, :description, :examples, :locale))
-
+          super(
+            keywords.extract!(
+              :content_type, :description, :examples, :headers,
+              :links, :locale, :openapi_extensions
+            )
+          )
           add_example(value: keywords.delete(:example)) if keywords.key?(:example)
           keywords[:ref] = keywords.delete(:schema) if keywords.key?(:schema)
 
-          @schema = Schema.new(**keywords)
+          @schema = Schema.new(keywords)
         end
 
         # Returns a hash representing the \OpenAPI response object.

@@ -23,6 +23,7 @@ module Jsapi
       # OpenAPI objects
 
       def test_minimal_openapi_operation_object
+        definitions = Definitions.new
         operation = Operation.new('foo')
 
         %w[2.0 3.0].each do |version|
@@ -38,6 +39,7 @@ module Jsapi
       end
 
       def test_full_openapi_operation_object
+        definitions = Definitions.new
         operation = Operation.new(
           'foo',
           tags: %w[Foo],
@@ -46,26 +48,38 @@ module Jsapi
           external_docs: {
             url: 'https://foo.bar/docs'
           },
+          parameters: {
+            'bar' => {
+              type: 'string',
+              in: 'query'
+            }
+          },
           request_body: {
             type: 'string',
             existence: true
           },
+          responses: {
+            nil => {
+              type: 'string'
+            }
+          },
+          callbacks: {
+            'onBar' => {
+              operations: {
+                '{$request.query.bar}' => {}
+              }
+            }
+          },
+          security_requirements: {
+            schemes: %w[http_basic]
+          },
           deprecated: true,
-
-          # OpenAPI 2.0 only:
           schemes: %w[https],
-
-          # OpenAPI 3.0 only:
           servers: [
             { url: 'https://foo.bar/foo' }
-          ]
+          ],
+          openapi_extensions: { 'foo' => 'bar' }
         )
-        operation.add_parameter('bar', type: 'string', in: 'query')
-        operation.add_response(type: 'string')
-        operation.add_security.add_scheme('http_basic')
-        operation.add_callback('onBar').add_operation('{$request.query.bar}')
-        operation.add_openapi_extension('foo', 'bar')
-
         # OpenAPI 2.0
         assert_equal(
           {
@@ -176,12 +190,6 @@ module Jsapi
           },
           operation.to_openapi('3.0', definitions)
         )
-      end
-
-      private
-
-      def definitions
-        @definitions ||= Definitions.new
       end
     end
   end

@@ -27,9 +27,10 @@ module Jsapi
             end
 
             def test_full_openapi_security_scheme_object
-              security_scheme = Basic.new(description: 'Foo')
-              security_scheme.add_openapi_extension('foo', 'bar')
-
+              security_scheme = Basic.new(
+                description: 'Foo',
+                openapi_extensions: { 'foo' => 'bar' }
+              )
               # OpenAPI 2.0
               assert_equal(
                 {

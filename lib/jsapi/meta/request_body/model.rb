@@ -30,7 +30,7 @@ module Jsapi
 
         def initialize(keywords = {})
           keywords = keywords.dup
-          super(keywords.extract!(:content_type, :description, :examples))
+          super(keywords.extract!(:content_type, :description, :examples, :openapi_extensions))
 
           add_example(value: keywords.delete(:example)) if keywords.key?(:example)
           keywords[:ref] = keywords.delete(:schema) if keywords.key?(:schema)

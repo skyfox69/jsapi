@@ -37,8 +37,8 @@ module Jsapi
       #   end
       def openapi(**keywords, &block)
         _define('openapi') do
-          _meta_model.openapi_root = keywords
-          OpenAPI::Root.new(_meta_model.openapi_root, &block) if block
+          _meta_model.openapi = keywords
+          OpenAPI::Root.new(_meta_model.openapi, &block) if block
         end
       end
 

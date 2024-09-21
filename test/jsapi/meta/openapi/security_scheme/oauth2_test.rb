@@ -19,13 +19,15 @@ module Jsapi
           end
 
           def test_full_openapi_security_scheme_object
-            security_scheme = OAuth2.new(description: 'Foo')
-            security_scheme.add_oauth_flow(
-              :implicit,
-              authorization_url: 'https://foo.bar/api/oauth/dialog'
+            security_scheme = OAuth2.new(
+              description: 'Foo',
+              oauth_flows: {
+                implicit: {
+                  authorization_url: 'https://foo.bar/api/oauth/dialog'
+                }
+              },
+              openapi_extensions: { 'foo' => 'bar' }
             )
-            security_scheme.add_openapi_extension('foo', 'bar')
-
             # OpenAPI 2.0
             assert_equal(
               {

@@ -22,10 +22,9 @@ module Jsapi
             security_scheme = APIKey.new(
               name: 'X-API-Key',
               in: 'header',
-              description: 'Foo'
+              description: 'Foo',
+              openapi_extensions: { 'foo' => 'bar' }
             )
-            security_scheme.add_openapi_extension('foo', 'bar')
-
             %w[2.0 3.0].each do |version|
               assert_equal(
                 {

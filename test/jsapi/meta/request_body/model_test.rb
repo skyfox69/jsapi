@@ -48,9 +48,11 @@ module Jsapi
         end
 
         def test_full_openapi_parameter_object
-          request_body_model = Model.new(type: 'string', description: 'Foo')
-          request_body_model.add_openapi_extension('foo', 'bar')
-
+          request_body_model = Model.new(
+            type: 'string',
+            description: 'Foo',
+            openapi_extensions: { 'foo' => 'bar' }
+          )
           assert_equal(
             {
               name: 'body',
@@ -87,10 +89,9 @@ module Jsapi
             content_type: 'application/foo',
             type: 'string',
             description: 'Foo',
-            example: 'foo'
+            example: 'foo',
+            openapi_extensions: { 'foo' => 'bar' }
           )
-          request_body_model.add_openapi_extension('foo', 'bar')
-
           assert_equal(
             {
               description: 'Foo',

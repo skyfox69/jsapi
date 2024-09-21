@@ -19,9 +19,9 @@ module Jsapi
       attribute :on_rescues, [], default: []
 
       ##
-      # :attr: openapi_root
-      # The OpenAPI::Root object.
-      attribute :openapi_root, OpenAPI::Root
+      # :attr: openapi
+      # The OpenAPI root object.
+      attribute :openapi, OpenAPI
 
       ##
       # :attr: operations
@@ -195,7 +195,7 @@ module Jsapi
           end.compact
         end.reduce(&:reverse_merge)
 
-        (openapi_root&.to_openapi(version, self) || {}).tap do |h|
+        (openapi&.to_openapi(version, self) || {}).tap do |h|
           h[:paths] = operations
                       .group_by { |operation| operation.path || default_path }
                       .transform_values do |op|

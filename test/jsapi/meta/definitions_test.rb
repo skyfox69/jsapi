@@ -42,20 +42,7 @@ module Jsapi
         )
       end
 
-      # Default values
-
-      def test_default_value
-        definitions = Definitions.new
-        definitions.add_default('array', within_requests: [])
-        assert(definitions.defaults.key?('array'))
-
-        assert_equal([], definitions.default_value('array', context: :request))
-
-        assert_nil(definitions.default_value(nil))
-        assert_nil(definitions.default_value('object'))
-      end
-
-      # Included
+      # Inclusion
 
       def test_detects_circular_dependencies
         definitions1 = Definitions.new(owner: 'definitions 1')
@@ -135,35 +122,68 @@ module Jsapi
         assert_equal('/foo_bar', operation.path)
       end
 
-      # Rescue handlers
+      # #rescue_handler_for
 
       def test_rescue_handler_for
+        definitions = Definitions.new(
+          rescue_handlers: [
+            {
+              error_class: Controller::ParametersInvalid,
+              status: 400
+            },
+            {
+              error_class: StandardError,
+              status: 500
+            }
+          ]
+        )
+        assert_equal(
+          400,
+          definitions.rescue_handler_for(
+            Controller::ParametersInvalid.new(Model::Base.new({}))
+          ).status
+        )
+        assert_equal(
+          500,
+          definitions.rescue_handler_for(StandardError.new).status
+        )
+        assert_nil(definitions.rescue_handler_for(Exception.new))
+      end
+
+      # #default_value
+
+      def test_default_value
+        definitions = Definitions.new(
+          defaults: {
+            'array' => { within_requests: [] }
+          }
+        )
+        assert_equal([], definitions.default_value('array', context: :request))
+      end
+
+      def test_default_value_returns_nil_by_default
         definitions = Definitions.new
-        definitions.add_rescue_handler(
-          error_class: Controller::ParametersInvalid,
-          status: 400
-        )
-        definitions.add_rescue_handler(
-          error_class: StandardError,
-          status: 500
-        )
-        error = Controller::ParametersInvalid.new(Model::Base.new({}))
-        assert_equal(400, definitions.rescue_handler_for(error).status)
-
-        error = StandardError.new
-        assert_equal(500, definitions.rescue_handler_for(error).status)
-
-        error = Exception.new
-        assert_nil(definitions.rescue_handler_for(error))
+        assert_nil(definitions.default_value(nil))
+        assert_nil(definitions.default_value('array'))
       end
 
       # JSON Schema documents
 
       def test_json_schema_document
-        definitions = Definitions.new
-        definitions.add_schema('Foo').add_property('bar', type: 'string')
-        definitions.add_schema('Bar').add_property('foo', schema: 'Foo')
-
+        definitions = Definitions.new(
+          schemas: {
+            'Foo' => {
+              properties: {
+                'bar' => { type: 'string' }
+              }
+            },
+            'Bar' => {
+              properties: {
+                'foo' => { schema: 'Foo' }
+              }
+            }
+          }
+        )
         # 'Foo'
         assert_equal(
           {
@@ -219,9 +239,15 @@ module Jsapi
       end
 
       def test_json_schema_document_without_definitions
-        definitions = Definitions.new
-        definitions.add_schema('Foo').add_property('bar', type: 'string')
-
+        definitions = Definitions.new(
+          schemas: {
+            'Foo' => {
+              properties: {
+                'bar': { type: 'string' }
+              }
+            }
+          }
+        )
         assert_equal(
           {
             type: %w[object null],
@@ -246,25 +272,41 @@ module Jsapi
       end
 
       def test_full_openapi_document
-        definitions = Definitions.new
-        definitions.openapi_root = { info: { title: 'Foo', version: '1' } }
-
-        operation = definitions.add_operation('operation', path: '/bar', method: 'post')
-        operation.add_parameter('parameter', ref: 'parameter')
-        operation.request_body = { ref: 'request_body' }
-        operation.add_response(200, ref: 'response')
-        operation.add_response(400, ref: 'error_response')
-
-        definitions.add_parameter('parameter', type: 'string')
-        definitions.add_request_body('request_body', type: 'string')
-        definitions.add_response('response', schema: 'response_schema')
-        definitions.add_response(
-          'error_response',
-          type: 'string',
-          content_type: 'application/problem+json'
+        definitions = Definitions.new(
+          openapi: {
+            info: { title: 'Foo', version: '1' }
+          },
+          operations: {
+            'operation' => {
+              path: '/bar',
+              method: 'post',
+              parameters: {
+                'parameter': { ref: 'parameter' }
+              },
+              request_body: { ref: 'request_body' },
+              responses: {
+                200 => { ref: 'response' },
+                400 => { ref: 'error_response' }
+              }
+            }
+          },
+          request_bodies: {
+            'request_body' => { type: 'string' }
+          },
+          parameters: {
+            'parameter' => { type: 'string' }
+          },
+          responses: {
+            'response' => { schema: 'response_schema' },
+            'error_response' => {
+              type: 'string',
+              content_type: 'application/problem+json'
+            }
+          },
+          schemas: {
+            'response_schema' => { type: 'object' }
+          }
         )
-        definitions.add_schema('response_schema')
-
         # OpenAPI 2.0
         assert_equal(
           {

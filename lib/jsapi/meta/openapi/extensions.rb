@@ -18,6 +18,12 @@ module Jsapi
           @openapi_extensions ||= {}
         end
 
+        def openapi_extensions=(extensions)
+          extensions.each do |name, value|
+            add_openapi_extension(name, value)
+          end
+        end
+
         private
 
         def with_openapi_extensions(keywords = {}) # :nodoc:

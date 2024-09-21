@@ -21,10 +21,9 @@ module Jsapi
             },
             license: {
               name: 'MIT'
-            }
+            },
+            openapi_extensions: { 'foo' => 'bar' }
           )
-          info.add_openapi_extension('foo', 'bar')
-
           assert_equal(
             {
               title: 'Foo',

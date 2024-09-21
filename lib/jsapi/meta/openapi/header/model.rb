@@ -45,8 +45,11 @@ module Jsapi
             raise ArgumentError, "type can't be object" if keywords[:type] == 'object'
 
             keywords = keywords.dup
-            super(keywords.extract!(:collection_format, :deprecated, :description, :examples))
-
+            super(
+              keywords.extract!(
+                :collection_format, :deprecated, :description, :examples, :openapi_extensions
+              )
+            )
             add_example(value: keywords.delete(:example)) if keywords.key?(:example)
 
             @schema = Schema.new(keywords)

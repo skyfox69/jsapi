@@ -20,10 +20,9 @@ module Jsapi
             example_model = Model.new(
               summary: 'Foo',
               description: 'Description of foo',
-              value: 'foo'
+              value: 'foo',
+              openapi_extensions: { 'foo' => 'bar' }
             )
-            example_model.add_openapi_extension('foo', 'bar')
-
             assert_equal(
               {
                 summary: 'Foo',

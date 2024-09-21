@@ -30,35 +30,39 @@ module Jsapi
         def test_full_openapi_object
           definitions = Definitions.new
           root = Root.new(
-            info: {
-              title: 'Foo',
-              version: '1'
-            },
+            info: { title: 'Foo', version: '1' },
             host: 'https://foo.bar',
             base_path: '/foo',
             schemes: %w[https],
             servers: [
-              {
-                url: 'https://foo.bar/foo'
-              }
+              { url: 'https://foo.bar/foo' }
             ],
+            callbacks: {
+              'onFoo' => {
+                operations: { '{$request.query.foo}' => {} }
+              }
+            },
+            examples: {
+              'foo' => { value: 'bar' }
+            },
+            headers: {
+              'X-Foo' => { type: 'string' }
+            },
+            links: {
+              'foo' => { operation_id: 'foo' }
+            },
+            security_schemes: {
+              'http_basic' => { type: 'basic' }
+            },
+            security_requirements: {
+              schemes: { 'http_basic': nil }
+            },
             tags: [
-              {
-                name: 'Foo'
-              }
+              { name: 'Foo' }
             ],
-            external_docs: {
-              url: 'https://foo.bar/docs'
-            }
+            external_docs: { url: 'https://foo.bar/docs' },
+            openapi_extensions: { 'foo' => 'bar' }
           )
-          root.add_callback('onFoo').add_operation('{$request.query.foo}')
-          root.add_example('foo', value: 'bar')
-          root.add_header('X-Foo', type: 'string')
-          root.add_link('foo', operation_id: 'foo')
-          root.add_openapi_extension('foo', 'bar')
-          root.add_security_scheme('http_basic', type: 'basic')
-          root.add_security.add_scheme('http_basic')
-
           # OpenAPI 2.0
           assert_equal(
             {

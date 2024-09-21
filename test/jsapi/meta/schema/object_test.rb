@@ -15,13 +15,21 @@ module Jsapi
         # #resolve_properties
 
         def test_resolve_properties
-          schema = definitions.add_schema('Foo')
-          schema.add_property('foo', read_only: true)
-
-          schema = Object.new
-          schema.add_all_of(ref: 'Foo')
-          schema.add_property('bar', write_only: true)
-
+          definitions = Definitions.new(
+            schemas: {
+              'Foo' => {
+                properties: {
+                  'foo' => { read_only: true }
+                }
+              }
+            }
+          )
+          schema = Object.new(
+            all_of: { ref: 'Foo' },
+            properties: {
+              'bar' => { write_only: true }
+            }
+          )
           properties = schema.resolve_properties(definitions)
           assert_equal(%w[foo bar], properties.keys)
 
@@ -33,11 +41,17 @@ module Jsapi
         end
 
         def test_resolve_properties_raises_an_exception_on_circular_reference
-          definitions.add_schema('Foo').add_all_of(ref: 'Bar')
-          definitions.add_schema('Bar').add_all_of(ref: 'Foo')
-
-          schema = Object.new
-          schema.add_all_of(ref: 'Foo')
+          definitions = Definitions.new(
+            schemas: {
+              'Foo' => {
+                all_of: { ref: 'Bar' }
+              },
+              'Bar' => {
+                all_of: { ref: 'Foo' }
+              }
+            }
+          )
+          schema = Object.new(all_of: { ref: 'Foo' })
 
           error = assert_raises(RuntimeError) do
             schema.resolve_properties(definitions)
@@ -48,43 +62,67 @@ module Jsapi
         # #resolve_schema
 
         def test_resolve_schema
-          base_schema = Object.new(discriminator: { property_name: 'foo' })
-          base_schema.add_property('foo', type: 'string', default: 'Foo')
-
-          foo_schema = definitions.add_schema('Foo')
-          bar_schema = definitions.add_schema('Bar')
-
-          assert_equal(foo_schema, base_schema.resolve_schema({ foo: 'Foo' }, definitions))
-          assert_equal(bar_schema, base_schema.resolve_schema({ foo: 'Bar' }, definitions))
-          assert_equal(foo_schema, base_schema.resolve_schema({ foo: nil }, definitions))
+          definitions = Definitions.new(
+            schemas: {
+              'Foo' => {},
+              'Bar' => {}
+            }
+          )
+          schema = Object.new(
+            discriminator: { property_name: 'foo' },
+            properties: {
+              'foo' => { type: 'string', default: 'Foo' }
+            }
+          )
+          assert_equal(
+            definitions.find_component(:schema, 'Foo'),
+            schema.resolve_schema({ foo: 'Foo' }, definitions)
+          )
+          assert_equal(
+            definitions.find_component(:schema, 'Bar'),
+            schema.resolve_schema({ foo: 'Bar' }, definitions)
+          )
+          assert_equal(
+            definitions.find_component(:schema, 'Foo'),
+            schema.resolve_schema({ foo: nil }, definitions)
+          )
         end
 
         def test_resolve_schema_raises_an_exception_on_unknown_discriminator_property
-          schema = Object.new(discriminator: { property_name: 'foo' })
-          schema.add_property('bar', type: 'string')
-
+          schema = Object.new(
+            discriminator: { property_name: 'foo' },
+            properties: {
+              'bar' => { type: 'string' }
+            }
+          )
           error = assert_raises(RuntimeError) do
-            schema.resolve_schema({}, definitions)
+            schema.resolve_schema({}, Definitions.new)
           end
           assert_equal('discriminator property must be "bar", is "foo"', error.message)
         end
 
         def test_resolve_schema_raises_an_exception_on_blank_value
-          schema = Object.new(discriminator: { property_name: 'foo' })
-          schema.add_property('foo', type: 'string')
-
+          schema = Object.new(
+            discriminator: { property_name: 'foo' },
+            properties: {
+              'foo' => { type: 'string' }
+            }
+          )
           error = assert_raises(RuntimeError) do
-            schema.resolve_schema({}, definitions)
+            schema.resolve_schema({}, Definitions.new)
           end
           assert_equal("foo can't be nil", error.message)
         end
 
         def test_resolve_schema_raises_an_exception_on_missing_inheriting_schema
-          schema = Object.new(discriminator: { property_name: 'foo' })
-          schema.add_property('foo', type: 'string')
-
+          schema = Object.new(
+            discriminator: { property_name: 'foo' },
+            properties: {
+              'foo' => { type: 'string' }
+            }
+          )
           error = assert_raises(RuntimeError) do
-            schema.resolve_schema({ foo: 'Bar' }, definitions)
+            schema.resolve_schema({ foo: 'Bar' }, Definitions.new)
           end
           assert_equal("inheriting schema couldn't be found: \"Bar\"", error.message)
         end
@@ -106,11 +144,18 @@ module Jsapi
         def test_full_json_schema_object
           schema = Object.new(
             all_of: [{ ref: 'Foo' }],
+            properties: {
+              'foo' => {
+                type: 'string',
+                existence: true
+              },
+              'bar' => {
+                type: 'integer',
+                existence: false
+              }
+            },
             additional_properties: { type: 'string' }
           )
-          schema.add_property('foo', type: 'string', existence: true)
-          schema.add_property('bar', type: 'integer', existence: false)
-
           assert_equal(
             {
               type: %w[object null],
@@ -163,11 +208,18 @@ module Jsapi
           schema = Object.new(
             all_of: [{ ref: 'Foo' }],
             discriminator: { property_name: 'foo' },
+            properties: {
+              'foo' => {
+                type: 'string',
+                existence: true
+              },
+              'bar' => {
+                type: 'integer',
+                existence: false
+              }
+            },
             additional_properties: { type: 'string' }
           )
-          schema.add_property('foo', type: 'string', existence: true)
-          schema.add_property('bar', type: 'integer', existence: false)
-
           # OpenAPI 2.0
           assert_equal(
             {
@@ -219,12 +271,6 @@ module Jsapi
             },
             schema.to_openapi('3.0')
           )
-        end
-
-        private
-
-        def definitions
-          @definitions ||= Definitions.new
         end
       end
     end

@@ -11,24 +11,22 @@ module Jsapi
         end
 
         def test_openapi_security_requirement_object_without_scopes
-          security_requirement = SecurityRequirement.new
-          security_requirement.add_scheme('foo')
-          security_requirement.add_scheme('bar')
-
+          security_requirement = SecurityRequirement.new(
+            schemes: { 'foo' => nil, 'bar' => nil }
+          )
           assert_equal(
-            {
-              'foo' => [],
-              'bar' => []
-            },
+            { 'foo' => [], 'bar' => [] },
             security_requirement.to_openapi
           )
         end
 
         def test_openapi_security_requirement_object_with_scopes
-          security_requirement = SecurityRequirement.new
-          security_requirement.add_scheme('foo', scopes: %w[read:foo])
-          security_requirement.add_scheme('bar', scopes: %w[read:bar])
-
+          security_requirement = SecurityRequirement.new(
+            schemes: {
+              'foo' => { scopes: %w[read:foo] },
+              'bar' => { scopes: %w[read:bar] }
+            }
+          )
           assert_equal(
             {
               'foo' => %w[read:foo],

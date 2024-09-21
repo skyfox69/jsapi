@@ -11,15 +11,23 @@ module Jsapi
         end
 
         def test_resolve
-          definitions = Definitions.new
-          schema = definitions.add_schema('foo')
-
-          assert_equal(schema, Reference.new(ref: 'foo').resolve(definitions))
+          definitions = Definitions.new(
+            schemas: {
+              'foo' => { existence: :allow_empty }
+            }
+          )
+          assert_equal(
+            definitions.find_component(:schema, 'foo'),
+            Reference.new(ref: 'foo').resolve(definitions)
+          )
         end
 
-        def test_resolve_with_higher_existence_level
-          definitions = Definitions.new
-          definitions.add_schema('foo', existence: :allow_empty)
+        def test_resolve_on_higher_existence_level
+          definitions = Definitions.new(
+            schemas: {
+              'foo' => { existence: :allow_empty }
+            }
+          )
           schema_reference = Reference.new(ref: 'foo', existence: true)
 
           resolved = schema_reference.resolve(definitions)
@@ -27,9 +35,12 @@ module Jsapi
           assert_equal(Existence::PRESENT, resolved.existence)
         end
 
-        def test_resolve_with_lower_existence_level
-          definitions = Definitions.new
-          definitions.add_schema('foo', existence: true)
+        def test_resolve_on_lower_existence_level
+          definitions = Definitions.new(
+            schemas: {
+              'foo' => { existence: true }
+            }
+          )
           schema_reference = Reference.new(ref: 'foo', existence: :allow_empty)
 
           resolved = schema_reference.resolve(definitions)

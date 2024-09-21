@@ -14,10 +14,9 @@ module Jsapi
           server_variable = ServerVariable.new(
             enum: %w[foo bar],
             default: 'foo',
-            description: 'Foo'
+            description: 'Foo',
+            openapi_extensions: { 'foo' => 'bar' }
           )
-          server_variable.add_openapi_extension('foo', 'bar')
-
           assert_equal(
             {
               enum: %w[foo bar],

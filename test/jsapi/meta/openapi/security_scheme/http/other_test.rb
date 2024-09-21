@@ -28,10 +28,9 @@ module Jsapi
             def test_full_openapi_security_scheme_object
               security_scheme = Other.new(
                 scheme: 'digest',
-                description: 'Foo'
+                description: 'Foo',
+                openapi_extensions: { 'foo' => 'bar' }
               )
-              security_scheme.add_openapi_extension('foo', 'bar')
-
               # OpenAPI 2.0
               assert_nil(
                 security_scheme.to_openapi(Version.from('2.0'))

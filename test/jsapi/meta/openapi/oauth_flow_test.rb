@@ -16,13 +16,14 @@ module Jsapi
           oauth_flow = OAuthFlow.new(
             authorization_url: 'https://foo.bar/api/oauth/dialog',
             token_url: 'https://foo.bar/api/oauth/token',
-            refresh_url: 'https://foo.bar/api/oauth/refresh'
+            refresh_url: 'https://foo.bar/api/oauth/refresh',
+            scopes: {
+              'read:foo' => nil,
+              'write:foo' => { description: 'Description of write:foo' }
+            },
+            openapi_extensions: { 'foo' => 'bar' }
           )
-          oauth_flow.add_scope('read:foo')
-          oauth_flow.add_scope('write:foo', description: 'Description of write:foo')
-          oauth_flow.add_openapi_extension('foo', 'bar')
-
-          hash = {
+          openapi = {
             authorizationUrl: 'https://foo.bar/api/oauth/dialog',
             tokenUrl: 'https://foo.bar/api/oauth/token',
             refreshUrl: 'https://foo.bar/api/oauth/refresh',
@@ -32,8 +33,8 @@ module Jsapi
             },
             'x-foo': 'bar'
           }
-          assert_equal(hash.except(:refreshUrl), oauth_flow.to_openapi(Version.from('2.0')))
-          assert_equal(hash, oauth_flow.to_openapi(Version.from('3.0')))
+          assert_equal(openapi.except(:refreshUrl), oauth_flow.to_openapi(Version.from('2.0')))
+          assert_equal(openapi, oauth_flow.to_openapi(Version.from('3.0')))
         end
       end
     end

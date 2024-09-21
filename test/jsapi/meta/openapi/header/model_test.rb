@@ -45,10 +45,9 @@ module Jsapi
               collection_format: 'pipes',
               description: 'foo',
               deprecated: true,
-              example: 'bar'
+              example: 'bar',
+              openapi_extensions: { 'foo' => 'bar' }
             )
-            header_model.add_openapi_extension('foo', 'bar')
-
             # OpenAPI 2.0
             assert_equal(
               {

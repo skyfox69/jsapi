@@ -16,10 +16,9 @@ module Jsapi
             description: 'Description of Foo',
             external_docs: {
               url: 'https://foo.bar/docs'
-            }
+            },
+            openapi_extensions: { 'foo' => 'bar' }
           )
-          tag.add_openapi_extension('foo', 'bar')
-
           assert_equal(
             {
               name: 'Foo',

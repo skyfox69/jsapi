@@ -14,15 +14,16 @@ module Jsapi
           def test_full_openapi_link_object
             link_model = Model.new(
               operation_id: 'foo',
-              description: 'Description of foo',
+              parameters: {
+                'bar' => nil
+              },
               request_body: 'bar',
+              description: 'Description of foo',
               server: {
                 url: 'https://foo.bar/foo'
-              }
+              },
+              openapi_extensions: { 'foo' => 'bar' }
             )
-            link_model.add_parameter(:bar, nil)
-            link_model.add_openapi_extension('foo', 'bar')
-
             assert_equal(
               {
                 operationId: 'foo',

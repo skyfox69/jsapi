@@ -148,9 +148,14 @@ module Jsapi
         end
 
         def test_minimal_openapi_parameter_object_on_nested_parameters
-          parameter_model = Model.new('foo', type: 'object', in: 'query')
-          parameter_model.add_property('bar', type: 'string')
-
+          parameter_model = Model.new(
+            'foo',
+            in: 'query',
+            type: 'object',
+            properties: {
+              'bar' => { type: 'string' }
+            }
+          )
           # OpenAPI 2.0
           assert_equal(
             [
@@ -181,9 +186,17 @@ module Jsapi
         end
 
         def test_minimal_openapi_parameter_object_on_nested_array_parameter
-          parameter_model = Model.new('foo', type: 'object', in: 'query')
-          parameter_model.add_property('bar', type: 'array', items: { type: 'string' })
-
+          parameter_model = Model.new(
+            'foo',
+            in: 'query',
+            type: 'object',
+            properties: {
+              'bar' => {
+                type: 'array',
+                items: { type: 'string' }
+              }
+            }
+          )
           # OpenAPI 2.0
           assert_equal(
             [
@@ -222,9 +235,19 @@ module Jsapi
         end
 
         def test_minimal_openapi_parameter_object_on_deeply_nested_parameters
-          parameter_model = Model.new('foo', type: 'object', in: 'query')
-          parameter_model.add_property('bar', type: 'object')
-                         .add_property('foo', type: 'string')
+          parameter_model = Model.new(
+            'foo',
+            in: 'query',
+            type: 'object',
+            properties: {
+              'bar': {
+                type: 'object',
+                properties: {
+                  'foo' => { type: 'string' }
+                }
+              }
+            }
+          )
           # OpenAPI 2.0
           assert_equal(
             [
@@ -261,10 +284,9 @@ module Jsapi
             existence: true,
             description: 'Description of foo',
             deprecated: true,
-            example: 'bar'
+            example: 'bar',
+            openapi_extensions: { 'foo' => 'bar' }
           )
-          parameter_model.add_openapi_extension('foo', 'bar')
-
           # OpenAPI 2.0
           assert_equal(
             [
@@ -307,21 +329,20 @@ module Jsapi
           parameter_model = Model.new(
             'foo',
             type: 'object',
+            properties: {
+              'bar' => {
+                type: 'string',
+                existence: true,
+                description: 'Description of foo',
+                deprecated: true,
+                openapi_extensions: { 'bar' => 'foo' }
+              }
+            },
             existence: true,
             deprecated: true,
-            example: 'bar'
+            example: 'bar',
+            openapi_extensions: { 'foo' => 'bar' }
           )
-          parameter_model.add_openapi_extension('foo', 'bar')
-
-          property = parameter_model.add_property(
-            'bar',
-            type: 'string',
-            existence: true,
-            description: 'Description of foo',
-            deprecated: true
-          )
-          property.add_openapi_extension('bar', 'foo')
-
           # OpenAPI 2.0
           assert_equal(
             [
@@ -364,10 +385,15 @@ module Jsapi
         end
 
         def test_openapi_parameter_object_on_read_only_and_write_only_attributes
-          parameter_model = Model.new('foo', type: 'object', in: 'query')
-          parameter_model.add_property('read_only_attr', type: 'string', read_only: true)
-          parameter_model.add_property('write_only_attr', type: 'string', write_only: true)
-
+          parameter_model = Model.new(
+            'foo',
+            in: 'query',
+            type: 'object',
+            properties: {
+              'read_only_attr' => { type: 'string', read_only: true },
+              'write_only_attr' => { type: 'string', write_only: true }
+            }
+          )
           assert_equal(
             %w[foo[write_only_attr]],
             parameter_model.to_openapi('3.0', Definitions.new).map { |p| p[:name] }

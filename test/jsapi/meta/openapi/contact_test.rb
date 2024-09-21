@@ -14,10 +14,9 @@ module Jsapi
           contact = Contact.new(
             name: 'Foo',
             url: 'https://foo.bar',
-            email: 'foo@foo.bar'
+            email: 'foo@foo.bar',
+            openapi_extensions: { 'foo' => 'bar' }
           )
-          contact.add_openapi_extension('foo', 'bar')
-
           assert_equal(
             {
               name: 'Foo',
