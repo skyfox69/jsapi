@@ -22,7 +22,7 @@ module Jsapi
   module Meta
     module OpenAPI
       class << self
-        # Creates a new root object.
+        # Creates a new \OpenAPI root object.
         def new(keywords = {})
           Root.new(keywords)
         end

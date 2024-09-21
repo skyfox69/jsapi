@@ -17,11 +17,11 @@ module Jsapi
           openapi_extensions["x-#{name}".to_sym] = value
         end
 
-        def openapi_extensions
+        def openapi_extensions # :nodoc:
           @openapi_extensions ||= {}
         end
 
-        def openapi_extensions=(extensions)
+        def openapi_extensions=(extensions) # :nodoc:
           @openapi_extensions = {}
 
           extensions.each do |name, value|
