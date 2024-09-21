@@ -6,7 +6,6 @@ module Jsapi
     # parameters by default.
     class Base
       extend Naming
-
       include Attributes
       include Validations
 

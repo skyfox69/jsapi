@@ -3,12 +3,9 @@
 module Jsapi
   module Model
     module Validations
-      extend ActiveSupport::Concern
-
-      include ActiveModel::Validations
-
-      included do
-        validate :nested_validity
+      def self.included(mod)
+        mod.include ActiveModel::Validations
+        mod.validate :nested_validity
       end
 
       # Overrides <code>ActiveModel::Validations#errors</code>

@@ -3,10 +3,8 @@
 module Jsapi
   module Model
     module Attributes
-      extend ActiveSupport::Concern
-
-      included do
-        delegate :[], :additional_attributes, :attribute?, :attributes, to: :nested
+      def self.included(mod)
+        mod.delegate :[], :additional_attributes, :attribute?, :attributes, to: :nested
       end
 
       def method_missing(*args) # :nodoc:

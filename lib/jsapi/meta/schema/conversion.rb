@@ -6,11 +6,8 @@ module Jsapi
   module Meta
     module Schema
       module Conversion
-        extend ActiveSupport::Concern
-
-        included do
-          # The method or +Proc+ to convert objects by.
-          attr_accessor :conversion
+        def self.included(mod)
+          mod.attr_accessor :conversion
         end
 
         def convert(object)
