@@ -6,6 +6,7 @@ module Jsapi
       module Attributes
         # Defines an attribute.
         def attribute(name, type = Object,
+                      add_method: nil,
                       default: nil,
                       default_key: nil,
                       keys: nil,
@@ -26,13 +27,18 @@ module Jsapi
           when Array
             unless read_only
               singular_name = name.to_s.singularize
-              add_method = "add_#{singular_name}"
+              add_method = "add_#{singular_name}" if add_method.nil?
 
               type_caster = TypeCaster.new(type.first, values: values, name: singular_name)
 
               # Attribute writer
               define_method("#{name}=") do |argument|
-                Array.wrap(argument).each { |element| send(add_method, element) }
+                if argument.nil?
+                  instance_variable_set(instance_variable_name, nil)
+                else
+                  instance_variable_set(instance_variable_name, [])
+                  Array.wrap(argument).each { |element| send(add_method, element) }
+                end
               end
 
               # Add method
@@ -48,12 +54,12 @@ module Jsapi
             end
           when Hash
             singular_name = name.to_s.singularize
-            add_method = "add_#{singular_name}"
+            add_method = "add_#{singular_name}" if add_method.nil?
 
             key_type, value_type = type.first
             key_type_caster = TypeCaster.new(key_type, values: keys, name: 'key')
 
-            # Hash value reader
+            # Lookup method
             define_method(singular_name) do |key = nil|
               key = default_key if key.to_s.empty?
               send(name)&.[](key_type_caster.cast(key))
@@ -64,7 +70,12 @@ module Jsapi
 
               # Attribute writer
               define_method("#{name}=") do |argument|
-                argument.each { |key, value| send(add_method, key, value) }
+                if argument.nil?
+                  instance_variable_set(instance_variable_name, nil)
+                else
+                  instance_variable_set(instance_variable_name, {})
+                  argument.each { |key, value| send(add_method, key, value) }
+                end
               end
 
               # Add method

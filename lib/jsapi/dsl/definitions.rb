@@ -19,7 +19,7 @@ module Jsapi
       # Includes API definitions from +klasses+.
       def include(*klasses)
         klasses.each do |klass|
-          _meta_model.add_included(klass.api_definitions)
+          _meta_model.include(klass.api_definitions)
         end
       end
 

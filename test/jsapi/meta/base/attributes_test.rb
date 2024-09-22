@@ -16,174 +16,223 @@ module Jsapi
           assert_equal(%i[foo bar], bar_class.attribute_names)
         end
 
-        # String attributes
-
-        def test_attribute
+        def test_attribute_reader_and_writer
           model = Class.new do
             extend Attributes
-            attribute :foo, String, values: %w[foo bar]
+            attribute :foo, Object, values: %w[foo]
           end.new
 
-          assert(model.respond_to?(:foo))
-          assert(model.respond_to?(:foo=))
-
-          assert_nil(model.foo)
-
-          model.foo = 'bar'
-          assert_equal('bar', model.foo)
+          model.foo = 'foo'
+          assert_equal('foo', model.foo)
 
           # Errors
-          assert_raises(InvalidArgumentError) { model.foo = 'foo_bar' }
+          error = assert_raises(InvalidArgumentError) do
+            model.foo = 'bar'
+          end
+          assert_equal('foo must be "foo", is "bar"', error.message)
         end
 
-        def test_attribute_with_default_value
+        def test_default_value
           default_value = 'bar'
 
           model = Class.new do
             extend Attributes
-            attribute :foo, String, default: default_value
+            attribute :foo, Object, default: default_value
           end.new
 
           assert_equal(default_value, model.foo)
         end
 
-        def test_read_only_attribute
+        def test_read_only
           model = Class.new do
             extend Attributes
-            attribute :foo, String, read_only: true
+            attribute :foo, Object, read_only: true
           end.new
 
-          assert(model.respond_to?(:foo))
           assert(!model.respond_to?(:foo=))
         end
 
         # Boolean attributes
 
-        def test_boolean_attribute
+        def test_predicate_method_on_boolean
           model = Class.new do
             extend Attributes
             attribute :foo, values: [true, false]
           end.new
 
-          assert(model.respond_to?(:foo))
-          assert(model.respond_to?(:foo?))
-          assert(model.respond_to?(:foo=))
-
-          assert(!model.foo?)
-
           model.foo = true
-          assert(model)
+          assert(model.foo?)
 
           model.foo = false
           assert(!model.foo?)
         end
 
-        def test_read_only_boolean_attribute
-          model = Class.new do
-            extend Attributes
-            attribute :foo, values: [true, false], read_only: true
-          end.new
-
-          assert(model.respond_to?(:foo))
-          assert(model.respond_to?(:foo?))
-          assert(!model.respond_to?(:foo=))
-        end
-
         # Array attributes
 
-        def test_array_attribute
+        def test_attribute_reader_and_writer_on_array
           model = Class.new do
             extend Attributes
-            attribute :foos, [String], values: %w[foo bar]
+            attribute :foos, [], values: %w[foo]
           end.new
-
-          assert(model.respond_to?(:foos))
-          assert(model.respond_to?(:foos=))
-          assert(model.respond_to?(:add_foo))
-
-          assert_nil(model.foos)
 
           model.foos = %w[foo]
           assert_equal(%w[foo], model.foos)
 
-          assert_equal('bar', model.add_foo('bar'))
-          assert_equal(%w[foo bar], model.foos)
+          model.foos = nil
+          assert_nil(model.foos)
 
           # Errors
-          assert_raises(InvalidArgumentError) { model.foos = %w[foo foo_bar] }
-          assert_raises(InvalidArgumentError) { model.add_foo 'foo_bar' }
+          error = assert_raises(InvalidArgumentError) do
+            model.foos = %w[bar]
+          end
+          assert_equal('foo must be "foo", is "bar"', error.message)
         end
 
-        def test_array_attribute_with_default_value
+        def test_add_method_on_array
+          model = Class.new do
+            extend Attributes
+            attribute :foos, [], values: %w[foo]
+          end.new
+
+          model.add_foo('foo')
+          assert_equal(%w[foo], model.foos)
+
+          # Errors
+          error = assert_raises(InvalidArgumentError) do
+            model.add_foo('bar')
+          end
+          assert_equal('foo must be "foo", is "bar"', error.message)
+        end
+
+        def test_custom_add_method_on_array
+          model = Class.new do
+            extend Attributes
+            attribute :foos, [], add_method: :bar
+          end.new
+
+          model.bar('foo')
+          assert_equal(%w[foo], model.foos)
+        end
+
+        def test_default_value_on_array
           default_value = %w[foo bar]
 
           model = Class.new do
             extend Attributes
-            attribute :foos, [String], default: default_value
+            attribute :foos, [], default: default_value
           end.new
 
           assert_equal(default_value, model.foos)
         end
 
-        def test_read_only_array_attribute
+        def test_read_only_on_array
           model = Class.new do
             extend Attributes
             attribute :foos, [String], read_only: true
           end.new
 
-          assert(model.respond_to?(:foos))
           assert(!model.respond_to?(:foos=))
           assert(!model.respond_to?(:add_foo))
         end
 
         # Hash attributes
 
-        def test_hash_attribute
+        def test_attribute_reader_and_writer_on_hash
           model = Class.new do
             extend Attributes
-            attribute :foos, { String => String },
-                      keys: %w[foo bar],
-                      values: %w[FOO BAR]
+            attribute :foos, {}, keys: %w[foo], values: %w[bar]
           end.new
 
-          assert(model.respond_to?(:foos))
-          assert(model.respond_to?(:add_foo))
+          hash = { 'foo' => 'bar' }
+          model.foos = hash
+          assert_equal(hash, model.foos)
 
+          model.foos = nil
           assert_nil(model.foos)
-          assert_nil(model.foo('foo'))
-
-          model.foos = { 'foo' => 'FOO' }
-          assert_equal('FOO', model.foo('foo'))
-
-          model.add_foo('bar', 'BAR')
-          assert_equal('BAR', model.foo('bar'))
 
           # Errors
-          error = assert_raises(ArgumentError) { model.add_foo('', 'bar') }
+          error = assert_raises(ArgumentError) do
+            model.foos = { '' => 'bar' }
+          end
           assert_equal("key can't be blank", error.message)
 
-          assert_raises(InvalidArgumentError) { model.add_foo 'foo_bar', 'FOO' }
-          assert_raises(InvalidArgumentError) { model.add_foo 'foo', 'foo_bar' }
+          error = assert_raises(InvalidArgumentError) do
+            model.foos = { 'bar' => 'bar' }
+          end
+          assert_equal('key must be "foo", is "bar"', error.message)
+
+          error = assert_raises(InvalidArgumentError) do
+            model.foos = { 'foo' => 'foo' }
+          end
+          assert_equal('value must be "bar", is "foo"', error.message)
         end
 
-        def test_hash_attribute_with_default_value
+        def test_add_method_on_hash
+          model = Class.new do
+            extend Attributes
+            attribute :foos, {}, keys: %w[foo], values: %w[bar]
+          end.new
+
+          model.add_foo('foo', 'bar')
+          assert_equal({ 'foo' => 'bar' }, model.foos)
+
+          # Errors
+          error = assert_raises(ArgumentError) do
+            model.add_foo('', 'bar')
+          end
+          assert_equal("key can't be blank", error.message)
+
+          error = assert_raises(InvalidArgumentError) do
+            model.add_foo 'bar', 'bar'
+          end
+          assert_equal('key must be "foo", is "bar"', error.message)
+
+          error = assert_raises(InvalidArgumentError) do
+            model.add_foo 'foo', 'foo'
+          end
+          assert_equal('value must be "bar", is "foo"', error.message)
+        end
+
+        def test_custom_add_method_on_hash
+          model = Class.new do
+            extend Attributes
+            attribute :foos, {}, add_method: :bar
+          end.new
+
+          model.bar('foo', 'bar')
+          assert_equal({ 'foo' => 'bar' }, model.foos)
+        end
+
+        def test_lockup_method_on_hash
+          model = Class.new do
+            extend Attributes
+            attribute :foos, {}
+          end.new
+
+          model.add_foo('foo', 'bar')
+          assert_equal('bar', model.foo('foo'))
+
+          assert_nil(model.foo(nil))
+        end
+
+        def test_default_value_on_hash
           default_value = { 'foo' => 'bar' }
 
           model = Class.new do
             extend Attributes
-            attribute :foos, { String => String }, default: default_value
+            attribute :foos, {}, default: default_value
           end.new
 
           assert_equal(default_value, model.foos)
         end
 
-        def test_read_only_hash_attribute
+        def test_read_only_on_hash
           model = Class.new do
             extend Attributes
-            attribute :foos, { String => String }, read_only: true
+            attribute :foos, {}, read_only: true
           end.new
 
-          assert(model.respond_to?(:foos))
+          assert(!model.respond_to?(:foo=))
           assert(!model.respond_to?(:add_foo))
         end
       end

@@ -9,9 +9,14 @@ module Jsapi
       attribute :defaults, { String => Defaults }, keys: Schema::TYPES, default: {}
 
       ##
-      # :attr: included
-      # The Definitions included.
-      attribute :included, [Definitions], default: []
+      # :attr: dependent_definitions
+      # The Definitions instances including this instance.
+      attribute :dependent_definitions, read_only: true, default: []
+
+      ##
+      # :attr: included_definitions
+      # The Definitions instances included.
+      attribute :included_definitions, [Definitions], add_method: :include, default: []
 
       ##
       # :attr: on_rescues
@@ -30,7 +35,7 @@ module Jsapi
 
       ##
       # :attr_reader: owner
-      # The class to which it is assigned.
+      # The class to which the Definitions instance is assigned.
       attribute :owner, read_only: true
 
       ##
@@ -40,7 +45,7 @@ module Jsapi
 
       ##
       # :attr_reader: parent
-      # The Definitions from which it inherits.
+      # The Definitions instance from which it inherits.
       attribute :parent, read_only: true
 
       ##
@@ -63,24 +68,13 @@ module Jsapi
       # The reusable Schema objects.
       attribute :schemas, { String => Schema }, default: {}
 
-      undef add_included, add_operation, add_parameter
+      undef add_operation, add_parameter, include
 
       def initialize(keywords = {})
         @owner = keywords.delete(:owner)
         @parent = keywords.delete(:parent)
 
         super(keywords)
-      end
-
-      def add_included(definitions) # :nodoc:
-        if circular_dependency?(definitions)
-          raise ArgumentError, 'detected circular dependency between ' \
-                               "#{owner.inspect} and " \
-                               "#{definitions.owner.inspect}"
-        end
-
-        (@included ||= []) << definitions
-        self
       end
 
       def add_operation(name = nil, keywords = {}) # :nodoc:
@@ -94,10 +88,11 @@ module Jsapi
         (@parameters ||= {})[name] = Parameter.new(name, keywords)
       end
 
-      # Returns an array containing itself and all of the definitions inherited/included.
+      # Returns an array containing itself and all of the Definitions instances
+      # inherited/included.
       def ancestors
-        [self].tap do |ancestors|
-          (included + Array(parent)).each do |included_or_parent|
+        @ancestors ||= [self].tap do |ancestors|
+          (included_definitions + Array(parent)).each do |included_or_parent|
             included_or_parent.ancestors.each do |definitions|
               ancestors << definitions
             end
@@ -130,8 +125,27 @@ module Jsapi
         end
       end
 
+      # Includes +definitions+.
+      def include(definitions)
+        if circular_dependency?(definitions)
+          raise ArgumentError, 'detected circular dependency between ' \
+                               "#{owner.inspect} and " \
+                               "#{definitions.owner.inspect}"
+        end
+
+        (@included_definitions ||= []) << definitions
+        definitions.included(self)
+        invalidate_ancestors
+        self
+      end
+
+      # Invoked whenever it is included in another +Definitions+ instance.
+      def included(definitions)
+        (@dependent_definitions ||= []) << definitions
+      end
+
       def inspect(*attributes) # :nodoc:
-        super(*(attributes.presence || %i[owner parent included]))
+        super(*(attributes.presence || %i[owner]))
       end
 
       # Returns a hash representing the \JSON \Schema document for +name+.
@@ -223,13 +237,20 @@ module Jsapi
         nil
       end
 
+      protected
+
+      def invalidate_ancestors
+        @ancestors = nil
+        dependent_definitions.each(&:invalidate_ancestors)
+      end
+
       private
 
       def circular_dependency?(other)
         return true if other == self
-        return false if other.included.none?
+        return false if other.included_definitions.none?
 
-        other.included.any? { |included| circular_dependency?(included) }
+        other.included_definitions.any? { |included| circular_dependency?(included) }
       end
 
       def default_operation_name

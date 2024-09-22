@@ -25,7 +25,7 @@ module Jsapi
         definitions = Definitions.new(
           owner: 'definitions',
           parent: base_definitions2,
-          included: [included_definitions1, included_definitions2]
+          included_definitions: [included_definitions1, included_definitions2]
         )
         assert_equal(
           [base_definitions1],
@@ -42,25 +42,38 @@ module Jsapi
         )
       end
 
-      # Inclusion
+      # #include
 
-      def test_detects_circular_dependencies
-        definitions1 = Definitions.new(owner: 'definitions 1')
-        definitions2 = Definitions.new(owner: 'definitions 2', included: definitions1)
-        definitions3 = Definitions.new(owner: 'definitions 3', included: definitions2)
+      def test_include
+        definitions = (1..3).map { |i| Definitions.new(owner: i) }
 
-        error = assert_raises(ArgumentError) { definitions1.add_included(definitions3) }
-        assert_equal(
-          'detected circular dependency between "definitions 1" and "definitions 3"',
-          error.message
-        )
+        definitions.second.include(definitions.first)
+        definitions.third.include(definitions.second)
+
+        # 1st definitions
+        assert_equal([], definitions.first.included_definitions)
+        assert_equal([definitions.second], definitions.first.dependent_definitions)
+
+        # 2nd definitions
+        assert_equal([definitions.first], definitions.second.included_definitions)
+        assert_equal([definitions.third], definitions.second.dependent_definitions)
+
+        # 3rd definitions
+        assert_equal([definitions.second], definitions.third.included_definitions)
+        assert_equal([], definitions.third.dependent_definitions)
+
+        # Circular dependency detection
+        error = assert_raises(ArgumentError) do
+          definitions.first.include(definitions.third)
+        end
+        assert_equal('detected circular dependency between 1 and 3', error.message)
       end
 
-      def test_would_not_raise_an_exception_when_including_parent
+      def test_include_would_not_raise_an_exception_when_including_parent
         base_definitions = Definitions.new
 
         definitions = Definitions.new(parent: base_definitions)
-        definitions.add_included(base_definitions)
+        definitions.include(base_definitions)
 
         assert_equal([definitions, base_definitions], definitions.ancestors)
       end
@@ -112,7 +125,7 @@ module Jsapi
           included_definitions = Definitions.new
           schema = included_definitions.send("add_#{name}", 'foo')
 
-          definitions = Definitions.new(included: [included_definitions])
+          definitions = Definitions.new(included_definitions: [included_definitions])
           assert_equal(schema, definitions.send("find_#{name}", 'foo'))
         end
       end
@@ -464,17 +477,8 @@ module Jsapi
       # # inspect
 
       def test_inspect
-        definitions = Definitions.new(
-          owner: 'foo',
-          parent: Definitions.new(owner: 'base'),
-          included: [Definitions.new(owner: 'incl')]
-        )
-        assert_equal(
-          '#<Jsapi::Meta::Definitions owner: "foo", ' \
-          'parent: #<Jsapi::Meta::Definitions owner: "base", parent: nil, included: []>, ' \
-          'included: [#<Jsapi::Meta::Definitions owner: "incl", parent: nil, included: []>]>',
-          definitions.inspect
-        )
+        definitions = Definitions.new(owner: 'foo')
+        assert_equal('#<Jsapi::Meta::Definitions owner: "foo">', definitions.inspect)
       end
     end
   end
