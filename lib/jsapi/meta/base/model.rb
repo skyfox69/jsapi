@@ -39,6 +39,11 @@ module Jsapi
         def resolve(*)
           self
         end
+
+        protected
+
+        # Invoked whenever an attribute has been changed.
+        def attribute_changed(name); end
       end
     end
   end

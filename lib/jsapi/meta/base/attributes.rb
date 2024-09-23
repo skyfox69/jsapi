@@ -49,12 +49,12 @@ module Jsapi
                   else
                     instance_variable_set(instance_variable_name, [])
                   end << casted_argument
+                  attribute_changed(name)
                 end
               end
             end
           when Hash
             singular_name = name.to_s.singularize
-            add_method = "add_#{singular_name}" if add_method.nil?
 
             key_type, value_type = type.first
             key_type_caster = TypeCaster.new(key_type, values: keys, name: 'key')
@@ -66,6 +66,8 @@ module Jsapi
             end
 
             unless read_only
+              add_method = "add_#{singular_name}" if add_method.nil?
+
               value_type_caster = TypeCaster.new(value_type, values: values)
 
               # Attribute writer
@@ -97,6 +99,9 @@ module Jsapi
                 else
                   instance_variable_set(instance_variable_name, {})
                 end[casted_key] = casted_value
+
+                attribute_changed(name)
+                casted_value
               end
             end
           else
@@ -111,9 +116,10 @@ module Jsapi
 
               # Attribute writer
               define_method("#{name}=") do |argument = nil|
-                instance_variable_set(
-                  instance_variable_name, type_caster.cast(argument)
-                )
+                type_caster.cast(argument).tap do |casted_value|
+                  instance_variable_set(instance_variable_name, casted_value)
+                  attribute_changed(name)
+                end
               end
             end
           end
