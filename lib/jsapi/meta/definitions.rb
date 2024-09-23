@@ -98,10 +98,8 @@ module Jsapi
       # inherited/included.
       def ancestors
         @ancestors ||= [self].tap do |ancestors|
-          (included_definitions + Array(parent)).each do |included_or_parent|
-            included_or_parent.ancestors.each do |definitions|
-              ancestors << definitions
-            end
+          (included_definitions + Array(parent)).each do |definitions|
+            ancestors.push(*definitions.ancestors)
           end
         end.uniq
       end
@@ -159,9 +157,10 @@ module Jsapi
 
       # Returns a hash representing the \JSON \Schema document for +name+.
       def json_schema_document(name)
-        find_schema(name)&.to_json_schema&.tap do |hash|
-          schemas = components[:schemas].except(name.to_s)
-          hash[:definitions] = schemas.transform_values(&:to_json_schema) if schemas.any?
+        find_schema(name)&.to_json_schema&.tap do |json_schema_document|
+          if (schemas = components[:schemas].except(name.to_s)).any?
+            json_schema_document[:definitions] = schemas.transform_values(&:to_json_schema)
+          end
         end
       end
 
@@ -177,55 +176,51 @@ module Jsapi
         version = OpenAPI::Version.from(version)
         operations = components[:operations].values
 
-        components = if version.major == 2
-                       {
-                         definitions: :schemas,
-                         parameters: :parameters,
-                         responses: :responses
-                       }
-                     else
-                       {
-                         schemas: :schemas,
-                         parameters: :parameters,
-                         requestBodies: :request_bodies,
-                         responses: :responses
-                       }
-                     end
+        component_keys = %i[parameters responses parameters schemas]
+        component_keys.insert(3, :request_bodies) if version.major > 2
 
-        openapi_components = ancestors.map do |definitions|
-          components.transform_values do |method|
-            definitions.send(method).transform_values do |component|
-              case method
-              when :parameters
-                component.to_openapi(version, self).first
-              when :responses
-                component.to_openapi(version, self)
-              else
-                component.to_openapi(version)
+        openapi_components = component_keys.filter_map do |key|
+          value = components[key].transform_values do |component|
+            case key
+            when :parameters
+              component.to_openapi(version, self).first
+            when :responses
+              component.to_openapi(version, self)
+            else
+              component.to_openapi(version)
+            end
+          end.presence
+
+          [key, value] if value.present?
+        end.to_h
+
+        (openapi&.to_openapi(version, self) || {}).tap do |openapi_document|
+          openapi_document[:paths] =
+            operations
+            .group_by { |operation| operation.path || default_path }
+            .transform_values do |operations_by_path|
+              operations_by_path.index_by(&:method).transform_values do |operation|
+                operation.to_openapi(version, self)
               end
             end.presence
-          end.compact
-        end.reduce(&:reverse_merge)
-
-        (openapi&.to_openapi(version, self) || {}).tap do |h|
-          h[:paths] = operations
-                      .group_by { |operation| operation.path || default_path }
-                      .transform_values do |op|
-                        op.index_by(&:method).transform_values do |operation|
-                          operation.to_openapi(version, self)
-                        end
-                      end.presence
 
           if version.major == 2
             consumes = operations.filter_map { |operation| operation.consumes(self) }
-            h[:consumes] = consumes.uniq.sort if consumes.present?
-
             produces = operations.flat_map { |operation| operation.produces(self) }
-            h[:produces] = produces.uniq.sort if produces.present?
 
-            h.merge!(openapi_components)
+            openapi_document.merge!(
+              consumes: (consumes.uniq.sort if consumes.present?),
+              produces: (produces.uniq.sort if produces.present?),
+              definitions: openapi_components[:schemas],
+              parameters: openapi_components[:parameters],
+              responses: openapi_components[:responses]
+            )
           elsif openapi_components.any?
-            (h[:components] ||= {}).merge!(openapi_components)
+            (openapi_document[:components] ||= {}).reverse_merge!(
+              openapi_components.transform_keys do |key|
+                key.to_s.camelize(:lower).to_sym
+              end
+            )
           end
         end.compact
       end
