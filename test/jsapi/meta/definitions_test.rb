@@ -175,6 +175,28 @@ module Jsapi
         assert_nil(definitions.default_value('array'))
       end
 
+      # Caching
+
+      def test_calls_invalidate_ancestors_when_another_instance_is_included
+        definitions = Definitions.new
+        called = false
+
+        definitions.stub(:invalidate_ancestors, -> { called = true }) do
+          definitions.include(Definitions.new)
+        end
+        assert(called)
+      end
+
+      def test_calls_invalidate_components_when_an_attribute_is_changed
+        definitions = Definitions.new
+        called = false
+
+        definitions.stub(:invalidate_components, -> { called = true }) do
+          definitions.add_schema('foo')
+        end
+        assert(called)
+      end
+
       # JSON Schema documents
 
       def test_json_schema_document

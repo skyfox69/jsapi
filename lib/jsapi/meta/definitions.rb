@@ -4,23 +4,28 @@ module Jsapi
   module Meta
     class Definitions < Base::Model
       ##
+      # :attr_reader: children
+      # The +Definitions+ instances that directly inherit from this instance.
+      attribute :children, read_only: true, default: []
+
+      ##
       # :attr: defaults
       # The Defaults.
       attribute :defaults, { String => Defaults }, keys: Schema::TYPES, default: {}
 
       ##
       # :attr: dependent_definitions
-      # The Definitions instances including this instance.
+      # The +Definitions+ instances that directly include this instance.
       attribute :dependent_definitions, read_only: true, default: []
 
       ##
       # :attr: included_definitions
-      # The Definitions instances included.
+      # The +Definitions+ instances included.
       attribute :included_definitions, [Definitions], add_method: :include, default: []
 
       ##
       # :attr: on_rescues
-      # The methods or procs to be called when rescuing an exception.
+      # The methods or procs to be called whenever an exception is rescued.
       attribute :on_rescues, [], default: []
 
       ##
@@ -35,7 +40,7 @@ module Jsapi
 
       ##
       # :attr_reader: owner
-      # The class to which the Definitions instance is assigned.
+      # The class to which this instance is assigned.
       attribute :owner, read_only: true
 
       ##
@@ -45,7 +50,7 @@ module Jsapi
 
       ##
       # :attr_reader: parent
-      # The Definitions instance from which it inherits.
+      # The +Definitions+ instance from which this instance inherits.
       attribute :parent, read_only: true
 
       ##
@@ -73,8 +78,9 @@ module Jsapi
       def initialize(keywords = {})
         @owner = keywords.delete(:owner)
         @parent = keywords.delete(:parent)
-
         super(keywords)
+
+        @parent&.inherited(self)
       end
 
       def add_operation(name = nil, keywords = {}) # :nodoc:
@@ -88,7 +94,7 @@ module Jsapi
         (@parameters ||= {})[name] = Parameter.new(name, keywords)
       end
 
-      # Returns an array containing itself and all of the Definitions instances
+      # Returns an array containing itself and all of the +Definitions+ instances
       # inherited/included.
       def ancestors
         @ancestors ||= [self].tap do |ancestors|
@@ -102,27 +108,35 @@ module Jsapi
 
       # Returns the default value for +type+ within +context+.
       def default_value(type, context: nil)
-        return unless (type = type.to_s).present?
-
-        ancestors.each do |definitions|
-          default = definitions.default(type)
-          return default.value(context: context) if default
-        end
-        nil
+        components.dig(:defaults, type.to_s)&.value(context: context)
       end
 
       # Returns the operation with the specified name.
       def find_operation(name = nil)
-        return find_component(:operation, name) if name.present?
+        return components.dig(:operations, name.to_s) if name.present?
 
         # Return the one and only operation
         operations.values.first if operations.one?
       end
 
-      %i[parameter request_body response schema].each do |type|
-        define_method("find_#{type}") do |name|
-          find_component(type, name)
-        end
+      # Returns the reusable parameter with the specified name.
+      def find_parameter(name)
+        components.dig(:parameters, name&.to_s)
+      end
+
+      # Returns the reusable request body with the specified name.
+      def find_request_body(name)
+        components.dig(:request_bodies, name&.to_s)
+      end
+
+      # Returns the reusable response with the specified name.
+      def find_response(name)
+        components.dig(:responses, name&.to_s)
+      end
+
+      # Returns the reusable schema with the specified name.
+      def find_schema(name)
+        components.dig(:schemas, name&.to_s)
       end
 
       # Includes +definitions+.
@@ -135,13 +149,8 @@ module Jsapi
 
         (@included_definitions ||= []) << definitions
         definitions.included(self)
-        invalidate_ancestors
+        attribute_changed(:included_definitions)
         self
-      end
-
-      # Invoked whenever it is included in another +Definitions+ instance.
-      def included(definitions)
-        (@dependent_definitions ||= []) << definitions
       end
 
       def inspect(*attributes) # :nodoc:
@@ -151,19 +160,14 @@ module Jsapi
       # Returns a hash representing the \JSON \Schema document for +name+.
       def json_schema_document(name)
         find_schema(name)&.to_json_schema&.tap do |hash|
-          definitions = ancestors
-                        .map(&:schemas)
-                        .reduce(&:merge)
-                        .except(name.to_s)
-                        .transform_values(&:to_json_schema)
-
-          hash[:definitions] = definitions if definitions.any?
+          schemas = components[:schemas].except(name.to_s)
+          hash[:definitions] = schemas.transform_values(&:to_json_schema) if schemas.any?
         end
       end
 
       # Returns the methods or procs to be called when rescuing an exception.
       def on_rescue_callbacks
-        ancestors.flat_map(&:on_rescues)
+        components[:on_rescues]
       end
 
       # Returns a hash representing the \OpenAPI document for +version+.
@@ -171,8 +175,7 @@ module Jsapi
       # Raises an +ArgumentError+ if +version+ is not supported.
       def openapi_document(version = nil)
         version = OpenAPI::Version.from(version)
-
-        operations = ancestors.map(&:operations).reduce(&:reverse_merge).values
+        operations = components[:operations].values
 
         components = if version.major == 2
                        {
@@ -229,19 +232,46 @@ module Jsapi
 
       # Returns the first RescueHandler to handle +exception+, or nil if no one could be found.
       def rescue_handler_for(exception)
-        ancestors.each do |definitions|
-          definitions.rescue_handlers.each do |rescue_handler|
-            return rescue_handler if rescue_handler.match?(exception)
-          end
-        end
-        nil
+        components[:rescue_handlers].find { |r| r.match?(exception) }
       end
 
       protected
 
+      def attribute_changed(name) # :nodoc:
+        return if name == :openapi
+
+        if name == :included_definitions
+          invalidate_ancestors
+        else
+          invalidate_components
+        end
+      end
+
+      # Invoked whenever it is included in another +Definitions+ instance.
+      def included(definitions)
+        (@dependent_definitions ||= []) << definitions
+      end
+
+      # rubocop:disable Lint/MissingSuper
+
+      # Invoked whenever it is inherited by another +Definitions+ instance.
+      def inherited(definitions)
+        (@children ||= []) << definitions
+      end
+
+      # rubocop:enable Lint/MissingSuper
+
+      # Invalidates cached ancestors.
       def invalidate_ancestors
         @ancestors = nil
-        dependent_definitions.each(&:invalidate_ancestors)
+        @components = nil
+        (children + dependent_definitions).each(&:invalidate_ancestors)
+      end
+
+      # Invalidates cached components.
+      def invalidate_components
+        @components = nil
+        (children + dependent_definitions).each(&:invalidate_components)
       end
 
       private
@@ -253,6 +283,17 @@ module Jsapi
         other.included_definitions.any? { |included| circular_dependency?(included) }
       end
 
+      def components
+        @components ||= ancestors.each_with_object({}) do |ancestor, components|
+          %i[defaults operations parameters request_bodies responses schemas].each do |type|
+            (components[type] ||= {}).reverse_merge!(ancestor.send(type))
+          end
+          %i[on_rescues rescue_handlers].each do |type|
+            (components[type] ||= []).push(*ancestor.send(type))
+          end
+        end
+      end
+
       def default_operation_name
         @default_operation_name ||=
           @owner.to_s.demodulize.delete_suffix('Controller').underscore
@@ -260,16 +301,6 @@ module Jsapi
 
       def default_path
         @default_path ||= "/#{default_operation_name}"
-      end
-
-      def find_component(type, name)
-        return unless (name = name.to_s).present?
-
-        ancestors.each do |definitions|
-          component = definitions.send(type, name)
-          return component if component.present?
-        end
-        nil
       end
     end
   end
