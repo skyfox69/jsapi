@@ -1,5 +1,11 @@
 # Change log
 
+## 0.7.1 (2024-09-23)
+
+### Changes
+
+- Performance improvements.
+
 ## 0.7.0 (2024-09-21)
 
 ### New features
