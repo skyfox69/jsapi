@@ -29,7 +29,7 @@ route for a simple echo operation can be defined as below.
 get 'echo', to: 'echo#index'
 ```
 
-Create a controller that inherits from `Jsapi::Controller::Base`:
+Then, create a controller class that inherits from `Jsapi::Controller::Base`:
 
 ```ruby
 # app/controllers/echo_controller.rb
@@ -38,16 +38,17 @@ class EchoController < Jsapi::Controller::Base
 end
 ```
 
-Define the API operation:
+Next, define the API operation. For this the `api_operation` class method can be used within
+the controller class created as below.
 
 ```ruby
 class EchoController < Jsapi::Controller::Base
   api_operation path: '/echo' do
     parameter 'call', type: 'string', existence: true
-    response 200 do
+    response 200, type: 'object'  do
       property 'echo', type: 'string'
     end
-    response 400 do
+    response 400, type: 'object' do
       property 'status', type: 'integer'
       property 'message', type: 'string'
     end
@@ -55,19 +56,27 @@ class EchoController < Jsapi::Controller::Base
 end
 ```
 
-Create the action performing the API operation:
+Then create the action performing the API operation:
 
 ```ruby
 class EchoController < Jsapi::Controller::Base
   def index
     api_operation! status: 200 do |api_params|
-      { echo: "#{api_params.call}, again" }
+      {
+        echo: "#{api_params.call}, again"
+      }
     end
   end
 end
 ```
 
-Add a rescue handle to produce error responses:
+Note that `api_operation!` renders the JSON representation of the object returned by the block.
+This can be a hash or any object providing attribute readers for each property of the response
+to be rendered. The `status` option specifies the status code of the response to be selected.
+As the `call` parameter must be present, `api_operation!` raises a
+`Jsapi::Controller::ParametersInvalid` when `call` is missing.
+
+Finally, add a rescue handler to produce apropriate error responses:
 
 ```ruby
 class EchoController < Jsapi::Controller::Base
@@ -75,35 +84,14 @@ class EchoController < Jsapi::Controller::Base
 end
 ```
 
-The whole controller class looks like:
+Whenever a `Jsapi::Controller::ParametersInvalid` exception is raised a response with status
+code 400 is produced.
 
-```ruby
-# app/controllers/echo_controller.rb
+See [echo_controller.rb](examples/echo/app/controllers/echo_controller.rb) how the whole
+controller class looks like.
 
-class EchoController < Jsapi::Controller::Base
-  api_rescue Jsapi::Controller::ParametersInvalid, with: 400
-
-  api_operation path: '/echo' do
-    parameter 'call', type: 'string', existence: true
-    response 200 do
-      property 'echo', type: 'string'
-    end
-    response 400 do
-      property 'status', type: 'integer'
-      property 'message', type: 'string'
-    end
-  end
-
-  def index
-    api_operation! status: 200 do |api_params|
-      { echo: "#{api_params.call}, again" }
-    end
-  end
-end
-```
-
-An instance of the `EchoController` class responds to `GET /echo?call=Hello`
-with HTTP status code 200 and the following body:
+A controller instance responds to `GET /echo?call=Hello` with HTTP status code 200 and the
+following body:
 
 ```json
 {
@@ -111,8 +99,8 @@ with HTTP status code 200 and the following body:
 }
 ```
 
-If the `call` query parameter isn't present, it responds with HTTP status code
-400 and the following body:
+When the `call` parameter isn't present, a response with HTTP status code 400 and the
+following body is produced:
 
 ```json
 {
