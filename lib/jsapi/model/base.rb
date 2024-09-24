@@ -7,7 +7,9 @@ module Jsapi
     class Base
       extend Naming
       include Attributes
-      include Validations
+      include ActiveModel::Validations
+
+      validate :nested_validity
 
       def initialize(nested)
         @nested = nested
@@ -20,6 +22,12 @@ module Jsapi
         )
       end
 
+      # Overrides <code>ActiveModel::Validations#errors</code>
+      # to use Errors as error store.
+      def errors
+        @errors ||= Errors.new(self)
+      end
+
       def inspect # :nodoc:
         "#<#{self.class.name}#{' ' if attributes.any?}" \
         "#{attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ')}>"
@@ -28,6 +36,10 @@ module Jsapi
       private
 
       attr_reader :nested
+
+      def nested_validity
+        @nested.validate(errors)
+      end
     end
   end
 end
