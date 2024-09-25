@@ -1,10 +1,16 @@
 # Change log
 
+## 0.7.3 (2024-09-25)
+
+### Changes
+
+- Refactoring
+
 ## 0.7.2 (2024-09-24)
 
 ### Changes
 
-- Performance improvements.
+- Performance improvements
 
 ## 0.7.0 (2024-09-21)
 
