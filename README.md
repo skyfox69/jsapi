@@ -127,7 +127,7 @@ body is produced:
 }
 ```
 
-`GET /echo/openapi?version={2.0|3.0|3.1} produces the following OpenAPI documents:
+`GET /echo/openapi?version={2.0|3.0|3.1}` produces the following OpenAPI documents:
 
 - [openapi-2.0.json](examples/echo/doc/openapi-2.0.json)
 - [openapi-3.0.json](examples/echo/doc/openapi-3.0.json)
