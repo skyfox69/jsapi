@@ -14,11 +14,19 @@ class EchoController < Jsapi::Controller::Base
     end
   end
 
+  openapi do
+    info title: 'Echo', version: '1'
+  end
+
   def index
     api_operation! status: 200 do |api_params|
       {
         echo: "#{api_params.call}, again"
       }
     end
+  end
+
+  def openapi
+    render(json: api_definitions.openapi_document(params[:version]))
   end
 end

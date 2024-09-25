@@ -1,10 +1,17 @@
 # Jsapi
 
+Easily build OpenAPI compliant APIs with Rails.
+
 ## Why Jsapi?
 
-Jsapi can be used to build Rails application providing JSON APIs consumed by other client
-applications. It provides an easy way to read requests, produce responses and create
-OpenAPI documents.
+Without Jsapi, complex API applications typically use in-memory models to read requests and
+serializers to write responses. When using OpenAPI for documentation purposes, this is done
+separatly.
+
+Jsapi brings all this together. The models to read requests, the serialization of objects and
+the optional OpenAPI documentation are based on the same API definition. This significantly
+reduces the workload and ensures that the OpenAPI documentation is consistent with the
+server-side implementation of the API.
 
 Jsapi supports OpenAPI 2.0, 3.0 and 3.1.
 
@@ -18,9 +25,7 @@ gem 'jsapi'
 
 ## Getting started
 
-### Creating an API operation
-
-Create the route for the API operation in `config/routes.rb`. For example, a non-resourceful
+Start by adding a route for the API operation to be created. For example, a non-resourceful
 route for a simple echo operation can be defined as below.
 
 ```ruby
@@ -29,19 +34,12 @@ route for a simple echo operation can be defined as below.
 get 'echo', to: 'echo#index'
 ```
 
-Then, create a controller class that inherits from `Jsapi::Controller::Base`:
+Then, create a controller class inheriting from `Jsapi::Controller::Base` and define the
+API operation by an `api_operation` block in there:
 
 ```ruby
 # app/controllers/echo_controller.rb
 
-class EchoController < Jsapi::Controller::Base
-end
-```
-
-Next, define the API operation. For this the `api_operation` class method can be used within
-the controller class created as below.
-
-```ruby
 class EchoController < Jsapi::Controller::Base
   api_operation path: '/echo' do
     parameter 'call', type: 'string', existence: true
@@ -56,42 +54,62 @@ class EchoController < Jsapi::Controller::Base
 end
 ```
 
-Then create the action performing the API operation:
+Note that `existence: true` declares the `call` parameter to be required.
+
+Next, add the action performing the API operation to the controller class:
 
 ```ruby
-class EchoController < Jsapi::Controller::Base
-  def index
-    api_operation! status: 200 do |api_params|
-      {
-        echo: "#{api_params.call}, again"
-      }
-    end
+def index
+  api_operation! status: 200 do |api_params|
+    {
+      echo: "#{api_params.call}, again"
+    }
   end
 end
 ```
 
-Note that `api_operation!` renders the JSON representation of the object returned by the block.
-This can be a hash or any object providing attribute readers for each property of the response
-to be rendered. The `status` option specifies the status code of the response to be selected.
-As the `call` parameter must be present, `api_operation!` raises a
-`Jsapi::Controller::ParametersInvalid` when `call` is missing.
+Note that the `api_operation!` method renders the JSON representation of the object returned by
+the block. This can be a hash or an object providing corresponding methods for all properties
+of the response.
 
-Finally, add a rescue handler to produce apropriate error responses:
+When the required `call` parameter is missing or empty, the `api_operation!` method raises a
+`Jsapi::Controller::ParametersInvalid` error. To rescue such errors, add an `api_rescue`
+directive to the controller class:
 
 ```ruby
+api_rescue Jsapi::Controller::ParametersInvalid, with: 400
+```
+
+To create the OpenAPI documentation for the `echo` operation, add another route, an `openapi`
+block and the action that produces OpenAPI documents, for example:
+
+```ruby
+# config/routes.rb
+
+get 'echo/openapi', to: 'echo#openapi'
+```
+
+```ruby
+# app/controllers/echo_controller.rb
+
 class EchoController < Jsapi::Controller::Base
-  api_rescue Jsapi::Controller::ParametersInvalid, with: 400
+  openapi do
+    info title: 'Echo', version: '1'
+  end
+
+  def openapi
+    render(json: api_definitions.openapi_document(params[:version]))
+  end
 end
 ```
 
-Whenever a `Jsapi::Controller::ParametersInvalid` exception is raised a response with status
-code 400 is produced.
+The routes and controller class for the `echo` API operation look like:
 
-See [echo_controller.rb](examples/echo/app/controllers/echo_controller.rb) how the whole
-controller class looks like.
+- [app/controllers/echo_controller.rb](examples/echo/app/controllers/echo_controller.rb)
+- [config/routes.rb](/examples/echo/config/routes.rb)
 
-A controller instance responds to `GET /echo?call=Hello` with HTTP status code 200 and the
-following body:
+An instance of the `EchoController` class responds to `GET /echo?call=Hello` with HTTP status
+code 200. The response body is:
 
 ```json
 {
@@ -99,8 +117,8 @@ following body:
 }
 ```
 
-When the `call` parameter isn't present, a response with HTTP status code 400 and the
-following body is produced:
+When the `call` parameter is missing, a response with HTTP status code 400 and the following
+body is produced:
 
 ```json
 {
@@ -109,112 +127,11 @@ following body is produced:
 }
 ```
 
-### Creating the OpenAPI documentation
+`GET /echo/openapi?version={2.0|3.0|3.1} produces the following OpenAPI documents:
 
-Create the route for the OpenAPI document, for example:
-
-```ruby
-# config/routes.rb
-
-get 'openapi', to: 'openapi#index'
-```
-
-Create the controller:
-
-```ruby
-# app/controllers/openapi_controller.rb
-
-class OpenapiController < Jsapi::Controller::Base
-  api_include EchoController
-
-  openapi do
-    info title: 'Echo', version: '1'
-  end
-
-  def index
-    render(json: api_definitions.openapi_document('3.1'))
-  end
-end
-```
-
-The OpenAPI document produced looks like:
-
-```json
-{
-  "openapi": "3.1.0",
-  "info": {
-    "title": "Echo",
-    "version": "1"
-  },
-  "paths": {
-    "/echo": {
-      "get": {
-        "operationId": "echo",
-        "parameters": [
-          {
-            "name": "call",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": [
-                    "object",
-                    "null"
-                  ],
-                  "properties": {
-                    "echo": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    }
-                  },
-                  "required": []
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": [
-                    "object",
-                    "null"
-                  ],
-                  "properties": {
-                    "status": {
-                      "type": [
-                        "integer",
-                        "null"
-                      ]
-                    },
-                    "message": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    }
-                  },
-                  "required": []
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-}
-```
+- [openapi-2.0.json](examples/echo/doc/openapi-2.0.json)
+- [openapi-3.0.json](examples/echo/doc/openapi-3.0.json)
+- [openapi-3.1.json](examples/echo/doc/openapi-3.1.json)
 
 ## Jsapi DSL
 
@@ -227,7 +144,7 @@ The `Jsapi::DSL` module provides the following methods to define API components:
 - [api_schema](#reusable-schemas) - Defines a reusable schema.
 - [api_rescue_from](#defining-rescue-handlers) - Defines a rescue handler.
 - [api_on_rescue](#defining-on_rescue-callbacks) - Defines an `on_rescue` callback.
-- [api_default](#defining-default-values) - Defines default values.
+- [api_default](#defining-default-values) - Defines default values for a type.
 - [api_include](#sharing-api-components) - Includes API definitions from other classes.
 
 API components can also be defined inside an `api_definitions` block, for example:
@@ -766,7 +683,7 @@ API operations:
 
 ### The `api_params` method
 
-`api_params` can be used to read request parameters by an instance of an operation's model
+`api_params` can be used to read request parameters as an instance of an operation's model
 class. The request parameters are casted according the operation's `parameter` and
 `request_body` specifications. Parameter names are converted to snake case.
 
@@ -810,6 +727,8 @@ If `status` is not present, the default response of the API operation is selecte
 are passed as an instance of the operation's model class to the block.
 
 This method implicitly renders the JSON representation of the object returned by the block.
+This can be a hash or an object providing corresponding methods for all properties of the
+response.
 
 ```ruby
 api_operation('foo', status: 200) do |api_params|
@@ -877,9 +796,12 @@ The default pattern is `{name} isn't allowed`.
 
 ## API models
 
-Top-level parameters and nested object parameters are wrapped by instances of
-`Jsapi::Model::Base` by default. To add custom model methods this class can be
-extended within the specification of an API component, for example:
+By default, the parameters returned by the `params` method of a controller are wrapped by
+an instance of `Jsapi::Model::Base`. Parameter names are converted to snake case. This allows
+parameter values to be read by Ruby-stylish methods, even if parameter names are represented
+in camel case.
+
+Additional model methods can be added by a `model` block, for example:
 
 ```ruby
 api_schema 'IntegerRange' do
@@ -894,8 +816,8 @@ api_schema 'IntegerRange' do
 end
 ```
 
-To use custom model methods in two or more API components, a subclass of
-`Jsapi::Model::Base` can be integrated as below.
+To use additional model methods in multiple API components, a subclass of `Jsapi::Model::Base`
+can be use as below.
 
 ```ruby
 class BaseRange < Jsapi::Model::Base
@@ -911,15 +833,9 @@ api_schema 'IntegerRange', model: BaseRange do
   property 'range_end', type: 'integer'
 end
 
-api_schema 'DateRange' do
+api_schema 'DateRange', model: BaseRange do
   property 'range_begin', type: 'string', format: 'date'
   property 'range_end', type: 'string', format: 'date'
-
-  model BaseRange do
-    def expired?
-      range_end.past?
-    end
-  end
 end
 ```
 
