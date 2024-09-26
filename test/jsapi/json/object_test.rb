@@ -12,9 +12,12 @@ module Jsapi
       end
 
       def test_empty_predicate
-        schema = Meta::Schema.new(type: 'object')
-        schema.add_property('foo', type: 'string')
-
+        schema = Meta::Schema.new(
+          type: 'object',
+          properties: {
+            'foo' => { type: 'string' }
+          }
+        )
         assert_predicate(Object.new({}, schema, definitions), :empty?)
         assert(!Object.new({ 'foo' => 'bar' }, schema, definitions).empty?)
       end
@@ -22,9 +25,12 @@ module Jsapi
       # Attributes
 
       def test_bracket_operator
-        schema = Meta::Schema.new(type: 'object')
-        schema.add_property('foo', type: 'string')
-
+        schema = Meta::Schema.new(
+          type: 'object',
+          properties: {
+            'foo' => { type: 'string' }
+          }
+        )
         object = Object.new({ 'foo' => 'bar' }, schema, definitions)
         assert_equal('bar', object[:foo])
 
@@ -33,9 +39,12 @@ module Jsapi
       end
 
       def test_attribute_predicate
-        schema = Meta::Schema.new(type: 'object')
-        schema.add_property('foo', type: 'string')
-
+        schema = Meta::Schema.new(
+          type: 'object',
+          properties: {
+            'foo' => { type: 'string' }
+          }
+        )
         object = Object.new({}, schema, definitions)
         assert(object.attribute?(:foo))
         assert(!object.attribute?(:bar))
@@ -43,9 +52,12 @@ module Jsapi
       end
 
       def test_attributes
-        schema = Meta::Schema.new(type: 'object')
-        schema.add_property('foo', type: 'string')
-
+        schema = Meta::Schema.new(
+          type: 'object',
+          properties: {
+            'foo' => { type: 'string' }
+          }
+        )
         object = Object.new({ 'foo' => 'bar' }, schema, definitions)
         assert_equal({ 'foo' => 'bar' }, object.attributes)
       end
@@ -68,19 +80,42 @@ module Jsapi
       end
 
       def test_additional_attributes
-        schema = Meta::Schema.new(type: 'object', additional_properties: { type: 'string' })
-        schema.add_property('foo', type: 'string')
-
+        schema = Meta::Schema.new(
+          type: 'object',
+          properties: {
+            'foo' => { type: 'string' }
+          },
+          additional_properties: { type: 'string' }
+        )
         object = Object.new({ 'foo' => 'bar', 'bar' => 'foo' }, schema, definitions)
         assert_equal({ 'bar' => 'foo' }, object.additional_attributes)
+      end
+
+      # Schema reference
+
+      def test_property_as_reference
+        definitions.add_schema('Foo', type: 'string')
+
+        schema = Meta::Schema.new(
+          type: 'object',
+          properties: {
+            'foo' => { schema: 'Foo' }
+          }
+        )
+        object = Object.new({ 'foo' => 'bar' }, schema, definitions)
+        assert_equal('bar', object['foo'])
       end
 
       # Validation
 
       def test_validates_self_against_schema
-        schema = Meta::Schema.new(type: 'object', existence: true)
-        schema.add_property('foo', type: 'string')
-
+        schema = Meta::Schema.new(
+          type: 'object',
+          existence: true,
+          properties: {
+            'foo' => { type: 'string' }
+          }
+        )
         object = Object.new({ 'foo' => 'foo' }, schema, definitions)
         errors = Model::Errors.new
         assert(object.validate(errors))
@@ -93,9 +128,12 @@ module Jsapi
       end
 
       def test_validates_attributes_against_property_schema
-        schema = Meta::Schema.new(type: 'object')
-        schema.add_property('foo', type: 'string', existence: true)
-
+        schema = Meta::Schema.new(
+          type: 'object',
+          properties: {
+            'foo' => { type: 'string', existence: true }
+          }
+        )
         object = Object.new({ 'foo' => 'foo' }, schema, definitions)
         errors = Model::Errors.new
         assert(object.validate(errors))
@@ -108,10 +146,17 @@ module Jsapi
       end
 
       def test_validates_nested_attributes_against_model
-        schema = Meta::Schema.new(type: 'object')
-        property = schema.add_property('foo', type: 'object')
-        property.schema.add_property('bar', type: 'string', existence: true)
-
+        schema = Meta::Schema.new(
+          type: 'object',
+          properties: {
+            'foo' => {
+              type: 'object',
+              properties: {
+                'bar' => { type: 'string', existence: true }
+              }
+            }
+          }
+        )
         object = Object.new({ 'foo' => { 'bar' => 'Bar' } }, schema, definitions)
         errors = Model::Errors.new
         assert(object.validate(errors))
@@ -121,18 +166,6 @@ module Jsapi
         errors = Model::Errors.new
         assert(!object.validate(errors))
         assert(errors.added?(:foo, "'bar' can't be blank"))
-      end
-
-      # Schema reference
-
-      def test_property_as_reference
-        definitions.add_schema('Foo', type: 'string')
-
-        schema = Meta::Schema.new(type: 'object')
-        schema.add_property('foo', schema: 'Foo')
-
-        object = Object.new({ 'foo' => 'bar' }, schema, definitions)
-        assert_equal('bar', object['foo'])
       end
 
       private
