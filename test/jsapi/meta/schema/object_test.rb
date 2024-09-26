@@ -19,7 +19,7 @@ module Jsapi
             schemas: {
               'Foo' => {
                 properties: {
-                  'foo' => { read_only: true }
+                  'foo' => { write_only: true }
                 }
               }
             }
@@ -27,16 +27,16 @@ module Jsapi
           schema = Object.new(
             all_of: { ref: 'Foo' },
             properties: {
-              'bar' => { write_only: true }
+              'bar' => { read_only: true }
             }
           )
           properties = schema.resolve_properties(definitions)
           assert_equal(%w[foo bar], properties.keys)
 
-          properties = schema.resolve_properties(definitions, context: :response)
+          properties = schema.resolve_properties(definitions, context: :request)
           assert_equal(%w[foo], properties.keys)
 
-          properties = schema.resolve_properties(definitions, context: :request)
+          properties = schema.resolve_properties(definitions, context: :response)
           assert_equal(%w[bar], properties.keys)
         end
 

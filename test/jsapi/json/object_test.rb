@@ -5,6 +5,21 @@ require 'test_helper'
 module Jsapi
   module JSON
     class ObjectTest < Minitest::Test
+      def test_initialize
+        schema = Meta::Schema.new(
+          type: 'object',
+          properties: {
+            'foo' => { type: 'string', write_only: true },
+            'bar' => { type: 'string', read_only: true }
+          }
+        )
+        object = Object.new({}, schema, definitions, context: :request)
+        assert_equal(%w[foo], object.raw_attributes.keys)
+
+        object = Object.new({}, schema, definitions, context: :response)
+        assert_equal(%w[bar], object.raw_attributes.keys)
+      end
+
       def test_model
         schema = Meta::Schema.new(type: 'object')
         object = Object.new({}, schema, definitions)

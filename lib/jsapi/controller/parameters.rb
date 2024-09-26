@@ -27,7 +27,8 @@ module Jsapi
           @raw_attributes[name] = JSON.wrap(
             parameter_model.in == 'header' ? headers[name] : @params[name],
             parameter_model.schema.resolve(definitions),
-            definitions
+            definitions,
+            context: :request
           )
         end
 
@@ -38,7 +39,8 @@ module Jsapi
           request_body = JSON.wrap(
             @params.except(*operation.parameters.keys),
             request_body_schema,
-            definitions
+            definitions,
+            context: :request
           )
           @raw_attributes.merge!(request_body.raw_attributes)
           @raw_additional_attributes = request_body.raw_additional_attributes

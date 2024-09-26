@@ -33,7 +33,9 @@ module Jsapi
       definitions = Meta::Definitions.new
       definitions.add_default('array', within_requests: [])
 
-      json_array = JSON.wrap(nil, Meta::Schema.new(type: 'array'), definitions)
+      schema = Meta::Schema.new(type: 'array')
+
+      json_array = JSON.wrap(nil, schema, definitions, context: :request)
       assert_kind_of(JSON::Array, json_array)
       assert_equal([], json_array.value)
     end

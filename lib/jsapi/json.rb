@@ -13,15 +13,15 @@ module Jsapi
   # Provides a DOM for JSON values.
   module JSON
     class << self
-      def wrap(object, schema, definitions = nil)
+      def wrap(object, schema, definitions = nil, context: nil)
         schema = schema.resolve(definitions) unless definitions.nil?
 
-        object = schema.default_value(definitions, context: :request) if object.nil?
+        object = schema.default_value(definitions, context: context) if object.nil?
         return Null.new(schema) if object.nil?
 
         case schema.type
         when 'array'
-          Array.new(object, schema, definitions)
+          Array.new(object, schema, definitions, context: context)
         when 'boolean'
           Boolean.new(object, schema)
         when 'integer'
@@ -29,7 +29,7 @@ module Jsapi
         when 'number'
           Number.new(object, schema)
         when 'object'
-          Object.new(object, schema, definitions)
+          Object.new(object, schema, definitions, context: context)
         when 'string'
           String.new(object, schema)
         else

@@ -4,10 +4,10 @@ module Jsapi
   module JSON
     # Represents a JSON array.
     class Array < Value
-      def initialize(elements, schema, definitions)
+      def initialize(elements, schema, definitions, context: nil)
         super(schema)
         @elements = Array(elements).map do |element|
-          JSON.wrap(element, schema.items, definitions)
+          JSON.wrap(element, schema.items, definitions, context: context)
         end
       end
 

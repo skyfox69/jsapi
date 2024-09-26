@@ -5,6 +5,24 @@ require 'test_helper'
 module Jsapi
   module JSON
     class ArrayTest < Minitest::Test
+      def test_initialize
+        schema = Meta::Schema.new(
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              'foo' => { type: 'string', write_only: true },
+              'bar' => { type: 'string', read_only: true }
+            }
+          }
+        )
+        array = Array.new([{}], schema, definitions, context: :request)
+        assert_equal(%w[foo], array.value.first.attributes.keys)
+
+        array = Array.new([{}], schema, definitions, context: :response)
+        assert_equal(%w[bar], array.value.first.attributes.keys)
+      end
+
       def test_value
         schema = Meta::Schema.new(type: 'array', items: { type: 'string' })
         array = Array.new(%w[foo bar], schema, definitions)
