@@ -27,14 +27,18 @@ module Jsapi
       # that the model passed to the block is invalid if there are any request parameters
       # that can't be mapped to a parameter or a request body property of the operation.
       #
-      # The +:omit+ option specifies on which conditions properties are omitted.
+      # The +:omit+ option specifies on which conditions properties are omitted in responses.
       # Possible values are:
       #
       # - +:empty+ - All of the  properties whose value is empty are omitted.
       # - +:nil+ - All of the properties whose value is +nil+ are omitted.
       #
       # Raises an InvalidArgumentError when the value of +:omit+ is invalid.
-      def api_operation(operation_name = nil, omit: nil, status: nil, strong: false, &block)
+      def api_operation(operation_name = nil,
+                        omit: nil,
+                        status: nil,
+                        strong: false,
+                        &block)
         _api_operation(
           operation_name,
           bang: false,
@@ -52,7 +56,11 @@ module Jsapi
       #     # ...
       #   end
       #
-      def api_operation!(operation_name = nil, omit: nil, status: nil, strong: false, &block)
+      def api_operation!(operation_name = nil,
+                         omit: nil,
+                         status: nil,
+                         strong: false,
+                         &block)
         _api_operation(
           operation_name,
           bang: true,
@@ -101,9 +109,9 @@ module Jsapi
       def api_response(result, operation_name = nil, omit: nil, status: nil)
         definitions = api_definitions
         operation = _find_api_operation(operation_name, definitions)
-        response = _api_response(operation, status, definitions)
+        response_model = _api_response(operation, status, definitions)
 
-        Response.new(result, response, api_definitions, omit: omit)
+        Response.new(result, response_model, api_definitions, omit: omit)
       end
 
       private
@@ -111,40 +119,43 @@ module Jsapi
       def _api_operation(operation_name, bang:, omit:, status:, strong:, &block)
         definitions = api_definitions
         operation = _find_api_operation(operation_name, definitions)
-        response = _api_response(operation, status, definitions)
 
-        if block
-          params = _api_params(operation, definitions, strong: strong)
-          result = begin
-            raise ParametersInvalid.new(params) if bang && params.invalid?
+        # Perform operation
+        response_model = _api_response(operation, status, definitions)
+        head(status) && return unless block
 
-            block.call(params)
-          rescue StandardError => e
-            # Lookup a rescue handler
-            rescue_handler = definitions.rescue_handler_for(e)
-            raise e if rescue_handler.nil?
+        params = _api_params(operation, definitions, strong: strong)
 
-            # Change the HTTP status code and response schema
-            status = rescue_handler.status
-            response = operation.response(status)&.resolve(definitions)
-            raise e if response.nil?
+        result = begin
+          raise ParametersInvalid.new(params) if bang && params.invalid?
 
-            # Call on_rescue callbacks
-            definitions.on_rescue_callbacks.each do |callback|
-              if callback.respond_to?(:call)
-                callback.call(e)
-              else
-                send(callback, e)
-              end
+          block.call(params)
+        rescue StandardError => e
+          # Lookup a rescue handler
+          rescue_handler = definitions.rescue_handler_for(e)
+          raise e if rescue_handler.nil?
+
+          # Change the HTTP status code and response model
+          status = rescue_handler.status
+          response_model = operation.response(status)&.resolve(definitions)
+          raise e if response_model.nil?
+
+          # Call on_rescue callbacks
+          definitions.on_rescue_callbacks.each do |callback|
+            if callback.respond_to?(:call)
+              callback.call(e)
+            else
+              send(callback, e)
             end
-
-            ErrorResult.new(e, status: status)
           end
-          render(json: Response.new(result, response, definitions, omit: omit), status: status)
-        else
-          head(status)
+
+          Error.new(e, status: status)
         end
-        self.content_type = response.content_type
+        response = Response.new(result, response_model, definitions, omit: omit)
+
+        # Write response
+        self.content_type = response_model.content_type
+        render(json: response, status: status)
       end
 
       def _api_params(operation, definitions, strong:)

@@ -3,7 +3,7 @@
 module Jsapi
   module Controller
     # Used by Methods#api_operation! to produce an error response.
-    class ErrorResult
+    class Error
       delegate_missing_to :@exception
 
       # The HTTP status code of the error response to be produced.

@@ -46,10 +46,10 @@ module Jsapi
         assert_equal('null', response.to_json)
       end
 
-      def test_converts_integers
+      def test_serializes_integers_on_conversion
         response_model = Meta::Response.new(type: 'integer', conversion: :abs)
 
-        response = Response.new(-1.0, response_model, definitions)
+        response = Response.new(-1, response_model, definitions)
         assert_equal('1', response.to_json)
       end
 
@@ -66,10 +66,10 @@ module Jsapi
         assert_equal('null', response.to_json)
       end
 
-      def test_converts_numbers
+      def test_serializes_numbers_on_conversion
         response_model = Meta::Response.new(type: 'number', conversion: :abs)
 
-        response = Response.new(-1, response_model, definitions)
+        response = Response.new(-1.0, response_model, definitions)
         assert_equal('1.0', response.to_json)
       end
 
@@ -86,9 +86,6 @@ module Jsapi
 
         response = Response.new(nil, response_model, definitions)
         assert_equal('null', response.to_json)
-
-        definitions.add_default('string', within_responses: '')
-        assert_equal('""', response.to_json)
       end
 
       def test_serializes_strings_on_date_format
@@ -113,11 +110,19 @@ module Jsapi
         assert_equal('"P1D"', response.to_json)
       end
 
-      def test_converts_strings
+      def test_serializes_strings_on_convertion
         response_model = Meta::Response.new(type: 'string', conversion: :upcase)
 
         response = Response.new('Foo', response_model, definitions)
         assert_equal('"FOO"', response.to_json)
+      end
+
+      def test_serializes_strings_on_default_value
+        response_model = Meta::Response.new(type: 'string')
+        definitions.add_default('string', within_responses: '')
+
+        response = Response.new(nil, response_model, definitions)
+        assert_equal('""', response.to_json)
       end
 
       # Arrays
@@ -141,9 +146,12 @@ module Jsapi
       # Objects
 
       def test_serializes_objects
-        response_model = Meta::Response.new(type: 'object')
-        response_model.add_property('foo', type: 'string')
-
+        response_model = Meta::Response.new(
+          type: 'object',
+          properties: {
+            'foo' => { type: 'string' }
+          }
+        )
         response = Response.new({ foo: 'bar' }, response_model, definitions)
         assert_equal('{"foo":"bar"}', response.to_json)
 
@@ -225,16 +233,12 @@ module Jsapi
       end
 
       def test_serializes_objects_on_omit_nil
-        response_model = Meta::Response.new(type: 'object')
-        response_model.add_property(
-          'foo',
-          type: 'string',
-          existence: :allow_nil
-        )
-        response_model.add_property(
-          'bar',
-          type: 'string',
-          existence: :allow_omitted
+        response_model = Meta::Response.new(
+          type: 'object',
+          properties: {
+            'foo' => { type: 'string', existence: :allow_nil },
+            'bar' => { type: 'string', existence: :allow_omitted }
+          }
         )
         response = Response.new({}, response_model, definitions, omit: :nil)
         assert_equal('{"foo":null}', response.to_json)
@@ -244,16 +248,12 @@ module Jsapi
       end
 
       def test_serializes_objects_on_omit_empty
-        response_model = Meta::Response.new(type: 'object')
-        response_model.add_property(
-          'foo',
-          type: 'string',
-          existence: :allow_empty
-        )
-        response_model.add_property(
-          'bar',
-          type: 'string',
-          existence: :allow_omitted
+        response_model = Meta::Response.new(
+          type: 'object',
+          properties: {
+            'foo' => { type: 'string', existence: :allow_empty },
+            'bar' => { type: 'string', existence: :allow_omitted }
+          }
         )
         object = { foo: '', bar: '' }
 
@@ -268,31 +268,51 @@ module Jsapi
 
       def test_raises_an_exception_on_invalid_response
         response_model = Meta::Response.new(type: 'string', existence: true)
+        response = Response.new(nil, response_model, definitions)
 
-        error = assert_raises RuntimeError do
-          Response.new(nil, response_model, definitions).to_json
-        end
-        assert_equal("response can't be nil", error.message)
+        error = assert_raises(RuntimeError) { response.to_json }
+        assert_equal("response body can't be nil", error.message)
+      end
+
+      def test_raises_an_exception_on_invalid_array
+        response_model = Meta::Response.new(
+          type: 'array',
+          items: { type: 'string', existence: true }
+        )
+        response = Response.new([nil], response_model, definitions)
+
+        error = assert_raises(RuntimeError) { response.to_json }
+        assert_equal("response body can't be nil", error.message)
       end
 
       def test_raises_an_exception_on_invalid_object
-        response_model = Meta::Response.new(type: 'object')
-        response_model.schema.add_property('foo', type: 'string', existence: true)
+        response_model = Meta::Response.new(
+          type: 'object',
+          properties: {
+            'foo' => { type: 'string', existence: true }
+          }
+        )
+        response = Response.new({ foo: nil }, response_model, definitions)
 
-        error = assert_raises RuntimeError do
-          Response.new({ foo: nil }, response_model, definitions).to_json
-        end
+        error = assert_raises(RuntimeError) { response.to_json }
         assert_equal("foo can't be nil", error.message)
       end
 
       def test_raises_an_exception_on_invalid_nested_object
-        response_model = Meta::Response.new(type: 'object')
-        nested_schema = response_model.schema.add_property('foo', type: 'object').schema
-        nested_schema.add_property(:bar, type: 'string', existence: true)
+        response_model = Meta::Response.new(
+          type: 'object',
+          properties: {
+            'foo' => {
+              type: 'object',
+              properties: {
+                'bar' => { type: 'string', existence: true }
+              }
+            }
+          }
+        )
+        response = Response.new({ foo: { bar: nil } }, response_model, definitions)
 
-        error = assert_raises RuntimeError do
-          Response.new({ foo: { bar: nil } }, response_model, definitions).to_json
-        end
+        error = assert_raises(RuntimeError) { response.to_json }
         assert_equal("foo.bar can't be nil", error.message)
       end
 
@@ -301,13 +321,12 @@ module Jsapi
           type: 'object',
           additional_properties: { type: 'string', existence: true }
         )
-        error = assert_raises RuntimeError do
-          Response.new(
-            { additional_properties: { foo: nil } },
-            response_model,
-            definitions
-          ).to_json
-        end
+        response = Response.new(
+          { additional_properties: { foo: nil } },
+          response_model,
+          definitions
+        )
+        error = assert_raises(RuntimeError) { response.to_json }
         assert_equal("foo can't be nil", error.message)
       end
 
@@ -318,13 +337,12 @@ module Jsapi
           type: 'object',
           additional_properties: { type: 'string', existence: true }
         )
-        error = assert_raises RuntimeError do
-          Response.new(
-            { foo: { additional_properties: { bar: nil } } },
-            response_model,
-            definitions
-          ).to_json
-        end
+        response = Response.new(
+          { foo: { additional_properties: { bar: nil } } },
+          response_model,
+          definitions
+        )
+        error = assert_raises(RuntimeError) { response.to_json }
         assert_equal("foo.bar can't be nil", error.message)
       end
 
@@ -334,13 +352,23 @@ module Jsapi
         object = Object.new
         object.define_singleton_method(:foo) { I18n.t(:hello_world) }
 
-        response_model = Meta::Response.new(type: 'object')
-        response_model.schema.add_property('foo', type: 'string')
+        response_model = Meta::Response.new(
+          type: 'object',
+          locale: :en,
+          properties: {
+            'foo' => { type: 'string' }
+          }
+        )
         response = Response.new(object, response_model, definitions)
         assert_equal('{"foo":"Hello world"}', response.to_json)
 
-        response_model = Meta::Response.new(type: 'object', locale: :de)
-        response_model.schema.add_property('foo', type: 'string')
+        response_model = Meta::Response.new(
+          type: 'object',
+          locale: :de,
+          properties: {
+            'foo' => { type: 'string' }
+          }
+        )
         response = Response.new(object, response_model, definitions)
         assert_equal('{"foo":"Hallo Welt"}', response.to_json)
       end

@@ -14,9 +14,9 @@ module Jsapi
       # - +:empty+ - All of the  properties whose value is empty are omitted.
       # - +:nil+ - All of the properties whose value is +nil+ are omitted.
       #
-      # Raises an InvalidArgumentError when the value of +:omit+ is invalid.
+      # Raises an ArgumentError when the value of +:omit+ is invalid.
       def initialize(object, response, definitions, omit: nil)
-        if [:empty, :nil, nil].exclude?(omit)
+        unless omit.in?([:empty, :nil, nil])
           raise InvalidArgumentError.new('omit', omit, valid_values: %i[empty nil])
         end
 
@@ -30,7 +30,7 @@ module Jsapi
         "#<#{self.class.name} #{@object.inspect}>"
       end
 
-      # Returns the JSON representation of the response as a +String+.
+      # Returns the JSON representation of the response as a string.
       def to_json(*)
         schema = @response.schema.resolve(@definitions)
         if @response.locale
@@ -44,21 +44,24 @@ module Jsapi
 
       private
 
-      def serialize(object, schema, path = nil)
+      def serialize(object, schema)
         object = schema.default_value(@definitions, context: :response) if object.nil?
-        return if object.nil? && schema.nullable?
 
-        raise "#{path || 'response'} can't be nil" if object.nil?
+        if object.nil?
+          return if schema.nullable?
+
+          raise SerializationError, "can't be nil"
+        end
 
         case schema.type
         when 'array'
-          serialize_array(object, schema, path)
+          serialize_array(object, schema)
         when 'integer'
           schema.convert(object.to_i)
         when 'number'
           schema.convert(object.to_f)
         when 'object'
-          serialize_object(object, schema, path)
+          serialize_object(object, schema)
         when 'string'
           schema.convert(
             case schema.format
@@ -77,12 +80,12 @@ module Jsapi
         end
       end
 
-      def serialize_array(array, schema, path)
+      def serialize_array(array, schema)
         item_schema = schema.items.resolve(@definitions)
-        Array(array).map { |item| serialize(item, item_schema, path) }
+        Array(array).map { |item| serialize(item, item_schema) }
       end
 
-      def serialize_object(object, schema, path)
+      def serialize_object(object, schema)
         schema = schema.resolve_schema(object, @definitions, context: :response)
         properties = {}
 
@@ -96,11 +99,9 @@ module Jsapi
                    (@omit == :nil && property_value.nil?)) &&
                   property_schema.omittable?
 
-          properties[key] = serialize(
-            property_value,
-            property_schema,
-            path.nil? ? property.name : "#{path}.#{property.name}"
-          )
+          properties[key] = serialize(property_value, property_schema)
+        rescue SerializationError => e
+          raise e.prepend(".#{property.name}")
         end
         # Serialize additional properties
         if (additional_properties = schema.additional_properties)
@@ -110,11 +111,9 @@ module Jsapi
             # Don't replace the property with the same key
             next if properties.key?(key = key.to_s)
 
-            properties[key] = serialize(
-              value,
-              additional_properties_schema,
-              path.nil? ? key : "#{path}.#{key}"
-            )
+            properties[key] = serialize(value, additional_properties_schema)
+          rescue SerializationError => e
+            raise e.prepend(".#{key}")
           end
         end
         # Return properties if present, otherwise nil
