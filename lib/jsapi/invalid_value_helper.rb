@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Jsapi
-  module InvalidValueHelper
+  module InvalidValueHelper # :nodoc:
     def build_message(name, value, valid_values)
       case valid_values.count
       when 0
