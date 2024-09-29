@@ -8,19 +8,19 @@ module Jsapi
 
       attr_reader :raw_additional_attributes, :raw_attributes
 
-      def initialize(attributes, schema, definitions, context: nil)
-        schema = schema.resolve_schema(attributes, definitions, context: context)
+      def initialize(hash, schema, definitions, context: nil)
+        schema = schema.resolve_schema(hash, definitions, context: context)
         properties = schema.resolve_properties(definitions, context: context)
 
         @raw_attributes = properties.transform_values do |property|
-          JSON.wrap(attributes[property.name], property.schema, definitions, context: context)
+          JSON.wrap(hash[property.name], property.schema, definitions, context: context)
         end
 
         @raw_additional_attributes =
           if (additional_properties = schema.additional_properties)
             additional_properties_schema = additional_properties.schema.resolve(definitions)
 
-            attributes.except(*properties.keys).transform_values do |value|
+            hash.except(*properties.keys).transform_values do |value|
               JSON.wrap(value, additional_properties_schema, definitions, context: context)
             end
           end || {}
