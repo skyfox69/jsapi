@@ -121,14 +121,6 @@ module Jsapi
         assert_equal('""', response.to_json)
       end
 
-      def test_to_json_raises_an_exception_on_invalid_response
-        response_model = Meta::Response.new(type: 'string', existence: true)
-        response = Response.new(nil, response_model, definitions)
-
-        error = assert_raises(RuntimeError) { response.to_json }
-        assert_equal("response body can't be nil", error.message)
-      end
-
       # Arrays
 
       def test_to_json_on_array
@@ -338,6 +330,26 @@ module Jsapi
         )
         error = assert_raises(RuntimeError) { response.to_json }
         assert_equal("foo.bar can't be nil", error.message)
+      end
+
+      # Errors
+
+      def test_to_json_raises_an_exception_on_invalid_response
+        response_model = Meta::Response.new(type: 'string', existence: true)
+        response = Response.new(nil, response_model, definitions)
+
+        error = assert_raises(RuntimeError) { response.to_json }
+        assert_equal("response body can't be nil", error.message)
+      end
+
+      def test_to_json_raises_an_exception_on_invalid_type
+        response_model = Meta::Response.new(type: 'object')
+        response = Response.new({}, response_model, definitions)
+
+        error = Meta::Schema::Base.stub_any_instance(:type, 'foo') do
+          assert_raises(RuntimeError) { response.to_json }
+        end
+        assert_equal('response body has an invalid type: "foo"', error.message)
       end
 
       # I18n

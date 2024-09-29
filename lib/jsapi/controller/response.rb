@@ -68,6 +68,8 @@ module Jsapi
           case schema.type
           when 'array'
             jsonify_array(object, schema)
+          when 'boolean'
+            object
           when 'integer'
             schema.convert(object.to_i)
           when 'number'
@@ -88,7 +90,7 @@ module Jsapi
               end
             )
           else
-            object # boolean
+            raise JsonifyError, "has an invalid type: #{schema.type.inspect}"
           end
         end
       end
