@@ -1,10 +1,16 @@
 # Change log
 
+## 0.8.0 (2024-09-29)
+
+### Changes
+
+- Serialization of responses has been refactored.
+
 ## 0.7.3 (2024-09-25)
 
 ### Changes
 
-- Refactoring
+- The `Jsapi::Model` module has been refactored.
 
 ## 0.7.2 (2024-09-24)
 
