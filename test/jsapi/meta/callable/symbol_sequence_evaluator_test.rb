@@ -6,13 +6,6 @@ module Jsapi
   module Meta
     module Callable
       class SymbolSequenceEvaluatorTest < Minitest::Test
-        def test_inspect
-          assert_equal(
-            '#<Jsapi::Meta::Callable::SymbolSequenceEvaluator [:foo, :bar]>',
-            SymbolSequenceEvaluator.new(:foo, :bar).inspect
-          )
-        end
-
         def test_call
           evaluator = SymbolSequenceEvaluator.new(:foo, :bar)
 
@@ -27,6 +20,15 @@ module Jsapi
 
           hash = { foo: nested }
           assert_equal('foo', evaluator.call(hash))
+        end
+
+        # #inspect
+
+        def test_inspect
+          assert_equal(
+            '#<Jsapi::Meta::Callable::SymbolSequenceEvaluator [:foo, :bar]>',
+            SymbolSequenceEvaluator.new(:foo, :bar).inspect
+          )
         end
       end
     end

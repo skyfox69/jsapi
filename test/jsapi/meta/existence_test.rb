@@ -75,6 +75,8 @@ module Jsapi
         assert(Existence::PRESENT.reach?(dummy))
       end
 
+      # #inspect
+
       def test_inspect
         assert_equal(
           '#<Jsapi::Meta::Existence level: 1>',

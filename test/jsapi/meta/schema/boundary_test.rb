@@ -27,6 +27,8 @@ module Jsapi
           assert(!boundary.exclusive?)
         end
 
+        # #inspect
+
         def test_inspect
           assert_equal(
             '#<Jsapi::Meta::Schema::Boundary value: 1, exclusive: false>',

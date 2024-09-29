@@ -6,13 +6,6 @@ module Jsapi
   module Meta
     module Callable
       class SymbolEvaluatorTest < Minitest::Test
-        def test_inspect
-          assert_equal(
-            '#<Jsapi::Meta::Callable::SymbolEvaluator :foo>',
-            SymbolEvaluator.new(:foo).inspect
-          )
-        end
-
         def test_call_on_nil
           evaluator = SymbolEvaluator.new(:foo)
 
@@ -36,6 +29,15 @@ module Jsapi
           [:foo, 'foo'].each do |key|
             assert_equal('bar', evaluator.call({ key => 'bar' }))
           end
+        end
+
+        # #inspect
+
+        def test_inspect
+          assert_equal(
+            '#<Jsapi::Meta::Callable::SymbolEvaluator :foo>',
+            SymbolEvaluator.new(:foo).inspect
+          )
         end
       end
     end
