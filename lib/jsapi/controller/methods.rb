@@ -33,7 +33,7 @@ module Jsapi
       # - +:empty+ - All of the  properties whose value is empty are omitted.
       # - +:nil+ - All of the properties whose value is +nil+ are omitted.
       #
-      # Raises an InvalidArgumentError when the value of +:omit+ is invalid.
+      # Raises an +ArgumentError+ when +:omit+ is other than +:empty+, +:nil+ or +nil+.
       def api_operation(operation_name = nil,
                         omit: nil,
                         status: nil,
@@ -105,7 +105,7 @@ module Jsapi
       # - +:empty+ - All of the  properties whose value is empty are omitted.
       # - +:nil+ - All of the properties whose value is +nil+ are omitted.
       #
-      # Raises an InvalidArgumentError when the value of +:omit+ is invalid.
+      # Raises an +ArgumentError+ when +:omit+ is other than +:empty+, +:nil+ or +nil+.
       def api_response(result, operation_name = nil, omit: nil, status: nil)
         definitions = api_definitions
         operation = _find_api_operation(operation_name, definitions)
