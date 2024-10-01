@@ -76,10 +76,11 @@ module Jsapi
       undef add_operation, add_parameter, include
 
       def initialize(keywords = {})
+        keywords = keywords.dup
         @owner = keywords.delete(:owner)
         @parent = keywords.delete(:parent)
-        super(keywords)
 
+        super(keywords)
         @parent&.inherited(self)
       end
 
