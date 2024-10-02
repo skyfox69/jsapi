@@ -16,17 +16,3 @@ require_relative 'openapi/server_variable'
 require_relative 'openapi/server'
 require_relative 'openapi/link'
 require_relative 'openapi/tag'
-require_relative 'openapi/root'
-
-module Jsapi
-  module Meta
-    module OpenAPI
-      class << self
-        # Creates a new \OpenAPI root object.
-        def new(keywords = {})
-          Root.new(keywords)
-        end
-      end
-    end
-  end
-end
