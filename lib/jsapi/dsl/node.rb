@@ -3,13 +3,20 @@
 module Jsapi
   module DSL
     class Node
-      def initialize(meta_model, &block)
-        @_meta_model = meta_model
-        instance_eval(&block) if block
+      def self.scope(name)
+        define_method(name) do |**keywords, &block|
+          _define(name) do
+            Node.new(_meta_model, "#{name}_", **keywords, &block)
+          end
+        end
       end
 
-      def method_missing(*args, &block) # :nodoc:
-        _keyword(*args, &block)
+      def initialize(meta_model, prefix = nil, **keywords, &block)
+        @_meta_model = meta_model
+        @_prefix = prefix
+
+        meta_model.merge!(keywords.transform_keys { |key| "#{prefix}#{key}" }) if keywords.any?
+        instance_eval(&block) if block
       end
 
       def respond_to_missing?(*args) # :nodoc:
@@ -19,6 +26,10 @@ module Jsapi
       private
 
       attr_reader :_meta_model
+
+      def method_missing(*args, &block)
+        _keyword(*args, &block)
+      end
 
       def _define(*args, &block)
         block.call
@@ -39,7 +50,7 @@ module Jsapi
       end
 
       def _find_method(name)
-        ["#{name}=", "add_#{name}"].find do |method|
+        ["#{@_prefix}#{name}=", "add_#{@_prefix}#{name}"].find do |method|
           _meta_model.respond_to?(method)
         end
       end

@@ -3,4 +3,3 @@
 require_relative 'openapi/callbacks'
 require_relative 'openapi/examples'
 require_relative 'openapi/callback'
-require_relative 'openapi/root'

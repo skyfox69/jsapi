@@ -4,6 +4,16 @@ module Jsapi
   module DSL
     # Used to define top-level API components.
     class Definitions < Node
+      ##
+      # :method: openapi
+      # :args: **keywords, &block
+      # Allows \OpenAPI components to be defined without prefix +openapi_+.
+      #
+      #   openapi base_path: '/foo' do
+      #     info title: 'Foo', version: '1'
+      #     # ...
+      #   end
+      scope :openapi
 
       # Specifies the general default values for +type+.
       #
@@ -30,17 +40,97 @@ module Jsapi
         end
       end
 
-      # Defines the root of an \OpenAPI document.
+      ##
+      # :method: openapi_base_path
+      # :args: arg
+      # Specifies the base path of the API.
       #
-      #   openapi do
-      #     info title: 'Foo', version: '1'
+      #   openapi_base_path '/foo'
+      #
+      # See Meta::Definitions#openapi_base_path for further information.
+
+      ##
+      # :method: openapi_external_docs
+      # :args: **keywords, &block
+      # Specifies the external documentation.
+      #
+      #   openapi_external_docs url: 'https://foo.bar'
+      #
+      # See Meta::Definitions#openapi_external_docs for further information.
+
+      ##
+      # :method: openapi_host
+      # :args: arg
+      # Specifies the host serving the API.
+      #
+      #   openapi_host 'foo.bar'
+      #
+      # See Meta::Definitions#openapi_host for further information.
+
+      ##
+      # :method: openapi_info
+      # :args: **keywords, &block
+      # Specifies general information about the API.
+      #
+      #   openapi_info title: 'foo', version: 1
+      #
+      # See Meta::Definitions#openapi_info for further information.
+
+      ##
+      # :method: openapi_link
+      # :args: name, **keywords, &block
+      # Adds a link.
+      #
+      #   openapi_link 'foo', operation_id: 'bar'
+      #
+      # See Meta::Definitions#openapi_links for further information.
+
+      ##
+      # :method: openapi_scheme
+      # :args: arg
+      # Adds a URI scheme supported by the API.
+      #
+      #   openapi_scheme 'https'
+      #
+      # See Meta::Definitions#openapi_schemes for further information.
+
+      ##
+      # :method: openapi_security_requirement
+      # :args: **keywords, &block
+      # Adds a security requirement.
+      #
+      #   openapi_security_requirement do
+      #     scheme 'basic_auth'
       #   end
-      def openapi(**keywords, &block)
-        _define('openapi') do
-          _meta_model.openapi = keywords
-          OpenAPI::Root.new(_meta_model.openapi, &block) if block
-        end
-      end
+      #
+      # See Meta::Definitions#openapi_security_requirements for further information.
+
+      ##
+      # :method: openapi_security_scheme
+      # :args: name, **keywords, &block
+      # Adds a security scheme.
+      #
+      #   openapi_security_scheme 'basic_auth', type: 'http', scheme: 'basic'
+      #
+      # See Meta::Definitions#openapi_security_schemes for further information.
+
+      ##
+      # :method: openapi_server
+      # :args: arg
+      # Adds a server providing the API.
+      #
+      #   openapi_server url: 'https://foo.bar'
+      #
+      # See Meta::Definitions#openapi_servers for further information.
+
+      ##
+      # :method: openapi_tag
+      # :args: **keywords, &block
+      # Adds a tag.
+      #
+      #   openapi_tag name: 'foo', description: 'description of foo'
+      #
+      # See Meta::Definitions#openapi_tags for further information.
 
       # Defines an operation.
       #
