@@ -5,64 +5,28 @@ require 'test_helper'
 module Jsapi
   module Meta
     class DefinitionsTest < Minitest::Test
-      # #ancestors
+      # Inheritance and inclusion
 
       def test_ancestors
-        base_definitions1 = Definitions.new(
-          owner: 'base 1'
-        )
-        base_definitions2 = Definitions.new(
-          owner: 'base 2',
-          parent: base_definitions1
-        )
-        included_definitions1 = Definitions.new(
-          owner: 'included 1'
-        )
-        included_definitions2 = Definitions.new(
-          owner: 'included 2',
-          parent: included_definitions1
-        )
-        definitions = Definitions.new(
-          owner: 'definitions',
-          parent: base_definitions2,
-          included_definitions: [included_definitions1, included_definitions2]
-        )
-        assert_equal(
-          [base_definitions1],
-          base_definitions1.ancestors
-        )
-        assert_equal(
-          [base_definitions2, base_definitions1],
-          base_definitions2.ancestors
-        )
-        assert_equal(
-          [definitions, included_definitions1, included_definitions2,
-           base_definitions2, base_definitions1],
-          definitions.ancestors
-        )
+        base1 = Definitions.new
+        base2 = Definitions.new(parent: base1)
+
+        included1 = Definitions.new
+        included2 = Definitions.new(parent: included1)
+
+        definitions = Definitions.new(parent: base2, include: [included2, included1])
+
+        assert_equal([base1], base1.ancestors)
+        assert_equal([base2, base1], base2.ancestors)
+        assert_equal([definitions, included2, included1, base2, base1], definitions.ancestors)
       end
 
-      # #include
-
-      def test_include
+      def test_include_raises_an_exception_on_circular_dependency
         definitions = (1..3).map { |i| Definitions.new(owner: i) }
 
         definitions.second.include(definitions.first)
         definitions.third.include(definitions.second)
 
-        # 1st definitions
-        assert_equal([], definitions.first.included_definitions)
-        assert_equal([definitions.second], definitions.first.dependent_definitions)
-
-        # 2nd definitions
-        assert_equal([definitions.first], definitions.second.included_definitions)
-        assert_equal([definitions.third], definitions.second.dependent_definitions)
-
-        # 3rd definitions
-        assert_equal([definitions.second], definitions.third.included_definitions)
-        assert_equal([], definitions.third.dependent_definitions)
-
-        # Circular dependency detection
         error = assert_raises(ArgumentError) do
           definitions.first.include(definitions.third)
         end
@@ -76,6 +40,35 @@ module Jsapi
         definitions.include(base_definitions)
 
         assert_equal([definitions, base_definitions], definitions.ancestors)
+      end
+
+      # Caching
+
+      def test_invalidates_caches
+        definitions = Definitions.new
+        child_definitions = Definitions.new(parent: definitions)
+        dependent_definitions = Definitions.new(include: definitions)
+
+        counter = 0
+        increase_counter = -> { counter += 1 }
+
+        # Expected #invalidate_ancestors to be called when another_instance_is_included
+        dependent_definitions.stub(:invalidate_ancestors, increase_counter) do
+          child_definitions.stub(:invalidate_ancestors, increase_counter) do
+            definitions.include(Definitions.new)
+          end
+        end
+        assert_equal(2, counter)
+
+        counter = 0
+
+        # Expected #invalidate_objects to be called when_an_attribute_is_changed
+        dependent_definitions.stub(:invalidate_objects, increase_counter) do
+          child_definitions.stub(:invalidate_objects, increase_counter) do
+            definitions.add_schema('foo')
+          end
+        end
+        assert_equal(2, counter)
       end
 
       # Operations
@@ -96,7 +89,9 @@ module Jsapi
       end
 
       def test_default_operation_name_and_path
-        definitions = Definitions.new(owner: 'Foo::Bar::FooBarController')
+        definitions = Definitions.new(
+          owner: Struct.new(:name).new('Foo::Bar::FooBarController')
+        )
         operation = definitions.add_operation
         assert_equal('foo_bar', operation.name)
         assert_equal('/foo_bar', operation.path)
@@ -125,7 +120,7 @@ module Jsapi
           included_definitions = Definitions.new
           schema = included_definitions.send("add_#{name}", 'foo')
 
-          definitions = Definitions.new(included_definitions: [included_definitions])
+          definitions = Definitions.new(include: [included_definitions])
           assert_equal(schema, definitions.send("find_#{name}", 'foo'))
         end
       end
@@ -173,28 +168,6 @@ module Jsapi
         definitions = Definitions.new
         assert_nil(definitions.default_value(nil))
         assert_nil(definitions.default_value('array'))
-      end
-
-      # Caching
-
-      def test_calls_invalidate_ancestors_when_another_instance_is_included
-        definitions = Definitions.new
-        called = false
-
-        definitions.stub(:invalidate_ancestors, -> { called = true }) do
-          definitions.include(Definitions.new)
-        end
-        assert(called)
-      end
-
-      def test_calls_invalidate_components_when_an_attribute_is_changed
-        definitions = Definitions.new
-        called = false
-
-        definitions.stub(:invalidate_components, -> { called = true }) do
-          definitions.add_schema('foo')
-        end
-        assert(called)
       end
 
       # JSON Schema documents
@@ -294,18 +267,58 @@ module Jsapi
 
       # OpenAPI documents
 
-      def test_empty_openapi_document
+      def test_minimal_openapi_document
         definitions = Definitions.new
-        %w[2.0 3.0 3.1].each do |version|
-          assert_equal({}, definitions.openapi_document(version))
-        end
+        assert_equal(
+          { swagger: '2.0' },
+          definitions.openapi_document('2.0')
+        )
+        assert_equal(
+          { openapi: '3.0.3' },
+          definitions.openapi_document('3.0')
+        )
+        assert_equal(
+          { openapi: '3.1.0' },
+          definitions.openapi_document('3.1')
+        )
       end
 
       def test_full_openapi_document
         definitions = Definitions.new(
-          openapi: {
-            info: { title: 'Foo', version: '1' }
+          openapi_base_path: '/foo',
+          openapi_callbacks: {
+            'onFoo' => {
+              operations: {
+                '{$request.query.foo}' => {}
+              }
+            }
           },
+          openapi_examples: {
+            'foo' => { value: 'bar' }
+          },
+          openapi_external_docs: { url: 'https://foo.bar/docs' },
+          openapi_extensions: { 'foo' => 'bar' },
+          openapi_host: 'https://foo.bar',
+          openapi_info: { title: 'Foo', version: '1' },
+          openapi_headers: {
+            'X-Foo' => { type: 'string' }
+          },
+          openapi_links: {
+            'foo' => { operation_id: 'foo' }
+          },
+          openapi_schemes: %w[https],
+          openapi_security_requirements: {
+            schemes: { 'http_basic': nil }
+          },
+          openapi_security_schemes: {
+            'http_basic' => { type: 'basic' }
+          },
+          openapi_servers: [
+            { url: 'https://foo.bar/foo' }
+          ],
+          openapi_tags: [
+            { name: 'Foo' }
+          ],
           operations: {
             'operation' => {
               path: '/bar',
@@ -345,6 +358,9 @@ module Jsapi
               title: 'Foo',
               version: '1'
             },
+            host: 'https://foo.bar',
+            basePath: '/foo',
+            schemes: %w[https],
             consumes: %w[application/json],
             produces: %w[application/json application/problem+json],
             paths: {
@@ -401,7 +417,24 @@ module Jsapi
                   type: 'string'
                 }
               }
-            }
+            },
+            securityDefinitions: {
+              'http_basic' => {
+                type: 'basic'
+              }
+            },
+            security: [
+              {
+                'http_basic' => []
+              }
+            ],
+            tags: [
+              { name: 'Foo' }
+            ],
+            externalDocs: {
+              url: 'https://foo.bar/docs'
+            },
+            'x-foo': 'bar'
           },
           definitions.openapi_document('2.0')
         )
@@ -413,6 +446,11 @@ module Jsapi
               title: 'Foo',
               version: '1'
             },
+            servers: [
+              {
+                url: 'https://foo.bar/foo'
+              }
+            ],
             paths: {
               '/bar' => {
                 'post' => {
@@ -445,30 +483,6 @@ module Jsapi
                   required: []
                 }
               },
-              parameters: {
-                'parameter' => {
-                  name: 'parameter',
-                  in: 'query',
-                  schema: {
-                    type: 'string',
-                    nullable: true
-                  },
-                  allowEmptyValue: true
-                }
-              },
-              requestBodies: {
-                'request_body' => {
-                  content: {
-                    'application/json' => {
-                      schema: {
-                        type: 'string',
-                        nullable: true
-                      }
-                    }
-                  },
-                  required: false
-                }
-              },
               responses: {
                 'response' => {
                   content: {
@@ -489,18 +503,188 @@ module Jsapi
                     }
                   }
                 }
+              },
+              parameters: {
+                'parameter' => {
+                  name: 'parameter',
+                  in: 'query',
+                  schema: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  allowEmptyValue: true
+                }
+              },
+              examples: {
+                'foo' => {
+                  value: 'bar'
+                }
+              },
+              requestBodies: {
+                'request_body' => {
+                  content: {
+                    'application/json' => {
+                      schema: {
+                        type: 'string',
+                        nullable: true
+                      }
+                    }
+                  },
+                  required: false
+                }
+              },
+              headers: {
+                'X-Foo' => {
+                  schema: {
+                    type: 'string',
+                    nullable: true
+                  }
+                }
+              },
+              securitySchemes: {
+                'http_basic' => {
+                  type: 'http',
+                  scheme: 'basic'
+                }
+              },
+              links: {
+                'foo' => {
+                  operationId: 'foo'
+                }
+              },
+              callbacks: {
+                'onFoo' => {
+                  '{$request.query.foo}' => {
+                    'get' => {
+                      parameters: [],
+                      responses: {}
+                    }
+                  }
+                }
               }
-            }
+            },
+            security: [
+              {
+                'http_basic' => []
+              }
+            ],
+            tags: [
+              { name: 'Foo' }
+            ],
+            externalDocs: {
+              url: 'https://foo.bar/docs'
+            },
+            'x-foo': 'bar'
           },
           definitions.openapi_document('3.0')
         )
       end
 
-      # # inspect
+      def test_openapi_document_on_inheritance
+        definitions = Definitions.new(
+          parent: Definitions.new(
+            openapi_info: { title: 'Foo', version: '1' },
+            operations: {
+              'foo' => { path: '/foo' }
+            },
+            openapi_tags: [
+              { name: 'Foo' }
+            ]
+          ),
+          operations: {
+            'bar' => { path: '/bar' }
+          },
+          openapi_tags: [
+            { name: 'Bar' }
+          ]
+        )
+        # OpenAPI 2.0
+        assert_equal(
+          {
+            swagger: '2.0',
+            info: {
+              title: 'Foo',
+              version: '1'
+            },
+            paths: {
+              '/foo' => {
+                'get' => {
+                  operationId: 'foo',
+                  parameters: [],
+                  responses: {}
+                }
+              },
+              '/bar' => {
+                'get' => {
+                  operationId: 'bar',
+                  parameters: [],
+                  responses: {}
+                }
+              }
+            },
+            tags: [
+              { name: 'Bar' },
+              { name: 'Foo' }
+            ]
+          }, definitions.openapi_document('2.0')
+        )
+        # OpenAPI 3.0
+        assert_equal(
+          {
+            openapi: '3.0.3',
+            info: {
+              title: 'Foo',
+              version: '1'
+            },
+            paths: {
+              '/foo' => {
+                'get' => {
+                  operationId: 'foo',
+                  parameters: [],
+                  responses: {}
+                }
+              },
+              '/bar' => {
+                'get' => {
+                  operationId: 'bar',
+                  parameters: [],
+                  responses: {}
+                }
+              }
+            },
+            tags: [
+              { name: 'Bar' },
+              { name: 'Foo' }
+            ]
+          }, definitions.openapi_document('3.0')
+        )
+      end
 
-      def test_inspect
-        definitions = Definitions.new(owner: 'foo')
-        assert_equal('#<Jsapi::Meta::Definitions owner: "foo">', definitions.inspect)
+      def test_openapi_document_takes_the_default_server_object
+        definitions = Definitions.new(owner: self.class)
+
+        # OpenAPI 2.0
+        assert_equal(
+          '/jsapi/meta',
+          definitions.openapi_document('2.0')[:basePath]
+        )
+        # OpenAPI 3.0
+        assert_equal(
+          [{ url: '/jsapi/meta' }],
+          definitions.openapi_document('3.0')[:servers]
+        )
+      end
+
+      def test_openapi_document_2_0_takes_the_url_parts_from_the_server_object
+        openapi_document = Definitions.new(
+          openapi_servers: [
+            { url: 'https://foo.bar/foo' }
+          ]
+        ).openapi_document('2.0')
+
+        assert_equal(%w[https], openapi_document[:schemes])
+        assert_equal('foo.bar', openapi_document[:host])
+        assert_equal('/foo', openapi_document[:basePath])
       end
     end
   end

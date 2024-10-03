@@ -104,12 +104,12 @@ module Jsapi
       # The tags used to group operations in an \OpenAPI document.
       attribute :tags, [String]
 
-      undef :add_parameter
-
       def initialize(name = nil, keywords = {})
         @name = name&.to_s
         super(keywords)
       end
+
+      undef add_parameter
 
       def add_parameter(name, keywords = {}) # :nodoc:
         (@parameters ||= {})[name.to_s] = Parameter.new(name, keywords)
@@ -153,7 +153,7 @@ module Jsapi
           end
           # Parameters (and request body)
           hash[:parameters] = parameters.values.flat_map do |parameter|
-            parameter.to_openapi(version, definitions)
+            parameter.to_openapi_parameters(version, definitions)
           end
           if request_body
             if version.major == 2

@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative 'parameter/to_openapi'
 require_relative 'parameter/model'
 require_relative 'parameter/reference'
 

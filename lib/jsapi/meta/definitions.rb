@@ -3,10 +3,7 @@
 module Jsapi
   module Meta
     class Definitions < Base::Model
-      ##
-      # :attr_reader: children
-      # The +Definitions+ instances that directly inherit from this instance.
-      attribute :children, read_only: true, default: []
+      include OpenAPI::Extensions
 
       ##
       # :attr: defaults
@@ -14,24 +11,83 @@ module Jsapi
       attribute :defaults, { String => Defaults }, keys: Schema::TYPES, default: {}
 
       ##
-      # :attr: dependent_definitions
-      # The +Definitions+ instances that directly include this instance.
-      attribute :dependent_definitions, read_only: true, default: []
-
-      ##
-      # :attr: included_definitions
-      # The +Definitions+ instances included.
-      attribute :included_definitions, [Definitions], add_method: :include, default: []
-
-      ##
       # :attr: on_rescues
       # The methods or procs to be called whenever an exception is rescued.
       attribute :on_rescues, [], default: []
 
       ##
-      # :attr: openapi
-      # The OpenAPI root object.
-      attribute :openapi, OpenAPI
+      # :attr: openapi_callbacks
+      # The reusable OpenAPI::Callback objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :openapi_callbacks, { String => OpenAPI::Callback }, default: {}
+
+      ##
+      # :attr: openapi_base_path
+      # The base path of the API. Applies to \OpenAPI 2.0.
+      attribute :openapi_base_path, String
+
+      ##
+      # :attr: openapi_examples
+      # The reusable OpenAPI::Example objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :openapi_examples, { String => OpenAPI::Example }, default: {}
+
+      ##
+      # :attr: openapi_external_docs
+      # The OpenAPI::ExternalDocumentation object.
+      attribute :openapi_external_docs, OpenAPI::ExternalDocumentation
+
+      ##
+      # :attr: openapi_headers
+      # The reusable OpenAPI::Header objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :openapi_headers, { String => OpenAPI::Header }, default: {}
+
+      ##
+      # :attr: openapi_host
+      # The host serving the API. Applies to \OpenAPI 2.0.
+      attribute :openapi_host, String
+
+      ##
+      # :attr: openapi_info
+      # The OpenAPI::Info object.
+      attribute :openapi_info, OpenAPI::Info
+
+      ##
+      # :attr: openapi_links
+      # The reusable OpenAPI::Link objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :openapi_links, { String => OpenAPI::Link }, default: {}
+
+      ##
+      # :attr: openapi_schemes
+      # The array of transfer protocols supported by the API. Possible values are:
+      #
+      # - <code>"http"</code>
+      # - <code>"https"</code>
+      # - <code>"ws"</code>
+      # - <code>"wss"</code>
+      #
+      # Applies to \OpenAPI 2.0.
+      attribute :openapi_schemes, [String], values: %w[http https ws wss], default: []
+
+      ##
+      # :attr: openapi_security_requirements
+      # The array of OpenAPI::SecurityRequirement objects.
+      attribute :openapi_security_requirements, [OpenAPI::SecurityRequirement], default: {}
+
+      alias add_openapi_security add_openapi_security_requirement
+
+      ##
+      # :attr: openapi_security_schemes
+      # The OpenAPI::SecurityScheme objects.
+      attribute :openapi_security_schemes, { String => OpenAPI::SecurityScheme }, default: {}
+
+      ##
+      # :attr: openapi_servers
+      # The array of OpenAPI::Server objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :openapi_servers, [OpenAPI::Server], default: []
+
+      ##
+      # :attr: openapi_tags
+      # The array of OpenAPI::Tag objects.
+      attribute :openapi_tags, [OpenAPI::Tag], default: []
 
       ##
       # :attr: operations
@@ -39,19 +95,9 @@ module Jsapi
       attribute :operations, { String => Operation }, default: {}
 
       ##
-      # :attr_reader: owner
-      # The class to which this instance is assigned.
-      attribute :owner, read_only: true
-
-      ##
       # :attr: parameters
       # The reusable Parameter objects.
       attribute :parameters, { String => Parameter }, default: {}
-
-      ##
-      # :attr_reader: parent
-      # The +Definitions+ instance from which this instance inherits.
-      attribute :parent, read_only: true
 
       ##
       # :attr: rescue_handlers
@@ -73,20 +119,30 @@ module Jsapi
       # The reusable Schema objects.
       attribute :schemas, { String => Schema }, default: {}
 
-      undef add_operation, add_parameter, include
+      # The class to which this instance is assigned.
+      attr_reader :owner
+
+      # The +Definitions+ instance from which this instance inherits.
+      attr_reader :parent
 
       def initialize(keywords = {})
         keywords = keywords.dup
         @owner = keywords.delete(:owner)
         @parent = keywords.delete(:parent)
-
+        included = keywords.delete(:include)
         super(keywords)
+
+        Array(included).each do |definitions|
+          include(definitions)
+        end
         @parent&.inherited(self)
       end
 
+      undef add_operation, add_parameter
+
       def add_operation(name = nil, keywords = {}) # :nodoc:
         name = name.nil? ? default_operation_name : name.to_s
-        keywords = keywords.reverse_merge(path: default_path)
+        keywords = keywords.reverse_merge(path: default_operation_path)
         (@operations ||= {})[name] = Operation.new(name, keywords)
       end
 
@@ -99,20 +155,20 @@ module Jsapi
       # inherited/included.
       def ancestors
         @ancestors ||= [self].tap do |ancestors|
-          (included_definitions + Array(parent)).each do |definitions|
-            ancestors.push(*definitions.ancestors)
+          [@included_definitions, @parent].flatten.each do |definitions|
+            ancestors.push(*definitions.ancestors) if definitions
           end
         end.uniq
       end
 
       # Returns the default value for +type+ within +context+.
       def default_value(type, context: nil)
-        components.dig(:defaults, type.to_s)&.value(context: context)
+        objects.dig(:defaults, type.to_s)&.value(context: context)
       end
 
       # Returns the operation with the specified name.
       def find_operation(name = nil)
-        return components.dig(:operations, name.to_s) if name.present?
+        return objects.dig(:operations, name.to_s) if name.present?
 
         # Return the one and only operation
         operations.values.first if operations.one?
@@ -120,46 +176,43 @@ module Jsapi
 
       # Returns the reusable parameter with the specified name.
       def find_parameter(name)
-        components.dig(:parameters, name&.to_s)
+        objects.dig(:parameters, name&.to_s)
       end
 
       # Returns the reusable request body with the specified name.
       def find_request_body(name)
-        components.dig(:request_bodies, name&.to_s)
+        objects.dig(:request_bodies, name&.to_s)
       end
 
       # Returns the reusable response with the specified name.
       def find_response(name)
-        components.dig(:responses, name&.to_s)
+        objects.dig(:responses, name&.to_s)
       end
 
       # Returns the reusable schema with the specified name.
       def find_schema(name)
-        components.dig(:schemas, name&.to_s)
+        objects.dig(:schemas, name&.to_s)
       end
 
       # Includes +definitions+.
       def include(definitions)
         if circular_dependency?(definitions)
-          raise ArgumentError, 'detected circular dependency between ' \
-                               "#{owner.inspect} and " \
-                               "#{definitions.owner.inspect}"
+          raise ArgumentError,
+                'detected circular dependency between ' \
+                "#{owner.inspect} and " \
+                "#{definitions.owner.inspect}"
         end
 
         (@included_definitions ||= []) << definitions
         definitions.included(self)
-        attribute_changed(:included_definitions)
+        invalidate_ancestors
         self
-      end
-
-      def inspect(*attributes) # :nodoc:
-        super(*(attributes.presence || %i[owner]))
       end
 
       # Returns a hash representing the \JSON \Schema document for +name+.
       def json_schema_document(name)
         find_schema(name)&.to_json_schema&.tap do |json_schema_document|
-          if (schemas = components[:schemas].except(name.to_s)).any?
+          if (schemas = objects[:schemas].except(name.to_s)).any?
             json_schema_document[:definitions] = schemas.transform_values(&:to_json_schema)
           end
         end
@@ -167,7 +220,7 @@ module Jsapi
 
       # Returns the methods or procs to be called when rescuing an exception.
       def on_rescue_callbacks
-        components[:on_rescues]
+        objects[:on_rescues]
       end
 
       # Returns a hash representing the \OpenAPI document for +version+.
@@ -175,72 +228,97 @@ module Jsapi
       # Raises an +ArgumentError+ if +version+ is not supported.
       def openapi_document(version = nil)
         version = OpenAPI::Version.from(version)
-        operations = components[:operations].values
+        operations = objects[:operations].values
 
-        component_keys = %i[parameters responses parameters schemas]
-        component_keys.insert(3, :request_bodies) if version.major > 2
-
-        openapi_components = component_keys.filter_map do |key|
-          value = components[key].transform_values do |component|
-            case key
-            when :parameters
-              component.to_openapi(version, self).first
-            when :responses
-              component.to_openapi(version, self)
-            else
-              component.to_openapi(version)
+        openapi_paths =
+          operations.group_by { |operation| operation.path || default_operation_path }
+                    .transform_values do |operations_by_path|
+            operations_by_path.index_by(&:method).transform_values do |operation|
+              operation.to_openapi(version, self)
             end
           end.presence
 
-          [key, value] if value.present?
-        end.to_h
-
-        (openapi&.to_openapi(version, self) || {}).tap do |openapi_document|
-          openapi_document[:paths] =
-            operations
-            .group_by { |operation| operation.path || default_path }
-            .transform_values do |operations_by_path|
-              operations_by_path.index_by(&:method).transform_values do |operation|
-                operation.to_openapi(version, self)
-              end
-            end.presence
-
+        openapi_objects =
           if version.major == 2
-            consumes = operations.filter_map { |operation| operation.consumes(self) }
-            produces = operations.flat_map { |operation| operation.produces(self) }
+            %i[openapi_base_path openapi_info openapi_external_docs openapi_host
+               openapi_schemes openapi_security_requirements openapi_security_schemes
+               openapi_tags parameters responses parameters schemas]
+          else
+            %i[openapi_callbacks openapi_examples openapi_external_docs openapi_headers
+               openapi_info openapi_links openapi_servers openapi_security_requirements
+               openapi_security_schemes openapi_tags parameters request_bodies responses
+               parameters schemas]
+          end.to_h { |key| [key, object_to_openapi(objects[key], version).presence] }
 
-            openapi_document.merge!(
-              consumes: (consumes.uniq.sort if consumes.present?),
-              produces: (produces.uniq.sort if produces.present?),
-              definitions: openapi_components[:schemas],
-              parameters: openapi_components[:parameters],
-              responses: openapi_components[:responses]
-            )
-          elsif openapi_components.any?
-            (openapi_document[:components] ||= {}).reverse_merge!(
-              openapi_components.transform_keys do |key|
-                key.to_s.camelize(:lower).to_sym
-              end
-            )
-          end
-        end.compact
+        with_openapi_extensions(
+          if version.major == 2
+            openapi_server = objects[:openapi_servers].first || default_openapi_server
+            uri = URI(openapi_server.url) if openapi_server
+            {
+              # Order according to the OpenAPI specification 2.x
+              swagger: '2.0',
+              info: openapi_objects[:openapi_info],
+              host: openapi_objects[:openapi_host] || uri&.hostname,
+              basePath: openapi_objects[:openapi_base_path] || uri&.path,
+              schemes: openapi_objects[:openapi_schemes] || Array(uri&.scheme).presence,
+              consumes: operations.filter_map do |operation|
+                operation.consumes(self)
+              end.uniq.sort.presence,
+              produces: operations.flat_map do |operation|
+                operation.produces(self)
+              end.uniq.sort.presence,
+              paths: openapi_paths,
+              definitions: openapi_objects[:schemas],
+              parameters: openapi_objects[:parameters],
+              responses: openapi_objects[:responses],
+              securityDefinitions: openapi_objects[:openapi_security_schemes]
+            }
+          else
+            {
+              # Order according to the OpenAPI specification 3.x
+              openapi: version.minor.zero? ? '3.0.3' : '3.1.0',
+              info: openapi_objects[:openapi_info],
+              servers: openapi_objects[:openapi_servers] ||
+                [default_openapi_server&.to_openapi].compact.presence,
+              paths: openapi_paths,
+              components: {
+                schemas: openapi_objects[:schemas],
+                responses: openapi_objects[:responses],
+                parameters: openapi_objects[:parameters],
+                examples: openapi_objects[:openapi_examples],
+                requestBodies: openapi_objects[:request_bodies],
+                headers: openapi_objects[:openapi_headers],
+                securitySchemes: openapi_objects[:openapi_security_schemes],
+                links: openapi_objects[:openapi_links],
+                callbacks: openapi_objects[:openapi_callbacks]
+              }.compact.presence
+            }
+          end.merge(
+            security: openapi_objects[:openapi_security_requirements],
+            tags: openapi_objects[:openapi_tags],
+            externalDocs: openapi_objects[:openapi_external_docs]
+          ).compact
+        )
       end
 
       # Returns the first RescueHandler to handle +exception+, or nil if no one could be found.
       def rescue_handler_for(exception)
-        components[:rescue_handlers].find { |r| r.match?(exception) }
+        objects[:rescue_handlers].find { |r| r.match?(exception) }
       end
 
       protected
 
-      def attribute_changed(name) # :nodoc:
-        return if name == :openapi
+      # The +Definitions+ instances that directly inherit from this instance.
+      attr_reader :children
 
-        if name == :included_definitions
-          invalidate_ancestors
-        else
-          invalidate_components
-        end
+      # The +Definitions+ instances that directly include this instance.
+      attr_reader :dependent_definitions
+
+      # The +Definitions+ instances included.
+      attr_reader :included_definitions
+
+      def attribute_changed(*) # :nodoc:
+        invalidate_objects
       end
 
       # Invoked whenever it is included in another +Definitions+ instance.
@@ -260,43 +338,73 @@ module Jsapi
       # Invalidates cached ancestors.
       def invalidate_ancestors
         @ancestors = nil
-        @components = nil
-        (children + dependent_definitions).each(&:invalidate_ancestors)
+        @objects = nil
+        @children&.each(&:invalidate_ancestors)
+        @dependent_definitions&.each(&:invalidate_ancestors)
       end
 
-      # Invalidates cached components.
-      def invalidate_components
-        @components = nil
-        (children + dependent_definitions).each(&:invalidate_components)
+      # Invalidates cached objects.
+      def invalidate_objects
+        @objects = nil
+        @children&.each(&:invalidate_objects)
+        @dependent_definitions&.each(&:invalidate_objects)
       end
 
       private
 
       def circular_dependency?(other)
         return true if other == self
-        return false if other.included_definitions.none?
+        return false unless other.included_definitions&.any?
 
         other.included_definitions.any? { |included| circular_dependency?(included) }
       end
 
-      def components
-        @components ||= ancestors.each_with_object({}) do |ancestor, components|
-          %i[defaults operations parameters request_bodies responses schemas].each do |type|
-            (components[type] ||= {}).reverse_merge!(ancestor.send(type))
+      def default_openapi_server
+        @default_openapi_server ||=
+          if (name = @owner.try(:name))
+            OpenAPI::Server.new(
+              url: name.deconstantize.split('::')
+                       .map(&:underscore)
+                       .join('/').prepend('/')
+            )
           end
-          %i[on_rescues rescue_handlers].each do |type|
-            (components[type] ||= []).push(*ancestor.send(type))
-          end
-        end
       end
 
       def default_operation_name
         @default_operation_name ||=
-          @owner.to_s.demodulize.delete_suffix('Controller').underscore
+          if (name = @owner.try(:name))
+            name.demodulize.delete_suffix('Controller').underscore
+          end
       end
 
-      def default_path
-        @default_path ||= "/#{default_operation_name}"
+      def default_operation_path
+        @default_operation_path ||= "/#{default_operation_name}"
+      end
+
+      def objects
+        @objects ||= ancestors.each_with_object({}) do |ancestor, objects|
+          self.class.attribute_names.each do |key|
+            case value = ancestor.send(key)
+            when Hash
+              (objects[key] ||= {}).reverse_merge!(value)
+            when Array
+              (objects[key] ||= []).push(*value)
+            else
+              objects[key] ||= value
+            end
+          end
+        end
+      end
+
+      def object_to_openapi(object, version)
+        case object
+        when Array
+          object.map { |item| object_to_openapi(item, version) }
+        when Hash
+          object.transform_values { |value| object_to_openapi(value, version) }
+        else
+          object.respond_to?(:to_openapi) ? object.to_openapi(version, self) : object
+        end
       end
     end
   end

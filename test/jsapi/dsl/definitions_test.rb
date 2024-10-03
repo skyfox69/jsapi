@@ -89,10 +89,10 @@ module Jsapi
       end
 
       def test_nameless_operation
-        definitions = definitions(owner: 'Foo') do
+        definitions = definitions do
           operation
         end
-        operation = definitions.operation('foo')
+        operation = definitions.operation
         assert_predicate(operation, :present?)
       end
 

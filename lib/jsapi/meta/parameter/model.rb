@@ -4,6 +4,7 @@ module Jsapi
   module Meta
     module Parameter
       class Model < Base::Model
+        include ToOpenAPI
         include OpenAPI::Extensions
 
         delegate_missing_to :schema
@@ -74,7 +75,7 @@ module Jsapi
         end
 
         # Returns an array of hashes representing the \OpenAPI parameter objects.
-        def to_openapi(version, definitions)
+        def to_openapi_parameters(version, definitions)
           version = OpenAPI::Version.from(version)
           schema = self.schema.resolve(definitions)
 
