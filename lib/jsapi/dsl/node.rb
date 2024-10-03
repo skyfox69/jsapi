@@ -27,10 +27,6 @@ module Jsapi
 
       attr_reader :_meta_model
 
-      def method_missing(*args, &block)
-        _keyword(*args, &block)
-      end
-
       def _define(*args, &block)
         block.call
       rescue Error => e
@@ -67,6 +63,10 @@ module Jsapi
 
       def _keyword?(name)
         _find_method(name).present?
+      end
+
+      def method_missing(*args, &block)
+        _keyword(*args, &block)
       end
     end
   end
