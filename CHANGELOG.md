@@ -1,10 +1,19 @@
 # Change log
 
+## 0.9.0 ()
+
+### Changes
+
+- OpenAPI objects can be inherited/included like API components.
+
+- The OpenAPI 2.0 base path and OpenAPI 3.x server objects are derrived from a
+  controller's module name by default.
+
 ## 0.8.0 (2024-09-29)
 
 ### Changes
 
-- Serialization of responses has been refactored.
+- Serialization of responses has been improved.
 
 ## 0.7.3 (2024-09-25)
 
