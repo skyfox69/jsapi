@@ -22,7 +22,7 @@ module Jsapi
                     keys: %w[authorization_code client_credentials implicit password]
 
           # Returns a hash representing the \OpenAPI security scheme object.
-          def to_openapi(version)
+          def to_openapi(version, *)
             version = Version.from(version)
 
             with_openapi_extensions(type: 'oauth2', description: description).tap do |h|

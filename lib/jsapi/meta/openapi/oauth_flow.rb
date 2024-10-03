@@ -38,7 +38,7 @@ module Jsapi
         attribute :token_url, String
 
         # Returns a hash representing the \OpenAPI OAuth flow object.
-        def to_openapi(version)
+        def to_openapi(version, *)
           with_openapi_extensions(
             authorizationUrl: authorization_url,
             tokenUrl: token_url,

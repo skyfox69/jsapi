@@ -55,7 +55,7 @@ module Jsapi
         end
 
         # Returns a hash representing the \OpenAPI 3.x request body object.
-        def to_openapi(version)
+        def to_openapi(version, *)
           with_openapi_extensions(
             description: description,
             content: {

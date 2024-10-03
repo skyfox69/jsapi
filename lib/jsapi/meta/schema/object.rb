@@ -83,7 +83,7 @@ module Jsapi
           ).compact
         end
 
-        def to_openapi(version) # :nodoc:
+        def to_openapi(version, *) # :nodoc:
           super.merge(
             allOf: all_of_references.map do |schema|
               schema.to_openapi(version)

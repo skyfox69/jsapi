@@ -56,7 +56,7 @@ module Jsapi
           end
 
           # Returns a hash representing the \OpenAPI header object.
-          def to_openapi(version)
+          def to_openapi(version, *)
             version = OpenAPI::Version.from(version)
 
             with_openapi_extensions(
