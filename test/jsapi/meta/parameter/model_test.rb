@@ -153,7 +153,6 @@ module Jsapi
           )
           # OpenAPI 2.0
           assert_equal(
-
             {
               name: 'foo[bar]',
               in: 'query',

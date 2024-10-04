@@ -26,7 +26,7 @@ module Jsapi
             version = Version.from(version)
 
             with_openapi_extensions(type: 'oauth2', description: description).tap do |h|
-              if oauth_flows&.any?
+              if oauth_flows.any?
                 if version.major == 2
                   key, oauth_flow = oauth_flows.first
                   h[:flow] = key.to_s

@@ -71,7 +71,9 @@ module Jsapi
             }
           },
           security_requirements: {
-            schemes: %w[http_basic]
+            schemes: {
+              'http_basic' => {}
+            }
           },
           deprecated: true,
           schemes: %w[https],

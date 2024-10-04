@@ -70,7 +70,7 @@ module Jsapi
                   description: description,
                   deprecated: deprecated?.presence,
                   schema: schema.to_openapi(version),
-                  examples: examples&.transform_values(&:to_openapi)
+                  examples: examples.transform_values(&:to_openapi).presence
                 }
               end
             )

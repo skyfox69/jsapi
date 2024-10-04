@@ -37,7 +37,7 @@ module Jsapi
           def to_openapi(*)
             with_openapi_extensions(
               operationId: operation_id,
-              parameters: parameters,
+              parameters: parameters.presence,
               requestBody: request_body,
               description: description,
               server: server&.to_openapi

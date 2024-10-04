@@ -110,7 +110,7 @@ module Jsapi
                     allowEmptyValue: allow_empty_value?.presence,
                     deprecated: deprecated?.presence,
                     schema: schema.to_openapi(version),
-                    examples: examples&.transform_values(&:to_openapi)
+                    examples: examples.transform_values(&:to_openapi).presence
 
                     # NOTE: collectionFormat is replaced by style and explode.
                     #       The default values for query parameters are:
@@ -166,7 +166,7 @@ module Jsapi
                       allowEmptyValue: allow_empty_value.presence,
                       deprecated: deprecated,
                       schema: property_schema.to_openapi(version).except(:deprecated),
-                      examples: examples&.transform_values(&:to_openapi)
+                      examples: examples.transform_values(&:to_openapi).presence
                     }
                   end
                 )

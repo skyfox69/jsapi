@@ -112,21 +112,21 @@ module Jsapi
               # OpenAPI 2.0
               {
                 type: type,
-                example: examples&.first
+                example: examples.first
               }
             elsif version.minor.zero?
               # OpenAPI 3.0
               {
                 type: type,
                 nullable: nullable?.presence,
-                examples: examples,
+                examples: examples.presence,
                 deprecated: deprecated?.presence
               }
             else
               # OpenAPI 3.1
               {
                 type: nullable? ? [type, 'null'] : type,
-                examples: examples,
+                examples: examples.presence,
                 deprecated: deprecated?.presence
               }
             end.tap do |hash|

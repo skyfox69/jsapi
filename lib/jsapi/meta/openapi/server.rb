@@ -27,7 +27,7 @@ module Jsapi
           with_openapi_extensions(
             url: url,
             description: description,
-            variables: variables&.transform_values(&:to_openapi)
+            variables: variables.transform_values(&:to_openapi).presence
           )
         end
       end

@@ -8,17 +8,17 @@ module Jsapi
       ##
       # :attr: defaults
       # The Defaults.
-      attribute :defaults, { String => Defaults }, keys: Schema::TYPES, default: {}
+      attribute :defaults, { String => Defaults }, keys: Schema::TYPES
 
       ##
       # :attr: on_rescues
       # The methods or procs to be called whenever an exception is rescued.
-      attribute :on_rescues, [], default: []
+      attribute :on_rescues, []
 
       ##
       # :attr: openapi_callbacks
       # The reusable OpenAPI::Callback objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :openapi_callbacks, { String => OpenAPI::Callback }, default: {}
+      attribute :openapi_callbacks, { String => OpenAPI::Callback }
 
       ##
       # :attr: openapi_base_path
@@ -28,7 +28,7 @@ module Jsapi
       ##
       # :attr: openapi_examples
       # The reusable OpenAPI::Example objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :openapi_examples, { String => OpenAPI::Example }, default: {}
+      attribute :openapi_examples, { String => OpenAPI::Example }
 
       ##
       # :attr: openapi_external_docs
@@ -38,7 +38,7 @@ module Jsapi
       ##
       # :attr: openapi_headers
       # The reusable OpenAPI::Header objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :openapi_headers, { String => OpenAPI::Header }, default: {}
+      attribute :openapi_headers, { String => OpenAPI::Header }
 
       ##
       # :attr: openapi_host
@@ -53,7 +53,7 @@ module Jsapi
       ##
       # :attr: openapi_links
       # The reusable OpenAPI::Link objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :openapi_links, { String => OpenAPI::Link }, default: {}
+      attribute :openapi_links, { String => OpenAPI::Link }
 
       ##
       # :attr: openapi_schemes
@@ -65,59 +65,59 @@ module Jsapi
       # - <code>"wss"</code>
       #
       # Applies to \OpenAPI 2.0.
-      attribute :openapi_schemes, [String], values: %w[http https ws wss], default: []
+      attribute :openapi_schemes, [String], values: %w[http https ws wss]
 
       ##
       # :attr: openapi_security_requirements
       # The array of OpenAPI::SecurityRequirement objects.
-      attribute :openapi_security_requirements, [OpenAPI::SecurityRequirement], default: {}
+      attribute :openapi_security_requirements, [OpenAPI::SecurityRequirement]
 
       alias add_openapi_security add_openapi_security_requirement
 
       ##
       # :attr: openapi_security_schemes
       # The OpenAPI::SecurityScheme objects.
-      attribute :openapi_security_schemes, { String => OpenAPI::SecurityScheme }, default: {}
+      attribute :openapi_security_schemes, { String => OpenAPI::SecurityScheme }
 
       ##
       # :attr: openapi_servers
       # The array of OpenAPI::Server objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :openapi_servers, [OpenAPI::Server], default: []
+      attribute :openapi_servers, [OpenAPI::Server]
 
       ##
       # :attr: openapi_tags
       # The array of OpenAPI::Tag objects.
-      attribute :openapi_tags, [OpenAPI::Tag], default: []
+      attribute :openapi_tags, [OpenAPI::Tag]
 
       ##
       # :attr: operations
       # The Operation objects.
-      attribute :operations, { String => Operation }, default: {}
+      attribute :operations, { String => Operation }
 
       ##
       # :attr: parameters
       # The reusable Parameter objects.
-      attribute :parameters, { String => Parameter }, default: {}
+      attribute :parameters, { String => Parameter }
 
       ##
       # :attr: rescue_handlers
       # The RescueHandler objects.
-      attribute :rescue_handlers, [RescueHandler], default: []
+      attribute :rescue_handlers, [RescueHandler]
 
       ##
       # :attr: request_bodies
       # The reusable RequestBody objects.
-      attribute :request_bodies, { String => RequestBody }, default: {}
+      attribute :request_bodies, { String => RequestBody }
 
       ##
       # :attr: responses
       # The reusable Response objects.
-      attribute :responses, { String => Response }, default: {}
+      attribute :responses, { String => Response }
 
       ##
       # :attr: schemas
       # The reusable Schema objects.
-      attribute :schemas, { String => Schema }, default: {}
+      attribute :schemas, { String => Schema }
 
       # The class to which this instance is assigned.
       attr_reader :owner

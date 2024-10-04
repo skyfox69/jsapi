@@ -66,11 +66,11 @@ module Jsapi
               {
                 description: description,
                 schema: schema.to_openapi(version),
-                headers: headers&.transform_values do |header|
+                headers: headers.transform_values do |header|
                   header.to_openapi(version) unless header.reference?
-                end&.compact,
+                end.compact.presence,
                 examples: (
-                  if (example = examples&.values&.first).present?
+                  if (example = examples.values.first).present?
                     { content_type => example.resolve(definitions).value }
                   end
                 )
@@ -81,11 +81,13 @@ module Jsapi
                 content: {
                   content_type => {
                     schema: schema.to_openapi(version),
-                    examples: examples&.transform_values(&:to_openapi)
+                    examples: examples.transform_values(&:to_openapi).presence
                   }.compact
                 },
-                headers: headers&.transform_values { |header| header.to_openapi(version) },
-                links: links&.transform_values(&:to_openapi)
+                headers: headers.transform_values do |header|
+                  header.to_openapi(version)
+                end.presence,
+                links: links.transform_values(&:to_openapi).presence
               }
             end
           )

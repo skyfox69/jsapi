@@ -8,7 +8,7 @@ module Jsapi
         class Model < Meta::Base::Model
           ##
           # :attr: operations
-          attribute :operations, { String => Object }, default: {}
+          attribute :operations, { String => Object }
 
           undef add_operation
 

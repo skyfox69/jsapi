@@ -19,7 +19,7 @@ module Jsapi
 
           {
             propertyName: property_name,
-            mapping: mappings&.transform_keys(&:to_s)
+            mapping: mappings.transform_keys(&:to_s).presence
           }.compact
         end
       end

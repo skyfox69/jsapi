@@ -53,7 +53,7 @@ module Jsapi
       ##
       # :attr: parameters
       # The parameters of the operation.
-      attribute :parameters, { String => Parameter }, default: {}
+      attribute :parameters, { String => Parameter }
 
       ##
       # :attr: path
@@ -68,7 +68,7 @@ module Jsapi
       ##
       # :attr: responses
       # The responses of the operation.
-      attribute :responses, { String => Response }, default: {}, default_key: 'default'
+      attribute :responses, { String => Response }, default_key: 'default'
 
       ##
       # :attr: schemes
@@ -133,12 +133,12 @@ module Jsapi
 
         with_openapi_extensions(
           operationId: name,
-          tags: tags,
+          tags: tags.presence,
           summary: summary,
           description: description,
           externalDocs: external_docs&.to_openapi,
           deprecated: deprecated?.presence,
-          security: security_requirements&.map(&:to_openapi)
+          security: security_requirements.map(&:to_openapi).presence
         ).tap do |hash|
           if version.major == 2
             if (consumes = consumes(definitions)).present?
@@ -147,8 +147,8 @@ module Jsapi
             if (produces = produces(definitions)).present?
               hash[:produces] = produces
             end
-            hash[:schemes] = schemes if schemes
-          elsif servers
+            hash[:schemes] = schemes if schemes.present?
+          elsif servers.present?
             hash[:servers] = servers.map(&:to_openapi)
           end
           # Parameters (and request body)
@@ -167,7 +167,7 @@ module Jsapi
             response.to_openapi(version, definitions)
           end
           # Callbacks
-          if callbacks && version.major > 2
+          if callbacks.present? && version.major > 2
             hash[:callbacks] = callbacks.transform_values do |callback|
               callback.to_openapi(version, definitions)
             end

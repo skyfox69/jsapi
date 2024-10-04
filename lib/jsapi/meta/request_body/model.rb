@@ -61,7 +61,7 @@ module Jsapi
             content: {
               content_type => {
                 schema: schema.to_openapi(version),
-                examples: examples&.transform_values(&:to_openapi)
+                examples: examples.transform_values(&:to_openapi).presence
               }.compact
             },
             required: required?

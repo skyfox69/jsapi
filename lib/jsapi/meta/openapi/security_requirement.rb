@@ -9,7 +9,7 @@ module Jsapi
           ##
           # :attr: scopes
           # The array of scopes.
-          attribute :scopes, [String], default: []
+          attribute :scopes, [String]
         end
 
         ##
@@ -19,7 +19,7 @@ module Jsapi
 
         # Returns a hash representing the \OpenAPI security requirement object.
         def to_openapi(*)
-          schemes&.transform_values(&:scopes) || {}
+          schemes.transform_values(&:scopes)
         end
       end
     end

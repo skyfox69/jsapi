@@ -30,7 +30,7 @@ module Jsapi
         ##
         # :attr: scopes
         # The hash containing the scopes.
-        attribute :scopes, { String => Scope }, default: {}
+        attribute :scopes, { String => Scope }
 
         ##
         # :attr: token_url
