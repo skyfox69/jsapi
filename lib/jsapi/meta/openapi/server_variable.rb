@@ -14,7 +14,7 @@ module Jsapi
 
         ##
         # :attr: description
-        # The optional description of the server variable.
+        # The description of the server variable.
         attribute :description, String
 
         ##
@@ -26,7 +26,7 @@ module Jsapi
         def to_openapi(*)
           with_openapi_extensions(
             default: default,
-            enum: enum.presence, # must not be empty
+            enum: enum.presence,
             description: description
           )
         end

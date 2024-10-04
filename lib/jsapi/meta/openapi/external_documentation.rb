@@ -9,7 +9,7 @@ module Jsapi
 
         ##
         # :attr: description
-        # The optional description of the external documentation.
+        # The description of the external documentation.
         attribute :description, String
 
         ##

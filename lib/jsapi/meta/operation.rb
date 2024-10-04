@@ -7,7 +7,7 @@ module Jsapi
 
       ##
       # :attr: callbacks
-      # The optional callbacks. Applies to \OpenAPI 3.0 and higher.
+      # The OpenAPI::Callback objects. Applies to \OpenAPI 3.0 and higher.
       attribute :callbacks, { String => OpenAPI::Callback }
 
       ##

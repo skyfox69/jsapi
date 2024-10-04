@@ -9,7 +9,7 @@ module Jsapi
 
         ##
         # :attr: description
-        # The optional description of the server.
+        # The description of the server.
         attribute :description, String
 
         ##
@@ -19,7 +19,7 @@ module Jsapi
 
         ##
         # :attr_reader: variables
-        # The optional server variables.
+        # The ServerVariable objects.
         attribute :variables, { String => ServerVariable }
 
         # Returns a hash representing the \OpenAPI server object.

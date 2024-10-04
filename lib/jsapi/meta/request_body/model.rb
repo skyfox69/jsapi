@@ -15,12 +15,12 @@ module Jsapi
 
         ##
         # :attr: description
-        # The optional description of the request body.
+        # The description of the request body.
         attribute :description, String
 
         ##
         # :attr_reader: examples
-        # The optional examples.
+        # The examples.
         attribute :examples, { String => OpenAPI::Example }, default_key: 'default'
 
         ##

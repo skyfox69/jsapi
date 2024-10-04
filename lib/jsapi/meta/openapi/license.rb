@@ -14,7 +14,7 @@ module Jsapi
 
         ##
         # :attr: url
-        # The optional URL of the license.
+        # The URL of the license.
         attribute :url, String
 
         # Returns a hash representing the \OpenAPI license object.

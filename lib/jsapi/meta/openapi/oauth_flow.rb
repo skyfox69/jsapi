@@ -10,7 +10,7 @@ module Jsapi
         class Scope < Meta::Base::Model
           ##
           # :attr: description
-          # The optional description of the scope.
+          # The description of the scope.
           attribute :description, String, default: ''
         end
 

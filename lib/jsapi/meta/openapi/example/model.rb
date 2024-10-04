@@ -9,7 +9,7 @@ module Jsapi
 
           ##
           # :attr: description
-          # The optional description of the example.
+          # The description of the example.
           attribute :description, String
 
           ##
@@ -19,7 +19,7 @@ module Jsapi
 
           ##
           # :attr: summary
-          # The optional summary of the example.
+          # The summary of the example.
           attribute :summary, String
 
           ##

@@ -7,7 +7,7 @@ module Jsapi
         class Base < Meta::Base::Model
           ##
           # :attr: description
-          # The optional description of the security scheme.
+          # The description of the security scheme.
           attribute :description, String
         end
       end

@@ -10,7 +10,7 @@ module Jsapi
 
           ##
           # :attr: description
-          # The optional description of the link.
+          # The description of the link.
           attribute :description, String
 
           ##
@@ -20,17 +20,17 @@ module Jsapi
 
           ##
           # :attr: parameters
-          # The optional parameters to be passed.
+          # The parameters to be passed.
           attribute :parameters, { String => Object }
 
           ##
           # :attr: request_body
-          # The optional request body to be passed.
+          # The request body to be passed.
           attribute :request_body
 
           ##
           # :attr: server
-          # The optional Server object.
+          # The Server object.
           attribute :server, Server
 
           # Returns a hash representing the \OpenAPI link object.

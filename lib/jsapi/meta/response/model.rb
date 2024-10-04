@@ -15,22 +15,22 @@ module Jsapi
 
         ##
         # :attr: description
-        # The optional description of the response.
+        # The description of the response.
         attribute :description, String
 
         ##
         # :attr: examples
-        # The optional examples.
+        # The OpenAPI::Example objects.
         attribute :examples, { String => OpenAPI::Example }, default_key: 'default'
 
         ##
         # :attr: headers
-        # The response headers.
+        # The OpenAPI::Header objects.
         attribute :headers, { String => OpenAPI::Header }
 
         ##
         # :attr: links
-        # The optional OpenAPI::Link objects.
+        # The OpenAPI::Link objects.
         attribute :links, { String => OpenAPI::Link }
 
         ##

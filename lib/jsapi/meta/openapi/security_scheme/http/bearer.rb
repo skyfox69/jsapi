@@ -15,7 +15,7 @@ module Jsapi
 
             ##
             # :attr: bearer_format
-            # The optional format of the bearer token.
+            # The format of the bearer token.
             attribute :bearer_format, String
 
             # Returns a hash representing the \OpenAPI security scheme object, or

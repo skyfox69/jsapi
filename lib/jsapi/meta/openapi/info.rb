@@ -9,22 +9,22 @@ module Jsapi
 
         ##
         # :attr: contact
-        # The optional Contact object.
+        # The Contact object.
         attribute :contact, Contact
 
         ##
         # :attr: description
-        # The optional description of the API.
+        # The description of the API.
         attribute :description, String
 
         ##
         # :attr: license
-        # The optional License object.
+        # The License object.
         attribute :license, License
 
         ##
         # :attr: terms_of_service
-        # The optional URL pointing to the terms of service.
+        # The URL pointing to the terms of service.
         attribute :terms_of_service, String
 
         ##
