@@ -21,7 +21,7 @@ module Jsapi
 
           case type
           when Array
-            # Generic default
+            # General default
             default ||= DEFAULT_ARRAY
 
             unless read_only
@@ -55,7 +55,7 @@ module Jsapi
             key_type, value_type = type.first
             key_type_caster = TypeCaster.new(key_type, values: keys, name: 'key')
 
-            # Generic default
+            # General default
             default ||= DEFAULT_HASH
 
             # Lookup method

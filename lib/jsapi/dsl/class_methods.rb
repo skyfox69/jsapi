@@ -88,13 +88,122 @@ module Jsapi
         api_definitions { schema(name, **keywords, &block) }
       end
 
-      # Defines the root of an OpenAPI document.
+      # Defines additional OpenAPI objects.
       #
       #   openapi do
       #     info title: 'Foo', version: '1'
       #   end
       def openapi(**keywords, &block)
         api_definitions { openapi(**keywords, &block) }
+      end
+
+      # Specifies the base path of the API.
+      #
+      #   openapi_base_path '/foo'
+      #
+      def openapi_base_path(arg)
+        api_definitions { openapi_base_path(arg) }
+      end
+
+      # Defines a reusable callback.
+      #
+      #   openapi_callback 'onFoo' do
+      #     operation '{$request.query.foo}', path: '/bar'
+      #   end
+      #
+      def openapi_callback(name, **keywords, &block)
+        api_definitions { openapi_callback(name, **keywords, &block) }
+      end
+
+      # Defines a reusable example.
+      #
+      #   openapi_example 'foo', value: 'bar'
+      #
+      def openapi_example(name, **keywords, &block)
+        api_definitions { openapi_example(name, **keywords, &block) }
+      end
+
+      # Specifies the external documentation.
+      #
+      #   openapi_external_docs url: 'https://foo.bar'
+      #
+      def openapi_external_docs(**keywords, &block)
+        api_definitions { openapi_external_docs(**keywords, &block) }
+      end
+
+      # Defines a reusable header.
+      #
+      #   openapi_header 'foo', type: 'string'
+      #
+      def openapi_header(name, **keywords, &block)
+        api_definitions { openapi_header(name, **keywords, &block) }
+      end
+
+      # Specifies the host serving the API.
+      #
+      #   openapi_host 'foo.bar'
+      #
+      def openapi_host(arg)
+        api_definitions { openapi_host(arg) }
+      end
+
+      # Specifies general information about the API.
+      #
+      #   openapi_info title: 'Foo', version: '1' do
+      #     contact name: 'bar'
+      #   end
+      def openapi_info(**keywords, &block)
+        api_definitions { openapi_info(**keywords, &block) }
+      end
+
+      # Defines a reusable link.
+      #
+      #   openapi_link 'foo', operation_id: 'bar'
+      #
+      def openapi_link(name, **keywords, &block)
+        api_definitions { openapi_link(name, **keywords, &block) }
+      end
+
+      # Adds a security requirement.
+      #
+      #   openapi_security_requirement do
+      #     scheme 'basic_auth'
+      #   end
+      #
+      def openapi_security_requirement(**keywords, &block)
+        api_definitions { openapi_security_requirement(**keywords, &block) }
+      end
+
+      # Adds a security scheme.
+      #
+      #   openapi_security_scheme 'basic_auth', type: 'http', scheme: 'basic'
+      #
+      def openapi_security_scheme(name, **keywords, &block)
+        api_definitions { openapi_security_scheme(name, **keywords, &block) }
+      end
+
+      # Adds a URI scheme supported by the API.
+      #
+      #   openapi_scheme 'https'
+      #
+      def openapi_scheme(arg)
+        api_definitions { openapi_scheme(arg) }
+      end
+
+      # Adds a server providing the API.
+      #
+      #   openapi_server url: 'https://foo.bar/foo'
+      #
+      def openapi_server(**keywords, &block)
+        api_definitions { openapi_server(**keywords, &block) }
+      end
+
+      # Adds a tag.
+      #
+      #   openapi_tag name: 'foo', description: 'description of foo'
+      #
+      def openapi_tag(**keywords, &block)
+        api_definitions { openapi_tag(**keywords, &block) }
       end
     end
   end

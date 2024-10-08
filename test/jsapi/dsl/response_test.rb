@@ -3,12 +3,14 @@
 module Jsapi
   module DSL
     class ResponseTest < Minitest::Test
+      # #example
+
       def test_example
         response = define_response { example 'foo' }
         assert_equal('foo', response.example('default').value)
       end
 
-      # Links
+      # #link
 
       def test_link
         response = define_response do

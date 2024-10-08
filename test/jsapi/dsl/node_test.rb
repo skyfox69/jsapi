@@ -111,7 +111,7 @@ module Jsapi
         assert(!node.respond_to?(:bar))
       end
 
-      def test_raises_exception_on_unsupported_method
+      def test_raises_an_exception_on_unsupported_method
         model = Meta::Base::Model.new
 
         error = assert_raises do
@@ -120,7 +120,7 @@ module Jsapi
         assert_equal('unsupported method: foo', error.message)
       end
 
-      def test_raises_exception_on_reference_and_block
+      def test_raises_an_exception_on_reference_and_block
         model = Class.new(Meta::Base::Model) do
           attribute :foo, Meta::Base::Reference
         end.new

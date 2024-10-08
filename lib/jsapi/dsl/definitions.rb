@@ -49,6 +49,32 @@ module Jsapi
       #
       # See Meta::Definitions#openapi_base_path for further information.
 
+      # Adds a reusable callback.
+      #
+      #   openapi_callback 'foo' do
+      #     operation '{$request.query.foo}', path: '/bar'
+      #   end
+      #
+      # See Meta::Definitions#openapi_callbacks for further information.
+      def openapi_callback(name, **keywords, &block)
+        _define('openapi_callback', name.inspect) do
+          callback = _meta_model.add_openapi_callback(name, keywords)
+          OpenAPI::Callback.new(callback, &block) if block
+        end
+      end
+
+      # Adds a reusable example.
+      #
+      #   openapi_example '/foo', value: 'bar'
+      #
+      # See Meta::Definitions#openapi_examples for further information.
+      def openapi_example(name, **keywords, &block)
+        _define('openapi_example', name.inspect) do
+          example = _meta_model.add_openapi_example(name, keywords)
+          Node.new(example, &block) if block
+        end
+      end
+
       ##
       # :method: openapi_external_docs
       # :args: **keywords, &block
@@ -57,6 +83,18 @@ module Jsapi
       #   openapi_external_docs url: 'https://foo.bar'
       #
       # See Meta::Definitions#openapi_external_docs for further information.
+
+      # Adds a reusable header.
+      #
+      #   openapi_header 'foo', type: 'string'
+      #
+      # See Meta::Definitions#openapi_headers for further information.
+      def openapi_header(name, **keywords, &block)
+        _define('openapi_header', name.inspect) do
+          header = _meta_model.add_openapi_header(name, keywords)
+          Node.new(header, &block) if block
+        end
+      end
 
       ##
       # :method: openapi_host
@@ -72,18 +110,23 @@ module Jsapi
       # :args: **keywords, &block
       # Specifies general information about the API.
       #
-      #   openapi_info title: 'foo', version: 1
+      #   openapi_info title: 'foo', version: 1 do
+      #     contact name: 'bar'
+      #   end
       #
       # See Meta::Definitions#openapi_info for further information.
 
-      ##
-      # :method: openapi_link
-      # :args: name, **keywords, &block
-      # Adds a link.
+      # Adds a reusable link.
       #
       #   openapi_link 'foo', operation_id: 'bar'
       #
       # See Meta::Definitions#openapi_links for further information.
+      def openapi_link(name, **keywords, &block)
+        _define('openapi_link', name.inspect) do
+          link = _meta_model.add_openapi_link(name, keywords)
+          Node.new(link, &block) if block
+        end
+      end
 
       ##
       # :method: openapi_scheme
@@ -105,21 +148,24 @@ module Jsapi
       #
       # See Meta::Definitions#openapi_security_requirements for further information.
 
-      ##
-      # :method: openapi_security_scheme
-      # :args: name, **keywords, &block
       # Adds a security scheme.
       #
       #   openapi_security_scheme 'basic_auth', type: 'http', scheme: 'basic'
       #
       # See Meta::Definitions#openapi_security_schemes for further information.
+      def openapi_security_scheme(name, **keywords, &block)
+        _define('openapi_security_scheme', name.inspect) do
+          security_scheme = _meta_model.add_openapi_security_scheme(name, keywords)
+          Node.new(security_scheme, &block) if block
+        end
+      end
 
       ##
       # :method: openapi_server
-      # :args: arg
+      # :args: **keywords, &block
       # Adds a server providing the API.
       #
-      #   openapi_server url: 'https://foo.bar'
+      #   openapi_server url: 'https://foo.bar/foo'
       #
       # See Meta::Definitions#openapi_servers for further information.
 

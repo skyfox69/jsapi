@@ -16,14 +16,14 @@ module Jsapi
       attribute :on_rescues, []
 
       ##
-      # :attr: openapi_callbacks
-      # The reusable OpenAPI::Callback objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :openapi_callbacks, { String => OpenAPI::Callback }
-
-      ##
       # :attr: openapi_base_path
       # The base path of the API. Applies to \OpenAPI 2.0.
       attribute :openapi_base_path, String
+
+      ##
+      # :attr: openapi_callbacks
+      # The reusable OpenAPI::Callback objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :openapi_callbacks, { String => OpenAPI::Callback }
 
       ##
       # :attr: openapi_examples

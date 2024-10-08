@@ -3,17 +3,21 @@
 module Jsapi
   module DSL
     class OperationTest < Minitest::Test
+      # #method
+
       def test_method
         operation = define_operation { method 'post' }
         assert_equal('post', operation.method)
       end
+
+      # #callback
 
       def test_callback
         operation = define_operation { callback 'onFoo' }
         assert_predicate(operation.callback('onFoo'), :present?)
       end
 
-      # Models
+      # #model
 
       def test_model
         klass = Class.new(Model::Base)
@@ -48,7 +52,7 @@ module Jsapi
         assert_equal('bar', model.foo)
       end
 
-      # Parameters
+      # #parameter
 
       def test_parameter
         operation = define_operation do
@@ -99,7 +103,7 @@ module Jsapi
         assert_equal('unsupported keyword: type (at parameter "foo")', error.message)
       end
 
-      # Request bodies
+      # #request_body
 
       def test_request_body
         operation = define_operation do
@@ -143,7 +147,7 @@ module Jsapi
         assert_equal('unsupported keyword: type (at request body)', error.message)
       end
 
-      # Responses
+      # #response
 
       def test_default_response
         operation = define_operation do

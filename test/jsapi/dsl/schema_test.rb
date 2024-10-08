@@ -3,22 +3,28 @@
 module Jsapi
   module DSL
     class SchemaTest < Minitest::Test
+      # #all_of
+
       def test_all_of
         schema = define_schema { all_of 'foo' }
         assert_equal(%w[foo], schema.all_of_references.map(&:ref))
       end
+
+      # #example
 
       def test_example
         schema = define_schema { example 'foo' }
         assert_equal(%w[foo], schema.examples)
       end
 
+      # #format
+
       def test_format
         schema = define_schema(type: 'string') { format 'date' }
         assert_equal('date', schema.format)
       end
 
-      # Items
+      # #items
 
       def test_items
         schema = define_schema(type: 'array') { items type: 'string' }
@@ -42,7 +48,7 @@ module Jsapi
         assert_equal("items isn't supported for 'object'", error.message)
       end
 
-      # Models
+      # #model
 
       def test_model
         klass = Class.new(Model::Base)
@@ -84,7 +90,7 @@ module Jsapi
         assert_equal("model isn't supported for 'array'", error.message)
       end
 
-      # Properties
+      # #property
 
       def test_property
         schema = define_schema(type: 'object') do
