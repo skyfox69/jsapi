@@ -77,7 +77,7 @@ When the required `call` parameter is missing or empty, the `api_operation!` met
 directive to the controller class:
 
 ```ruby
-api_rescue Jsapi::Controller::ParametersInvalid, with: 400
+api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
 ```
 
 To create the OpenAPI documentation for the `echo` operation, add another route, an `openapi`
@@ -135,51 +135,53 @@ body is produced:
 
 ## Jsapi DSL
 
-The `Jsapi::DSL` module provides the following methods to define API components:
-
-- [api_operation](#defining-operations) - Defines a single API operation.
-- [api_parameter](#reusable-parameters) - Defines a reusable parameter.
-- [api_response_body](#reusable-request-bodies) - Defines a reusable request body.
-- [api_response](#reusable-responses) - Defines a reusable response.
-- [api_schema](#reusable-schemas) - Defines a reusable schema.
-- [api_rescue_from](#defining-rescue-handlers) - Defines a rescue handler.
-- [api_on_rescue](#defining-on_rescue-callbacks) - Defines an `on_rescue` callback.
-- [api_default](#defining-default-values) - Defines default values for a type.
-- [api_include](#sharing-api-components) - Includes API definitions from other classes.
-
-API components can also be defined inside an `api_definitions` block, for example:
+Everything needed to build an API is defined by a DSL that can be used in any controller
+inherriting from `Jsapi::Controller::Base` as well as any class extending `Jsapi::DSL`. The
+names of all DSL methods start with `api_` to avoid naming conflicts with other GEMs. All DSL
+methods can be grouped in a `api_definitions` block without the prefix `api_` as shown below.
 
 ```ruby
 api_definitions do
-  operation 'foo' do
-    parameter 'bar'
-    response 'FooResponse'
-  end
+  rescue_from Jsapi::Controller::ParametersInvalid, with: 400
 
-  parameter 'bar', type: 'string'
-
-  response 'FooResponse', schema: 'Foo'
-
-  schema 'Foo', type: 'object' do
-    property 'bar', type: 'string'
+  operation path: '/echo' do
+    parameter 'call', type: 'string', existence: true
+    response 200, type: 'object'  do
+      property 'echo', type: 'string'
+    end
+    response 400, type: 'object' do
+      property 'status', type: 'integer'
+      property 'message', type: 'string'
+    end
   end
 end
 ```
 
+### Defining API components
+
+The following methods are provided to define API components:
+
+- [api_operation](#defining-operations) - Defines an operation bound to an API endpoint.
+- [api_parameter](#defining-and-referring-reusable-parameters) - Defines a reusable parameter.
+- [api_request_body](#defining-and-referring-reusable-request-bodies) - Defines a reusable
+  request body.
+- [api_response](#defining-and-refering-reusable-responses) - Defines a reusable response.
+- [api_schema](#defining-and-referring-reusable-schemas) - Defines a reusable schema.
+
 The names and types of API components can be strings or symbols. All keywords except  `ref`,
-`schema` and `type` can also be specified by a method call within the block, for example:
+`schema` and `type` can also be specified within the block, for example:
 
 ```ruby
 # Define keyword by argument
 parameter 'foo', type: 'string', existence: true
 
-# Define keyword by method call within the block
+# Define keyword within the block
 parameter 'bar', type: 'string' do
   existence true
 end
 ```
 
-### Defining operations
+#### Defining operations
 
 An operation can be defined as below.
 
@@ -194,7 +196,7 @@ end
 
 The operation name can be omitted, if the controller handles one operation only.
 
-**Keywords**
+`api_operations` takes the following keywords:
 
 - `:deprecated` - Specifies whether or not the operation is deprecated.
 - `:description` - The description of the operation.
@@ -204,7 +206,7 @@ The operation name can be omitted, if the controller handles one operation only.
 - `:summary` - The short summary of the operation.
 - `:tags` - One or more tags used to group operations in an OpenAPI document.
 
-### Defining parameters
+##### Parameters
 
 A (top-level) parameter of an operation can be defined as below.
 
@@ -224,7 +226,7 @@ api_operation 'foo' do
 end
 ```
 
-**Keywords**
+`parameter` takes the following keywords:
 
 - `:conversion` - See [The conversion keyword](#the-conversion-keyword).
 - `:default` - The default value.
@@ -244,7 +246,7 @@ end
 Additionally, all of the [validation keywords](#validation-keywords) can be specified to
 validate parameter values.
 
-### Defining request bodies
+##### Request bodies
 
 The request body of an operation can be defined as below.
 
@@ -256,7 +258,7 @@ api_operation 'foo' do
 end
 ```
 
-**Keywords**
+`request_body` takes the following keywords:
 
 - `:content_type`- The content type, `"application/json"` by default.
 - `:default` - The default value.
@@ -267,7 +269,7 @@ end
 - `:schema` - See [Reusable schemas](#reusable-schemas)
 - `:title` - The title of the request body.
 
-### Defining responses
+##### Responses
 
 A response of an operation can be defined as below.
 
@@ -279,7 +281,7 @@ api_operation 'foo' do
 end
 ```
 
-**Keywords**
+`response` takes the following keywords:
 
 - `:additional_properties` -
   See [The additional_properties keyword](#the-additional-properties-keyword).
@@ -297,7 +299,7 @@ end
 - `:title` - The title of the response.
 - `:type` - See [The type keyword](#the-type-keyword).
 
-### Defining properties
+##### Properties
 
 A property can be defined as below.
 
@@ -311,7 +313,7 @@ property 'foo' do
 end
 ```
 
-**Keywords**
+`property` takes the following keywords:
 
 - `:additional_properties` -
   See [The additional_properties keyword](#the-additional-properties-keyword).
@@ -334,89 +336,7 @@ end
 Additionally, all of the [validation keyword](#validation-keywords) can be specified to
 validate nested parameter values.
 
-### Defining examples
-
-A simple sample value can be specified as below.
-
-```ruby
-property 'foo', type: 'string', example: 'bar'
-```
-
-Multiple sample values can be specified as below.
-
-```ruby
-schema 'Foo', type: 'object' do
-  property 'foo', type: 'string'
-
-  example 'foo', value: { 'foo' => 'foo' }
-  example 'bar', value: { 'foo' => 'bar' }
-end
-```
-
-**Keywords**
-
-- `description` - The description of the example.
-- `external` - Specifies whether `value` is the URI of an external example.
-- `summary` - The short summary of the example.
-- `value` - The sample value
-
-### Defining rescue handlers
-
-Rescue handlers are used to render error responses when an exception is raised. A rescue
-handler can be defined as below.
-
-```ruby
-api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
-```
-
-### Defining `on_rescue` callbacks
-
-To notice exceptions rescued by a rescue handler a callback can be defined as below.
-
-```ruby
-api_on_rescue :foo
-
-api_on_rescue do |error|
-  # ...
-end
-```
-
-### Defining default values
-
-The general default values for a type can be defined as below.
-
-```ruby
-api_default 'array', within_requests: [], within_responses: []
-```
-
-**Keywords**
-
-- `:within_requests` - The general default value of parameters and properties when
-  reading requests.
-- `:within_responses` - The general default value of properties when writing responses.
-
-### Defining OpenAPI documents
-
-All additional data required to generate OpenAPI documents can be specified as below.
-
-```ruby
-openapi do
-  info title: 'Foo', version: 1
-  security_scheme 'http_basic', type: 'basic'
-  security do
-    scheme 'http_basic'
-  end
-
-  # OpenAPI 2.0
-  host 'https://foo.bar'
-  base_path '/foo'
-
-  # OpenAPI 3.0
-  server url: 'https://foo.bar/foo'
-end
-```
-
-### Reusable schemas
+#### Defining and referring reusable schemas
 
 The `api_schema` method defines a schema that can be associated with parameters,
 request bodies, responses and properties.
@@ -461,7 +381,7 @@ schema 'Bar' do
 end
 ```
 
-### Reusable parameters
+#### Defining and referring reusable parameters
 
 The `api_parameter` method defines a parameter that can be used in multiple operations.
 
@@ -473,7 +393,7 @@ api_operation do
 end
 ```
 
-### Reusable request bodies
+#### Defining and referring reusable request bodies
 
 The `api_request_body` method defines a request body that ca be used in multiple operations.
 
@@ -487,7 +407,7 @@ api_operation do
 end
 ```
 
-### Reusable responses
+#### Defining and referring reusable responses
 
 The `api_response` method defines a response that can be used in multiple operations.
 
@@ -499,6 +419,309 @@ end
 api_operation do
   response 'foo'
 end
+```
+
+#### The `:type` keyword
+
+The `:type` keyword specifies the type of a parameter, request body, response,
+parameter or schema. The supported types correspond to JSON Schema:
+
+- `array`
+- `boolean`
+- `integer`
+- `number`
+- `object`
+- `string`
+
+The default type is `object`.
+
+#### The `:existence` keyword
+
+The `:existence` keyword combines the presence concepts of Rails and JSON Schema
+by four levels of existence:
+
+- `:present` or `true` -  The parameter or property value must not be empty.
+- `:allow_empty` - The parameter or property value can be empty, for example `''`.
+- `:allow_nil` or `allow_null` - The parameter or property value can be `nil`.
+- `:allow_omitted` or `false` - The parameter or property can be omitted.
+
+The default level of existence is `false`.
+
+Note that `existence: :present` slightly differs from Rails `present?` as it treats `false`
+to be present.
+
+#### The `:conversion` keyword
+
+The `conversion` keyword can be used to convert integers, numbers and strings by a method or
+a `Proc`, for example:
+
+```ruby
+# Conversion by method
+parameter 'foo', type: 'string', conversion: :upcase
+
+# Conversion by proc
+parameter 'foo', type: 'string', conversion: ->(value) { value.upcase }
+```
+
+#### The `:additional_properties` keyword
+
+The `:additional_properties` keyword defines the schema of properties that are not
+explicity specified, for example:
+
+```ruby
+  schema 'foo', additional_properties: { type: 'string', source: :bar }
+```
+
+The default source is `:additional_properties`.
+
+#### The `:source` keyword
+
+The `:source` keyword specifies the sequence of methods or the `Proc` to be called to read
+property values. A source can be a string, a symbol, an array or a `Proc`, for example:
+
+```ruby
+property 'foo', source: 'bar.foo'
+```
+
+```ruby
+property 'foo', source: %i[bar foo]
+```
+
+```ruby
+property 'foo', source: ->(bar) { bar.foo }
+```
+
+#### The `:items` keyword
+
+The `:items` keyword specifies the kind of items that can be contained in an
+array, for example:
+
+```ruby
+parameter 'foo', type: 'array', items: { type: 'string' }
+```
+
+```ruby
+parameter 'foo', type: 'array' do
+  items do
+    property 'bar', type: 'string'
+  end
+end
+```
+
+#### The `:format` keyword
+
+The `:format` keyword specifies the format of a string. If the format is `"date"`,
+`"date-time"` or `"duration"`, parameter and property values are implicitly
+casted as below.
+
+- `"date"` - `Date`
+- `"date-time"` - `DateTime`
+- `"duration"` - `ActiveSupport::Duration`
+
+All other formats are only used for documentation.
+
+#### Validation keywords
+
+The following keywords can be specified to validate parameter values. The
+validation keywords correspond to JSON Schema validations.
+
+- `:enum` - The valid values.
+- `:max_items` - The maximum length of an array.
+- `:max_length` - The maximum length of a string.
+- `:maximum` - The maximum value of an integer or a number.
+- `:min_items` - The minimum length of an array.
+- `:min_length` - The minimum length of a string.
+- `:minimum` - The minimum value of an integer or a number.
+- `:multiple_of` - The value an integer or a number must be a multiple of.
+- `:pattern` - The regular expression a string must match.
+
+The minimum and maximum value can be specified as shown below.
+
+```ruby
+# Restrict values to positive integers
+parameter 'foo', type: 'integer', minimum: 1
+
+# Restrict values to positive numbers
+parameter 'bar', type: 'number', minimum: { value: 0, exclusive: true }
+```
+
+### Defining rescue handlers
+
+Rescue handlers are used to render error responses when an exception is raised. A rescue
+handler can be defined as below.
+
+```ruby
+api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
+```
+
+To notice exceptions caught by a rescue handler a callback can be defined as below.
+
+```ruby
+api_on_rescue :foo
+
+api_on_rescue do |error|
+  # ...
+end
+```
+
+### Defining general default values
+
+The general default values for a type can be defined as below.
+
+```ruby
+api_default 'array', within_requests: [], within_responses: []
+```
+
+`api_default` takes the following keywords:
+
+- `:within_requests` - The general default value of parameters when reading requests.
+- `:within_responses` - The general default value of properties when producing responses.
+
+### Defining examples
+
+A simple sample value can be specified as below.
+
+```ruby
+property 'foo', type: 'string', example: 'bar'
+```
+
+Multiple sample values can be specified as below.
+
+```ruby
+schema 'Foo', type: 'object' do
+  property 'foo', type: 'string'
+
+  example 'foo', value: { 'foo' => 'foo' }
+  example 'bar', value: { 'foo' => 'bar' }
+end
+```
+
+`example` takes the following keywords:
+
+- `description` - The description of the example.
+- `external` - Specifies whether `value` is the URI of an external example.
+- `summary` - The short summary of the example.
+- `value` - The sample value
+
+### Specifying additional information
+
+The following methods are provided to specify additional information:
+
+- [openapi_base_path](#specifying-the-base-path) - Specifies the base path of the API.
+- [openapi_callback](#specifying-reusable-callbacks) - Specifies a reusable callback.
+- [openapi_example](#specifying-reusable-examples) - Specifies a reusable example.
+- [openapi_external_docs](#specifying-external-documentation) - Specifies the external
+  documentation.
+- [openapi_header](#specifying-reusable-headers) - Specifies a reusable header.
+- [openapi_host](#specifying-the-host) - Specifies the host serving the API.
+- [openapi_info](#specifying-general-information) - Specifies general information about the API.
+- [openapi_link](#specifying-reusable-link) - Specifies a reusable link.
+- [openapi_scheme](#specifying-a-uri-scheme) - Specifies a URI scheme supported by the API.
+- [openapi_security_requirement](#specifying-security-requirements) - Specifies a security
+  requirement.
+- [openapi_security_scheme](#specifying-security-schemes) - Specifies a security scheme.
+- [openapi_server](#specifying-servers) - Specifies a server providing the API
+- [openapi_tag](#specifying-tags) - Specifies a tag.
+
+```ruby
+openapi do
+  info title: 'Foo', version: 1
+  security_scheme 'http_basic', type: 'basic'
+  security do
+    scheme 'http_basic'
+  end
+
+  # OpenAPI 2.0
+  host 'https://foo.bar'
+  base_path '/foo'
+
+  # OpenAPI 3.0
+  server url: 'https://foo.bar/foo'
+end
+```
+
+#### Specifying general information
+
+```ruby
+openapi_info title: 'Foo', version: '1' do
+  contact name: 'bar'
+end
+```
+
+#### Specifying servers
+
+```ruby
+openapi_server 'https://foo.bar/foo'
+```
+
+#### Specifying the host
+
+```ruby
+openapi_host 'foo.bar'
+```
+
+#### Specifying the base path
+
+```ruby
+openapi_base_path '/foo'
+```
+
+#### Specifying a URI scheme
+
+```ruby
+openapi_scheme 'https'
+```
+
+#### Specifying reusable callbacks
+
+```ruby
+openapi_callback 'onFoo' do
+  operation '{$request.query.foo}', path: '/bar'
+end
+```
+
+#### Specifying reusable headers
+
+```ruby
+openapi_header 'foo', type: 'string'
+```
+
+#### Specifying reusable examples
+
+```ruby
+openapi_example 'foo', value: 'bar'
+```
+
+#### Specifying reusable links
+
+```ruby
+openapi_link 'foo', operation_id: 'bar'
+```
+
+#### Specifying security schemes
+
+```ruby
+openapi_security_scheme 'basic_auth', type: 'http', scheme: 'basic'
+```
+
+#### Specifying security requirements
+
+```ruby
+openapi_security_requirement do
+  scheme 'basic_auth'
+end
+```
+
+#### Specifying tags
+
+```ruby
+openapi_tag name: 'foo', description: 'Description of foo'
+```
+
+#### Specifying external documentation
+
+```ruby
+openapi_external_docs url: 'https://foo.bar'
 ```
 
 ### Sharing API components
@@ -523,132 +746,10 @@ class FooController < Jsapi::Controller::Base
   api_schema 'Foo'
 end
 
-class BarController < FooController
+class BarController < Jsapi::Controller::Base
   api_include FooController
   api_response 'Bar', schema: 'Foo'
 end
-```
-
-### The `:type` keyword
-
-The `:type` keyword specifies the type of a parameter, request body, response,
-parameter or schema. The supported types correspond to JSON Schema:
-
-- `array`
-- `boolean`
-- `integer`
-- `number`
-- `object`
-- `string`
-
-The default type is `object`.
-
-### The `:existence` keyword
-
-The `:existence` keyword combines the presence concepts of Rails and JSON Schema
-by four levels of existence:
-
-- `:present` or `true` -  The parameter or property value must not be empty.
-- `:allow_empty` - The parameter or property value can be empty, for example `''`.
-- `:allow_nil` or `allow_null` - The parameter or property value can be `nil`.
-- `:allow_omitted` or `false` - The parameter or property can be omitted.
-
-The default level of existence is `false`.
-
-Note that `existence: :present` slightly differs from Rails `present?` as it
-treats `false` to be present.
-
-### The `:conversion` keyword
-
-The `conversion` keyword can be used to convert an integer, number or string by
-a method or a `Proc`, for example:
-
-```ruby
-parameter 'foo', type: 'string', conversion: :upcase
-
-parameter 'foo', type: 'string', conversion: ->(value) { value.upcase }
-```
-
-### The `:additional_properties` keyword
-
-The `:additional_properties` keyword defines the schema of properties that are not
-explicity specified, for example:
-
-```ruby
-  schema 'foo', additional_properties: { type: 'string', source: :bar }
-```
-
-The default source is `:additional_properties`.
-
-### The `:source` keyword
-
-The `:source` keyword specifies the sequence of methods or the `Proc` to be called to read
-property values. A source can be a string, a symbol, an array or a `Proc`, for example:
-
-```ruby
-property 'foo', source: 'bar.foo'
-```
-
-```ruby
-property 'foo', source: %i[bar foo]
-```
-
-```ruby
-property 'foo', source: ->(bar) { bar.foo }
-```
-
-### The `:items` keyword
-
-The `:items` keyword specifies the kind of items that can be contained in an
-array, for example:
-
-```ruby
-parameter 'foo', type: 'array', items: { type: 'string' }
-```
-
-```ruby
-parameter 'foo', type: 'array' do
-  items do
-    property 'bar', type: 'string'
-  end
-end
-```
-
-### The `:format` keyword
-
-The `:format` keyword specifies the format of a string. If the format is `"date"`,
-`"date-time"` or `"duration"`, parameter and property values are implicitly
-casted as below.
-
-- `"date"` - `Date`
-- `"date-time"` - `DateTime`
-- `"duration"` - `ActiveSupport::Duration`
-
-All other formats are only used for documentation.
-
-### Validation keywords
-
-The following keywords can be specified to validate parameter values. The
-validation keywords correspond to JSON Schema validations.
-
-- `:enum` - The valid values.
-- `:max_items` - The maximum length of an array.
-- `:max_length` - The maximum length of a string.
-- `:maximum` - The maximum value of an integer or a number.
-- `:min_items` - The minimum length of an array.
-- `:min_length` - The minimum length of a string.
-- `:minimum` - The minimum value of an integer or a number.
-- `:multiple_of` - The value an integer or a number must be a multiple of.
-- `:pattern` - The regular expression a string must match.
-
-The minimum and maximum value can be specified as shown below.
-
-```ruby
-# Restrict values to positive integers
-parameter 'foo', type: 'integer', minimum: 1
-
-# Restrict values to positive numbers
-parameter 'bar', type: 'number', minimum: { value: 0, exclusive: true }
 ```
 
 ## API controllers
