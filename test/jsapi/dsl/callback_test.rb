@@ -29,7 +29,7 @@ module Jsapi
       private
 
       def define_callback(**keywords, &block)
-        Meta::OpenAPI::Callback.new(keywords).tap do |callback|
+        Meta::Callback.new(keywords).tap do |callback|
           Callback.new(callback, &block)
         end
       end

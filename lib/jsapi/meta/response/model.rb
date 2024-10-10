@@ -3,6 +3,7 @@
 module Jsapi
   module Meta
     module Response
+      # Defines a response.
       class Model < Base::Model
         include OpenAPI::Extensions
 
@@ -20,18 +21,18 @@ module Jsapi
 
         ##
         # :attr: examples
-        # The OpenAPI::Example objects.
-        attribute :examples, { String => OpenAPI::Example }, default_key: 'default'
+        # The Example objects.
+        attribute :examples, { String => Example }, default_key: 'default'
 
         ##
         # :attr: headers
         # The OpenAPI::Header objects.
-        attribute :headers, { String => OpenAPI::Header }
+        attribute :headers, { String => Header }
 
         ##
         # :attr: links
-        # The OpenAPI::Link objects.
-        attribute :links, { String => OpenAPI::Link }
+        # The Link objects.
+        attribute :links, { String => Link }
 
         ##
         # :attr: locale

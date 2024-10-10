@@ -2,13 +2,14 @@
 
 module Jsapi
   module Meta
+    # Defines an API operation.
     class Operation < Base::Model
       include OpenAPI::Extensions
 
       ##
       # :attr: callbacks
-      # The OpenAPI::Callback objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :callbacks, { String => OpenAPI::Callback }
+      # The Callback objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :callbacks, { String => Callback }
 
       ##
       # :attr: deprecated
@@ -22,8 +23,8 @@ module Jsapi
 
       ##
       # :attr: external_docs
-      # The OpenAPI::ExternalDocumentation object.
-      attribute :external_docs, OpenAPI::ExternalDocumentation
+      # The ExternalDocumentation object.
+      attribute :external_docs, ExternalDocumentation
 
       ##
       # :attr: method
@@ -84,15 +85,15 @@ module Jsapi
 
       ##
       # :attr: security_requirements
-      # The OpenAPI::SecurityRequirement objects.
-      attribute :security_requirements, [OpenAPI::SecurityRequirement]
+      # The SecurityRequirement objects.
+      attribute :security_requirements, [SecurityRequirement]
 
       alias add_security add_security_requirement
 
       ##
       # :attr: servers
-      # The OpenAPI::Server objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :servers, [OpenAPI::Server]
+      # The Server objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :servers, [Server]
 
       ##
       # :attr: summary

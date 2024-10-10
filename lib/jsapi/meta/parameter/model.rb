@@ -3,6 +3,7 @@
 module Jsapi
   module Meta
     module Parameter
+      # Defines a parameter.
       class Model < Base::Model
         include ToOpenAPI
         include OpenAPI::Extensions
@@ -22,7 +23,7 @@ module Jsapi
         ##
         # :attr_reader: examples
         # The examples.
-        attribute :examples, { String => OpenAPI::Example }, default_key: 'default'
+        attribute :examples, { String => Example }, default_key: 'default'
 
         ##
         # :attr: in

@@ -34,7 +34,7 @@ module Jsapi
         ##
         # :attr: external_docs
         # The OpenAPI::ExternalDocumentation object.
-        attribute :external_docs, OpenAPI::ExternalDocumentation
+        attribute :external_docs, ExternalDocumentation
 
         ##
         # :attr: existence

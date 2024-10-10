@@ -12,8 +12,8 @@ module Jsapi
 
       ##
       # :attr: callbacks
-      # The reusable OpenAPI::Callback objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :callbacks, { String => OpenAPI::Callback }
+      # The reusable Callback objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :callbacks, { String => Callback }
 
       ##
       # :attr: defaults
@@ -22,18 +22,18 @@ module Jsapi
 
       ##
       # :attr: examples
-      # The reusable OpenAPI::Example objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :examples, { String => OpenAPI::Example }
+      # The reusable Example objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :examples, { String => Example }
 
       ##
       # :attr: external_docs
-      # The OpenAPI::ExternalDocumentation object.
-      attribute :external_docs, OpenAPI::ExternalDocumentation
+      # The ExternalDocumentation object.
+      attribute :external_docs, ExternalDocumentation
 
       ##
       # :attr: headers
-      # The reusable OpenAPI::Header objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :headers, { String => OpenAPI::Header }
+      # The reusable Header objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :headers, { String => Header }
 
       ##
       # :attr: host
@@ -42,13 +42,13 @@ module Jsapi
 
       ##
       # :attr: info
-      # The OpenAPI::Info object.
-      attribute :info, OpenAPI::Info
+      # The Info object.
+      attribute :info, Info
 
       ##
       # :attr: links
-      # The reusable OpenAPI::Link objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :links, { String => OpenAPI::Link }
+      # The reusable Link objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :links, { String => Link }
 
       ##
       # :attr: on_rescues
@@ -99,25 +99,25 @@ module Jsapi
 
       ##
       # :attr: security_requirements
-      # The array of OpenAPI::SecurityRequirement objects.
-      attribute :security_requirements, [OpenAPI::SecurityRequirement]
+      # The array of SecurityRequirement objects.
+      attribute :security_requirements, [SecurityRequirement]
 
       alias add_security add_security_requirement
 
       ##
       # :attr: security_schemes
-      # The OpenAPI::SecurityScheme objects.
-      attribute :security_schemes, { String => OpenAPI::SecurityScheme }
+      # The SecurityScheme objects.
+      attribute :security_schemes, { String => SecurityScheme }
 
       ##
       # :attr: servers
-      # The array of OpenAPI::Server objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :servers, [OpenAPI::Server]
+      # The array of Server objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :servers, [Server]
 
       ##
       # :attr: tags
-      # The array of OpenAPI::Tag objects.
-      attribute :tags, [OpenAPI::Tag]
+      # The array of Tag objects.
+      attribute :tags, [Tag]
 
       # The class to which this instance is assigned.
       attr_reader :owner
@@ -249,7 +249,7 @@ module Jsapi
 
         with_openapi_extensions(
           if version.major == 2
-            openapi_server = objects[:servers].first || default_openapi_server
+            openapi_server = objects[:servers].first || default_server
             uri = URI(openapi_server.url) if openapi_server
             {
               # Order according to the OpenAPI specification 2.x
@@ -276,7 +276,7 @@ module Jsapi
               openapi: version.minor.zero? ? '3.0.3' : '3.1.0',
               info: openapi_objects[:info],
               servers: openapi_objects[:servers] ||
-                [default_openapi_server&.to_openapi].compact.presence,
+                [default_server&.to_openapi].compact.presence,
               paths: openapi_paths,
               components: {
                 schemas: openapi_objects[:schemas],
@@ -356,17 +356,6 @@ module Jsapi
         other.included_definitions.any? { |included| circular_dependency?(included) }
       end
 
-      def default_openapi_server
-        @default_openapi_server ||=
-          if (name = @owner.try(:name))
-            OpenAPI::Server.new(
-              url: name.deconstantize.split('::')
-                       .map(&:underscore)
-                       .join('/').prepend('/')
-            )
-          end
-      end
-
       def default_operation_name
         @default_operation_name ||=
           if (name = @owner.try(:name))
@@ -376,6 +365,17 @@ module Jsapi
 
       def default_operation_path
         @default_operation_path ||= "/#{default_operation_name}"
+      end
+
+      def default_server
+        @default_server ||=
+          if (name = @owner.try(:name))
+            Server.new(
+              url: name.deconstantize.split('::')
+                       .map(&:underscore)
+                       .join('/').prepend('/')
+            )
+          end
       end
 
       def objects

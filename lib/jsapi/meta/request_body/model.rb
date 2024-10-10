@@ -3,6 +3,7 @@
 module Jsapi
   module Meta
     module RequestBody
+      # Defines a request body.
       class Model < Base::Model
         include OpenAPI::Extensions
 
@@ -20,8 +21,8 @@ module Jsapi
 
         ##
         # :attr_reader: examples
-        # The examples.
-        attribute :examples, { String => OpenAPI::Example }, default_key: 'default'
+        # The Example objects.
+        attribute :examples, { String => Example }, default_key: 'default'
 
         ##
         # :attr_reader: schema
