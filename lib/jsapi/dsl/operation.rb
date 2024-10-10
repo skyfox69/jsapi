@@ -2,8 +2,8 @@
 
 module Jsapi
   module DSL
-    # Used to specify details of an operation.
-    class Operation < Node
+    # Used to define an API operation.
+    class Operation < Base
       include OpenAPI::Callbacks
 
       ##
@@ -149,7 +149,7 @@ module Jsapi
       ##
       # :method: tags
       # :args: names
-      # Specifies all of the tags at once.
+      # Specifies all tags at once.
       #
       #   tags %w[foo bar]
     end

@@ -23,7 +23,7 @@ module Jsapi
             end
 
             example = _meta_model.add_example(name, keywords)
-            Node.new(example, &block) if block
+            Base.new(example, &block) if block
           end
         end
       end

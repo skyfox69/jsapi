@@ -2,20 +2,9 @@
 
 module Jsapi
   module DSL
-    class Node
-      def self.scope(name)
-        define_method(name) do |**keywords, &block|
-          _define(name) do
-            Node.new(_meta_model, "#{name}_", **keywords, &block)
-          end
-        end
-      end
-
-      def initialize(meta_model, prefix = nil, **keywords, &block)
+    class Base
+      def initialize(meta_model, &block)
         @_meta_model = meta_model
-        @_prefix = prefix
-
-        meta_model.merge!(keywords.transform_keys { |key| "#{prefix}#{key}" }) if keywords.any?
         instance_eval(&block) if block
       end
 
@@ -35,7 +24,7 @@ module Jsapi
         raise Error.new(e, args.compact.join(' ').presence)
       end
 
-      def _eval(model, klass = Node, &block)
+      def _eval(model, klass = Base, &block)
         return unless block
 
         if model.reference?
@@ -46,7 +35,7 @@ module Jsapi
       end
 
       def _find_method(name)
-        ["#{@_prefix}#{name}=", "add_#{@_prefix}#{name}"].find do |method|
+        ["#{name}=", "add_#{name}"].find do |method|
           _meta_model.respond_to?(method)
         end
       end

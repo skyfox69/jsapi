@@ -5,6 +5,45 @@ require 'test_helper'
 module Jsapi
   module DSL
     class ClassMethodsTest < Minitest::Test
+      # ::api_base_path
+
+      def test_api_base_path
+        definitions = Class.new do
+          extend ClassMethods
+          api_base_path '/foo'
+        end.api_definitions
+
+        assert_equal('/foo', definitions.base_path)
+      end
+
+      # ::api_callback
+
+      def test_api_callback
+        definitions = Class.new do
+          extend ClassMethods
+          api_callback 'onFoo', operations: {
+            '{$request.query.foo}' => { path: '/bar' }
+          }
+        end.api_definitions
+
+        callback = definitions.callback('onFoo')
+        assert_predicate(callback, :present?)
+        assert_equal('/bar', callback.operation('{$request.query.foo}').path)
+      end
+
+      def test_api_callback_with_block
+        definitions = Class.new do
+          extend ClassMethods
+          api_callback 'onFoo' do
+            operation '{$request.query.foo}', path: '/bar'
+          end
+        end.api_definitions
+
+        callback = definitions.callback('onFoo')
+        assert_predicate(callback, :present?)
+        assert_equal('/bar', callback.operation('{$request.query.foo}').path)
+      end
+
       # ::api_default
 
       def test_api_default
@@ -56,6 +95,95 @@ module Jsapi
         assert_predicate(operation, :present?)
       end
 
+      # ::api_example
+
+      def test_api_example
+        definitions = Class.new do
+          extend ClassMethods
+          api_example 'foo', value: 'bar'
+        end.api_definitions
+
+        example = definitions.example('foo')
+        assert_predicate(example, :present?)
+        assert_equal('bar', example.value)
+      end
+
+      def test_api_example_with_block
+        definitions = Class.new do
+          extend ClassMethods
+          api_example 'foo' do
+            value 'bar'
+          end
+        end.api_definitions
+
+        example = definitions.example('foo')
+        assert_predicate(example, :present?)
+        assert_equal('bar', example.value)
+      end
+
+      # ::api_external_docs
+
+      def test_api_external_docs
+        definitions = Class.new do
+          extend ClassMethods
+          api_external_docs url: 'https://foo.bar'
+        end.api_definitions
+
+        external_docs = definitions.external_docs
+        assert_predicate(external_docs, :present?)
+        assert_equal('https://foo.bar', external_docs.url)
+      end
+
+      def test_api_external_docs_with_block
+        definitions = Class.new do
+          extend ClassMethods
+          api_external_docs do
+            url 'https://foo.bar'
+          end
+        end.api_definitions
+
+        external_docs = definitions.external_docs
+        assert_predicate(external_docs, :present?)
+        assert_equal('https://foo.bar', external_docs.url)
+      end
+
+      # ::api_header
+
+      def test_api_header
+        definitions = Class.new do
+          extend ClassMethods
+          api_header 'foo', description: 'Description of foo'
+        end.api_definitions
+
+        header = definitions.header('foo')
+        assert_predicate(header, :present?)
+        assert_equal('Description of foo', header.description)
+      end
+
+      def test_api_header_with_block
+        definitions = Class.new do
+          extend ClassMethods
+          api_header 'foo' do
+            description 'Description of foo'
+          end
+        end.api_definitions
+
+        header = definitions.header('foo')
+        assert_predicate(header, :present?)
+        assert_equal('Description of foo', header.description)
+      end
+
+      # ::api_host
+
+      def test_api_host
+        definitions = Class.new do
+          extend ClassMethods
+          api_host 'foo.bar'
+        end.api_definitions
+
+        assert_equal('foo.bar', definitions.host)
+      end
+
       # ::api_include
 
       def test_api_include
@@ -71,6 +199,58 @@ module Jsapi
 
         schema = definitions.find_schema('foo')
         assert_predicate(schema, :present?)
+      end
+
+      # ::api_info
+
+      def test_api_info
+        definitions = Class.new do
+          extend ClassMethods
+          api_info title: 'foo'
+        end.api_definitions
+
+        info = definitions.info
+        assert_predicate(info, :present?)
+        assert_equal('foo', info.title)
+      end
+
+      def test_api_info_with_block
+        definitions = Class.new do
+          extend ClassMethods
+          api_info do
+            title 'foo'
+          end
+        end.api_definitions
+
+        info = definitions.info
+        assert_predicate(info, :present?)
+        assert_equal('foo', info.title)
+      end
+
+      # ::api_link
+
+      def test_api_link
+        definitions = Class.new do
+          extend ClassMethods
+          api_link 'foo', operation_id: 'bar'
+        end.api_definitions
+
+        link = definitions.link('foo')
+        assert_predicate(link, :present?)
+        assert_equal('bar', link.operation_id)
+      end
+
+      def test_api_link_with_block
+        definitions = Class.new do
+          extend ClassMethods
+          api_link 'foo' do
+            operation_id 'bar'
+          end
+        end.api_definitions
+
+        link = definitions.link('foo')
+        assert_predicate(link, :present?)
+        assert_equal('bar', link.operation_id)
       end
 
       # ::api_on_rescue
@@ -235,325 +415,119 @@ module Jsapi
         assert_equal('Description of foo', schema.description)
       end
 
-      # ::openapi
+      # ::api_scheme
 
-      def test_openapi
+      def test_api_scheme
         definitions = Class.new do
           extend ClassMethods
-          openapi info: { title: 'foo', version: '1' }
+          api_scheme 'https'
         end.api_definitions
 
-        info = definitions.openapi_info
-        assert_predicate(info, :present?)
-        assert_equal('foo', info.title)
+        assert_equal(%w[https], definitions.schemes)
       end
 
-      def test_openapi_with_block
+      # ::api_security_requirement
+
+      def test_api_security_requirement
         definitions = Class.new do
           extend ClassMethods
-          openapi do
-            info title: 'foo', version: '1'
-          end
+          api_security_requirement schemes: { 'basic_auth' => [] }
         end.api_definitions
 
-        info = definitions.openapi_info
-        assert_predicate(info, :present?)
-        assert_equal('foo', info.title)
-      end
-
-      # ::openapi_base_path
-
-      def test_openapi_base_path
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_base_path '/foo'
-        end.api_definitions
-
-        assert_equal('/foo', definitions.openapi_base_path)
-      end
-
-      # ::openapi_callback
-
-      def test_openapi_callback
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_callback 'onFoo', operations: {
-            '{$request.query.foo}' => { path: '/bar' }
-          }
-        end.api_definitions
-
-        callback = definitions.openapi_callback('onFoo')
-        assert_predicate(callback, :present?)
-        assert_equal('/bar', callback.operation('{$request.query.foo}').path)
-      end
-
-      def test_openapi_callback_with_block
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_callback 'onFoo' do
-            operation '{$request.query.foo}', path: '/bar'
-          end
-        end.api_definitions
-
-        callback = definitions.openapi_callback('onFoo')
-        assert_predicate(callback, :present?)
-        assert_equal('/bar', callback.operation('{$request.query.foo}').path)
-      end
-
-      # ::openapi_example
-
-      def test_openapi_example
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_example 'foo', value: 'bar'
-        end.api_definitions
-
-        example = definitions.openapi_example('foo')
-        assert_predicate(example, :present?)
-        assert_equal('bar', example.value)
-      end
-
-      def test_openapi_example_with_block
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_example 'foo' do
-            value 'bar'
-          end
-        end.api_definitions
-
-        example = definitions.openapi_example('foo')
-        assert_predicate(example, :present?)
-        assert_equal('bar', example.value)
-      end
-
-      # ::openapi_external_docs
-
-      def test_openapi_external_docs
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_external_docs url: 'https://foo.bar'
-        end.api_definitions
-
-        external_docs = definitions.openapi_external_docs
-        assert_predicate(external_docs, :present?)
-        assert_equal('https://foo.bar', external_docs.url)
-      end
-
-      def test_openapi_external_docs_with_block
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_external_docs do
-            url 'https://foo.bar'
-          end
-        end.api_definitions
-
-        external_docs = definitions.openapi_external_docs
-        assert_predicate(external_docs, :present?)
-        assert_equal('https://foo.bar', external_docs.url)
-      end
-
-      # ::openapi_header
-
-      def test_openapi_header
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_header 'foo', description: 'Description of foo'
-        end.api_definitions
-
-        header = definitions.openapi_header('foo')
-        assert_predicate(header, :present?)
-        assert_equal('Description of foo', header.description)
-      end
-
-      def test_openapi_header_with_block
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_header 'foo' do
-            description 'Description of foo'
-          end
-        end.api_definitions
-
-        header = definitions.openapi_header('foo')
-        assert_predicate(header, :present?)
-        assert_equal('Description of foo', header.description)
-      end
-
-      # ::openapi_host
-
-      def test_openapi_host
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_host 'foo.bar'
-        end.api_definitions
-
-        assert_equal('foo.bar', definitions.openapi_host)
-      end
-
-      # ::openapi_info
-
-      def test_openapi_info
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_info title: 'foo'
-        end.api_definitions
-
-        info = definitions.openapi_info
-        assert_predicate(info, :present?)
-        assert_equal('foo', info.title)
-      end
-
-      def test_openapi_info_with_block
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_info do
-            title 'foo'
-          end
-        end.api_definitions
-
-        openapi_info = definitions.openapi_info
-        assert_predicate(openapi_info, :present?)
-        assert_equal('foo', openapi_info.title)
-      end
-
-      # ::openapi_link
-
-      def test_openapi_link
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_link 'foo', operation_id: 'bar'
-        end.api_definitions
-
-        link = definitions.openapi_link('foo')
-        assert_predicate(link, :present?)
-        assert_equal('bar', link.operation_id)
-      end
-
-      def test_openapi_link_with_block
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_link 'foo' do
-            operation_id 'bar'
-          end
-        end.api_definitions
-
-        link = definitions.openapi_link('foo')
-        assert_predicate(link, :present?)
-        assert_equal('bar', link.operation_id)
-      end
-
-      # ::openapi_scheme
-
-      def test_openapi_scheme
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_scheme 'https'
-        end.api_definitions
-
-        assert_equal(%w[https], definitions.openapi_schemes)
-      end
-
-      # ::openapi_security_requirement
-
-      def test_openapi_security_requirement
-        definitions = Class.new do
-          extend ClassMethods
-          openapi_security_requirement schemes: { 'basic_auth' => [] }
-        end.api_definitions
-
-        security_requirements = definitions.openapi_security_requirements
+        security_requirements = definitions.security_requirements
         assert_predicate(security_requirements, :one?)
         assert_equal([], security_requirements.first.schemes['basic_auth'].scopes)
       end
 
-      def test_openapi_security_requirement_with_block
+      def test_api_security_requirement_with_block
         definitions = Class.new do
           extend ClassMethods
-          openapi_security_requirement do
+          api_security_requirement do
             scheme 'basic_auth'
           end
         end.api_definitions
 
-        security_requirements = definitions.openapi_security_requirements
+        security_requirements = definitions.security_requirements
         assert_predicate(security_requirements, :one?)
         assert_equal([], security_requirements.first.schemes['basic_auth'].scopes)
       end
 
-      # ::openapi_security_scheme
+      # ::api_security_scheme
 
-      def test_openapi_security_scheme
+      def test_api_security_scheme
         definitions = Class.new do
           extend ClassMethods
-          openapi_security_scheme 'basic_auth', type: 'http',
-                                                scheme: 'basic',
-                                                description: 'Description of basic auth'
+          api_security_scheme 'basic_auth', type: 'http',
+                                            scheme: 'basic',
+                                            description: 'Description of basic auth'
         end.api_definitions
 
-        security_scheme = definitions.openapi_security_scheme('basic_auth')
+        security_scheme = definitions.security_scheme('basic_auth')
         assert_predicate(security_scheme, :present?)
         assert_equal('Description of basic auth', security_scheme.description)
       end
 
-      def test_openapi_security_scheme_with_block
+      def test_api_security_scheme_with_block
         definitions = Class.new do
           extend ClassMethods
-          openapi_security_scheme 'basic_auth', type: 'http', scheme: 'basic' do
+          api_security_scheme 'basic_auth', type: 'http', scheme: 'basic' do
             description 'Description of basic auth'
           end
         end.api_definitions
 
-        security_scheme = definitions.openapi_security_scheme('basic_auth')
+        security_scheme = definitions.security_scheme('basic_auth')
         assert_predicate(security_scheme, :present?)
         assert_equal('Description of basic auth', security_scheme.description)
       end
 
-      # ::openapi_server
+      # ::api_server
 
-      def test_openapi_server
+      def test_api_server
         definitions = Class.new do
           extend ClassMethods
-          openapi_server url: 'https://foo.bar/foo'
+          api_server url: 'https://foo.bar/foo'
         end.api_definitions
 
-        servers = definitions.openapi_servers
+        servers = definitions.servers
         assert_predicate(servers, :one?)
         assert_equal('https://foo.bar/foo', servers.first.url)
       end
 
-      def test_openapi_server_with_block
+      def test_api_server_with_block
         definitions = Class.new do
           extend ClassMethods
-          openapi_server do
+          api_server do
             url 'https://foo.bar/foo'
           end
         end.api_definitions
 
-        servers = definitions.openapi_servers
+        servers = definitions.servers
         assert_predicate(servers, :one?)
         assert_equal('https://foo.bar/foo', servers.first.url)
       end
 
-      # ::openapi_tag
+      # ::api_tag
 
-      def test_openapi_tag
+      def test_api_tag
         definitions = Class.new do
           extend ClassMethods
-          openapi_tag name: 'foo'
+          api_tag name: 'foo'
         end.api_definitions
 
-        tags = definitions.openapi_tags
+        tags = definitions.tags
         assert_predicate(tags, :one?)
         assert_equal('foo', tags.first.name)
       end
 
-      def test_openapi_tag_with_block
+      def test_api_tag_with_block
         definitions = Class.new do
           extend ClassMethods
-          openapi_tag do
+          api_tag do
             name 'foo'
           end
         end.api_definitions
 
-        tags = definitions.openapi_tags
+        tags = definitions.tags
         assert_predicate(tags, :one?)
         assert_equal('foo', tags.first.name)
       end

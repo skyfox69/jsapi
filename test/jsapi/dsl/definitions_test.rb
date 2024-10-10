@@ -3,6 +3,39 @@
 module Jsapi
   module DSL
     class DefinitionsTest < Minitest::Test
+      # #callback
+
+      def test_callback
+        definitions = self.definitions do
+          callback 'onFoo', operations: {
+            '{$request.query.foo}' => { path: '/bar' }
+          }
+        end
+        callback = definitions.callback('onFoo')
+        assert_predicate(callback, :present?)
+        assert_equal('/bar', callback.operation('{$request.query.foo}').path)
+      end
+
+      def test_callback_with_block
+        definitions = self.definitions do
+          callback 'foo' do
+            operation '{$request.query.foo}', path: '/bar'
+          end
+        end
+        callback = definitions.callback('foo')
+        assert_predicate(callback, :present?)
+        assert_equal('/bar', callback.operation('{$request.query.foo}').path)
+      end
+
+      def test_callback_raises_an_error_on_invalid_keyword
+        error = assert_raises(Error) do
+          definitions do
+            callback 'foo', bar: ''
+          end
+        end
+        assert_equal('unsupported keyword: bar (at callback "foo")', error.message)
+      end
+
       # #default
 
       def test_default
@@ -34,6 +67,37 @@ module Jsapi
         assert_equal('unsupported keyword: foo (at default "array")', error.message)
       end
 
+      # #example
+
+      def test_example
+        definitions = self.definitions do
+          example 'foo', value: 'bar'
+        end
+        example = definitions.example('foo')
+        assert_predicate(example, :present?)
+        assert_equal('bar', example.value)
+      end
+
+      def test_example_with_block
+        definitions = self.definitions do
+          example 'foo' do
+            value 'bar'
+          end
+        end
+        example = definitions.example('foo')
+        assert_predicate(example, :present?)
+        assert_equal('bar', example.value)
+      end
+
+      def test_example_raises_an_error_on_invalid_keyword
+        error = assert_raises(Error) do
+          definitions do
+            example 'foo', bar: ''
+          end
+        end
+        assert_equal('unsupported keyword: bar (at example "foo")', error.message)
+      end
+
       # #include
 
       def test_include
@@ -43,6 +107,68 @@ module Jsapi
 
         schema = owner2.api_definitions.find_schema('Foo')
         assert_predicate(schema, :present?)
+      end
+
+      # #header
+
+      def test_header
+        definitions = self.definitions do
+          header 'foo', description: 'Description of foo'
+        end
+        header = definitions.header('foo')
+        assert_predicate(header, :present?)
+        assert_equal('Description of foo', header.description)
+      end
+
+      def test_header_with_block
+        definitions = self.definitions do
+          header 'foo' do
+            description 'Description of foo'
+          end
+        end
+        header = definitions.header('foo')
+        assert_predicate(header, :present?)
+        assert_equal('Description of foo', header.description)
+      end
+
+      def test_header_raises_an_error_on_invalid_keyword
+        error = assert_raises(Error) do
+          definitions do
+            header 'foo', bar: ''
+          end
+        end
+        assert_equal('unsupported keyword: bar (at header "foo")', error.message)
+      end
+
+      # #link
+
+      def test_link
+        definitions = self.definitions do
+          link 'foo', operation_id: 'bar'
+        end
+        link = definitions.link('foo')
+        assert_predicate(link, :present?)
+        assert_equal('bar', link.operation_id)
+      end
+
+      def test_link_with_block
+        definitions = self.definitions do
+          link 'foo' do
+            operation_id 'bar'
+          end
+        end
+        link = definitions.link('foo')
+        assert_predicate(link, :present?)
+        assert_equal('bar', link.operation_id)
+      end
+
+      def test_link_raises_an_error_on_invalid_keyword
+        error = assert_raises(Error) do
+          definitions do
+            link 'foo', bar: ''
+          end
+        end
+        assert_equal('unsupported keyword: bar (at link "foo")', error.message)
       end
 
       # #on_rescue
@@ -59,190 +185,6 @@ module Jsapi
           on_rescue { |e| e }
         end
         assert_instance_of(Proc, definitions.on_rescue_callbacks.first)
-      end
-
-      # #openapi
-
-      def test_openapi
-        definitions = self.definitions do
-          openapi(info: { title: 'foo', version: '1' })
-        end
-        info = definitions.openapi_info
-        assert_predicate(info, :present?)
-        assert_equal('foo', info.title)
-      end
-
-      def test_openapi_with_block
-        definitions = self.definitions do
-          openapi do
-            info title: 'foo', version: '1'
-          end
-        end
-        info = definitions.openapi_info
-        assert_predicate(info, :present?)
-        assert_equal('foo', info.title)
-      end
-
-      # #openapi_callback
-
-      def test_openapi_callback
-        definitions = self.definitions do
-          openapi_callback 'onFoo', operations: {
-            '{$request.query.foo}' => { path: '/bar' }
-          }
-        end
-        callback = definitions.openapi_callback('onFoo')
-        assert_predicate(callback, :present?)
-        assert_equal('/bar', callback.operation('{$request.query.foo}').path)
-      end
-
-      def test_openapi_callback_with_block
-        definitions = self.definitions do
-          openapi_callback 'foo' do
-            operation '{$request.query.foo}', path: '/bar'
-          end
-        end
-        callback = definitions.openapi_callback('foo')
-        assert_predicate(callback, :present?)
-        assert_equal('/bar', callback.operation('{$request.query.foo}').path)
-      end
-
-      def test_openapi_callback_raises_an_error_on_invalid_keyword
-        error = assert_raises(Error) do
-          definitions do
-            openapi_callback 'foo', bar: ''
-          end
-        end
-        assert_equal('unsupported keyword: bar (at openapi_callback "foo")', error.message)
-      end
-
-      # #openapi_example
-
-      def test_openapi_example
-        definitions = self.definitions do
-          openapi_example 'foo', value: 'bar'
-        end
-        example = definitions.openapi_example('foo')
-        assert_predicate(example, :present?)
-        assert_equal('bar', example.value)
-      end
-
-      def test_openapi_example_with_block
-        definitions = self.definitions do
-          openapi_example 'foo' do
-            value 'bar'
-          end
-        end
-        example = definitions.openapi_example('foo')
-        assert_predicate(example, :present?)
-        assert_equal('bar', example.value)
-      end
-
-      def test_openapi_example_raises_an_error_on_invalid_keyword
-        error = assert_raises(Error) do
-          definitions do
-            openapi_example 'foo', bar: ''
-          end
-        end
-        assert_equal('unsupported keyword: bar (at openapi_example "foo")', error.message)
-      end
-
-      # #openapi_header
-
-      def test_openapi_header
-        definitions = self.definitions do
-          openapi_header 'foo', description: 'Description of foo'
-        end
-        header = definitions.openapi_header('foo')
-        assert_predicate(header, :present?)
-        assert_equal('Description of foo', header.description)
-      end
-
-      def test_openapi_header_with_block
-        definitions = self.definitions do
-          openapi_header 'foo' do
-            description 'Description of foo'
-          end
-        end
-        header = definitions.openapi_header('foo')
-        assert_predicate(header, :present?)
-        assert_equal('Description of foo', header.description)
-      end
-
-      def test_openapi_header_raises_an_error_on_invalid_keyword
-        error = assert_raises(Error) do
-          definitions do
-            openapi_header 'foo', bar: ''
-          end
-        end
-        assert_equal('unsupported keyword: bar (at openapi_header "foo")', error.message)
-      end
-
-      # #openapi_link
-
-      def test_openapi_link
-        definitions = self.definitions do
-          openapi_link 'foo', operation_id: 'bar'
-        end
-        link = definitions.openapi_link('foo')
-        assert_predicate(link, :present?)
-        assert_equal('bar', link.operation_id)
-      end
-
-      def test_openapi_link_with_block
-        definitions = self.definitions do
-          openapi_link 'foo' do
-            operation_id 'bar'
-          end
-        end
-        link = definitions.openapi_link('foo')
-        assert_predicate(link, :present?)
-        assert_equal('bar', link.operation_id)
-      end
-
-      def test_openapi_link_raises_an_error_on_invalid_keyword
-        error = assert_raises(Error) do
-          definitions do
-            openapi_link 'foo', bar: ''
-          end
-        end
-        assert_equal('unsupported keyword: bar (at openapi_link "foo")', error.message)
-      end
-
-      # #openapi_security_scheme
-
-      def test_openapi_security_scheme
-        definitions = self.definitions do
-          openapi_security_scheme 'basic_auth', type: 'http',
-                                                scheme: 'basic',
-                                                description: 'Description of basic auth'
-        end
-        security_scheme = definitions.openapi_security_scheme('basic_auth')
-        assert_predicate(security_scheme, :present?)
-        assert_equal('Description of basic auth', security_scheme.description)
-      end
-
-      def test_openapi_security_scheme_with_block
-        definitions = self.definitions do
-          openapi_security_scheme 'basic_auth', type: 'http', scheme: 'basic' do
-            description 'Description of basic auth'
-          end
-        end
-        security_scheme = definitions.openapi_security_scheme('basic_auth')
-        assert_predicate(security_scheme, :present?)
-        assert_equal('Description of basic auth', security_scheme.description)
-      end
-
-      def test_openapi_security_scheme_raises_an_error_on_invalid_keyword
-        error = assert_raises(Error) do
-          definitions do
-            openapi_security_scheme 'basic_auth', type: 'http', foo: ''
-          end
-        end
-        assert_equal(
-          'unsupported keyword: foo (at openapi_security_scheme "basic_auth")',
-          error.message
-        )
       end
 
       # #operation
@@ -437,6 +379,42 @@ module Jsapi
           end
         end
         assert_equal('unsupported keyword: bar (at schema "foo")', error.message)
+      end
+
+      # #security_scheme
+
+      def test_security_scheme
+        definitions = self.definitions do
+          security_scheme 'basic_auth', type: 'http',
+                                        scheme: 'basic',
+                                        description: 'Description of basic auth'
+        end
+        security_scheme = definitions.security_scheme('basic_auth')
+        assert_predicate(security_scheme, :present?)
+        assert_equal('Description of basic auth', security_scheme.description)
+      end
+
+      def test_security_scheme_with_block
+        definitions = self.definitions do
+          security_scheme 'basic_auth', type: 'http', scheme: 'basic' do
+            description 'Description of basic auth'
+          end
+        end
+        security_scheme = definitions.security_scheme('basic_auth')
+        assert_predicate(security_scheme, :present?)
+        assert_equal('Description of basic auth', security_scheme.description)
+      end
+
+      def test_security_scheme_raises_an_error_on_invalid_keyword
+        error = assert_raises(Error) do
+          definitions do
+            security_scheme 'basic_auth', type: 'http', foo: ''
+          end
+        end
+        assert_equal(
+          'unsupported keyword: foo (at security_scheme "basic_auth")',
+          error.message
+        )
       end
 
       private

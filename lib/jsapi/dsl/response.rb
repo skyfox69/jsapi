@@ -2,7 +2,7 @@
 
 module Jsapi
   module DSL
-    # Used to specify details of a response.
+    # Used to define a response.
     class Response < Schema
       include OpenAPI::Examples
 
@@ -37,7 +37,7 @@ module Jsapi
           keywords = { ref: name } unless keywords.any? || block
 
           link_model = _meta_model.add_link(name, keywords)
-          Node.new(link_model, &block) if block
+          Base.new(link_model, &block) if block
         end
       end
 

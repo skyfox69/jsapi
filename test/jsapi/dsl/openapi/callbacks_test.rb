@@ -4,7 +4,7 @@ module Jsapi
   module DSL
     module OpenAPI
       class CallbacksTest < Minitest::Test
-        class Dummy < Node
+        class Dummy < Base
           include Callbacks
         end
 

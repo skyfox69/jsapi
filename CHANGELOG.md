@@ -2,12 +2,16 @@
 
 ## 0.9.0 ()
 
+### Breaking changes
+
+- `openapi` has been removed from the DSL. All declarations that were previously specified in
+  an `openapi` block are now specified directly in an `api_definitions` block or on top level
+  with prefix `api_`. This allows OpenAPI objects to be inherited/included like API components.
+
 ### Changes
 
-- OpenAPI objects can be inherited/included like API components.
-
-- The OpenAPI 2.0 base path and OpenAPI 3.x server objects are derrived from a
-  controller's module name by default.
+- The OpenAPI 2.0 base path and OpenAPI 3.x server objects are derrived from a controller's
+  module name by default.
 
 ## 0.8.0 (2024-09-29)
 

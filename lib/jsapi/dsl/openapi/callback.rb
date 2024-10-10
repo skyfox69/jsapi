@@ -3,8 +3,8 @@
 module Jsapi
   module DSL
     module OpenAPI
-      # Used to specify details of a callback.
-      class Callback < Node
+      # Used to specify a callback.
+      class Callback < Base
 
         # Adds a callback operation.
         #

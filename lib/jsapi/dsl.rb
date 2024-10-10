@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require_relative 'dsl/error'
-require_relative 'dsl/node'
+require_relative 'dsl/base'
 require_relative 'dsl/openapi'
 require_relative 'dsl/schema'
 require_relative 'dsl/parameter'

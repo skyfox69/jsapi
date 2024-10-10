@@ -2,31 +2,7 @@
 
 module Jsapi
   module DSL
-    class NodeTest < Minitest::Test
-      # Scopes
-
-      def test_scope
-        klass = Class.new(Node) do
-          scope :foo
-        end
-
-        model = Class.new(Meta::Base::Model) do
-          attribute :foo_bar, String
-        end.new
-
-        klass.new(model) do
-          foo { bar 'foo' }
-        end
-        assert_equal('foo', model.foo_bar)
-
-        error = assert_raises(Error) do
-          klass.new(model) do
-            foo { foo_bar 'foo' }
-          end
-        end
-        assert_equal('unsupported method: foo_bar (at foo)', error.message)
-      end
-
+    class BaseTest < Minitest::Test
       # Generic methods
 
       def test_generic_method_call
@@ -34,7 +10,7 @@ module Jsapi
           attribute :foo, String
         end.new
 
-        Node.new(model) { foo 'bar' }
+        Base.new(model) { foo 'bar' }
         assert_equal('bar', model.foo)
       end
 
@@ -43,7 +19,7 @@ module Jsapi
           attribute :foos, [String]
         end.new
 
-        Node.new(model) { foo 'bar' }
+        Base.new(model) { foo 'bar' }
         assert_equal(%w[bar], model.foos)
       end
 
@@ -52,7 +28,7 @@ module Jsapi
           attribute :foos, { String => String }
         end.new
 
-        Node.new(model) { foo 'foo', 'bar' }
+        Base.new(model) { foo 'foo', 'bar' }
         assert_equal('bar', model.foo('foo'))
       end
 
@@ -65,7 +41,7 @@ module Jsapi
           )
         end.new
 
-        Node.new(model) do
+        Base.new(model) do
           foo { bar 'bar' }
         end
         assert_equal('bar', model.foo.bar)
@@ -80,7 +56,7 @@ module Jsapi
           ]
         end.new
 
-        Node.new(model) do
+        Base.new(model) do
           foo { bar 'bar' }
         end
         assert_equal(%w[bar], model.foos.map(&:bar))
@@ -95,7 +71,7 @@ module Jsapi
           }
         end.new
 
-        Node.new(model) do
+        Base.new(model) do
           foo('foo') { bar 'bar' }
         end
         assert_equal('bar', model.foo('foo').bar)
@@ -106,7 +82,7 @@ module Jsapi
           attribute :foo
         end.new
 
-        node = Node.new(model)
+        node = Base.new(model)
         assert(node.respond_to?(:foo))
         assert(!node.respond_to?(:bar))
       end
@@ -115,7 +91,7 @@ module Jsapi
         model = Meta::Base::Model.new
 
         error = assert_raises do
-          Node.new(model) { foo 'bar' }
+          Base.new(model) { foo 'bar' }
         end
         assert_equal('unsupported method: foo', error.message)
       end
@@ -126,7 +102,7 @@ module Jsapi
         end.new
 
         error = assert_raises do
-          Node.new(model) do
+          Base.new(model) do
             foo(ref: 'bar') {}
           end
         end

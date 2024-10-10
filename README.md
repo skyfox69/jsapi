@@ -135,10 +135,10 @@ body is produced:
 
 ## Jsapi DSL
 
-Everything needed to build an API is defined by a DSL that can be used in any controller
-inherriting from `Jsapi::Controller::Base` as well as any class extending `Jsapi::DSL`. The
-names of all DSL methods start with `api_` to avoid naming conflicts with other GEMs. All DSL
-methods can be grouped in a `api_definitions` block without the prefix `api_` as shown below.
+Everything needed to build an API is defined by a DSL whose vocabulary is based on OpenAPI /
+JSON Schema. This DSL can be used in any controller inherriting from `Jsapi::Controller::Base`
+and any class extending `Jsapi::DSL`. All declarations start with `api_`. Declarations can also
+be grouped in an `api_definitions` block without the prefix `api_` as shown below.
 
 ```ruby
 api_definitions do
@@ -157,6 +157,15 @@ api_definitions do
 end
 ```
 
+All keywords except `ref`, `schema` and `type` can also be specified within the block,
+for example:
+
+```ruby
+parameter 'call', type: 'string' do
+  existence true
+end
+```
+
 ### Defining API components
 
 The following methods are provided to define API components:
@@ -168,18 +177,7 @@ The following methods are provided to define API components:
 - [api_response](#defining-and-refering-reusable-responses) - Defines a reusable response.
 - [api_schema](#defining-and-referring-reusable-schemas) - Defines a reusable schema.
 
-The names and types of API components can be strings or symbols. All keywords except  `ref`,
-`schema` and `type` can also be specified within the block, for example:
-
-```ruby
-# Define keyword by argument
-parameter 'foo', type: 'string', existence: true
-
-# Define keyword within the block
-parameter 'bar', type: 'string' do
-  existence true
-end
-```
+The names and types of API components can be strings or symbols.
 
 #### Defining operations
 
@@ -607,43 +605,26 @@ end
 
 The following methods are provided to specify additional information:
 
-- [openapi_base_path](#specifying-the-base-path) - Specifies the base path of the API.
-- [openapi_callback](#specifying-reusable-callbacks) - Specifies a reusable callback.
-- [openapi_example](#specifying-reusable-examples) - Specifies a reusable example.
-- [openapi_external_docs](#specifying-external-documentation) - Specifies the external
+- [api_base_path](#specifying-the-base-path) - Specifies the base path of the API.
+- [api_callback](#specifying-reusable-callbacks) - Specifies a reusable callback.
+- [api_example](#specifying-reusable-examples) - Specifies a reusable example.
+- [api_external_docs](#specifying-external-documentation) - Specifies the external
   documentation.
-- [openapi_header](#specifying-reusable-headers) - Specifies a reusable header.
-- [openapi_host](#specifying-the-host) - Specifies the host serving the API.
-- [openapi_info](#specifying-general-information) - Specifies general information about the API.
-- [openapi_link](#specifying-reusable-link) - Specifies a reusable link.
-- [openapi_scheme](#specifying-a-uri-scheme) - Specifies a URI scheme supported by the API.
-- [openapi_security_requirement](#specifying-security-requirements) - Specifies a security
+- [api_header](#specifying-reusable-headers) - Specifies a reusable header.
+- [api_host](#specifying-the-host) - Specifies the host serving the API.
+- [api_info](#specifying-general-information) - Specifies general information about the API.
+- [api_link](#specifying-reusable-link) - Specifies a reusable link.
+- [api_scheme](#specifying-a-uri-scheme) - Specifies a URI scheme supported by the API.
+- [api_security_requirement](#specifying-security-requirements) - Specifies a security
   requirement.
-- [openapi_security_scheme](#specifying-security-schemes) - Specifies a security scheme.
-- [openapi_server](#specifying-servers) - Specifies a server providing the API
-- [openapi_tag](#specifying-tags) - Specifies a tag.
-
-```ruby
-openapi do
-  info title: 'Foo', version: 1
-  security_scheme 'http_basic', type: 'basic'
-  security do
-    scheme 'http_basic'
-  end
-
-  # OpenAPI 2.0
-  host 'https://foo.bar'
-  base_path '/foo'
-
-  # OpenAPI 3.0
-  server url: 'https://foo.bar/foo'
-end
-```
+- [api_security_scheme](#specifying-security-schemes) - Specifies a security scheme.
+- [api_server](#specifying-servers) - Specifies a server providing the API
+- [api_tag](#specifying-tags) - Specifies a tag.
 
 #### Specifying general information
 
 ```ruby
-openapi_info title: 'Foo', version: '1' do
+api_info title: 'Foo', version: '1' do
   contact name: 'bar'
 end
 ```
@@ -651,31 +632,31 @@ end
 #### Specifying servers
 
 ```ruby
-openapi_server 'https://foo.bar/foo'
+api_server 'https://foo.bar/foo'
 ```
 
 #### Specifying the host
 
 ```ruby
-openapi_host 'foo.bar'
+api_host 'foo.bar'
 ```
 
 #### Specifying the base path
 
 ```ruby
-openapi_base_path '/foo'
+api_base_path '/foo'
 ```
 
 #### Specifying a URI scheme
 
 ```ruby
-openapi_scheme 'https'
+api_scheme 'https'
 ```
 
 #### Specifying reusable callbacks
 
 ```ruby
-openapi_callback 'onFoo' do
+api_callback 'onFoo' do
   operation '{$request.query.foo}', path: '/bar'
 end
 ```
@@ -683,31 +664,31 @@ end
 #### Specifying reusable headers
 
 ```ruby
-openapi_header 'foo', type: 'string'
+api_header 'foo', type: 'string'
 ```
 
 #### Specifying reusable examples
 
 ```ruby
-openapi_example 'foo', value: 'bar'
+api_example 'foo', value: 'bar'
 ```
 
 #### Specifying reusable links
 
 ```ruby
-openapi_link 'foo', operation_id: 'bar'
+api_link 'foo', operation_id: 'bar'
 ```
 
 #### Specifying security schemes
 
 ```ruby
-openapi_security_scheme 'basic_auth', type: 'http', scheme: 'basic'
+api_security_scheme 'basic_auth', type: 'http', scheme: 'basic'
 ```
 
 #### Specifying security requirements
 
 ```ruby
-openapi_security_requirement do
+api_security_requirement do
   scheme 'basic_auth'
 end
 ```
@@ -715,13 +696,13 @@ end
 #### Specifying tags
 
 ```ruby
-openapi_tag name: 'foo', description: 'Description of foo'
+api_tag name: 'foo', description: 'Description of foo'
 ```
 
 #### Specifying external documentation
 
 ```ruby
-openapi_external_docs url: 'https://foo.bar'
+api_external_docs url: 'https://foo.bar'
 ```
 
 ### Sharing API components

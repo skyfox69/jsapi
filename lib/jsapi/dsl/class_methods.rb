@@ -3,6 +3,24 @@
 module Jsapi
   module DSL
     module ClassMethods
+      # Specifies the base path of the API.
+      #
+      #   api_base_path '/foo'
+      #
+      def api_base_path(arg)
+        api_definitions { base_path(arg) }
+      end
+
+      # Specifies a reusable callback.
+      #
+      #   api_callback 'onFoo' do
+      #     operation '{$request.query.foo}', path: '/bar'
+      #   end
+      #
+      def api_callback(name, **keywords, &block)
+        api_definitions { callback(name, **keywords, &block) }
+      end
+
       # Specifies the general default values for +type+.
       #
       #   api_default 'array', read: [], write: []
@@ -21,9 +39,58 @@ module Jsapi
         @api_definitions
       end
 
+      # Specifies a reusable example.
+      #
+      #   example 'foo', value: 'bar'
+      #
+      def api_example(name, **keywords, &block)
+        api_definitions { example(name, **keywords, &block) }
+      end
+
+      # Specifies the external documentation.
+      #
+      #   api_external_docs url: 'https://foo.bar'
+      #
+      def api_external_docs(**keywords, &block)
+        api_definitions { external_docs(**keywords, &block) }
+      end
+
+      # Specifies a reusable header.
+      #
+      #   api_header 'foo', type: 'string'
+      #
+      def api_header(name, **keywords, &block)
+        api_definitions { header(name, **keywords, &block) }
+      end
+
+      # Specifies the host serving the API.
+      #
+      #   api_host 'foo.bar'
+      #
+      def api_host(arg)
+        api_definitions { host(arg) }
+      end
+
       # Includes API definitions from +klasses+.
       def api_include(*klasses)
         api_definitions { include(*klasses) }
+      end
+
+      # Specifies general information about the API.
+      #
+      #   api_info title: 'Foo', version: '1' do
+      #     contact name: 'bar'
+      #   end
+      def api_info(**keywords, &block)
+        api_definitions { info(**keywords, &block) }
+      end
+
+      # Specifies a reusable link.
+      #
+      #   api_link 'foo', operation_id: 'bar'
+      #
+      def api_link(name, **keywords, &block)
+        api_definitions { link(name, **keywords, &block) }
       end
 
       # Registers a callback to be called when rescuing an exception.
@@ -88,122 +155,46 @@ module Jsapi
         api_definitions { schema(name, **keywords, &block) }
       end
 
-      # Defines additional OpenAPI objects.
+      # Specifies a URI scheme supported by the API.
       #
-      #   openapi do
-      #     info title: 'Foo', version: '1'
-      #   end
-      def openapi(**keywords, &block)
-        api_definitions { openapi(**keywords, &block) }
+      #   api_scheme 'https'
+      #
+      def api_scheme(arg)
+        api_definitions { scheme(arg) }
       end
 
-      # Specifies the base path of the API.
+      # Specifies a security requirement.
       #
-      #   openapi_base_path '/foo'
-      #
-      def openapi_base_path(arg)
-        api_definitions { openapi_base_path(arg) }
-      end
-
-      # Defines a reusable callback.
-      #
-      #   openapi_callback 'onFoo' do
-      #     operation '{$request.query.foo}', path: '/bar'
-      #   end
-      #
-      def openapi_callback(name, **keywords, &block)
-        api_definitions { openapi_callback(name, **keywords, &block) }
-      end
-
-      # Defines a reusable example.
-      #
-      #   openapi_example 'foo', value: 'bar'
-      #
-      def openapi_example(name, **keywords, &block)
-        api_definitions { openapi_example(name, **keywords, &block) }
-      end
-
-      # Specifies the external documentation.
-      #
-      #   openapi_external_docs url: 'https://foo.bar'
-      #
-      def openapi_external_docs(**keywords, &block)
-        api_definitions { openapi_external_docs(**keywords, &block) }
-      end
-
-      # Defines a reusable header.
-      #
-      #   openapi_header 'foo', type: 'string'
-      #
-      def openapi_header(name, **keywords, &block)
-        api_definitions { openapi_header(name, **keywords, &block) }
-      end
-
-      # Specifies the host serving the API.
-      #
-      #   openapi_host 'foo.bar'
-      #
-      def openapi_host(arg)
-        api_definitions { openapi_host(arg) }
-      end
-
-      # Specifies general information about the API.
-      #
-      #   openapi_info title: 'Foo', version: '1' do
-      #     contact name: 'bar'
-      #   end
-      def openapi_info(**keywords, &block)
-        api_definitions { openapi_info(**keywords, &block) }
-      end
-
-      # Defines a reusable link.
-      #
-      #   openapi_link 'foo', operation_id: 'bar'
-      #
-      def openapi_link(name, **keywords, &block)
-        api_definitions { openapi_link(name, **keywords, &block) }
-      end
-
-      # Adds a security requirement.
-      #
-      #   openapi_security_requirement do
+      #   api_security_requirement do
       #     scheme 'basic_auth'
       #   end
       #
-      def openapi_security_requirement(**keywords, &block)
-        api_definitions { openapi_security_requirement(**keywords, &block) }
+      def api_security_requirement(**keywords, &block)
+        api_definitions { security_requirement(**keywords, &block) }
       end
 
-      # Adds a security scheme.
+      # Specifies a security scheme.
       #
-      #   openapi_security_scheme 'basic_auth', type: 'http', scheme: 'basic'
+      #   api_security_scheme 'basic_auth', type: 'http', scheme: 'basic'
       #
-      def openapi_security_scheme(name, **keywords, &block)
-        api_definitions { openapi_security_scheme(name, **keywords, &block) }
+      def api_security_scheme(name, **keywords, &block)
+        api_definitions { security_scheme(name, **keywords, &block) }
       end
 
-      # Adds a URI scheme supported by the API.
+      # Specifies a server providing the API.
       #
-      #   openapi_scheme 'https'
+      #   api_server url: 'https://foo.bar/foo'
       #
-      def openapi_scheme(arg)
-        api_definitions { openapi_scheme(arg) }
+      def api_server(**keywords, &block)
+        api_definitions { server(**keywords, &block) }
       end
 
-      # Adds a server providing the API.
+      # Specifies a tag.
       #
-      #   openapi_server url: 'https://foo.bar/foo'
+      #   api_tag name: 'foo', description: 'description of foo'
       #
-      def openapi_server(**keywords, &block)
-        api_definitions { openapi_server(**keywords, &block) }
-      end
-
-      # Adds a tag.
-      #
-      #   openapi_tag name: 'foo', description: 'description of foo'
-      #
-      def openapi_tag(**keywords, &block)
-        api_definitions { openapi_tag(**keywords, &block) }
+      def api_tag(**keywords, &block)
+        api_definitions { tag(**keywords, &block) }
       end
     end
   end

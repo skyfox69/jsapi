@@ -2,7 +2,7 @@
 
 module Jsapi
   module DSL
-    # Used to specify details of a request body.
+    # Used to define a request body.
     class RequestBody < Schema
       include OpenAPI::Examples
 

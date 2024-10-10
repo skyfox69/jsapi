@@ -285,40 +285,27 @@ module Jsapi
 
       def test_full_openapi_document
         definitions = Definitions.new(
-          openapi_base_path: '/foo',
-          openapi_callbacks: {
+          base_path: '/foo',
+          callbacks: {
             'onFoo' => {
               operations: {
                 '{$request.query.foo}' => {}
               }
             }
           },
-          openapi_examples: {
+          examples: {
             'foo' => { value: 'bar' }
           },
-          openapi_external_docs: { url: 'https://foo.bar/docs' },
-          openapi_extensions: { 'foo' => 'bar' },
-          openapi_host: 'https://foo.bar',
-          openapi_info: { title: 'Foo', version: '1' },
-          openapi_headers: {
+          external_docs: { url: 'https://foo.bar/docs' },
+          headers: {
             'X-Foo' => { type: 'string' }
           },
-          openapi_links: {
+          host: 'https://foo.bar',
+          info: { title: 'Foo', version: '1' },
+          links: {
             'foo' => { operation_id: 'foo' }
           },
-          openapi_schemes: %w[https],
-          openapi_security_requirements: {
-            schemes: { 'http_basic': nil }
-          },
-          openapi_security_schemes: {
-            'http_basic' => { type: 'basic' }
-          },
-          openapi_servers: [
-            { url: 'https://foo.bar/foo' }
-          ],
-          openapi_tags: [
-            { name: 'Foo' }
-          ],
+          openapi_extensions: { 'foo' => 'bar' },
           operations: {
             'operation' => {
               path: '/bar',
@@ -348,7 +335,20 @@ module Jsapi
           },
           schemas: {
             'response_schema' => { type: 'object' }
-          }
+          },
+          schemes: %w[https],
+          security_requirements: {
+            schemes: { 'http_basic': nil }
+          },
+          security_schemes: {
+            'http_basic' => { type: 'basic' }
+          },
+          servers: [
+            { url: 'https://foo.bar/foo' }
+          ],
+          tags: [
+            { name: 'Foo' }
+          ]
         )
         # OpenAPI 2.0
         assert_equal(
@@ -583,18 +583,18 @@ module Jsapi
       def test_openapi_document_on_inheritance
         definitions = Definitions.new(
           parent: Definitions.new(
-            openapi_info: { title: 'Foo', version: '1' },
+            info: { title: 'Foo', version: '1' },
             operations: {
               'foo' => { path: '/foo' }
             },
-            openapi_tags: [
+            tags: [
               { name: 'Foo' }
             ]
           ),
           operations: {
             'bar' => { path: '/bar' }
           },
-          openapi_tags: [
+          tags: [
             { name: 'Bar' }
           ]
         )
@@ -677,7 +677,7 @@ module Jsapi
 
       def test_openapi_document_2_0_takes_the_url_parts_from_the_server_object
         openapi_document = Definitions.new(
-          openapi_servers: [
+          servers: [
             { url: 'https://foo.bar/foo' }
           ]
         ).openapi_document('2.0')

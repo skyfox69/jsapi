@@ -2,8 +2,8 @@
 
 module Jsapi
   module DSL
-    # Used to specify details of a schema.
-    class Schema < Node
+    # Used to define a schema.
+    class Schema < Base
 
       # Includes all of the properties from +schemas+. Each argument must be the name of
       # a schema defined by ClassMethods#api_schema or Definitions#schema.

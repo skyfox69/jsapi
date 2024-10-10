@@ -6,88 +6,54 @@ module Jsapi
       include OpenAPI::Extensions
 
       ##
+      # :attr: base_path
+      # The base path of the API. Applies to \OpenAPI 2.0.
+      attribute :base_path, String
+
+      ##
+      # :attr: callbacks
+      # The reusable OpenAPI::Callback objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :callbacks, { String => OpenAPI::Callback }
+
+      ##
       # :attr: defaults
       # The Defaults.
       attribute :defaults, { String => Defaults }, keys: Schema::TYPES
 
       ##
+      # :attr: examples
+      # The reusable OpenAPI::Example objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :examples, { String => OpenAPI::Example }
+
+      ##
+      # :attr: external_docs
+      # The OpenAPI::ExternalDocumentation object.
+      attribute :external_docs, OpenAPI::ExternalDocumentation
+
+      ##
+      # :attr: headers
+      # The reusable OpenAPI::Header objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :headers, { String => OpenAPI::Header }
+
+      ##
+      # :attr: host
+      # The host serving the API. Applies to \OpenAPI 2.0.
+      attribute :host, String
+
+      ##
+      # :attr: info
+      # The OpenAPI::Info object.
+      attribute :info, OpenAPI::Info
+
+      ##
+      # :attr: links
+      # The reusable OpenAPI::Link objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :links, { String => OpenAPI::Link }
+
+      ##
       # :attr: on_rescues
       # The methods or procs to be called whenever an exception is rescued.
       attribute :on_rescues, []
-
-      ##
-      # :attr: openapi_base_path
-      # The base path of the API. Applies to \OpenAPI 2.0.
-      attribute :openapi_base_path, String
-
-      ##
-      # :attr: openapi_callbacks
-      # The reusable OpenAPI::Callback objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :openapi_callbacks, { String => OpenAPI::Callback }
-
-      ##
-      # :attr: openapi_examples
-      # The reusable OpenAPI::Example objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :openapi_examples, { String => OpenAPI::Example }
-
-      ##
-      # :attr: openapi_external_docs
-      # The OpenAPI::ExternalDocumentation object.
-      attribute :openapi_external_docs, OpenAPI::ExternalDocumentation
-
-      ##
-      # :attr: openapi_headers
-      # The reusable OpenAPI::Header objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :openapi_headers, { String => OpenAPI::Header }
-
-      ##
-      # :attr: openapi_host
-      # The host serving the API. Applies to \OpenAPI 2.0.
-      attribute :openapi_host, String
-
-      ##
-      # :attr: openapi_info
-      # The OpenAPI::Info object.
-      attribute :openapi_info, OpenAPI::Info
-
-      ##
-      # :attr: openapi_links
-      # The reusable OpenAPI::Link objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :openapi_links, { String => OpenAPI::Link }
-
-      ##
-      # :attr: openapi_schemes
-      # The array of transfer protocols supported by the API. Possible values are:
-      #
-      # - <code>"http"</code>
-      # - <code>"https"</code>
-      # - <code>"ws"</code>
-      # - <code>"wss"</code>
-      #
-      # Applies to \OpenAPI 2.0.
-      attribute :openapi_schemes, [String], values: %w[http https ws wss]
-
-      ##
-      # :attr: openapi_security_requirements
-      # The array of OpenAPI::SecurityRequirement objects.
-      attribute :openapi_security_requirements, [OpenAPI::SecurityRequirement]
-
-      alias add_openapi_security add_openapi_security_requirement
-
-      ##
-      # :attr: openapi_security_schemes
-      # The OpenAPI::SecurityScheme objects.
-      attribute :openapi_security_schemes, { String => OpenAPI::SecurityScheme }
-
-      ##
-      # :attr: openapi_servers
-      # The array of OpenAPI::Server objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :openapi_servers, [OpenAPI::Server]
-
-      ##
-      # :attr: openapi_tags
-      # The array of OpenAPI::Tag objects.
-      attribute :openapi_tags, [OpenAPI::Tag]
 
       ##
       # :attr: operations
@@ -118,6 +84,40 @@ module Jsapi
       # :attr: schemas
       # The reusable Schema objects.
       attribute :schemas, { String => Schema }
+
+      ##
+      # :attr: schemes
+      # The array of transfer protocols supported by the API. Possible values are:
+      #
+      # - <code>"http"</code>
+      # - <code>"https"</code>
+      # - <code>"ws"</code>
+      # - <code>"wss"</code>
+      #
+      # Applies to \OpenAPI 2.0.
+      attribute :schemes, [String], values: %w[http https ws wss]
+
+      ##
+      # :attr: security_requirements
+      # The array of OpenAPI::SecurityRequirement objects.
+      attribute :security_requirements, [OpenAPI::SecurityRequirement]
+
+      alias add_security add_security_requirement
+
+      ##
+      # :attr: security_schemes
+      # The OpenAPI::SecurityScheme objects.
+      attribute :security_schemes, { String => OpenAPI::SecurityScheme }
+
+      ##
+      # :attr: servers
+      # The array of OpenAPI::Server objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :servers, [OpenAPI::Server]
+
+      ##
+      # :attr: tags
+      # The array of OpenAPI::Tag objects.
+      attribute :tags, [OpenAPI::Tag]
 
       # The class to which this instance is assigned.
       attr_reader :owner
@@ -240,27 +240,24 @@ module Jsapi
 
         openapi_objects =
           if version.major == 2
-            %i[openapi_base_path openapi_info openapi_external_docs openapi_host
-               openapi_schemes openapi_security_requirements openapi_security_schemes
-               openapi_tags parameters responses parameters schemas]
+            %i[base_path external_docs info host parameters responses parameters schemas
+               schemes security_requirements security_schemes tags]
           else
-            %i[openapi_callbacks openapi_examples openapi_external_docs openapi_headers
-               openapi_info openapi_links openapi_servers openapi_security_requirements
-               openapi_security_schemes openapi_tags parameters request_bodies responses
-               parameters schemas]
+            %i[callbacks examples external_docs headers info links parameters request_bodies
+               responses schemas security_requirements security_schemes servers tags]
           end.to_h { |key| [key, object_to_openapi(objects[key], version).presence] }
 
         with_openapi_extensions(
           if version.major == 2
-            openapi_server = objects[:openapi_servers].first || default_openapi_server
+            openapi_server = objects[:servers].first || default_openapi_server
             uri = URI(openapi_server.url) if openapi_server
             {
               # Order according to the OpenAPI specification 2.x
               swagger: '2.0',
-              info: openapi_objects[:openapi_info],
-              host: openapi_objects[:openapi_host] || uri&.hostname,
-              basePath: openapi_objects[:openapi_base_path] || uri&.path,
-              schemes: openapi_objects[:openapi_schemes] || Array(uri&.scheme).presence,
+              info: openapi_objects[:info],
+              host: openapi_objects[:host] || uri&.hostname,
+              basePath: openapi_objects[:base_path] || uri&.path,
+              schemes: openapi_objects[:schemes] || Array(uri&.scheme).presence,
               consumes: operations.filter_map do |operation|
                 operation.consumes(self)
               end.uniq.sort.presence,
@@ -271,32 +268,32 @@ module Jsapi
               definitions: openapi_objects[:schemas],
               parameters: openapi_objects[:parameters],
               responses: openapi_objects[:responses],
-              securityDefinitions: openapi_objects[:openapi_security_schemes]
+              securityDefinitions: openapi_objects[:security_schemes]
             }
           else
             {
               # Order according to the OpenAPI specification 3.x
               openapi: version.minor.zero? ? '3.0.3' : '3.1.0',
-              info: openapi_objects[:openapi_info],
-              servers: openapi_objects[:openapi_servers] ||
+              info: openapi_objects[:info],
+              servers: openapi_objects[:servers] ||
                 [default_openapi_server&.to_openapi].compact.presence,
               paths: openapi_paths,
               components: {
                 schemas: openapi_objects[:schemas],
                 responses: openapi_objects[:responses],
                 parameters: openapi_objects[:parameters],
-                examples: openapi_objects[:openapi_examples],
+                examples: openapi_objects[:examples],
                 requestBodies: openapi_objects[:request_bodies],
-                headers: openapi_objects[:openapi_headers],
-                securitySchemes: openapi_objects[:openapi_security_schemes],
-                links: openapi_objects[:openapi_links],
-                callbacks: openapi_objects[:openapi_callbacks]
+                headers: openapi_objects[:headers],
+                securitySchemes: openapi_objects[:security_schemes],
+                links: openapi_objects[:links],
+                callbacks: openapi_objects[:callbacks]
               }.compact.presence
             }
           end.merge(
-            security: openapi_objects[:openapi_security_requirements],
-            tags: openapi_objects[:openapi_tags],
-            externalDocs: openapi_objects[:openapi_external_docs]
+            security: openapi_objects[:security_requirements],
+            tags: openapi_objects[:tags],
+            externalDocs: openapi_objects[:external_docs]
           ).compact
         )
       end

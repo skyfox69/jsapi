@@ -2,7 +2,7 @@
 
 module Jsapi
   module DSL
-    # Used to specify details of a parameter.
+    # Used to define a parameter.
     class Parameter < Schema
       include OpenAPI::Examples
 
