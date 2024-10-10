@@ -162,7 +162,7 @@ module Jsapi
         (operation.model || Model::Base).new(
           Parameters.new(
             params.except(:action, :controller, :format).permit!,
-            headers,
+            request.headers,
             operation,
             definitions,
             strong: strong

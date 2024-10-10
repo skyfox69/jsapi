@@ -14,11 +14,11 @@ module ActionController
   end
 
   class API
-    attr_reader :headers, :params
+    attr_reader :params, :request
 
-    def initialize(headers: {}, params: {})
+    def initialize(params: {}, request_headers: {})
       @params = ActionController::Parameters.new(params)
-      @headers = headers
+      @request = ActionDispatch::Request.new(request_headers)
     end
 
     def content_type=(content_type)
