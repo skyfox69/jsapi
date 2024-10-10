@@ -4,7 +4,7 @@ module Jsapi
   module DSL
     # Used to define a parameter.
     class Parameter < Schema
-      include OpenAPI::Examples
+      include Examples
 
       ##
       # :method: deprecated

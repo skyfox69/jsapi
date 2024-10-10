@@ -23,7 +23,7 @@ module Jsapi
       def callback(name, **keywords, &block)
         _define('callback', name.inspect) do
           callback = _meta_model.add_callback(name, keywords)
-          OpenAPI::Callback.new(callback, &block) if block
+          Callback.new(callback, &block) if block
         end
       end
 

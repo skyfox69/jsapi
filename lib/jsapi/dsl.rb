@@ -2,7 +2,9 @@
 
 require_relative 'dsl/error'
 require_relative 'dsl/base'
-require_relative 'dsl/openapi'
+require_relative 'dsl/callback'
+require_relative 'dsl/callbacks'
+require_relative 'dsl/examples'
 require_relative 'dsl/schema'
 require_relative 'dsl/parameter'
 require_relative 'dsl/request_body'

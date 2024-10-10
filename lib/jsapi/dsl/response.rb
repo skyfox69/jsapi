@@ -4,7 +4,7 @@ module Jsapi
   module DSL
     # Used to define a response.
     class Response < Schema
-      include OpenAPI::Examples
+      include Examples
 
       ##
       # :method: deprecated

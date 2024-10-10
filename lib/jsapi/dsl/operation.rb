@@ -4,7 +4,7 @@ module Jsapi
   module DSL
     # Used to define an API operation.
     class Operation < Base
-      include OpenAPI::Callbacks
+      include Callbacks
 
       ##
       # :method: deprecated
