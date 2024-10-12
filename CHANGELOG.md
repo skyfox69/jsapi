@@ -1,6 +1,6 @@
 # Change log
 
-## 0.9.0 ()
+## 0.9.0 (2024-10-12)
 
 ### Breaking changes
 
