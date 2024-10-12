@@ -7,7 +7,7 @@ module Jsapi
   module Meta
     module Link
       class << self
-        # Creates a link model or reference.
+        # Creates a Model or Reference.
         def new(keywords = {})
           return Reference.new(keywords) if keywords.key?(:ref)
 

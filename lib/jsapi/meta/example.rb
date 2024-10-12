@@ -7,7 +7,7 @@ module Jsapi
   module Meta
     module Example
       class << self
-        # Creates a new example model or reference.
+        # Creates a Model or Reference.
         def new(keywords = {})
           return Reference.new(keywords) if keywords.key?(:ref)
 

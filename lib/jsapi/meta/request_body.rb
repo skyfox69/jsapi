@@ -7,7 +7,7 @@ module Jsapi
   module Meta
     module RequestBody
       class << self
-        # Creates a new request body model or reference.
+        # Creates a Model or Reference.
         def new(keywords = {})
           return Reference.new(keywords) if keywords.key?(:ref)
 

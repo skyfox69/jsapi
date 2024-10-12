@@ -27,8 +27,8 @@ module Jsapi
       end
 
       class << self
-        # Creates a new schema model or reference. The +:type+ keyword determines
-        # the type of the schema to be created. Possible types are:
+        # Creates a new schema. The +:type+ keyword determines the type of the schema to be
+        # created. Possible types are:
         #
         # - <code>"array"</code>
         # - <code>"boolean"</code>

@@ -7,7 +7,7 @@ module Jsapi
   module Meta
     module Header
       class << self
-        # Creates a header model or reference.
+        # Creates a Model or Reference.
         def new(keywords = {})
           return Reference.new(keywords) if keywords.key?(:ref)
 
