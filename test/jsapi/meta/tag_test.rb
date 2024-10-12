@@ -12,7 +12,7 @@ module Jsapi
       def test_full_openapi_tag_object
         tag = Tag.new(
           name: 'Foo',
-          description: 'Description of Foo',
+          description: 'Lorem ipsum',
           external_docs: {
             url: 'https://foo.bar/docs'
           },
@@ -21,7 +21,7 @@ module Jsapi
         assert_equal(
           {
             name: 'Foo',
-            description: 'Description of Foo',
+            description: 'Lorem ipsum',
             externalDocs: {
               url: 'https://foo.bar/docs'
             },

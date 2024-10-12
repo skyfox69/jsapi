@@ -17,7 +17,7 @@ module Jsapi
               'bar' => nil
             },
             request_body: 'bar',
-            description: 'Description of foo',
+            description: 'Lorem ipsum',
             server: {
               url: 'https://foo.bar/foo'
             },
@@ -30,7 +30,7 @@ module Jsapi
                 'bar' => nil
               },
               requestBody: 'bar',
-              description: 'Description of foo',
+              description: 'Lorem ipsum',
               server: {
                 url: 'https://foo.bar/foo'
               },

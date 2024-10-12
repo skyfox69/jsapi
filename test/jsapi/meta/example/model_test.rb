@@ -18,14 +18,14 @@ module Jsapi
         def test_full_openapi_example_object
           example_model = Model.new(
             summary: 'Foo',
-            description: 'Description of foo',
+            description: 'Lorem ipsum',
             value: 'foo',
             openapi_extensions: { 'foo' => 'bar' }
           )
           assert_equal(
             {
               summary: 'Foo',
-              description: 'Description of foo',
+              description: 'Lorem ipsum',
               value: 'foo',
               'x-foo': 'bar'
             },

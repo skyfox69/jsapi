@@ -44,7 +44,7 @@ module Jsapi
           'foo',
           tags: %w[Foo],
           summary: 'Summary of foo',
-          description: 'Description of foo',
+          description: 'Lorem ipsum',
           external_docs: {
             url: 'https://foo.bar/docs'
           },
@@ -88,7 +88,7 @@ module Jsapi
             operationId: 'foo',
             tags: %w[Foo],
             summary: 'Summary of foo',
-            description: 'Description of foo',
+            description: 'Lorem ipsum',
             externalDocs: {
               url: 'https://foo.bar/docs'
             },
@@ -134,7 +134,7 @@ module Jsapi
             operationId: 'foo',
             tags: %w[Foo],
             summary: 'Summary of foo',
-            description: 'Description of foo',
+            description: 'Lorem ipsum',
             externalDocs: {
               url: 'https://foo.bar/docs'
             },

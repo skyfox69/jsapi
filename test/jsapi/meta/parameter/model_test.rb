@@ -271,7 +271,7 @@ module Jsapi
             'foo',
             type: 'string',
             existence: true,
-            description: 'Description of foo',
+            description: 'Lorem ipsum',
             deprecated: true,
             example: 'bar',
             openapi_extensions: { 'foo' => 'bar' }
@@ -281,7 +281,7 @@ module Jsapi
             {
               name: 'foo',
               in: 'query',
-              description: 'Description of foo',
+              description: 'Lorem ipsum',
               required: true,
               type: 'string',
               'x-foo': 'bar'
@@ -293,7 +293,7 @@ module Jsapi
             {
               name: 'foo',
               in: 'query',
-              description: 'Description of foo',
+              description: 'Lorem ipsum',
               required: true,
               deprecated: true,
               schema: {
@@ -320,7 +320,7 @@ module Jsapi
               'bar' => {
                 type: 'string',
                 existence: true,
-                description: 'Description of foo',
+                description: 'Lorem ipsum',
                 deprecated: true,
                 openapi_extensions: { 'bar' => 'foo' }
               }
@@ -335,7 +335,7 @@ module Jsapi
             {
               name: 'foo[bar]',
               in: 'query',
-              description: 'Description of foo',
+              description: 'Lorem ipsum',
               required: true,
               type: 'string',
               'x-foo': 'bar',
@@ -348,12 +348,12 @@ module Jsapi
             {
               name: 'foo[bar]',
               in: 'query',
-              description: 'Description of foo',
+              description: 'Lorem ipsum',
               required: true,
               deprecated: true,
               schema: {
                 type: 'string',
-                description: 'Description of foo',
+                description: 'Lorem ipsum',
                 'x-bar': 'foo'
               },
               examples: {

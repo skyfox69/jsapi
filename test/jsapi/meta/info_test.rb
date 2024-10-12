@@ -13,7 +13,7 @@ module Jsapi
         info = Info.new(
           title: 'Foo',
           version: 1,
-          description: 'Description of Foo',
+          description: 'Lorem ipsum',
           terms_of_service: 'Terms of service',
           contact: {
             name: 'Bar'
@@ -27,7 +27,7 @@ module Jsapi
           {
             title: 'Foo',
             version: '1',
-            description: 'Description of Foo',
+            description: 'Lorem ipsum',
             termsOfService: 'Terms of service',
             contact: {
               name: 'Bar'

@@ -18,7 +18,7 @@ module Jsapi
           refresh_url: 'https://foo.bar/api/oauth/refresh',
           scopes: {
             'read:foo' => nil,
-            'write:foo' => { description: 'Description of write:foo' }
+            'write:foo' => { description: 'Lorem ipsum' }
           },
           openapi_extensions: { 'foo' => 'bar' }
         )
@@ -28,7 +28,7 @@ module Jsapi
           refreshUrl: 'https://foo.bar/api/oauth/refresh',
           scopes: {
             'read:foo' => '',
-            'write:foo' => 'Description of write:foo'
+            'write:foo' => 'Lorem ipsum'
           },
           'x-foo': 'bar'
         }
