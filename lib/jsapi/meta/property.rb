@@ -56,7 +56,7 @@ module Jsapi
       end
 
       # Returns a hash representing the \OpenAPI schema object.
-      def to_openapi(version)
+      def to_openapi(version, *)
         version = OpenAPI::Version.from(version)
 
         schema.to_openapi(version).tap do |hash|

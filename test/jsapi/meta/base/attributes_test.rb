@@ -68,21 +68,23 @@ module Jsapi
 
         def test_attribute_reader_and_writer_on_array
           model = Class.new(DummyModel) do
-            attribute :foos, [], values: %w[foo]
+            attribute :foos, [], values: %w[foo bar]
           end.new
 
-          model.foos = %w[foo]
-          assert_equal(%w[foo], model.foos)
-          assert_equal(:foos, model.last_changed)
+          assert_equal([], model.foos)
 
-          model.foos = nil
-          assert_nil(model.foos)
+          array = %w[foo bar]
+          result = model.foos = array
+          assert_equal(array, result)
+          assert_equal(array, model.foos)
+
+          assert_equal(:foos, model.last_changed)
 
           # Errors
           error = assert_raises(InvalidArgumentError) do
-            model.foos = %w[bar]
+            model.foos = %w[foo_bar]
           end
-          assert_equal('foo must be "foo", is "bar"', error.message)
+          assert_equal('foo must be one of "foo" or "bar", is "foo_bar"', error.message)
         end
 
         def test_add_method_on_array
@@ -98,15 +100,6 @@ module Jsapi
             model.add_foo('bar')
           end
           assert_equal('foo must be "foo", is "bar"', error.message)
-        end
-
-        def test_custom_add_method_on_array
-          model = Class.new(DummyModel) do
-            attribute :foos, [], add_method: :bar
-          end.new
-
-          model.bar('foo')
-          assert_equal(%w[foo], model.foos)
         end
 
         def test_default_value_on_array
@@ -135,13 +128,14 @@ module Jsapi
             attribute :foos, {}, keys: %w[foo], values: %w[bar]
           end.new
 
-          hash = { 'foo' => 'bar' }
-          model.foos = hash
-          assert_equal(hash, model.foos)
-          assert_equal(:foos, model.last_changed)
+          assert_equal({}, model.foos)
 
-          model.foos = nil
-          assert_nil(model.foos)
+          hash = { 'foo' => 'bar' }
+          result = model.foos = hash
+          assert_equal(hash, result)
+          assert_equal(hash, model.foos)
+
+          assert_equal(:foos, model.last_changed)
 
           # Errors
           error = assert_raises(ArgumentError) do
@@ -183,15 +177,6 @@ module Jsapi
             model.add_foo 'foo', 'foo'
           end
           assert_equal('value must be "bar", is "foo"', error.message)
-        end
-
-        def test_custom_add_method_on_hash
-          model = Class.new(DummyModel) do
-            attribute :foos, {}, add_method: :bar
-          end.new
-
-          model.bar('foo', 'bar')
-          assert_equal({ 'foo' => 'bar' }, model.foos)
         end
 
         def test_lockup_method_on_hash

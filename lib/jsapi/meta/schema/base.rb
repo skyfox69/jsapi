@@ -34,7 +34,7 @@ module Jsapi
         ##
         # :attr: external_docs
         # The OpenAPI::ExternalDocumentation object.
-        attribute :external_docs, OpenAPI::ExternalDocumentation
+        attribute :external_docs, ExternalDocumentation
 
         ##
         # :attr: existence
@@ -104,7 +104,7 @@ module Jsapi
         end
 
         # Returns a hash representing the \OpenAPI schema object.
-        def to_openapi(version)
+        def to_openapi(version, *)
           version = OpenAPI::Version.from(version)
 
           with_openapi_extensions(
@@ -112,21 +112,21 @@ module Jsapi
               # OpenAPI 2.0
               {
                 type: type,
-                example: examples&.first
+                example: examples.first
               }
             elsif version.minor.zero?
               # OpenAPI 3.0
               {
                 type: type,
                 nullable: nullable?.presence,
-                examples: examples,
+                examples: examples.presence,
                 deprecated: deprecated?.presence
               }
             else
               # OpenAPI 3.1
               {
                 type: nullable? ? [type, 'null'] : type,
-                examples: examples,
+                examples: examples.presence,
                 deprecated: deprecated?.presence
               }
             end.tap do |hash|

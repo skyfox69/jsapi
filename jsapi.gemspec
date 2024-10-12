@@ -5,10 +5,7 @@ require_relative 'lib/jsapi/version'
 Gem::Specification.new do |s|
   s.name = 'jsapi'
   s.version = Jsapi::Version::VERSION
-  s.summary = 'Build JSON APIs with Rails'
-  s.description =
-    'Jsapi can be used to read requests, produce responses ' \
-    'and create OpenAPI documents'
+  s.summary = 'Easily build OpenAPI compliant APIs with Rails.'
   s.license = 'MIT'
   s.authors = ['Denis Göller']
   s.email = 'denis@dmgoeller.de'

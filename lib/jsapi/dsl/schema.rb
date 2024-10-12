@@ -2,13 +2,13 @@
 
 module Jsapi
   module DSL
-    # Used to specify details of a schema.
-    class Schema < Node
+    # Used to define a schema.
+    class Schema < Base
 
       # Includes all of the properties from +schemas+. Each argument must be the name of
       # a schema defined by ClassMethods#api_schema or Definitions#schema.
       def all_of(*schemas)
-        schemas.each { |schema| _meta_model.add_all_of({ ref: schema }) }
+        schemas.each { |schema| @meta_model.add_all_of({ ref: schema }) }
       end
 
       ##
@@ -57,7 +57,7 @@ module Jsapi
       #
       #   example 'foo'
       def example(example)
-        _meta_model.add_example(example)
+        @meta_model.add_example(example)
       end
 
       ##
@@ -77,7 +77,7 @@ module Jsapi
       #
       # See Meta::Schema::String#format for further information.
       def format(format)
-        _keyword(:format, format)
+        keyword(:format, format)
       end
 
       # Defines the kind of items that can be contained in an array.
@@ -88,12 +88,12 @@ module Jsapi
       #
       # Raises an Error if type is other than <code>"array"</code>.
       def items(**keywords, &block)
-        unless _meta_model.respond_to?(:items=)
-          raise Error, "items isn't supported for '#{_meta_model.type}'"
+        unless @meta_model.respond_to?(:items=)
+          raise Error, "items isn't supported for '#{@meta_model.type}'"
         end
 
-        _meta_model.items = keywords
-        Schema.new(_meta_model.items, &block) if block
+        @meta_model.items = keywords
+        Schema.new(@meta_model.items, &block) if block
       end
 
       ##
@@ -159,15 +159,15 @@ module Jsapi
       #
       # Raises an Error if type is other than <code>"object"</code>.
       def model(klass = nil, &block)
-        unless _meta_model.respond_to?(:model=)
-          raise Error, "model isn't supported for '#{_meta_model.type}'"
+        unless @meta_model.respond_to?(:model=)
+          raise Error, "model isn't supported for '#{@meta_model.type}'"
         end
 
         if block
           klass = Class.new(klass || Model::Base)
           klass.class_eval(&block)
         end
-        _meta_model.model = klass
+        @meta_model.model = klass
       end
 
       ##
@@ -194,12 +194,12 @@ module Jsapi
       #
       # Raises an Error if type is other than <code>"object"</code>.
       def property(name, **keywords, &block)
-        _define('property', name.inspect) do
-          unless _meta_model.respond_to?(:add_property)
-            raise Error, "property isn't supported for '#{_meta_model.type}'"
+        define('property', name.inspect) do
+          unless @meta_model.respond_to?(:add_property)
+            raise Error, "property isn't supported for '#{@meta_model.type}'"
           end
 
-          property_model = _meta_model.add_property(name, keywords)
+          property_model = @meta_model.add_property(name, keywords)
           Schema.new(property_model, &block) if block
         end
       end

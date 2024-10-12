@@ -4,9 +4,11 @@ module Jsapi
   module Meta
     module Base
       module Attributes
+        DEFAULT_ARRAY = [].freeze
+        DEFAULT_HASH = {}.freeze
+
         # Defines an attribute.
         def attribute(name, type = Object,
-                      add_method: nil,
                       default: nil,
                       default_key: nil,
                       keys: nil,
@@ -17,26 +19,20 @@ module Jsapi
 
           instance_variable_name = "@#{name}"
 
-          # Attribute reader
-          define_method(name) do
-            value = instance_variable_get(instance_variable_name)
-            value.nil? ? default : value
-          end
-
           case type
           when Array
+            # General default
+            default ||= DEFAULT_ARRAY
+
             unless read_only
               singular_name = name.to_s.singularize
-              add_method = "add_#{singular_name}" if add_method.nil?
+              add_method = "add_#{singular_name}"
 
               type_caster = TypeCaster.new(type.first, values: values, name: singular_name)
 
               # Attribute writer
               define_method("#{name}=") do |argument|
-                if argument.nil?
-                  instance_variable_set(instance_variable_name, nil)
-                else
-                  instance_variable_set(instance_variable_name, [])
+                instance_variable_set(instance_variable_name, []).tap do
                   Array.wrap(argument).each { |element| send(add_method, element) }
                 end
               end
@@ -59,24 +55,24 @@ module Jsapi
             key_type, value_type = type.first
             key_type_caster = TypeCaster.new(key_type, values: keys, name: 'key')
 
+            # General default
+            default ||= DEFAULT_HASH
+
             # Lookup method
             define_method(singular_name) do |key = nil|
               key = default_key if key.to_s.empty?
-              send(name)&.[](key_type_caster.cast(key))
+              send(name)[key_type_caster.cast(key)]
             end
 
             unless read_only
-              add_method = "add_#{singular_name}" if add_method.nil?
+              add_method = "add_#{singular_name}"
 
               value_type_caster = TypeCaster.new(value_type, values: values)
 
               # Attribute writer
               define_method("#{name}=") do |argument|
-                if argument.nil?
-                  instance_variable_set(instance_variable_name, nil)
-                else
-                  instance_variable_set(instance_variable_name, {})
-                  argument.each { |key, value| send(add_method, key, value) }
+                instance_variable_set(instance_variable_name, {}).tap do
+                  Hash(argument).each { |key, value| send(add_method, key, value) }
                 end
               end
 
@@ -122,6 +118,12 @@ module Jsapi
                 end
               end
             end
+          end
+
+          # Attribute reader
+          define_method(name) do
+            value = instance_variable_get(instance_variable_name)
+            value.nil? ? default : value
           end
         end
 

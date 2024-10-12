@@ -10,10 +10,31 @@ module Jsapi
           klass = Class.new(Model) do
             attribute :foo
           end
-          assert_equal('bar', klass.new(foo: 'bar').foo)
+          model = klass.new(foo: 'bar')
+          assert_equal('bar', model.foo)
 
-          error = assert_raises(ArgumentError) { klass.new(bar: 'bar') }
-          assert_equal('unsupported keyword: bar', error.message)
+          error = assert_raises(ArgumentError) do
+            klass.new(foo_bar: 'bar')
+          end
+          assert_equal('unsupported keyword: foo_bar', error.message)
+        end
+
+        def test_merge
+          klass = Class.new(Model) do
+            attribute :foo
+            attribute :bar
+          end
+          model = klass.new(foo: 'foo', bar: 'foo')
+          result = model.merge!(foo: 'bar')
+
+          assert(model.equal?(result))
+          assert_equal('bar', model.foo)
+          assert_equal('foo', model.bar)
+
+          error = assert_raises(ArgumentError) do
+            model.merge!(foo_bar: 'bar')
+          end
+          assert_equal('unsupported keyword: foo_bar', error.message)
         end
 
         def test_reference_predicate

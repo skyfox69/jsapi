@@ -11,7 +11,7 @@ module Jsapi
 
         ##
         # :attr: all_of_references
-        attribute :all_of_references, [Reference], default: []
+        attribute :all_of_references, [Reference]
 
         alias :all_of= :all_of_references= # :nodoc:
         alias :add_all_of :add_all_of_reference
@@ -30,7 +30,7 @@ module Jsapi
         ##
         # :attr: properties
         # The properties.
-        attribute :properties, { String => Property }, default: {}
+        attribute :properties, { String => Property }
 
         undef add_property
 
@@ -83,7 +83,7 @@ module Jsapi
           ).compact
         end
 
-        def to_openapi(version) # :nodoc:
+        def to_openapi(version, *) # :nodoc:
           super.merge(
             allOf: all_of_references.map do |schema|
               schema.to_openapi(version)

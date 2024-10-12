@@ -59,7 +59,7 @@ module Jsapi
             type: 'string',
             existence: true,
             title: 'Title of foo',
-            description: 'Description of foo',
+            description: 'Lorem ipsum',
             default: 'foo',
             example: 'bar',
             deprecated: true
@@ -68,7 +68,7 @@ module Jsapi
             {
               type: 'string',
               title: 'Title of foo',
-              description: 'Description of foo',
+              description: 'Lorem ipsum',
               default: 'foo',
               examples: %w[bar],
               deprecated: true
@@ -171,7 +171,7 @@ module Jsapi
             type: 'string',
             existence: true,
             title: 'Title of foo',
-            description: 'Description of foo',
+            description: 'Lorem ipsum',
             default: 'foo',
             example: 'bar',
             deprecated: true,
@@ -185,7 +185,7 @@ module Jsapi
             {
               type: 'string',
               title: 'Title of foo',
-              description: 'Description of foo',
+              description: 'Lorem ipsum',
               default: 'foo',
               example: 'bar',
               externalDocs: {
@@ -200,7 +200,7 @@ module Jsapi
             {
               type: 'string',
               title: 'Title of foo',
-              description: 'Description of foo',
+              description: 'Lorem ipsum',
               default: 'foo',
               examples: %w[bar],
               deprecated: true,
@@ -216,7 +216,7 @@ module Jsapi
             {
               type: 'string',
               title: 'Title of foo',
-              description: 'Description of foo',
+              description: 'Lorem ipsum',
               default: 'foo',
               examples: %w[bar],
               deprecated: true,

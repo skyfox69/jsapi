@@ -2,13 +2,14 @@
 
 module Jsapi
   module Meta
+    # Defines an API operation.
     class Operation < Base::Model
       include OpenAPI::Extensions
 
       ##
       # :attr: callbacks
-      # The optional callbacks. Applies to \OpenAPI 3.0 and higher.
-      attribute :callbacks, { String => OpenAPI::Callback }
+      # The Callback objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :callbacks, { String => Callback }
 
       ##
       # :attr: deprecated
@@ -22,8 +23,8 @@ module Jsapi
 
       ##
       # :attr: external_docs
-      # The OpenAPI::ExternalDocumentation object.
-      attribute :external_docs, OpenAPI::ExternalDocumentation
+      # The ExternalDocumentation object.
+      attribute :external_docs, ExternalDocumentation
 
       ##
       # :attr: method
@@ -53,7 +54,7 @@ module Jsapi
       ##
       # :attr: parameters
       # The parameters of the operation.
-      attribute :parameters, { String => Parameter }, default: {}
+      attribute :parameters, { String => Parameter }
 
       ##
       # :attr: path
@@ -68,7 +69,7 @@ module Jsapi
       ##
       # :attr: responses
       # The responses of the operation.
-      attribute :responses, { String => Response }, default: {}, default_key: 'default'
+      attribute :responses, { String => Response }, default_key: 'default'
 
       ##
       # :attr: schemes
@@ -84,15 +85,15 @@ module Jsapi
 
       ##
       # :attr: security_requirements
-      # The OpenAPI::SecurityRequirement objects.
-      attribute :security_requirements, [OpenAPI::SecurityRequirement]
+      # The SecurityRequirement objects.
+      attribute :security_requirements, [SecurityRequirement]
 
       alias add_security add_security_requirement
 
       ##
       # :attr: servers
-      # The OpenAPI::Server objects. Applies to \OpenAPI 3.0 and higher.
-      attribute :servers, [OpenAPI::Server]
+      # The Server objects. Applies to \OpenAPI 3.0 and higher.
+      attribute :servers, [Server]
 
       ##
       # :attr: summary
@@ -104,12 +105,12 @@ module Jsapi
       # The tags used to group operations in an \OpenAPI document.
       attribute :tags, [String]
 
-      undef :add_parameter
-
       def initialize(name = nil, keywords = {})
         @name = name&.to_s
         super(keywords)
       end
+
+      undef add_parameter
 
       def add_parameter(name, keywords = {}) # :nodoc:
         (@parameters ||= {})[name.to_s] = Parameter.new(name, keywords)
@@ -133,12 +134,12 @@ module Jsapi
 
         with_openapi_extensions(
           operationId: name,
-          tags: tags,
+          tags: tags.presence,
           summary: summary,
           description: description,
           externalDocs: external_docs&.to_openapi,
           deprecated: deprecated?.presence,
-          security: security_requirements&.map(&:to_openapi)
+          security: security_requirements.map(&:to_openapi).presence
         ).tap do |hash|
           if version.major == 2
             if (consumes = consumes(definitions)).present?
@@ -147,13 +148,13 @@ module Jsapi
             if (produces = produces(definitions)).present?
               hash[:produces] = produces
             end
-            hash[:schemes] = schemes if schemes
-          elsif servers
+            hash[:schemes] = schemes if schemes.present?
+          elsif servers.present?
             hash[:servers] = servers.map(&:to_openapi)
           end
           # Parameters (and request body)
           hash[:parameters] = parameters.values.flat_map do |parameter|
-            parameter.to_openapi(version, definitions)
+            parameter.to_openapi_parameters(version, definitions)
           end
           if request_body
             if version.major == 2
@@ -167,7 +168,7 @@ module Jsapi
             response.to_openapi(version, definitions)
           end
           # Callbacks
-          if callbacks && version.major > 2
+          if callbacks.present? && version.major > 2
             hash[:callbacks] = callbacks.transform_values do |callback|
               callback.to_openapi(version, definitions)
             end

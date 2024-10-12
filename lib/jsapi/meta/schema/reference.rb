@@ -22,7 +22,7 @@ module Jsapi
         end
 
         # Returns a hash representing the \OpenAPI reference object.
-        def to_openapi(version)
+        def to_openapi(version, *)
           version = OpenAPI::Version.from(version)
           path = version.major == 2 ? 'definitions' : 'components/schemas'
 

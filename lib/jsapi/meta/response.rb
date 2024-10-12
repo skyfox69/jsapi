@@ -7,7 +7,7 @@ module Jsapi
   module Meta
     module Response
       class << self
-        # Creates a new response model or reference.
+        # Creates a Model or Reference.
         def new(keywords = {})
           return Reference.new(keywords) if keywords.key?(:ref)
 

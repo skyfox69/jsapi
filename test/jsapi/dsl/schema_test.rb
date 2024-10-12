@@ -3,110 +3,135 @@
 module Jsapi
   module DSL
     class SchemaTest < Minitest::Test
+      # #all_of
+
       def test_all_of
-        schema = define_schema { all_of 'foo' }
-        assert_equal(%w[foo], schema.all_of_references.map(&:ref))
+        all_of_references = schema do
+          all_of 'foo'
+        end.all_of_references
+
+        assert_equal(%w[foo], all_of_references.map(&:ref))
       end
+
+      # #example
 
       def test_example
-        schema = define_schema { example 'foo' }
-        assert_equal(%w[foo], schema.examples)
+        examples = schema do
+          example 'foo'
+        end.examples
+
+        assert_equal(%w[foo], examples)
       end
+
+      # #format
 
       def test_format
-        schema = define_schema(type: 'string') { format 'date' }
-        assert_equal('date', schema.format)
+        format = schema(type: 'string') do
+          format 'date'
+        end.format
+
+        assert_equal('date', format)
       end
 
-      # Items
+      # #items
 
       def test_items
-        schema = define_schema(type: 'array') { items type: 'string' }
-        assert_predicate(schema.items, :string?)
+        items = schema(type: 'array') do
+          items description: 'Lorem ipsum'
+        end.items
+
+        assert_predicate(items, :present?)
+        assert_equal('Lorem ipsum', items.description)
       end
 
       def test_items_with_block
-        schema = define_schema(type: 'array') do
-          items type: 'string' do
-            format 'date'
+        items = schema(type: 'array') do
+          items do
+            description 'Lorem ipsum'
           end
-        end
-        assert_predicate(schema.items, :string?)
-        assert_equal('date', schema.items.format)
+        end.items
+
+        assert_predicate(items, :present?)
+        assert_equal('Lorem ipsum', items.description)
       end
 
       def test_items_raises_an_exception_on_other_type_than_array
         error = assert_raises Error do
-          define_schema(type: 'object') { items type: 'string' }
+          schema(type: 'object') { items type: 'string' }
         end
         assert_equal("items isn't supported for 'object'", error.message)
       end
 
-      # Models
+      # #model
 
       def test_model
         klass = Class.new(Model::Base)
-        schema = define_schema(type: 'object') { model klass }
-        assert_equal(klass, schema.model)
+        model = schema(type: 'object') do
+          model klass
+        end.model
+
+        assert_equal(klass, model)
       end
 
       def test_model_with_block
-        schema = define_schema(type: 'object') do
+        model = schema(type: 'object') do
           model do
             def foo
               'bar'
             end
           end
-        end
-        model = schema.model.new({})
+        end.model.new({})
+
         assert_kind_of(Model::Base, model)
         assert_equal('bar', model.foo)
       end
 
       def test_model_with_class_and_block
         klass = Class.new(Model::Base)
-        schema = define_schema(type: 'object') do
+        model = schema(type: 'object') do
           model klass do
             def foo
               'bar'
             end
           end
-        end
-        model = schema.model.new({})
+        end.model.new({})
+
         assert_kind_of(klass, model)
         assert_equal('bar', model.foo)
       end
 
       def test_model_raises_an_exception_on_other_type_than_object
         error = assert_raises Error do
-          define_schema(type: 'array') { model {} }
+          schema(type: 'array') { model {} }
         end
         assert_equal("model isn't supported for 'array'", error.message)
       end
 
-      # Properties
+      # #property
 
       def test_property
-        schema = define_schema(type: 'object') do
-          property 'foo', type: 'string'
-        end
-        property = schema.property('foo')
-        assert_predicate(property.schema, :string?)
+        property = schema(type: 'object') do
+          property 'foo', description: 'Lorem ipsum'
+        end.property('foo')
+
+        assert_predicate(property, :present?)
+        assert_equal('Lorem ipsum', property.description)
       end
 
       def test_property_with_block
-        schema = define_schema(type: 'object') do
-          property 'foo', type: 'array' do
-            items type: 'string'
+        property = schema(type: 'object') do
+          property 'foo' do
+            description 'Lorem ipsum'
           end
-        end
-        property = schema.property('foo')
-        assert_predicate(property.schema.items, :string?)
+        end.property('foo')
+
+        assert_predicate(property, :present?)
+        assert_equal('Lorem ipsum', property.description)
       end
 
       def test_property_raises_an_exception_on_other_type_than_object
         error = assert_raises Error do
-          define_schema(type: 'array') { property 'foo' }
+          schema(type: 'array') { property 'foo' }
         end
         assert_equal(
           "property isn't supported for 'array' (at property \"foo\")",
@@ -116,7 +141,7 @@ module Jsapi
 
       private
 
-      def define_schema(**keywords, &block)
+      def schema(**keywords, &block)
         Meta::Schema.new(keywords).tap do |schema|
           Schema.new(schema, &block)
         end

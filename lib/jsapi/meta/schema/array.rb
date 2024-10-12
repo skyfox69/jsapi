@@ -43,7 +43,7 @@ module Jsapi
           super.merge(items: items&.to_json_schema || {})
         end
 
-        def to_openapi(version) # :nodoc:
+        def to_openapi(version, *) # :nodoc:
           super.merge(items: items&.to_openapi(version) || {})
         end
       end

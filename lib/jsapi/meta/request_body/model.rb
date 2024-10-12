@@ -3,6 +3,7 @@
 module Jsapi
   module Meta
     module RequestBody
+      # Defines a request body.
       class Model < Base::Model
         include OpenAPI::Extensions
 
@@ -15,13 +16,13 @@ module Jsapi
 
         ##
         # :attr: description
-        # The optional description of the request body.
+        # The description of the request body.
         attribute :description, String
 
         ##
         # :attr_reader: examples
-        # The optional examples.
-        attribute :examples, { String => OpenAPI::Example }, default_key: 'default'
+        # The Example objects.
+        attribute :examples, { String => Example }, default_key: 'default'
 
         ##
         # :attr_reader: schema
@@ -55,13 +56,13 @@ module Jsapi
         end
 
         # Returns a hash representing the \OpenAPI 3.x request body object.
-        def to_openapi(version)
+        def to_openapi(version, *)
           with_openapi_extensions(
             description: description,
             content: {
               content_type => {
                 schema: schema.to_openapi(version),
-                examples: examples&.transform_values(&:to_openapi)
+                examples: examples.transform_values(&:to_openapi).presence
               }.compact
             },
             required: required?

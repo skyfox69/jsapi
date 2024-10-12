@@ -11,13 +11,7 @@ module Jsapi
         #
         # Raises an +ArgumentError+ if at least one keyword is not supported.
         def initialize(keywords = {})
-          keywords.each do |key, value|
-            if respond_to?(method = "#{key}=")
-              public_send(method, value)
-            else
-              raise ArgumentError, "unsupported keyword: #{key}"
-            end
-          end
+          merge!(keywords)
         end
 
         def inspect(*attributes) # :nodoc:
@@ -28,6 +22,20 @@ module Jsapi
           "#<#{klass.name} #{
             attribute_names.map { |name| "#{name}: #{send(name).inspect}" }.join(', ')
           }>"
+        end
+
+        # Merges +keywords+ into the model.
+        #
+        # Raises an +ArgumentError+ if at least one keyword is not supported.
+        def merge!(keywords = {})
+          keywords.each do |key, value|
+            if respond_to?(method = "#{key}=")
+              public_send(method, value)
+            else
+              raise ArgumentError, "unsupported keyword: #{key}"
+            end
+          end
+          self
         end
 
         # Returns false.

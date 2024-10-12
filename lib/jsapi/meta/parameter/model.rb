@@ -3,7 +3,9 @@
 module Jsapi
   module Meta
     module Parameter
+      # Defines a parameter.
       class Model < Base::Model
+        include ToOpenAPI
         include OpenAPI::Extensions
 
         delegate_missing_to :schema
@@ -21,7 +23,7 @@ module Jsapi
         ##
         # :attr_reader: examples
         # The examples.
-        attribute :examples, { String => OpenAPI::Example }, default_key: 'default'
+        attribute :examples, { String => Example }, default_key: 'default'
 
         ##
         # :attr: in
@@ -74,7 +76,7 @@ module Jsapi
         end
 
         # Returns an array of hashes representing the \OpenAPI parameter objects.
-        def to_openapi(version, definitions)
+        def to_openapi_parameters(version, definitions)
           version = OpenAPI::Version.from(version)
           schema = self.schema.resolve(definitions)
 
@@ -109,7 +111,7 @@ module Jsapi
                     allowEmptyValue: allow_empty_value?.presence,
                     deprecated: deprecated?.presence,
                     schema: schema.to_openapi(version),
-                    examples: examples&.transform_values(&:to_openapi)
+                    examples: examples.transform_values(&:to_openapi).presence
 
                     # NOTE: collectionFormat is replaced by style and explode.
                     #       The default values for query parameters are:
@@ -165,7 +167,7 @@ module Jsapi
                       allowEmptyValue: allow_empty_value.presence,
                       deprecated: deprecated,
                       schema: property_schema.to_openapi(version).except(:deprecated),
-                      examples: examples&.transform_values(&:to_openapi)
+                      examples: examples.transform_values(&:to_openapi).presence
                     }
                   end
                 )

@@ -50,11 +50,6 @@ module Jsapi
         "#{attributes.map { |k, v| "#{k}: #{v.inspect}" }.join(', ')}>"
       end
 
-      def method_missing(*args) # :nodoc:
-        name = args.first.to_s
-        _attr_readers.key?(name) ? _attr_readers[name] : super
-      end
-
       def respond_to_missing?(param1, _param2) # :nodoc:
         _attr_readers.key?(param1.to_s) ? true : super
       end
@@ -67,6 +62,11 @@ module Jsapi
 
       def _nested_validity
         @nested.validate(errors)
+      end
+
+      def method_missing(*args) # :nodoc:
+        name = args.first.to_s
+        _attr_readers.key?(name) ? _attr_readers[name] : super
       end
     end
   end

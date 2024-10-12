@@ -3,6 +3,7 @@
 module Jsapi
   module Meta
     module Response
+      # Defines a response.
       class Model < Base::Model
         include OpenAPI::Extensions
 
@@ -15,23 +16,23 @@ module Jsapi
 
         ##
         # :attr: description
-        # The optional description of the response.
+        # The description of the response.
         attribute :description, String
 
         ##
         # :attr: examples
-        # The optional examples.
-        attribute :examples, { String => OpenAPI::Example }, default_key: 'default'
+        # The Example objects.
+        attribute :examples, { String => Example }, default_key: 'default'
 
         ##
         # :attr: headers
-        # The response headers.
-        attribute :headers, { String => OpenAPI::Header }
+        # The Header objects.
+        attribute :headers, { String => Header }
 
         ##
         # :attr: links
-        # The optional OpenAPI::Link objects.
-        attribute :links, { String => OpenAPI::Link }
+        # The Link objects.
+        attribute :links, { String => Link }
 
         ##
         # :attr: locale
@@ -66,11 +67,11 @@ module Jsapi
               {
                 description: description,
                 schema: schema.to_openapi(version),
-                headers: headers&.transform_values do |header|
+                headers: headers.transform_values do |header|
                   header.to_openapi(version) unless header.reference?
-                end&.compact,
+                end.compact.presence,
                 examples: (
-                  if (example = examples&.values&.first).present?
+                  if (example = examples.values.first).present?
                     { content_type => example.resolve(definitions).value }
                   end
                 )
@@ -81,11 +82,13 @@ module Jsapi
                 content: {
                   content_type => {
                     schema: schema.to_openapi(version),
-                    examples: examples&.transform_values(&:to_openapi)
+                    examples: examples.transform_values(&:to_openapi).presence
                   }.compact
                 },
-                headers: headers&.transform_values { |header| header.to_openapi(version) },
-                links: links&.transform_values(&:to_openapi)
+                headers: headers.transform_values do |header|
+                  header.to_openapi(version)
+                end.presence,
+                links: links.transform_values(&:to_openapi).presence
               }
             end
           )
