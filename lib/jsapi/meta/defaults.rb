@@ -5,12 +5,12 @@ module Jsapi
     # Holds the default values for a particular Schema type.
     class Defaults < Base::Model
       ##
-      # :attr: read
+      # :attr: within_requests
       # The default value of parameters and properties when reading requests.
       attribute :within_requests
 
       ##
-      # :attr: write
+      # :attr: within_responses
       # The default value of properties when writing responses.
       attribute :within_responses
 

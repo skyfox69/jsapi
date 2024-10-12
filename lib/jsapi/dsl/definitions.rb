@@ -21,19 +21,20 @@ module Jsapi
       #
       # See Meta::Definitions#callbacks for further information.
       def callback(name, **keywords, &block)
-        _define('callback', name.inspect) do
-          callback = _meta_model.add_callback(name, keywords)
+        define('callback', name.inspect) do
+          callback = @meta_model.add_callback(name, keywords)
           Callback.new(callback, &block) if block
         end
       end
 
       # Specifies the general default values for +type+.
       #
-      #   default 'array', read: [], write: []
+      #   default 'array', within_requests: [], within_responses: []
       #
+      # See Meta::Definitions#defaults for further information.
       def default(type, **keywords, &block)
-        _define('default', type.inspect) do
-          default = _meta_model.add_default(type, keywords)
+        define('default', type.inspect) do
+          default = @meta_model.add_default(type, keywords)
           Base.new(default, &block) if block
         end
       end
@@ -44,8 +45,8 @@ module Jsapi
       #
       # See Meta::Definitions#examples for further information.
       def example(name, **keywords, &block)
-        _define('example', name.inspect) do
-          example = _meta_model.add_example(name, keywords)
+        define('example', name.inspect) do
+          example = @meta_model.add_example(name, keywords)
           Base.new(example, &block) if block
         end
       end
@@ -62,7 +63,7 @@ module Jsapi
       # Includes API definitions from +klasses+.
       def include(*klasses)
         klasses.each do |klass|
-          _meta_model.include(klass.api_definitions)
+          @meta_model.include(klass.api_definitions)
         end
       end
 
@@ -72,8 +73,8 @@ module Jsapi
       #
       # See Meta::Definitions#headers for further information.
       def header(name, **keywords, &block)
-        _define('header', name.inspect) do
-          header = _meta_model.add_header(name, keywords)
+        define('header', name.inspect) do
+          header = @meta_model.add_header(name, keywords)
           Base.new(header, &block) if block
         end
       end
@@ -104,20 +105,26 @@ module Jsapi
       #
       # See Meta::Definitions#links for further information.
       def link(name, **keywords, &block)
-        _define('link', name.inspect) do
-          link = _meta_model.add_link(name, keywords)
+        define('link', name.inspect) do
+          link = @meta_model.add_link(name, keywords)
           Base.new(link, &block) if block
         end
       end
 
       # Registers a callback to be called when rescuing an exception.
+      #
+      #   on_rescue :foo
+      #
+      #   on_rescue do |error|
+      #     # ...
+      #   end
       def on_rescue(method = nil, &block)
-        _define('on_rescue') do
-          _meta_model.add_on_rescue(method || block)
+        define('on_rescue') do
+          @meta_model.add_on_rescue(method || block)
         end
       end
 
-      # Defines an operation.
+      # Specifies an operation.
       #
       #   operation 'foo', path: '/foo' do
       #     parameter 'bar', type: 'string'
@@ -127,31 +134,35 @@ module Jsapi
       #   end
       #
       # +name+ can be +nil+ if the controller handles one operation only.
+      #
+      # See Meta::Definitions#operations for further information.
       def operation(name = nil, **keywords, &block)
-        _define('operation', name&.inspect) do
-          operation_model = _meta_model.add_operation(name, keywords)
+        define('operation', name&.inspect) do
+          operation_model = @meta_model.add_operation(name, keywords)
           Operation.new(operation_model, &block) if block
         end
       end
 
-      # Defines a reusable parameter.
+      # Specifies a reusable parameter.
       #
       #   parameter 'foo', type: 'string'
       #
+      # See Meta::Definitions#parameters for further information.
       def parameter(name, **keywords, &block)
-        _define('parameter', name.inspect) do
-          parameter_model = _meta_model.add_parameter(name, keywords)
+        define('parameter', name.inspect) do
+          parameter_model = @meta_model.add_parameter(name, keywords)
           Parameter.new(parameter_model, &block) if block
         end
       end
 
-      # Defines a reusable request body.
+      # Specifies a reusable request body.
       #
       #   request_body 'foo', type: 'string'
       #
+      # See Meta::Definitions#request_bodies for further information.
       def request_body(name, **keywords, &block)
-        _define('request_body', name.inspect) do
-          request_body_model = _meta_model.add_request_body(name, keywords)
+        define('request_body', name.inspect) do
+          request_body_model = @meta_model.add_request_body(name, keywords)
           RequestBody.new(request_body_model, &block) if block
         end
       end
@@ -163,30 +174,34 @@ module Jsapi
       #
       def rescue_from(*klasses, with: nil)
         klasses.each do |klass|
-          _meta_model.add_rescue_handler({ error_class: klass, status: with })
+          @meta_model.add_rescue_handler({ error_class: klass, status: with })
         end
       end
 
-      # Defines a reusable response.
+      # Specifies a reusable response.
       #
       #   response 'Foo', type: 'object' do
       #     property 'bar', type: 'string'
       #   end
+      #
+      # See Meta::Definitions#responses for further information.
       def response(name, **keywords, &block)
-        _define('response', name.inspect) do
-          response_model = _meta_model.add_response(name, keywords)
+        define('response', name.inspect) do
+          response_model = @meta_model.add_response(name, keywords)
           Response.new(response_model, &block) if block
         end
       end
 
-      # Defines a reusable schema.
+      # Specifies a reusable schema.
       #
       #   schema 'Foo' do
       #     property 'bar', type: 'string'
       #   end
+      #
+      # See Meta::Definitions#schemas for further information.
       def schema(name, **keywords, &block)
-        _define('schema', name.inspect) do
-          schema_model = _meta_model.add_schema(name, keywords)
+        define('schema', name.inspect) do
+          schema_model = @meta_model.add_schema(name, keywords)
           Schema.new(schema_model, &block) if block
         end
       end
@@ -217,8 +232,8 @@ module Jsapi
       #
       # See Meta::Definitions#security_schemes for further information.
       def security_scheme(name, **keywords, &block)
-        _define('security_scheme', name.inspect) do
-          security_scheme = _meta_model.add_security_scheme(name, keywords)
+        define('security_scheme', name.inspect) do
+          security_scheme = @meta_model.add_security_scheme(name, keywords)
           Base.new(security_scheme, &block) if block
         end
       end

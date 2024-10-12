@@ -6,31 +6,31 @@ module Jsapi
       # #callback
 
       def test_callback
-        definitions = self.definitions do
-          callback 'onFoo', operations: {
-            '{$request.query.foo}' => { path: '/bar' }
+        callback = definitions do
+          callback 'foo', operations: {
+            'bar' => { description: 'Lorem ipsum' }
           }
-        end
-        callback = definitions.callback('onFoo')
+        end.callback('foo')
+
         assert_predicate(callback, :present?)
-        assert_equal('/bar', callback.operation('{$request.query.foo}').path)
+        assert_equal('Lorem ipsum', callback.operation('bar').description)
       end
 
       def test_callback_with_block
-        definitions = self.definitions do
+        callback = definitions do
           callback 'foo' do
-            operation '{$request.query.foo}', path: '/bar'
+            operation 'bar', description: 'Lorem ipsum'
           end
-        end
-        callback = definitions.callback('foo')
+        end.callback('foo')
+
         assert_predicate(callback, :present?)
-        assert_equal('/bar', callback.operation('{$request.query.foo}').path)
+        assert_equal('Lorem ipsum', callback.operation('bar').description)
       end
 
       def test_callback_raises_an_error_on_invalid_keyword
         error = assert_raises(Error) do
           definitions do
-            callback 'foo', bar: ''
+            callback 'foo', bar: 'Lorem ipsum'
           end
         end
         assert_equal('unsupported keyword: bar (at callback "foo")', error.message)
@@ -39,21 +39,21 @@ module Jsapi
       # #default
 
       def test_default
-        definitions = self.definitions do
+        default = definitions do
           default 'array', within_requests: []
-        end
-        default = definitions.default('array')
+        end.default('array')
+
         assert_predicate(default, :present?)
         assert_equal([], default.within_requests)
       end
 
       def test_default_with_block
-        definitions = self.definitions do
+        default = definitions do
           default 'array' do
             within_requests []
           end
-        end
-        default = definitions.default('array')
+        end.default('array')
+
         assert_predicate(default, :present?)
         assert_equal([], default.within_requests)
       end
@@ -61,7 +61,7 @@ module Jsapi
       def test_default_raises_an_error_on_invalid_keyword
         error = assert_raises(Error) do
           definitions do
-            default 'array', foo: ''
+            default 'array', foo: 'Lorem ipsum'
           end
         end
         assert_equal('unsupported keyword: foo (at default "array")', error.message)
@@ -70,21 +70,21 @@ module Jsapi
       # #example
 
       def test_example
-        definitions = self.definitions do
+        example = definitions do
           example 'foo', value: 'bar'
-        end
-        example = definitions.example('foo')
+        end.example('foo')
+
         assert_predicate(example, :present?)
         assert_equal('bar', example.value)
       end
 
       def test_example_with_block
-        definitions = self.definitions do
+        example = definitions do
           example 'foo' do
             value 'bar'
           end
-        end
-        example = definitions.example('foo')
+        end.example('foo')
+
         assert_predicate(example, :present?)
         assert_equal('bar', example.value)
       end
@@ -92,7 +92,7 @@ module Jsapi
       def test_example_raises_an_error_on_invalid_keyword
         error = assert_raises(Error) do
           definitions do
-            example 'foo', bar: ''
+            example 'foo', bar: 'Lorem ipsum'
           end
         end
         assert_equal('unsupported keyword: bar (at example "foo")', error.message)
@@ -112,29 +112,29 @@ module Jsapi
       # #header
 
       def test_header
-        definitions = self.definitions do
-          header 'foo', description: 'Description of foo'
-        end
-        header = definitions.header('foo')
+        header = definitions do
+          header 'foo', description: 'Lorem ipsum'
+        end.header('foo')
+
         assert_predicate(header, :present?)
-        assert_equal('Description of foo', header.description)
+        assert_equal('Lorem ipsum', header.description)
       end
 
       def test_header_with_block
-        definitions = self.definitions do
+        header = definitions do
           header 'foo' do
-            description 'Description of foo'
+            description 'Lorem ipsum'
           end
-        end
-        header = definitions.header('foo')
+        end.header('foo')
+
         assert_predicate(header, :present?)
-        assert_equal('Description of foo', header.description)
+        assert_equal('Lorem ipsum', header.description)
       end
 
       def test_header_raises_an_error_on_invalid_keyword
         error = assert_raises(Error) do
           definitions do
-            header 'foo', bar: ''
+            header 'foo', bar: 'Lorem ipsum'
           end
         end
         assert_equal('unsupported keyword: bar (at header "foo")', error.message)
@@ -143,29 +143,29 @@ module Jsapi
       # #link
 
       def test_link
-        definitions = self.definitions do
-          link 'foo', operation_id: 'bar'
-        end
-        link = definitions.link('foo')
+        link = definitions do
+          link 'foo', description: 'Lorem ipsum'
+        end.link('foo')
+
         assert_predicate(link, :present?)
-        assert_equal('bar', link.operation_id)
+        assert_equal('Lorem ipsum', link.description)
       end
 
       def test_link_with_block
-        definitions = self.definitions do
+        link = definitions do
           link 'foo' do
-            operation_id 'bar'
+            description 'Lorem ipsum'
           end
-        end
-        link = definitions.link('foo')
+        end.link('foo')
+
         assert_predicate(link, :present?)
-        assert_equal('bar', link.operation_id)
+        assert_equal('Lorem ipsum', link.description)
       end
 
       def test_link_raises_an_error_on_invalid_keyword
         error = assert_raises(Error) do
           definitions do
-            link 'foo', bar: ''
+            link 'foo', bar: 'Lorem ipsum'
           end
         end
         assert_equal('unsupported keyword: bar (at link "foo")', error.message)
@@ -174,66 +174,68 @@ module Jsapi
       # #on_rescue
 
       def test_on_rescue
-        definitions = self.definitions do
+        on_rescue_callbacks = definitions do
           on_rescue :foo
-        end
-        assert_equal(:foo, definitions.on_rescue_callbacks.first)
+        end.on_rescue_callbacks
+
+        assert_equal(:foo, on_rescue_callbacks.first)
       end
 
       def test_on_rescue_with_block
-        definitions = self.definitions do
+        on_rescue_callbacks = definitions do
           on_rescue { |e| e }
-        end
-        assert_instance_of(Proc, definitions.on_rescue_callbacks.first)
+        end.on_rescue_callbacks
+
+        assert_instance_of(Proc, on_rescue_callbacks.first)
       end
 
       # #operation
 
       def test_operation
         # Named operation
-        definitions = self.definitions do
-          operation 'foo', description: 'Description of foo'
-        end
-        operation = definitions.operation('foo')
+        operation = definitions do
+          operation 'foo', description: 'Lorem ipsum'
+        end.operation('foo')
+
         assert_predicate(operation, :present?)
-        assert_equal('Description of foo', operation.description)
+        assert_equal('Lorem ipsum', operation.description)
 
         # Nameless operation
-        definitions = definitions do
-          operation description: 'Description of foo'
-        end
-        operation = definitions.operation
+        operation = definitions do
+          operation description: 'Lorem ipsum'
+        end.operation
+
         assert_predicate(operation, :present?)
-        assert_equal('Description of foo', operation.description)
+        assert_equal('Lorem ipsum', operation.description)
       end
 
       def test_operation_with_block
         # Named operation
-        definitions = self.definitions do
+        operation = definitions do
           operation 'foo' do
-            description 'Description of foo'
+            description 'Lorem ipsum'
           end
-        end
-        operation = definitions.operation('foo')
+        end.operation('foo')
+
         assert_predicate(operation, :present?)
-        assert_equal('Description of foo', operation.description)
+        assert_equal('Lorem ipsum', operation.description)
 
         # Nameless operation
-        definitions = definitions do
+        operation = definitions do
           operation do
-            description 'Description of foo'
+            description 'Lorem ipsum'
           end
-        end
-        operation = definitions.operation
+        end.operation
+
         assert_predicate(operation, :present?)
-        assert_equal('Description of foo', operation.description)
+        assert_equal('Lorem ipsum', operation.description)
       end
 
       def test_operation_raises_an_error_on_invalid_keyword
         # Named operation
         error = assert_raises(Error) do
           definitions do
-            operation 'foo', bar: ''
+            operation 'foo', bar: 'Lorem ipsum'
           end
         end
         assert_equal('unsupported keyword: bar (at operation "foo")', error.message)
@@ -241,7 +243,7 @@ module Jsapi
         # Nameless operation
         error = assert_raises(Error) do
           definitions do
-            operation bar: ''
+            operation bar: 'Lorem ipsum'
           end
         end
         assert_equal('unsupported keyword: bar (at operation)', error.message)
@@ -250,29 +252,29 @@ module Jsapi
       # #parameter
 
       def test_parameter
-        definitions = self.definitions do
-          parameter 'foo', description: 'Description of foo'
-        end
-        parameter = definitions.parameter('foo')
+        parameter = definitions do
+          parameter 'foo', description: 'Lorem ipsum'
+        end.parameter('foo')
+
         assert_predicate(parameter, :present?)
-        assert_equal('Description of foo', parameter.description)
+        assert_equal('Lorem ipsum', parameter.description)
       end
 
       def test_parameter_with_block
-        definitions = self.definitions do
+        parameter = definitions do
           parameter 'foo' do
-            description 'Description of foo'
+            description 'Lorem ipsum'
           end
-        end
-        parameter = definitions.parameter('foo')
+        end.parameter('foo')
+
         assert_predicate(parameter, :present?)
-        assert_equal('Description of foo', parameter.description)
+        assert_equal('Lorem ipsum', parameter.description)
       end
 
       def test_parameter_raises_an_error_on_invalid_keyword
         error = assert_raises(Error) do
           definitions do
-            parameter 'foo', bar: ''
+            parameter 'foo', bar: 'Lorem ipsum'
           end
         end
         assert_equal('unsupported keyword: bar (at parameter "foo")', error.message)
@@ -281,29 +283,29 @@ module Jsapi
       # #request_body
 
       def test_request_body
-        definitions = self.definitions do
-          request_body 'foo', description: 'Description of foo'
-        end
-        request_body = definitions.request_body('foo')
+        request_body = definitions do
+          request_body 'foo', description: 'Lorem ipsum'
+        end.request_body('foo')
+
         assert_predicate(request_body, :present?)
-        assert_equal('Description of foo', request_body.description)
+        assert_equal('Lorem ipsum', request_body.description)
       end
 
       def test_request_body_with_block
-        definitions = self.definitions do
+        request_body = definitions do
           request_body 'foo' do
-            description 'Description of foo'
+            description 'Lorem ipsum'
           end
-        end
-        request_body = definitions.request_body('foo')
+        end.request_body('foo')
+
         assert_predicate(request_body, :present?)
-        assert_equal('Description of foo', request_body.description)
+        assert_equal('Lorem ipsum', request_body.description)
       end
 
       def test_request_body_raises_an_error_on_invalid_keyword
         error = assert_raises(Error) do
           definitions do
-            request_body 'foo', bar: ''
+            request_body 'foo', bar: 'Lorem ipsum'
           end
         end
         assert_equal('unsupported keyword: bar (at request_body "foo")', error.message)
@@ -312,39 +314,39 @@ module Jsapi
       # #rescue_from
 
       def test_recue_from
-        definitions = self.definitions do
+        rescue_handlers = definitions do
           rescue_from StandardError, with: 500
-        end
-        rescue_handlers = definitions.rescue_handlers
+        end.rescue_handlers
+
         assert_equal([500], rescue_handlers.map(&:status))
       end
 
       # #response
 
       def test_response
-        definitions = self.definitions do
-          response 'foo', description: 'Description of foo'
-        end
-        response = definitions.response('foo')
+        response = definitions do
+          response 'foo', description: 'Lorem ipsum'
+        end.response('foo')
+
         assert_predicate(response, :present?)
-        assert_equal('Description of foo', response.description)
+        assert_equal('Lorem ipsum', response.description)
       end
 
       def test_response_with_block
-        definitions = self.definitions do
+        response = definitions do
           response 'foo' do
-            description 'Description of foo'
+            description 'Lorem ipsum'
           end
-        end
-        response = definitions.response('foo')
+        end.response('foo')
+
         assert_predicate(response, :present?)
-        assert_equal('Description of foo', response.description)
+        assert_equal('Lorem ipsum', response.description)
       end
 
       def test_response_raises_an_error_on_invalid_keyword
         error = assert_raises(Error) do
           definitions do
-            response 'foo', bar: ''
+            response 'foo', bar: 'Lorem ipsum'
           end
         end
         assert_equal('unsupported keyword: bar (at response "foo")', error.message)
@@ -353,29 +355,29 @@ module Jsapi
       # #schema
 
       def test_schema
-        definitions = self.definitions do
-          schema 'foo', description: 'Description of foo'
-        end
-        schema = definitions.schema('foo')
+        schema = definitions do
+          schema 'foo', description: 'Lorem ipsum'
+        end.schema('foo')
+
         assert_predicate(schema, :present?)
-        assert_equal('Description of foo', schema.description)
+        assert_equal('Lorem ipsum', schema.description)
       end
 
       def test_schema_with_block
-        definitions = self.definitions do
+        schema = definitions do
           schema 'foo' do
-            description 'Description of foo'
+            description 'Lorem ipsum'
           end
-        end
-        schema = definitions.schema('foo')
+        end.schema('foo')
+
         assert_predicate(schema, :present?)
-        assert_equal('Description of foo', schema.description)
+        assert_equal('Lorem ipsum', schema.description)
       end
 
       def test_schema_raises_an_error_on_invalid_keyword
         error = assert_raises(Error) do
           definitions do
-            schema 'foo', bar: ''
+            schema 'foo', bar: 'Lorem ipsum'
           end
         end
         assert_equal('unsupported keyword: bar (at schema "foo")', error.message)
@@ -384,31 +386,31 @@ module Jsapi
       # #security_scheme
 
       def test_security_scheme
-        definitions = self.definitions do
+        security_scheme = definitions do
           security_scheme 'basic_auth', type: 'http',
                                         scheme: 'basic',
-                                        description: 'Description of basic auth'
-        end
-        security_scheme = definitions.security_scheme('basic_auth')
+                                        description: 'Lorem ipsum'
+        end.security_scheme('basic_auth')
+
         assert_predicate(security_scheme, :present?)
-        assert_equal('Description of basic auth', security_scheme.description)
+        assert_equal('Lorem ipsum', security_scheme.description)
       end
 
       def test_security_scheme_with_block
-        definitions = self.definitions do
+        security_scheme = definitions do
           security_scheme 'basic_auth', type: 'http', scheme: 'basic' do
-            description 'Description of basic auth'
+            description 'Lorem ipsum'
           end
-        end
-        security_scheme = definitions.security_scheme('basic_auth')
+        end.security_scheme('basic_auth')
+
         assert_predicate(security_scheme, :present?)
-        assert_equal('Description of basic auth', security_scheme.description)
+        assert_equal('Lorem ipsum', security_scheme.description)
       end
 
       def test_security_scheme_raises_an_error_on_invalid_keyword
         error = assert_raises(Error) do
           definitions do
-            security_scheme 'basic_auth', type: 'http', foo: ''
+            security_scheme 'basic_auth', type: 'http', foo: 'Lorem ipsum'
           end
         end
         assert_equal(

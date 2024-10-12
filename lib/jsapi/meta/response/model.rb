@@ -26,7 +26,7 @@ module Jsapi
 
         ##
         # :attr: headers
-        # The OpenAPI::Header objects.
+        # The Header objects.
         attribute :headers, { String => Header }
 
         ##

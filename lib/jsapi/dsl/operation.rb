@@ -4,7 +4,32 @@ module Jsapi
   module DSL
     # Used to define an API operation.
     class Operation < Base
-      include Callbacks
+
+      # Specifies a callback.
+      #
+      #   callback 'foo' do
+      #     operation '{$request.query.bar}'
+      #   end
+      #
+      # Refers a resuable callback if the `:ref` keyword is specified.
+      #
+      #   callback ref: 'foo'
+      #
+      # Refers the reusable callback object with the same name if neither any
+      # keywords nor a block is specified.
+      #
+      #   callback 'foo'
+      #
+      # See Meta::Operation#callbacks for further information.
+      def callback(name = nil, **keywords, &block)
+        define('callback', name&.inspect) do
+          name = keywords[:ref] if name.nil?
+          keywords = { ref: name } unless keywords.any? || block
+
+          callback_model = @meta_model.add_callback(name, keywords)
+          Callback.new(callback_model, &block) if block
+        end
+      end
 
       ##
       # :method: deprecated
@@ -24,7 +49,7 @@ module Jsapi
       #
       # See Meta::Operation#method for further information.
       def method(arg)
-        _keyword(:method, arg)
+        keyword(:method, arg)
       end
 
       # Defines the model class to access top-level parameters by.
@@ -35,41 +60,41 @@ module Jsapi
       #     end
       #   end
       #
-      # +klass+ can be any subclass of Model::Base. If block is given, an anonymous class
-      # is created that inherits either from +klass+ or Model::Base.
+      # +klass+ can be any subclass of Model::Base. If block is given, an anonymous
+      # class is created that inherits either from +klass+ or Model::Base.
       def model(klass = nil, &block)
         if block
           klass = Class.new(klass || Model::Base)
           klass.class_eval(&block)
         end
-        _meta_model.model = klass
+        @meta_model.model = klass
       end
 
-      # Adds a parameter or a reference to a reusable parameter.
+      # Specifies a parameter
       #
-      #   # define a parameter
       #   parameter 'foo', type: 'string'
       #
-      #   # define a nested parameter
       #   parameter 'foo', type: 'object' do
       #     property 'bar', type: 'string'
       #   end
       #
-      #   # refer a reusable parameter
+      # Refers a resuable parameter if the `:ref` keyword is specified.
+      #
       #   parameter ref: 'foo'
       #
-      # Refers the reusable parameter with the same name if neither any keywords nor a
-      # block is specified.
+      # Refers the reusable parameter with the same name if neither any keywords
+      # nor a block is specified.
       #
       #   parameter 'foo'
       #
+      # See Meta::Operation#parameters for further information.
       def parameter(name = nil, **keywords, &block)
-        _define('parameter', name&.inspect) do
+        define('parameter', name&.inspect) do
           name = keywords[:ref] if name.nil?
           keywords = { ref: name } unless keywords.any? || block
 
-          parameter_model = _meta_model.add_parameter(name, keywords)
-          _eval(parameter_model, Parameter, &block)
+          parameter_model = @meta_model.add_parameter(name, keywords)
+          Parameter.new(parameter_model, &block) if block
         end
       end
 
@@ -78,14 +103,14 @@ module Jsapi
       # :args: arg
       # Specifies the relative path of the operation.
 
-      # Defines the request body or refers a reusable request body.
+      # Specifies the request body.
       #
-      #   # define a request body
       #   request_body type: 'object' do
       #     property 'foo', type: 'string'
       #   end
       #
-      #   # refer a reusable request body
+      # Refers a resuable request body if the `:ref` keyword is specified.
+      #
       #   request_body ref: 'foo'
       #
       # Refers the reusable request body with the same name if neither any
@@ -93,24 +118,25 @@ module Jsapi
       #
       #   request_body 'foo'
       #
+      # See Meta::Operation#request_body for further information.
       def request_body(**keywords, &block)
-        _define('request body') do
-          _meta_model.request_body = keywords
-          _eval(_meta_model.request_body, RequestBody, &block)
+        define('request body') do
+          @meta_model.request_body = keywords
+          RequestBody.new(@meta_model.request_body, &block) if block
         end
       end
 
-      # Adds a response or a reference to a reusable response.
+      # Specifies a response.
       #
-      #   # define a response
       #   response 200, type: 'object' do
       #     property 'foo', type: 'string'
       #   end
       #
-      #   # refer a reusable response
-      #   response 200, ref: 'foo'
-      #
       # The default status is <code>"default"</code>.
+      #
+      # Refers a resuable response if the `:ref` keyword is specified.
+      #
+      #   response 200, ref: 'foo'
       #
       # Refers the reusable response with the same name if neither any keywords
       # nor a block is specified.
@@ -118,9 +144,11 @@ module Jsapi
       #   response 'foo'
       #
       # Raises an Error if name is specified together with keywords or a block.
+      #
+      # See Meta::Operation#responses for further information.
       def response(status_or_name = nil, name = nil, **keywords, &block)
-        _define('response', status_or_name&.inspect) do
-          raise Error, 'name cannot be specified together with keywords ' \
+        define('response', status_or_name&.inspect) do
+          raise Error, "name can't be specified together with keywords " \
                        'or a block' if name && (keywords.any? || block)
 
           if keywords.any? || block
@@ -129,8 +157,8 @@ module Jsapi
             status = status_or_name if name
             keywords = { ref: name || status_or_name }
           end
-          response_model = _meta_model.add_response(status, keywords)
-          _eval(response_model, Response, &block)
+          response_model = @meta_model.add_response(status, keywords)
+          Response.new(response_model, &block) if block
         end
       end
 

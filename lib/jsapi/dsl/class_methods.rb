@@ -23,7 +23,7 @@ module Jsapi
 
       # Specifies the general default values for +type+.
       #
-      #   api_default 'array', read: [], write: []
+      #   api_default 'array', within_requests: [], within_responses: []
       #
       def api_default(type, **keywords, &block)
         api_definitions { default(type, **keywords, &block) }
@@ -94,11 +94,17 @@ module Jsapi
       end
 
       # Registers a callback to be called when rescuing an exception.
+      #
+      #   api_on_rescue :foo
+      #
+      #   api_on_rescue do |error|
+      #     # ...
+      #   end
       def api_on_rescue(method = nil, &block)
         api_definitions { on_rescue(method, &block) }
       end
 
-      # Defines an operation.
+      # Specifies an operation.
       #
       #   api_operation 'foo', path: '/foo' do
       #     parameter 'bar', type: 'string'
@@ -112,7 +118,7 @@ module Jsapi
         api_definitions { operation(name, **keywords, &block) }
       end
 
-      # Defines a reusable parameter.
+      # Specifies a reusable parameter.
       #
       #   api_parameter 'foo', type: 'string'
       #
@@ -137,7 +143,7 @@ module Jsapi
         api_definitions { rescue_from(*klasses, with: with) }
       end
 
-      # Defines a reusable response.
+      # Specifies a reusable response.
       #
       #   api_response 'Foo', type: 'object' do
       #     property 'bar', type: 'string'
@@ -146,7 +152,7 @@ module Jsapi
         api_definitions { response(name, **keywords, &block) }
       end
 
-      # Defines a reusable schema.
+      # Specifies a reusable schema.
       #
       #   api_schema 'Foo' do
       #     property 'bar', type: 'string'

@@ -11,8 +11,8 @@ module Jsapi
       #     parameter 'bar', type: 'string'
       #   end
       def operation(expression, **keywords, &block)
-        _define('operation', expression.inspect) do
-          operation_model = _meta_model.add_operation(expression, keywords)
+        define('operation', expression.inspect) do
+          operation_model = @meta_model.add_operation(expression, keywords)
           Operation.new(operation_model, &block) if block
         end
       end

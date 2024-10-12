@@ -3,32 +3,40 @@
 module Jsapi
   module DSL
     class CallbackTest < Minitest::Test
+      # #operation
+
       def test_operation
-        callback = define_callback do
-          operation('{$request.query.foo}', path: '/foo')
-        end
-        callback_operation = callback.operation('{$request.query.foo}')
-        assert_equal('/foo', callback_operation.path)
+        operation = callback do
+          operation '{$request.query.foo}', description: 'Lorem ipsum'
+        end.operation('{$request.query.foo}')
+
+        assert_predicate(operation, :present?)
+        assert_equal('Lorem ipsum', operation.description)
       end
 
       def test_operation_with_block
-        callback = define_callback do
-          operation('{$request.query.foo}') { path '/foo' }
-        end
-        callback_operation = callback.operation('{$request.query.foo}')
-        assert_equal('/foo', callback_operation.path)
+        operation = callback do
+          operation '{$request.query.foo}' do
+            description 'Lorem ipsum'
+          end
+        end.operation('{$request.query.foo}')
+
+        assert_predicate(operation, :present?)
+        assert_equal('Lorem ipsum', operation.description)
       end
 
       def test_operation_raises_an_exception_on_blank_expression
         error = assert_raises(Error) do
-          define_callback { operation '' }
+          callback do
+            operation ''
+          end
         end
         assert_equal("expression can't be blank (at operation \"\")", error.message)
       end
 
       private
 
-      def define_callback(**keywords, &block)
+      def callback(**keywords, &block)
         Meta::Callback.new(keywords).tap do |callback|
           Callback.new(callback, &block)
         end

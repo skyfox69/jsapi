@@ -6,52 +6,97 @@ module Jsapi
       # #example
 
       def test_example
-        response = define_response { example 'foo' }
-        assert_equal('foo', response.example('default').value)
+        example = response do
+          example 'foo'
+        end.example('default')
+
+        assert_predicate(example, :present?)
+        assert_equal('foo', example.value)
+      end
+
+      # #header
+
+      def test_header
+        header = response do
+          header 'X-Foo', description: 'Lorem ipsum'
+        end.header('X-Foo')
+
+        assert_predicate(header, :present?)
+        assert_equal('Lorem ipsum', header.description)
+      end
+
+      def test_header_with_block
+        header = response do
+          header 'X-Foo' do
+            description 'Lorem ipsum'
+          end
+        end.header('X-Foo')
+
+        assert_predicate(header, :present?)
+        assert_equal('Lorem ipsum', header.description)
+      end
+
+      def test_header_reference
+        header = response do
+          header ref: 'x_foo'
+        end.header('x_foo')
+
+        assert_predicate(header, :present?)
+        assert_equal('x_foo', header.ref)
+      end
+
+      def test_header_reference_by_name
+        header = response do
+          header 'X-Foo'
+        end.header('X-Foo')
+
+        assert_predicate(header, :present?)
+        assert_equal('X-Foo', header.ref)
       end
 
       # #link
 
       def test_link
-        response = define_response do
-          link 'foo', operation_id: 'bar'
-        end
-        assert_equal('bar', response.link('foo').operation_id)
+        link = response do
+          link 'foo', description: 'Lorem ipsum'
+        end.link('foo')
+
+        assert_predicate(link, :present?)
+        assert_equal('Lorem ipsum', link.description)
       end
 
       def test_link_with_block
-        response = define_response do
-          link('foo') { operation_id 'bar' }
-        end
-        assert_equal('bar', response.link('foo').operation_id)
+        link = response do
+          link 'foo' do
+            description 'Lorem ipsum'
+          end
+        end.link('foo')
+
+        assert_predicate(link, :present?)
+        assert_equal('Lorem ipsum', link.description)
       end
 
       def test_link_reference
-        response = define_response do
+        link = response do
           link ref: 'foo'
-        end
-        assert_equal('foo', response.link('foo').ref)
+        end.link('foo')
+
+        assert_predicate(link, :present?)
+        assert_equal('foo', link.ref)
       end
 
       def test_link_reference_by_name
-        response = define_response do
+        link = response do
           link 'foo'
-        end
-        assert_equal('foo', response.link('foo').ref)
-      end
+        end.link('foo')
 
-      def test_raises_an_exception_on_ambiguous_keywords
-        error = assert_raises(Error) do
-          define_response do
-            link ref: 'foo', operation_id: 'bar'
-          end
-        end
-        assert_equal('unsupported keyword: operation_id (at link)', error.message)
+        assert_predicate(link, :present?)
+        assert_equal('foo', link.ref)
       end
 
       private
 
-      def define_response(**keywords, &block)
+      def response(**keywords, &block)
         Meta::Response.new(keywords).tap do |response|
           Response.new(response, &block)
         end

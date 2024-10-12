@@ -7,49 +7,63 @@ module Jsapi
         include Examples
       end
 
-      def test_default_example
-        model = define_model do
+      def test_example
+        example = examples do
           example 'bar'
-        end
-        assert_equal('bar', model.example('default').value)
+        end['default']
+
+        assert_predicate(example, :present?)
+        assert_equal('bar', example.value)
       end
 
-      def test_example_with_options
-        model = define_model do
+      def test_example_with_keywords
+        example = examples do
           example value: 'bar'
-        end
-        assert_equal('bar', model.example('default').value)
+        end['default']
+
+        assert_predicate(example, :present?)
+        assert_equal('bar', example.value)
       end
 
       def test_example_with_block
-        model = define_model do
-          example { value 'bar' }
-        end
-        assert_equal('bar', model.example('default').value)
+        example = examples do
+          example do
+            value 'bar'
+          end
+        end['default']
+
+        assert_predicate(example, :present?)
+        assert_equal('bar', example.value)
       end
 
-      def test_example_with_name_and_options
-        model = define_model do
+      def test_example_with_name_and_keywords
+        example = examples do
           example 'foo', value: 'bar'
-        end
-        assert_equal('bar', model.example('foo').value)
+        end['foo']
+
+        assert_predicate(example, :present?)
+        assert_equal('bar', example.value)
       end
 
       def test_example_with_name_and_block
-        model = define_model do
+        example = examples do
           example 'foo' do
             value 'bar'
           end
-        end
-        assert_equal('bar', model.example('foo').value)
+        end['foo']
+
+        assert_predicate(example, :present?)
+        assert_equal('bar', example.value)
       end
 
       private
 
-      def define_model(&block)
+      def examples(&block)
         Meta::Parameter.new('foo').tap do |model|
-          Dummy.new(model, &block)
-        end
+          Class.new(Base) do
+            include Examples
+          end.new(model, &block)
+        end.examples
       end
     end
   end

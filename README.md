@@ -656,8 +656,8 @@ api_scheme 'https'
 #### Specifying reusable callbacks
 
 ```ruby
-api_callback 'onFoo' do
-  operation '{$request.query.foo}', path: '/bar'
+api_callback 'foo' do
+  operation '{$request.query.bar}', path: '/bar'
 end
 ```
 

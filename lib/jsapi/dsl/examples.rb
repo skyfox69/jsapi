@@ -3,7 +3,7 @@
 module Jsapi
   module DSL
     module Examples
-      # Specifies an OpenAPI example object.
+      # Specifies an example.
       #
       #   example 'foo', value: 'bar'
       #
@@ -11,7 +11,7 @@ module Jsapi
       #
       # The default name is <code>'default'</code>.
       def example(name_or_value = nil, **keywords, &block)
-        _define('example', name_or_value&.inspect) do
+        define('example', name_or_value&.inspect) do
           if keywords.any? || block
             # example 'foo', value: 'bar', ...
             name = name_or_value
@@ -21,7 +21,7 @@ module Jsapi
             keywords = { value: name_or_value }
           end
 
-          example = _meta_model.add_example(name, keywords)
+          example = @meta_model.add_example(name, keywords)
           Base.new(example, &block) if block
         end
       end
