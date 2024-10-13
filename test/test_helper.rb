@@ -36,6 +36,7 @@ end
 require 'dummies/action_controller'
 require 'dummies/action_dispatch'
 require 'dummies/active_model'
+require 'dummies/rails'
 
 # This gem
 require 'jsapi'
