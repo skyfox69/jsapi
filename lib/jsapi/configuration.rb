@@ -1,28 +1,26 @@
 # frozen_string_literal: true
 
 module Jsapi
-  # Holds the Jsapi configuration.
+  # Holds the \Jsapi configuration.
   class Configuration
-    ##
-    # :attr: path
-    # The path of the API definitions relative to the Rails root. The default path is
-    # <code>"app/api_definitions"</code>.
-    attr_accessor :path
+    # The path where the API definitions are located relative to the Rails root.
+    # The default is <code>"app/api_defs"</code>.
+    attr_accessor :api_defs_path
 
     def initialize
-      @path = 'app/api_definitions'
+      @api_defs_path = 'app/api_defs'
     end
 
-    # Returns the absolute +Pathname+ for +args+ within the API definitions path.
+    # Returns the absolute +Pathname+ for +args+ within +api_defs_path+.
     def pathname(*args)
       return unless (root = Rails.root)
 
-      root.join(*[path, args].flatten)
+      root.join(*[api_defs_path, args].flatten)
     end
   end
 
   class << self
-    # The singleton Jsapi configuration.
+    # The singleton \Jsapi configuration.
     def configuration
       @configuration ||= Configuration.new
     end
