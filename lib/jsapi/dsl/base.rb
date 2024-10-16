@@ -3,9 +3,26 @@
 module Jsapi
   module DSL
     class Base
-      def initialize(meta_model, &block)
+      def initialize(meta_model, pathname = nil, parent: nil, &block)
         @meta_model = meta_model
+        @pathname = pathname
+        @parent = parent
 
+        # Raise an error when pathname is attempted to be imported again
+        if pathname && (ancestor = parent)
+          while ancestor
+            if ancestor.pathname == pathname
+              raise Error, "Attempted #{pathname.to_path.inspect} to be imported again"
+            end
+
+            ancestor = ancestor.parent
+          end
+        end
+
+        # Evaluate the file to be imported
+        instance_eval(pathname.read, pathname.to_path) if pathname
+
+        # Evaluate block
         if block
           if meta_model.reference?
             raise Error, "reference can't be specified together with a block"
@@ -15,9 +32,29 @@ module Jsapi
         end
       end
 
+      # Imports the file named +filename+ relative to +Jsapi.configation.path+.
+      def import(filename)
+        raise ArgumentError, "file name can't be blank" if filename.blank?
+
+        pathname = Jsapi.configuration.pathname("#{filename}.rb")
+        self.class.new(@meta_model, pathname, parent: self)
+      end
+
+      # Imports the file named +filename+ relative to the current file's path.
+      def import_relative(filename)
+        raise ArgumentError, "file name can't be blank" if filename.blank?
+
+        pathname = (@pathname&.parent || Jsapi.configuration.pathname) + "#{filename}.rb"
+        self.class.new(@meta_model, pathname, parent: self)
+      end
+
       def respond_to_missing?(*args) # :nodoc:
         keyword?(args.first)
       end
+
+      protected
+
+      attr_reader :parent, :pathname
 
       private
 

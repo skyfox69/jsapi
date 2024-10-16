@@ -68,23 +68,56 @@ module Jsapi
           extend ClassMethods
         end
         klass = Class.new(base_klass)
-        definitions = klass.api_definitions
 
+        base_definitions = base_klass.api_definitions
+        assert_equal(base_klass, base_definitions.owner)
+        assert_nil(base_definitions.parent)
+
+        definitions = klass.api_definitions
         assert_equal(klass, definitions.owner)
-        assert_equal(base_klass, definitions.parent.owner)
+        assert_equal(base_definitions, definitions.parent)
+      end
+
+      def test_api_definitions_with_keywords
+        definitions = Class.new do
+          extend ClassMethods
+          api_definitions base_path: '/foo'
+        end.api_definitions
+
+        assert_equal('/foo', definitions.base_path)
       end
 
       def test_api_definitions_with_block
         definitions = Class.new do
           extend ClassMethods
-
           api_definitions do
-            operation 'foo'
+            base_path '/foo'
           end
         end.api_definitions
 
-        operation = definitions.operation('foo')
-        assert_predicate(operation, :present?)
+        assert_equal('/foo', definitions.base_path)
+      end
+
+      def test_api_definitions_loads_api_defs_from_file
+        configuration = Minitest::Mock.new
+        pathname = Minitest::Mock.new
+
+        configuration.expect(:pathname, pathname, [[], 'foo.rb'])
+        pathname.expect(:file?, true)
+        pathname.expect(:read, "base_path '/foo'")
+        pathname.expect(:to_path, '/foo.rb')
+
+        Jsapi.stub(:configuration, configuration) do
+          definitions = Class.new do
+            extend ClassMethods
+
+            def self.name
+              'Foo'
+            end
+          end.api_definitions
+
+          assert_equal('/foo', definitions.base_path)
+        end
       end
 
       # ::api_example

@@ -3,11 +3,11 @@
 module Jsapi
   # Holds the \Jsapi configuration.
   class Configuration
-    # The path where the API definitions are located relative to the Rails root.
+    # The path where the API definitions are located relative to +Rails.root+.
     # The default is <code>"app/api_defs"</code>.
     attr_accessor :api_defs_path
 
-    def initialize
+    def initialize # :nodoc:
       @api_defs_path = 'app/api_defs'
     end
 
