@@ -13,7 +13,7 @@ module Jsapi
           assert_equal('bar', openapi_extensions[:'x-foo'])
         end
 
-        def test_add_openapi_extension_raises_an_exception_on_blank_name
+        def test_add_openapi_extension_raises_an_error_when_name_is_blank
           error = assert_raises(ArgumentError) do
             add_openapi_extension('')
           end

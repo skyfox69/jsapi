@@ -27,7 +27,7 @@ module Jsapi
         assert_equal('Lorem ipsum', callback.operation('bar').description)
       end
 
-      def test_callback_raises_an_error_on_invalid_keyword
+      def test_callback_raises_an_error_on_unsupported_keyword
         error = assert_raises(Error) do
           definitions do
             callback 'foo', bar: 'Lorem ipsum'
@@ -58,7 +58,7 @@ module Jsapi
         assert_equal([], default.within_requests)
       end
 
-      def test_default_raises_an_error_on_invalid_keyword
+      def test_default_raises_an_error_on_unsupported_keyword
         error = assert_raises(Error) do
           definitions do
             default 'array', foo: 'Lorem ipsum'
@@ -89,7 +89,7 @@ module Jsapi
         assert_equal('bar', example.value)
       end
 
-      def test_example_raises_an_error_on_invalid_keyword
+      def test_example_raises_an_error_on_unsupported_keyword
         error = assert_raises(Error) do
           definitions do
             example 'foo', bar: 'Lorem ipsum'
@@ -131,7 +131,7 @@ module Jsapi
         assert_equal('Lorem ipsum', header.description)
       end
 
-      def test_header_raises_an_error_on_invalid_keyword
+      def test_header_raises_an_error_on_unsupported_keyword
         error = assert_raises(Error) do
           definitions do
             header 'foo', bar: 'Lorem ipsum'
@@ -162,7 +162,7 @@ module Jsapi
         assert_equal('Lorem ipsum', link.description)
       end
 
-      def test_link_raises_an_error_on_invalid_keyword
+      def test_link_raises_an_error_on_unsupported_keyword
         error = assert_raises(Error) do
           definitions do
             link 'foo', bar: 'Lorem ipsum'
@@ -231,7 +231,7 @@ module Jsapi
         assert_equal('Lorem ipsum', operation.description)
       end
 
-      def test_operation_raises_an_error_on_invalid_keyword
+      def test_operation_raises_an_error_on_unsupported_keyword
         # Named operation
         error = assert_raises(Error) do
           definitions do
@@ -271,7 +271,7 @@ module Jsapi
         assert_equal('Lorem ipsum', parameter.description)
       end
 
-      def test_parameter_raises_an_error_on_invalid_keyword
+      def test_parameter_raises_an_error_on_unsupported_keyword
         error = assert_raises(Error) do
           definitions do
             parameter 'foo', bar: 'Lorem ipsum'
@@ -302,7 +302,7 @@ module Jsapi
         assert_equal('Lorem ipsum', request_body.description)
       end
 
-      def test_request_body_raises_an_error_on_invalid_keyword
+      def test_request_body_raises_an_error_on_unsupported_keyword
         error = assert_raises(Error) do
           definitions do
             request_body 'foo', bar: 'Lorem ipsum'
@@ -343,7 +343,7 @@ module Jsapi
         assert_equal('Lorem ipsum', response.description)
       end
 
-      def test_response_raises_an_error_on_invalid_keyword
+      def test_response_raises_an_error_on_unsupported_keyword
         error = assert_raises(Error) do
           definitions do
             response 'foo', bar: 'Lorem ipsum'
@@ -374,7 +374,7 @@ module Jsapi
         assert_equal('Lorem ipsum', schema.description)
       end
 
-      def test_schema_raises_an_error_on_invalid_keyword
+      def test_schema_raises_an_error_on_unsupported_keyword
         error = assert_raises(Error) do
           definitions do
             schema 'foo', bar: 'Lorem ipsum'
@@ -407,7 +407,7 @@ module Jsapi
         assert_equal('Lorem ipsum', security_scheme.description)
       end
 
-      def test_security_scheme_raises_an_error_on_invalid_keyword
+      def test_security_scheme_raises_an_error_on_unsupported_keyword
         error = assert_raises(Error) do
           definitions do
             security_scheme 'basic_auth', type: 'http', foo: 'Lorem ipsum'

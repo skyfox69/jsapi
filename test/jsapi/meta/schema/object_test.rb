@@ -40,7 +40,7 @@ module Jsapi
           assert_equal(%w[bar], properties.keys)
         end
 
-        def test_resolve_properties_raises_an_exception_on_circular_reference
+        def test_resolve_properties_raises_an_error_on_circular_reference
           definitions = Definitions.new(
             schemas: {
               'Foo' => {
@@ -88,7 +88,7 @@ module Jsapi
           )
         end
 
-        def test_resolve_schema_raises_an_exception_on_unknown_discriminator_property
+        def test_resolve_schema_raises_an_error_when_discriminator_property_does_not_exist
           schema = Object.new(
             discriminator: { property_name: 'foo' },
             properties: {
@@ -101,7 +101,7 @@ module Jsapi
           assert_equal('discriminator property must be "bar", is "foo"', error.message)
         end
 
-        def test_resolve_schema_raises_an_exception_on_blank_value
+        def test_resolve_schema_raises_an_error_when_value_is_blank
           schema = Object.new(
             discriminator: { property_name: 'foo' },
             properties: {
@@ -114,7 +114,7 @@ module Jsapi
           assert_equal("foo can't be nil", error.message)
         end
 
-        def test_resolve_schema_raises_an_exception_on_missing_inheriting_schema
+        def test_resolve_schema_raises_an_error_when_inheriting_schema_is_missing
           schema = Object.new(
             discriminator: { property_name: 'foo' },
             properties: {

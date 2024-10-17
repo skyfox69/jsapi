@@ -55,7 +55,7 @@ module Jsapi
         assert_equal('Lorem ipsum', items.description)
       end
 
-      def test_items_raises_an_exception_on_other_type_than_array
+      def test_items_raises_an_error_when_type_is_other_than_array
         error = assert_raises Error do
           schema(type: 'object') { items type: 'string' }
         end
@@ -100,7 +100,7 @@ module Jsapi
         assert_equal('bar', model.foo)
       end
 
-      def test_model_raises_an_exception_on_other_type_than_object
+      def test_model_raises_an_error_when_type_is_other_than_object
         error = assert_raises Error do
           schema(type: 'array') { model {} }
         end
@@ -129,7 +129,7 @@ module Jsapi
         assert_equal('Lorem ipsum', property.description)
       end
 
-      def test_property_raises_an_exception_on_other_type_than_object
+      def test_property_raises_an_error_when_type_is_other_than_object
         error = assert_raises Error do
           schema(type: 'array') { property 'foo' }
         end

@@ -21,7 +21,7 @@ module Jsapi
         assert_equal([definitions, included2, included1, base2, base1], definitions.ancestors)
       end
 
-      def test_include_raises_an_exception_on_circular_dependency
+      def test_include_raises_an_error_on_circular_dependency
         definitions = (1..3).map { |i| Definitions.new(owner: i) }
 
         definitions.second.include(definitions.first)

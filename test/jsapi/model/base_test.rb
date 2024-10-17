@@ -106,7 +106,7 @@ module Jsapi
         assert(!model.respond_to?(:bar))
       end
 
-      def test_raises_an_exception_on_missing_attribute
+      def test_raises_an_error_on_missing_attribute
         schema = Meta::Schema.new(type: 'object')
         schema.add_property('foo', type: 'string')
 

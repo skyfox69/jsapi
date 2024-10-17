@@ -25,7 +25,7 @@ module Jsapi
         assert_equal('Lorem ipsum', operation.description)
       end
 
-      def test_operation_raises_an_exception_on_blank_expression
+      def test_operation_raises_an_error_when_expression_is_blank
         error = assert_raises(Error) do
           callback do
             operation ''

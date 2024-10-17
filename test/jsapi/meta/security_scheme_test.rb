@@ -30,13 +30,13 @@ module Jsapi
         assert_kind_of(SecurityScheme::OpenIDConnect, security_scheme)
       end
 
-      def test_raises_an_exception_on_blank_type
+      def test_raises_an_error_when_type_is_blank
         assert_raises(InvalidArgumentError) do
           SecurityScheme.new(type: nil)
         end
       end
 
-      def test_raises_an_exception_on_invalid_type
+      def test_raises_an_error_when_type_is_invalid
         assert_raises(InvalidArgumentError) do
           SecurityScheme.new(type: 'foo')
         end

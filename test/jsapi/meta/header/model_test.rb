@@ -6,7 +6,7 @@ module Jsapi
   module Meta
     module Header
       class ModelTest < Minitest::Test
-        def test_raises_an_exception_on_object
+        def test_raises_an_error_when_type_is_object
           error = assert_raises(ArgumentError) do
             Model.new(type: 'object')
           end

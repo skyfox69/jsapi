@@ -32,7 +32,7 @@ module Jsapi
         assert_equal(%i[foo bar], callable.symbols)
       end
 
-      def test_raises_an_exception_on_blank_argument
+      def test_raises_an_error_when_argument_is_blank
         error = assert_raises(ArgumentError) { Callable.from(nil) }
         assert_equal("argument can't be blank", error.message)
       end

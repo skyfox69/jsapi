@@ -5,7 +5,7 @@ module Jsapi
     class BaseTest < Minitest::Test
       # #initialize
 
-      def test_raises_an_error_when_a_file_is_attempted_to_be_imported_again
+      def test_initialize_raises_an_error_when_a_file_is_attempted_to_be_imported_again
         meta_model = dummy_model
 
         Pathname.stub_any_instance(:read, '') do
@@ -22,7 +22,7 @@ module Jsapi
         end
       end
 
-      def test_raises_an_error_when_a_reference_is_specified_together_with_a_block
+      def test_initialize_raises_an_error_when_ref_and_block_are_specified_together
         meta_model = dummy_model do
           attribute :foo, Meta::Base::Reference
         end
@@ -195,7 +195,7 @@ module Jsapi
         assert_equal('bar', meta_model.foo('foo').bar)
       end
 
-      def test_raises_an_error_when_a_keyword_is_not_supported
+      def test_raises_an_error_on_unsupported_keyword
         meta_model = dummy_model
 
         error = assert_raises(RuntimeError) do

@@ -127,7 +127,7 @@ module Jsapi
           assert_equal('foo', error.message)
         end
 
-        define_method("test_#{name}_reraises_an_exception_if_error_response_does_not_exist") do
+        define_method("test_#{name}_reraises_an_error_when_the_response_does_not_exist") do
           controller = dummy_controller do
             api_definitions do
               rescue_from RuntimeError, with: 500

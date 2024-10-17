@@ -242,7 +242,7 @@ module Jsapi
         assert_equal('foo', response.ref)
       end
 
-      def test_response_raises_an_error
+      def test_response_raises_an_error_when_name_and_keywords_are_specified_together
         error = assert_raises(Error) do
           operation do
             response 200, 'foo', description: 'Lorem ipsum'
