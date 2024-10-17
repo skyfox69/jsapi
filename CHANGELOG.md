@@ -1,5 +1,11 @@
 # Change log
 
+## 0.9.1 ()
+
+### New features
+
+- API definitions can be loaded from files.
+
 ## 0.9.0 (2024-10-12)
 
 ### Breaking changes

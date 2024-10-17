@@ -34,54 +34,57 @@ route for a simple echo operation can be defined as below.
 get 'echo', to: 'echo#index'
 ```
 
-Then, create a controller class inheriting from `Jsapi::Controller::Base` and define the
-API operation by an `api_operation` block in there:
+Specify the API operation in `app/api_defs/echo.rb`:
 
 ```ruby
-# app/controllers/echo_controller.rb
+# app/api_defs/echo.rb
 
-class EchoController < Jsapi::Controller::Base
-  api_operation path: '/echo' do
-    parameter 'call', type: 'string', existence: true
-    response 200, type: 'object'  do
-      property 'echo', type: 'string'
-    end
-    response 400, type: 'object' do
-      property 'status', type: 'integer'
-      property 'message', type: 'string'
-    end
+operation path: '/echo' do
+  parameter 'call', type: 'string', existence: true
+  response 200, type: 'object' do
+    property 'echo', type: 'string'
+  end
+  response 400, type: 'object' do
+    property 'status', type: 'integer'
+    property 'message', type: 'string'
   end
 end
 ```
 
 Note that `existence: true` declares the `call` parameter to be required.
 
-Next, add the action performing the API operation to the controller class:
+Then create a controller that inherits from `Jsapi::Controller::Base`:
 
 ```ruby
-def index
-  api_operation! status: 200 do |api_params|
-    {
-      echo: "#{api_params.call}, again"
-    }
+# app/controllers/echo_controller.rb
+
+class EchoController < Jsapi::Controller::Base
+  def index
+    api_operation! status: 200 do |api_params|
+      {
+        echo: "#{api_params.call}, again"
+      }
+    end
   end
 end
 ```
 
-Note that the `api_operation!` method renders the JSON representation of the object returned by
-the block. This can be a hash or an object providing corresponding methods for all properties
-of the response.
+Note that `api_operation!` renders the JSON representation of the object returned by the block.
+This can be a hash or an object providing corresponding methods for all properties of the
+response.
 
-When the required `call` parameter is missing or empty, the `api_operation!` method raises a
-`Jsapi::Controller::ParametersInvalid` error. To rescue such errors, add an `api_rescue`
-directive to the controller class:
+When the required `call` parameter is missing or the value of `call` is empty, `api_operation!`
+raises a `Jsapi::Controller::ParametersInvalid` error. To rescue such exceptions, add an
+`rescue_from` directive to `app/api_defs/echo.rb`:
 
 ```ruby
-api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
+# app/api_defs/echo.rb
+
+rescue_from Jsapi::Controller::ParametersInvalid, with: 400
 ```
 
-To create the OpenAPI documentation for the `echo` operation, add another route, an `openapi`
-block and the action that produces OpenAPI documents, for example:
+To create the OpenAPI documentation for the `echo` operation, add another route, an `info`
+directive and the action to produce OpenAPI documents, for example:
 
 ```ruby
 # config/routes.rb
@@ -90,21 +93,24 @@ get 'echo/openapi', to: 'echo#openapi'
 ```
 
 ```ruby
+# app/api_defs/echo.rb
+
+info title: 'Echo', version: '1'
+```
+
+```ruby
 # app/controllers/echo_controller.rb
 
 class EchoController < Jsapi::Controller::Base
-  openapi do
-    info title: 'Echo', version: '1'
-  end
-
   def openapi
     render(json: api_definitions.openapi_document(params[:version]))
   end
 end
 ```
 
-The routes and controller class for the `echo` API operation look like:
+The API defintions, controller and routes for the `echo` API operation look like:
 
+- [app/api_defs/echo.rb](examples/echo/app/api_defs/echo.rb)
 - [app/controllers/echo_controller.rb](examples/echo/app/controllers/echo_controller.rb)
 - [config/routes.rb](/examples/echo/config/routes.rb)
 
@@ -117,8 +123,8 @@ code 200. The response body is:
 }
 ```
 
-When the `call` parameter is missing, a response with HTTP status code 400 and the following
-body is produced:
+When the `call` parameter is missing or the value of `call` is empty, a response with HTTP
+status code 400 and the following body is produced:
 
 ```json
 {
@@ -136,22 +142,54 @@ body is produced:
 ## Jsapi DSL
 
 Everything needed to build an API is defined by a DSL whose vocabulary is based on OpenAPI /
-JSON Schema. This DSL can be used in any controller inherriting from `Jsapi::Controller::Base`
-and any class extending `Jsapi::DSL`. All declarations start with `api_`. Declarations can also
-be grouped in an `api_definitions` block without the prefix `api_` as shown below.
+JSON Schema. This DSL can be used in any controller inheriting from `Jsapi::Controller::Base`
+as well as any class extending `Jsapi::DSL`. All directives start with `api_`.
+
+The API definitions of the example in the [Getting started](#getting-started) can also be
+specified as below.
 
 ```ruby
-api_definitions do
-  rescue_from Jsapi::Controller::ParametersInvalid, with: 400
+# app/controllers/echo_controller.rb
 
-  operation path: '/echo' do
+class EchoController < Jsapi::Controller::Base
+  api_info title: 'Echo', version: '1'
+
+  api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
+
+  api_operation path: '/echo' do
     parameter 'call', type: 'string', existence: true
-    response 200, type: 'object'  do
+    response 200, type: 'object' do
       property 'echo', type: 'string'
     end
     response 400, type: 'object' do
       property 'status', type: 'integer'
       property 'message', type: 'string'
+    end
+  end
+end
+```
+
+Declarations can also be grouped in an `api_definitions` block without the prefix `api_` as
+shown below.
+
+```ruby
+# app/controllers/echo_controller.rb
+
+class EchoController < Jsapi::Controller::Base
+  api_definitions do
+    info title: 'Echo', version: '1'
+
+    rescue_from Jsapi::Controller::ParametersInvalid, with: 400
+
+    operation path: '/echo' do
+      parameter 'call', type: 'string', existence: true
+      response 200, type: 'object'  do
+        property 'echo', type: 'string'
+      end
+      response 400, type: 'object' do
+        property 'status', type: 'integer'
+        property 'message', type: 'string'
+      end
     end
   end
 end
