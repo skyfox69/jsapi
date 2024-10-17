@@ -87,6 +87,11 @@ module Jsapi
         api_definitions { host(arg) }
       end
 
+      # Imports the file named +filename+ relative to +Jsapi.configation.path+.
+      def api_import(filename)
+        api_definitions { import(filename) }
+      end
+
       # Includes API definitions from +klasses+.
       def api_include(*klasses)
         api_definitions { include(*klasses) }

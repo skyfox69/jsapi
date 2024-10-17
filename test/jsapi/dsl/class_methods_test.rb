@@ -5,7 +5,7 @@ require 'test_helper'
 module Jsapi
   module DSL
     class ClassMethodsTest < Minitest::Test
-      # ::api_base_path
+      # #api_base_path
 
       def test_api_base_path
         base_path = api_definitions do
@@ -15,7 +15,7 @@ module Jsapi
         assert_equal('/foo', base_path)
       end
 
-      # ::api_callback
+      # #api_callback
 
       def test_api_callback
         callback = api_definitions do
@@ -39,7 +39,7 @@ module Jsapi
         assert_equal('Lorem ipsum', callback.operation('bar').description)
       end
 
-      # ::api_default
+      # #api_default
 
       def test_api_default
         default = api_definitions do
@@ -61,7 +61,7 @@ module Jsapi
         assert_equal([], default.within_responses)
       end
 
-      # ::api_definitions
+      # #api_definitions
 
       def test_api_definitions
         base_klass = Class.new do
@@ -120,7 +120,7 @@ module Jsapi
         end
       end
 
-      # ::api_example
+      # #api_example
 
       def test_api_example
         example = api_definitions do
@@ -142,7 +142,7 @@ module Jsapi
         assert_equal('bar', example.value)
       end
 
-      # ::api_external_docs
+      # #api_external_docs
 
       def test_api_external_docs
         external_docs = api_definitions do
@@ -164,7 +164,7 @@ module Jsapi
         assert_equal('Lorem ipsum', external_docs.description)
       end
 
-      # ::api_header
+      # #api_header
 
       def test_api_header
         header = api_definitions do
@@ -186,7 +186,7 @@ module Jsapi
         assert_equal('Lorem ipsum', header.description)
       end
 
-      # ::api_host
+      # #api_host
 
       def test_api_host
         host = api_definitions do
@@ -196,7 +196,25 @@ module Jsapi
         assert_equal('foo.bar', host)
       end
 
-      # ::api_include
+      # #api_import
+
+      def test_api_import
+        configuration = Minitest::Mock.new
+        pathname = Minitest::Mock.new
+
+        configuration.expect(:pathname, pathname, %w[foo.rb])
+        pathname.expect(:read, "base_path '/foo'")
+        pathname.expect(:to_path, '')
+
+        definitions = Jsapi.stub(:configuration, configuration) do
+          api_definitions do
+            api_import 'foo'
+          end
+        end
+        assert_equal('/foo', definitions.base_path)
+      end
+
+      # #api_include
 
       def test_api_include
         foo_class = Class.new do
@@ -212,7 +230,7 @@ module Jsapi
         assert_predicate(schema, :present?)
       end
 
-      # ::api_info
+      # #api_info
 
       def test_api_info
         info = api_definitions do
@@ -234,7 +252,7 @@ module Jsapi
         assert_equal('foo', info.title)
       end
 
-      # ::api_link
+      # #api_link
 
       def test_api_link
         link = api_definitions do
@@ -256,7 +274,7 @@ module Jsapi
         assert_equal('Lorem ipsum', link.description)
       end
 
-      # ::api_on_rescue
+      # #api_on_rescue
 
       def test_api_on_rescue
         on_rescue_callbacks = api_definitions do
@@ -274,7 +292,7 @@ module Jsapi
         assert_instance_of(Proc, on_rescue_callbacks.first)
       end
 
-      # ::api_operation
+      # #api_operation
 
       def test_api_operation
         operation = api_definitions do
@@ -296,7 +314,7 @@ module Jsapi
         assert_equal('Lorem ipsum', operation.description)
       end
 
-      # ::api_parameter
+      # #api_parameter
 
       def test_api_parameter
         parameter = api_definitions do
@@ -318,7 +336,7 @@ module Jsapi
         assert_equal('Lorem ipsum', parameter.description)
       end
 
-      # ::api_request_body
+      # #api_request_body
 
       def test_api_request_body
         request_body = api_definitions do
@@ -340,7 +358,7 @@ module Jsapi
         assert_equal('Lorem ipsum', request_body.description)
       end
 
-      # ::api_rescue_from
+      # #api_rescue_from
 
       def test_api_rescue_from
         rescue_handler = api_definitions do
@@ -350,7 +368,7 @@ module Jsapi
         assert_predicate(rescue_handler, :present?)
       end
 
-      # ::api_response
+      # #api_response
 
       def test_api_response
         response = api_definitions do
@@ -372,7 +390,7 @@ module Jsapi
         assert_equal('Lorem ipsum', response.description)
       end
 
-      # ::api_schema
+      # #api_schema
 
       def test_api_schema
         schema = api_definitions do
@@ -394,7 +412,7 @@ module Jsapi
         assert_equal('Lorem ipsum', schema.description)
       end
 
-      # ::api_scheme
+      # #api_scheme
 
       def test_api_scheme
         schemes = api_definitions do
@@ -404,7 +422,7 @@ module Jsapi
         assert_equal(%w[https], schemes)
       end
 
-      # ::api_security_requirement
+      # #api_security_requirement
 
       def test_api_security_requirement
         security_requirements = api_definitions do
@@ -426,7 +444,7 @@ module Jsapi
         assert_equal([], security_requirements.first.schemes['basic_auth'].scopes)
       end
 
-      # ::api_security_scheme
+      # #api_security_scheme
 
       def test_api_security_scheme
         security_scheme = api_definitions do
@@ -450,7 +468,7 @@ module Jsapi
         assert_equal('Lorem ipsum', security_scheme.description)
       end
 
-      # ::api_server
+      # #api_server
 
       def test_api_server
         servers = api_definitions do
@@ -472,7 +490,7 @@ module Jsapi
         assert_equal('https://foo.bar/foo', servers.first.url)
       end
 
-      # ::api_tag
+      # #api_tag
 
       def test_api_tag
         tags = api_definitions do
