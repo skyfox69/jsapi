@@ -25,8 +25,8 @@ gem 'jsapi'
 
 ## Getting started
 
-Start by adding a route for the API operation to be created. For example, a non-resourceful
-route for a simple echo operation can be defined as below.
+Start by adding a route for the API endpoint. For example, a non-resourceful route for a
+simple echo endpoint can be defined as below.
 
 ```ruby
 # config/routes.rb
@@ -34,7 +34,7 @@ route for a simple echo operation can be defined as below.
 get 'echo', to: 'echo#index'
 ```
 
-Specify the API operation in `app/api_defs/echo.rb`:
+Specify the operation to be bound to the API endpoint in `app/api_defs/echo.rb`:
 
 ```ruby
 # app/api_defs/echo.rb
@@ -53,7 +53,7 @@ end
 
 Note that `existence: true` declares the `call` parameter to be required.
 
-Then create a controller that inherits from `Jsapi::Controller::Base`:
+Create a controller that inherits from `Jsapi::Controller::Base`:
 
 ```ruby
 # app/controllers/echo_controller.rb
@@ -84,7 +84,7 @@ rescue_from Jsapi::Controller::ParametersInvalid, with: 400
 ```
 
 To create the OpenAPI documentation for the `echo` operation, add another route, an `info`
-directive and the action to produce OpenAPI documents, for example:
+directive and the controller action to produce OpenAPI documents, for example:
 
 ```ruby
 # config/routes.rb
@@ -143,10 +143,9 @@ status code 400 and the following body is produced:
 
 Everything needed to build an API is defined by a DSL whose vocabulary is based on OpenAPI /
 JSON Schema. This DSL can be used in any controller inheriting from `Jsapi::Controller::Base`
-as well as any class extending `Jsapi::DSL`. All directives start with `api_`.
-
-The API definitions of the example in the [Getting started](#getting-started) can also be
-specified as below.
+as well as any class extending `Jsapi::DSL`. To avoid naming conflicts with other libraries,
+all top-level directives start with `api_`. Therefore, the API definitions of the example in
+the [Getting started](#getting-started) section can also be specified as below.
 
 ```ruby
 # app/controllers/echo_controller.rb
@@ -169,8 +168,7 @@ class EchoController < Jsapi::Controller::Base
 end
 ```
 
-Declarations can also be grouped in an `api_definitions` block without the prefix `api_` as
-shown below.
+Furthermore, API definitions can be specified within an `api_definitions` block as below.
 
 ```ruby
 # app/controllers/echo_controller.rb
@@ -195,7 +193,7 @@ class EchoController < Jsapi::Controller::Base
 end
 ```
 
-All keywords except `ref`, `schema` and `type` can also be specified within the block,
+All keywords except `ref`, `schema` and `type` can also be specified as a directive,
 for example:
 
 ```ruby
@@ -206,7 +204,7 @@ end
 
 ### Defining API components
 
-The following methods are provided to define API components:
+The following directives are provided to define API components:
 
 - [api_operation](#defining-operations) - Defines an operation bound to an API endpoint.
 - [api_parameter](#defining-and-referring-reusable-parameters) - Defines a reusable parameter.
@@ -769,6 +767,51 @@ class BarController < Jsapi::Controller::Base
   api_include FooController
   api_response 'Bar', schema: 'Foo'
 end
+```
+
+### Importing definitions
+
+API definitions can also be specified in separate files located in `apps/api_defs`. Directives
+within files are specified as in `api_definitions` blocks without prefix `api_`, for example:
+
+```ruby
+# app/api_defs/foo.rb
+
+operation 'foo' do
+  # ...
+end
+```
+
+The API definitions specified in a file are automatically imported into a controller if the
+file name matches the controller name. For example, `app/api_defs/foo.rb` is automatically
+imported into `FooController`. Other files can be imported as below.
+
+```ruby
+class FooController < Jsapi::Controller::Base
+  api_import 'bar'
+end
+```
+
+Within a file, other files can be imported as below.
+
+```ruby
+# app/api_defs/foo/bar.rb
+
+import 'foo/shared'
+```
+
+```ruby
+# app/api_defs/foo/bar.rb
+
+import_relative 'shared'
+```
+
+The location of API definitions can be changed by an initializer:
+
+```ruby
+# config/initializers/jsapi.rb
+
+Jsapi.configuration.api_defs_path = 'app/foo'
 ```
 
 ## API controllers
