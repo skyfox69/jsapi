@@ -1,10 +1,10 @@
 # Change log
 
-## 0.9.1 ()
+## 0.9.1 (2024-10-18)
 
 ### New features
 
-- API definitions can be loaded from files.
+- API definitions can be imported from files.
 
 ## 0.9.0 (2024-10-12)
 
