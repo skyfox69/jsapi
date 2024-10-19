@@ -3,10 +3,10 @@
 module Jsapi
   module Meta
     module Parameter
-      # Defines a parameter.
+      # Specifies a parameter.
       class Model < Base::Model
-        include ToOpenAPI
         include OpenAPI::Extensions
+        include ToOpenAPI
 
         delegate_missing_to :schema
 

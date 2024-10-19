@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module RequestBody
-      # Defines a request body.
+      # Specifies a request body.
       class Model < Base::Model
         include OpenAPI::Extensions
 

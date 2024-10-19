@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Response
-      # Defines a response.
+      # Specifies a response.
       class Model < Base::Model
         include OpenAPI::Extensions
 

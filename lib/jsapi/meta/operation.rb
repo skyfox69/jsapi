@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    # Defines an API operation.
+    # Specifies an API operation.
     class Operation < Base::Model
       include OpenAPI::Extensions
 
