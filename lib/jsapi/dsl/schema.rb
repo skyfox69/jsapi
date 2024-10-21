@@ -5,6 +5,15 @@ module Jsapi
     # Used to define a schema.
     class Schema < Base
 
+      ##
+      # :method: additional_properties
+      # :args: **keywords, &block
+      # Specifies the schema of properties that are not explicity specified.
+      #
+      #   additional_properties type: 'string'
+      #
+      # See Meta::Schema::Object#additional_properties for further information.
+
       # Includes all of the properties from +schemas+. Each argument must be the name of
       # a schema defined by ClassMethods#api_schema or Definitions#schema.
       def all_of(*schemas)
@@ -47,8 +56,9 @@ module Jsapi
       #
       #   enum %w[foo bar]
 
-      ## :method: external_docs
-      ## :args: **keywords, &blocks
+      ##
+      # :method: external_docs
+      # :args: **keywords, &block
       # Specifies the external documentation.
       #
       # See Meta::Schema::Base#external_docs for further information.
