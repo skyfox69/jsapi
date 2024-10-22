@@ -218,7 +218,7 @@ module Jsapi
       ##
       # :method: security_requirement
       # :args: **keywords, &block
-      # Adds a security requirement.
+      # Specifies a security requirement.
       #
       #   security_requirement do
       #     scheme 'basic_auth'
