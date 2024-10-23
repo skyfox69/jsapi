@@ -73,6 +73,15 @@ Note that `api_operation!` renders the JSON representation of the object returne
 This can be a hash or an object providing corresponding methods for all properties of the
 response.
 
+When calling `GET /echo?call=Hello`, a response with HTTP status code 200 and the following
+body is produced:
+
+```json
+{
+  "echo": "Hello, again"
+}
+```
+
 When the required `call` parameter is missing or the value of `call` is empty, `api_operation!`
 raises a `Jsapi::Controller::ParametersInvalid` error. To rescue such exceptions, add an
 `rescue_from` directive to `app/api_defs/echo.rb`:
@@ -83,17 +92,7 @@ raises a `Jsapi::Controller::ParametersInvalid` error. To rescue such exceptions
 rescue_from Jsapi::Controller::ParametersInvalid, with: 400
 ```
 
-An instance of the `EchoController` class responds to `GET /echo?call=Hello` with HTTP status
-code 200. The response body is:
-
-```json
-{
-  "echo": "Hello, again"
-}
-```
-
-When the `call` parameter is missing or the value of `call` is empty, a response with HTTP
-status code 400 and the following body is produced:
+Then a response with HTTP status code 400 and the following body is produced:
 
 ```json
 {
@@ -102,8 +101,8 @@ status code 400 and the following body is produced:
 }
 ```
 
-To create the OpenAPI documentation for the `echo` operation, add another route, an `info`
-directive and the controller action to produce OpenAPI documents, for example:
+To produce OpenAPI documents describing the API, add another route, an `info` directive and a
+controller action matching the route, for example:
 
 ```ruby
 # config/routes.rb
@@ -127,25 +126,43 @@ class EchoController < Jsapi::Controller::Base
 end
 ```
 
-`GET /echo/openapi?version={2.0|3.0|3.1}` produces the following OpenAPI documents:
-
-- [openapi-2.0.json](examples/echo/doc/openapi-2.0.json)
-- [openapi-3.0.json](examples/echo/doc/openapi-3.0.json)
-- [openapi-3.1.json](examples/echo/doc/openapi-3.1.json)
-
-The API defintions, controller and routes for the `echo` API operation look like:
-
-- [app/api_defs/echo.rb](examples/echo/app/api_defs/echo.rb)
-- [app/controllers/echo_controller.rb](examples/echo/app/controllers/echo_controller.rb)
-- [config/routes.rb](/examples/echo/config/routes.rb)
+The sources and OpenAPI documents of this example are [here](examples/echo).
 
 ## Jsapi DSL
 
 Everything needed to build an API is defined by a DSL whose vocabulary is based on OpenAPI and
 JSON Schema. This DSL can be used in any controller inheriting from `Jsapi::Controller::Base`
 as well as any class extending `Jsapi::DSL`. To avoid naming conflicts with other libraries,
-all top-level directives start with `api_` or `openapi_`. Therefore, the API definitions of
-the example in the [Getting started](#getting-started) section may also be specified as below.
+all top-level directives start with `api_`.
+
+The following top-level directives are provided:
+
+- [api_base_path](#specifying-api-servers)
+- [api_callback](#callbacks)
+- [api_default](#specifying-general-default-values)
+- api_definitions
+- [api_example](#specifying-examples)
+- [api_external_docs](#specifying-external-docs)
+- [api_header](#headers)
+- [api_host](#specifying-api-servers)
+- [api_import](#importing-api-definitions)
+- [api_include](#sharing-api-definitions)
+- [api_info](#specifying-general-information)
+- [api_link](#links)
+- [api_on_rescue](#specifying-rescue-handlers-and-callbacks)
+- [api_operation](#specifying-operations)
+- [api_parameter](#specifying-parameters)
+- [api_request_body](#specifying-request-bodies)
+- [api_rescue_from](#specifying-rescue-handlers-and-callbacks)
+- [api_response](#specifying-responses)
+- [api_schema](#specifying-schemas)
+- [api_scheme](#specifying-api-servers)
+- [api_security_requirement](#specifying-security-schemes-and-requirements)
+- [api_security_scheme](#specifying-security-schemes-and-requirements)
+- [api_server](#specifying-api-servers)
+- [api_tag](#specifying-tags)
+
+When using top-level directives, the example in [Getting started](#getting-started) looks like:
 
 ```ruby
 # app/controllers/echo_controller.rb
@@ -193,7 +210,7 @@ class EchoController < Jsapi::Controller::Base
 end
 ```
 
-All keywords except `:ref`, `:schema` and `:type` may also be specified as a nested directive,
+All keywords except `:ref`, `:schema` and `:type` may also be specified by a nested directive,
 for example:
 
 ```ruby
@@ -244,7 +261,7 @@ directive takes the following keywords:
 - `:responses` - See [Specifying responses].
 - `:schemes` - The transfer protocols supported by the operation.
 - `:security_requirements` - See [Specifying security schemes and requirements].
-- `:servers` - The alternative servers providing the operation.
+- `:servers` - See [Specifying servers].
 - `:summary` - The short summary of the operation.
 - `:tags` - One or more tags to group operations in an OpenAPI document.
 
@@ -661,17 +678,17 @@ The `:items` keyword and `items` directive take all keywords described above.
 The `:format` keyword specifies the format of a string. If the format is `"date"`, `"date-time"`
 or `"duration"`, parameter and property values are implicitly casted as below.
 
-- `"date"` - `Date`
-- `"date-time"` - `DateTime`
-- `"duration"` - `ActiveSupport::Duration`
+- `"date"` - values are casted to `Date`.
+- `"date-time"` - values are casted to `DateTime`.
+- `"duration"` - values are casted to `ActiveSupport::Duration`.
 
-All other formats are used for documentation purposes only.
+All other formats are only used to describe the format of a string.
 
 #### The `:maximum` keyword
 
 [The :maximum keyword]: #the-maximum-keyword
 
-The `:maximum` keyword specifies the maximum of an integer or a number, for example:
+The `:maximum` keyword specifies the maximum value an integer or a number can be, for example:
 
 ```ruby
 # Allow negative integers only
@@ -687,7 +704,7 @@ parameter 'bar', type: 'number', maximum: { value: 0, exclusive: true }
 
 [The :minimum keyword]: #the-minimum-keyword
 
-The `:minimum` keyword specifies the minimum of an integer or a number, for example:
+The `:minimum` keyword specifies the minimum value an integer or a number can be, for example:
 
 ```ruby
 # Allow positive integers only
@@ -744,13 +761,16 @@ end
 
 #### Composition
 
-All properties of a schema can be included in another schema by the `all_of` directive.
+All properties of another schema can be included by the `all_of` directive, for example:
 
 ```ruby
 api_schema 'Foo', type: 'object' do
   all_of 'Base'
 end
 ```
+
+The `all_of` directive corresponds to the `allOf` JSON Schema keyword. Note that there are no
+equivalent directives for the `anyOf` and `oneOf` keywords.
 
 #### Polymorphism
 
@@ -796,6 +816,28 @@ The `api_info` directive takes the following keywords:
 - `:title` - The mandatory title of the API.
 - `:version` - The mandatory version of the API.
 
+### Specifying API servers
+
+[Specifying API servers]: #specifying-api-servers
+
+A server providing the API can be specified by an `api_server` directive, for example:
+
+```ruby
+api_server 'https://foo.bar/foo'
+```
+
+The `api_server` directive corresponds to the server object introduced with OpenAPI 3.0. The
+value can be an absolute or relative URI.
+
+Alternatively, the URI can be specified using the following instructions, which are based on
+OpenAPI 2.0:
+
+```ruby
+api_scheme 'https'
+api_host 'foo.bar'
+api_base_path '/foo'
+```
+
 ### Specifying security schemes and requirements
 
 [Specifying security schemes and requirements]: #specifying-security-schemes-and-requirements
@@ -820,31 +862,15 @@ api_operation do
 end
 ```
 
-### Specifying API URIs
-
-```ruby
-# OpenAPI 3.x style
-api_server 'https://foo.bar/foo'
-```
-
-```ruby
-# OpenAPI 2.0 style
-api_scheme 'https'
-api_host 'foo.bar'
-api_base_path '/foo'
-```
-
 ### Specifying examples
 
 [Specifying examples]: (#specifying-examples)
 
-A simple sample value can be specified as
+A single sample value can be specified as below.
 
 ```ruby
 property 'foo', type: 'string', example: 'bar'
 ```
-
-or
 
 ```ruby
 property 'foo', type: 'string' do
@@ -856,11 +882,11 @@ A named sample value can be specified as below.
 
 ```ruby
 property 'foo', type: 'string' do
-  example 'bar', value: 'bar'
+  example 'bar', value: 'value of bar'
 end
 ```
 
-`example` takes the following keywords:
+The `example` directive takes the following keywords:
 
 - `description` - The description of the example.
 - `external` - Specifies whether `value` is the URI of an external example.
@@ -868,6 +894,9 @@ end
 - `value` - The sample value.
 
 #### Reusable examples
+
+If an example matches multiple parameters, request bodies or responses, it can be specified once
+by an `api_example` directive, for example:
 
 ```ruby
 api_example 'foo', value: 'bar'
@@ -893,28 +922,36 @@ api_external_docs url: 'https://foo.bar'
 openapi_extension 'foo', 'bar'
 ```
 
-### Specifying rescue handlers
+### Specifying rescue handlers and callbacks
 
-Rescue handlers are used to render error responses when an exception is raised. A rescue
-handler can be defined as below.
+To rescue exceptions raised while performing an operation, a rescue handler can be defined by
+an `api_rescue_from` directive, for example:
 
 ```ruby
 api_rescue_from Jsapi::Controller::ParametersInvalid, with: 400
 ```
 
-To notice exceptions caught by a rescue handler a callback can be defined as below.
+The one and only positional argument specifies the exception class to be rescued. The `:with`
+keyword specifies the status of the error response to be produced.
+
+To notice exceptions caught by a rescue handler, a callback can be added by an `api_on_rescue`
+directive, for example:
 
 ```ruby
 api_on_rescue :foo
+```
 
+```ruby
 api_on_rescue do |error|
   # ...
 end
 ```
 
+A callback can either be a method name or a block.
+
 ### Specifying general default values
 
-The general default values for a type can be defined as below.
+The general default values for a type can be defined by an `api_default` directive, for example:
 
 ```ruby
 api_default 'array', within_requests: [], within_responses: []
