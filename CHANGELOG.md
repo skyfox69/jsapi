@@ -1,5 +1,11 @@
 # Change log
 
+## 0.9.2 (2024-1024)
+
+### Changes
+
+- The order of operations and schemas in OpenAPI documents has been changed.
+
 ## 0.9.1 (2024-10-18)
 
 ### New features

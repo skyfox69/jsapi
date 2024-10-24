@@ -382,10 +382,14 @@ module Jsapi
         @objects ||= ancestors.each_with_object({}) do |ancestor, objects|
           self.class.attribute_names.each do |key|
             case value = ancestor.send(key)
-            when Hash
-              (objects[key] ||= {}).reverse_merge!(value)
             when Array
               (objects[key] ||= []).push(*value)
+            when Hash
+              if (hash = objects[key])
+                value.each { |k, v| hash[k] = v unless hash.key?(k) }
+              else
+                objects[key] = value.dup
+              end
             else
               objects[key] ||= value
             end
