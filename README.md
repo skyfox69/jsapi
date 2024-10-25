@@ -8,10 +8,10 @@ Without Jsapi, complex API applications typically use in-memory models to read r
 serializers to write responses. When using OpenAPI for documentation purposes, this is done
 separatly.
 
-Jsapi brings all this together. The models to read requests, the serialization of objects and
-the optional OpenAPI documentation are based on the same API definition. This significantly
-reduces the workload and ensures that the OpenAPI documentation is consistent with the
-server-side implementation of the API.
+Jsapi brings all this together. The models to read requests, serialization of objects and
+optional OpenAPI documentation base on the same API definition. This significantly reduces
+the workload and ensures that the OpenAPI documentation is consistent with the server-side
+implementation of the API.
 
 Jsapi supports OpenAPI 2.0, 3.0 and 3.1.
 
@@ -101,8 +101,8 @@ Then a response with HTTP status code 400 and the following body is produced:
 }
 ```
 
-To produce OpenAPI documents describing the API, add another route, an `info` directive and a
-controller action matching the route, for example:
+To produce an OpenAPI document describing the API, add another route, an `info` directive and
+a controller action matching the route, for example:
 
 ```ruby
 # config/routes.rb
@@ -130,7 +130,7 @@ The sources and OpenAPI documents of this example are [here](examples/echo).
 
 ## Jsapi DSL
 
-Everything needed to build an API is defined by a DSL whose vocabulary is based on OpenAPI and
+Everything needed to build an API is defined by a DSL whose vocabulary bases on OpenAPI and
 JSON Schema. This DSL can be used in any controller inheriting from `Jsapi::Controller::Base`
 as well as any class extending `Jsapi::DSL`. To avoid naming conflicts with other libraries,
 all top-level directives start with `api_`.
@@ -210,7 +210,7 @@ class EchoController < Jsapi::Controller::Base
 end
 ```
 
-All keywords except `:ref`, `:schema` and `:type` may also be specified by a nested directive,
+All keywords except `:ref`, `:schema` and `:type` may also be specified by nested directives,
 for example:
 
 ```ruby
@@ -251,7 +251,7 @@ directive takes the following keywords:
 - `:callbacks` - See [Callbacks].
 - `:deprecated` - Specifies whether or not the operation is deprecated.
 - `:description` - The description of the operation.
-- `:external_docs` - The external documentation.
+- `:external_docs` - See [Specifying external docs].
 - `:method` - The HTTP verb of the operation, `"GET"` by default.
 - `:model` - See [API models](#api-models).
 - `:openapi_extensions` - See [Specifying OpenAPI extensions].
@@ -263,7 +263,7 @@ directive takes the following keywords:
 - `:security_requirements` - See [Specifying security schemes and requirements].
 - `:servers` - See [Specifying servers].
 - `:summary` - The short summary of the operation.
-- `:tags` - One or more tags to group operations in an OpenAPI document.
+- `:tags` - The tags to group operations in an OpenAPI document.
 
 All keywords except `:model`, `:parameters`, `:request_body` and `:responses` are only used to
 describe the operation in an OpenAPI document. The relative path of an operation is derived
@@ -283,6 +283,10 @@ api_operation do
   end
 end
 ```
+
+The one and only positional argument specifies the mandatory name of the callback. A nested
+`operation` directive maps an expression to an operation. See the OpenAPI specification for
+further information.
 
 If a callback is associated with multiple operations, it can be specified once by an
 `api_callback` directive, for example:
@@ -439,6 +443,9 @@ define the schema of the response. Additionally, the following keywords may be s
 - `:openapi_extensions` - See [Specifying OpenAPI extensions].
 - `:ref` - Refers a reusable response.
 
+The `:locale` keyword allows to produce responses in different languages depending on
+status code.
+
 The `:example`, `:examples`, `:headers`, `:links` and `:openapi_extensions` keywords are only
 used to describe a response in an OpenAPI document.
 
@@ -491,6 +498,11 @@ directive, for example:
 api_header 'foo', type: 'string'
 ```
 
+The one and only positional argument specifies the mandatory name of the header. The `header`
+directive takes all keywords described in [Specifying schemas] to define the schema of the
+header. The type of a header must not be `"object"`.
+
+
 A header specified by `api_header` can be referred as below.
 
 ```ruby
@@ -517,6 +529,15 @@ response do
   link 'foo', operation_id: 'bar'
 end
 ```
+
+The one and only positional argument specifies the mandatory name of the link. The `link`
+directive take the following keywords:
+
+- `:description` - The description of the link.
+- `:operation_id` - The ID of the operation to be linked.
+- `:parameters` - The parameters to be passed.
+- `:request_body` - The request body to be passed.
+- `:server` - The server providing the operation.
 
 If an operation is linked to multiple responses, the link can be specified once by an `api_link`
 directive, for example:
@@ -669,8 +690,6 @@ property 'foo', type: 'array' do
 end
 ```
 
-The `:items` keyword and `items` directive take all keywords described above.
-
 #### The `:format` keyword
 
 [The :format keyword]: #the-format-keyword
@@ -729,9 +748,8 @@ schema 'foo' do
 end
 ```
 
-The `additional_properties` directive take all keywords described above. Additionally, the
-sequence of methods or `Proc` to be called to read additional properties can be specified by
-the `:source` keyword. The default source is `:additional_properties`.
+The `:source` keyword specifies the sequence of methods or `Proc` to be called to read
+additional properties. The default source is `:additional_properties`.
 
 #### Reusable schemas
 
@@ -820,16 +838,12 @@ The `api_info` directive takes the following keywords:
 
 [Specifying API servers]: #specifying-api-servers
 
-A server providing the API can be specified by an `api_server` directive, for example:
+OpenAPI 3.0 and higher:
 
 ```ruby
 api_server 'https://foo.bar/foo'
 ```
 
-The `api_server` directive corresponds to the server object introduced with OpenAPI 3.0. The
-value can be an absolute or relative URI.
-
-Alternatively, the URI can be specified using the following instructions, which are based on
 OpenAPI 2.0:
 
 ```ruby
@@ -909,6 +923,8 @@ api_tag name: 'foo', description: 'Description of foo'
 ```
 
 ### Specifying external docs
+
+[Specifying external docs]: #specifying-external-docs
 
 ```ruby
 api_external_docs url: 'https://foo.bar'
