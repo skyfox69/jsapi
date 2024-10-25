@@ -5,9 +5,9 @@ require 'test_helper'
 module Jsapi
   module Meta
     class HeaderTest < Minitest::Test
-      def test_new_header
+      def test_new
         header = Header.new
-        assert_kind_of(Header::Model, header)
+        assert_kind_of(Header::Base, header)
       end
 
       def test_new_reference

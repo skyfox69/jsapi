@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     # Specifies an API operation.
-    class Operation < Base::Model
+    class Operation < Model::Base
       include OpenAPI::Extensions
 
       ##
@@ -43,8 +43,8 @@ module Jsapi
 
       ##
       # :attr: model
-      # The model class to access top-level parameters by. Model::Base by default.
-      attribute :model, Class, default: Model::Base
+      # The model class to access top-level parameters by, Jsapi::Model::Base by default.
+      attribute :model, Class, default: Jsapi::Model::Base
 
       ##
       # :attr_reader: name

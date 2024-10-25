@@ -2,9 +2,9 @@
 
 module Jsapi
   module Meta
-    module Base
+    module Model
       # The base meta model class.
-      class Model
+      class Base
         extend Attributes
 
         # Creates a new meta model.

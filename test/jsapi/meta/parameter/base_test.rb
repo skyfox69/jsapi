@@ -5,39 +5,39 @@ require 'test_helper'
 module Jsapi
   module Meta
     module Parameter
-      class ModelTest < Minitest::Test
+      class BaseTest < Minitest::Test
         def test_name_and_type
-          parameter_model = Model.new('foo', type: 'string')
-          assert_equal('foo', parameter_model.name)
-          assert_equal('string', parameter_model.type)
+          parameter = Base.new('foo', type: 'string')
+          assert_equal('foo', parameter.name)
+          assert_equal('string', parameter.type)
         end
 
         def test_example
-          parameter_model = Model.new('foo', type: 'string', example: 'bar')
-          assert_equal('bar', parameter_model.example.value)
+          parameter = Base.new('foo', type: 'string', example: 'bar')
+          assert_equal('bar', parameter.example.value)
         end
 
         def test_schema
-          parameter_model = Model.new('foo', schema: 'bar')
-          assert_equal('bar', parameter_model.schema.ref)
+          parameter = Base.new('foo', schema: 'bar')
+          assert_equal('bar', parameter.schema.ref)
         end
 
         def test_raises_exception_on_blank_parameter_name
-          error = assert_raises(ArgumentError) { Model.new('') }
+          error = assert_raises(ArgumentError) { Base.new('') }
           assert_equal("parameter name can't be blank", error.message)
         end
 
         # Predicate methods
 
         def test_required_predicate
-          parameter_model = Model.new('foo', existence: true)
-          assert(parameter_model.required?)
+          parameter = Base.new('foo', existence: true)
+          assert(parameter.required?)
 
-          parameter_model = Model.new('foo', in: 'path')
-          assert(parameter_model.required?)
+          parameter = Base.new('foo', in: 'path')
+          assert(parameter.required?)
 
-          parameter_model = Model.new('foo', existence: false)
-          assert(!parameter_model.required?)
+          parameter = Base.new('foo', existence: false)
+          assert(!parameter.required?)
         end
 
         # OpenAPI objects
@@ -45,7 +45,7 @@ module Jsapi
         def test_minimal_openapi_parameter_object_on_query_parameter
           definitions = Definitions.new
 
-          parameter_model = Model.new('foo', type: 'string', in: 'query')
+          parameter = Base.new('foo', type: 'string', in: 'query')
 
           # OpenAPI 2.0
           assert_equal(
@@ -55,7 +55,7 @@ module Jsapi
               type: 'string',
               allowEmptyValue: true
             },
-            parameter_model.to_openapi('2.0', definitions)
+            parameter.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -68,14 +68,14 @@ module Jsapi
               },
               allowEmptyValue: true
             },
-            parameter_model.to_openapi('3.0', definitions)
+            parameter.to_openapi('3.0', definitions)
           )
         end
 
         def test_minimal_openapi_parameter_object_on_path_segment
           definitions = Definitions.new
 
-          parameter_model = Model.new('foo', type: 'string', in: 'path')
+          parameter = Base.new('foo', type: 'string', in: 'path')
 
           # OpenAPI 2.0
           assert_equal(
@@ -85,7 +85,7 @@ module Jsapi
               required: true,
               type: 'string'
             },
-            parameter_model.to_openapi('2.0', definitions)
+            parameter.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -98,14 +98,14 @@ module Jsapi
                 nullable: true
               }
             },
-            parameter_model.to_openapi('3.0', definitions)
+            parameter.to_openapi('3.0', definitions)
           )
         end
 
         def test_minimal_openapi_parameter_object_on_array
           definitions = Definitions.new
 
-          parameter_model = Model.new('foo', type: 'array', items: { type: 'string' })
+          parameter = Base.new('foo', type: 'array', items: { type: 'string' })
 
           # OpenAPI 2.0
           assert_equal(
@@ -119,7 +119,7 @@ module Jsapi
               allowEmptyValue: true,
               collectionFormat: 'multi'
             },
-            parameter_model.to_openapi('2.0', definitions)
+            parameter.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -136,14 +136,14 @@ module Jsapi
               },
               allowEmptyValue: true
             },
-            parameter_model.to_openapi('3.0', definitions)
+            parameter.to_openapi('3.0', definitions)
           )
         end
 
         def test_minimal_openapi_parameter_object_on_nested_parameters
           definitions = Definitions.new
 
-          parameter_model = Model.new(
+          parameter = Base.new(
             'foo',
             in: 'query',
             type: 'object',
@@ -159,7 +159,7 @@ module Jsapi
               type: 'string',
               allowEmptyValue: true
             },
-            parameter_model.to_openapi('2.0', definitions)
+            parameter.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -172,14 +172,14 @@ module Jsapi
               },
               allowEmptyValue: true
             },
-            parameter_model.to_openapi('3.0', definitions)
+            parameter.to_openapi('3.0', definitions)
           )
         end
 
         def test_minimal_openapi_parameter_object_on_nested_array_parameter
           definitions = Definitions.new
 
-          parameter_model = Model.new(
+          parameter = Base.new(
             'foo',
             in: 'query',
             type: 'object',
@@ -202,7 +202,7 @@ module Jsapi
               allowEmptyValue: true,
               collectionFormat: 'multi'
             },
-            parameter_model.to_openapi('2.0', definitions)
+            parameter.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -219,14 +219,14 @@ module Jsapi
               },
               allowEmptyValue: true
             },
-            parameter_model.to_openapi('3.0', definitions)
+            parameter.to_openapi('3.0', definitions)
           )
         end
 
         def test_minimal_openapi_parameter_object_on_deeply_nested_parameters
           definitions = Definitions.new
 
-          parameter_model = Model.new(
+          parameter = Base.new(
             'foo',
             in: 'query',
             type: 'object',
@@ -247,7 +247,7 @@ module Jsapi
               type: 'string',
               allowEmptyValue: true
             },
-            parameter_model.to_openapi('2.0', definitions)
+            parameter.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -260,14 +260,14 @@ module Jsapi
               },
               allowEmptyValue: true
             },
-            parameter_model.to_openapi('3.0', definitions)
+            parameter.to_openapi('3.0', definitions)
           )
         end
 
         def test_full_openapi_parameter_object
           definitions = Definitions.new
 
-          parameter_model = Model.new(
+          parameter = Base.new(
             'foo',
             type: 'string',
             existence: true,
@@ -286,7 +286,7 @@ module Jsapi
               type: 'string',
               'x-foo': 'bar'
             },
-            parameter_model.to_openapi('2.0', definitions)
+            parameter.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -306,14 +306,14 @@ module Jsapi
               },
               'x-foo': 'bar'
             },
-            parameter_model.to_openapi('3.0', definitions)
+            parameter.to_openapi('3.0', definitions)
           )
         end
 
         def test_full_openapi_parameter_object_on_nested_parameters
           definitions = Definitions.new
 
-          parameter_model = Model.new(
+          parameter = Base.new(
             'foo',
             type: 'object',
             properties: {
@@ -341,7 +341,7 @@ module Jsapi
               'x-foo': 'bar',
               'x-bar': 'foo'
             },
-            parameter_model.to_openapi('2.0', definitions)
+            parameter.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -363,12 +363,12 @@ module Jsapi
               },
               'x-foo': 'bar'
             },
-            parameter_model.to_openapi('3.0', definitions)
+            parameter.to_openapi('3.0', definitions)
           )
         end
 
         def test_openapi_parameter_object_on_read_only_and_write_only_attributes
-          parameter_model = Model.new(
+          parameter = Base.new(
             'foo',
             in: 'query',
             type: 'object',
@@ -379,7 +379,7 @@ module Jsapi
           )
           assert_equal(
             %w[foo[write_only_attr]],
-            parameter_model.to_openapi_parameters('3.0', Definitions.new).map { |p| p[:name] }
+            parameter.to_openapi_parameters('3.0', Definitions.new).map { |p| p[:name] }
           )
         end
       end

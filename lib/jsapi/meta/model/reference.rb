@@ -2,9 +2,9 @@
 
 module Jsapi
   module Meta
-    module Base
+    module Model
       # The base reference class.
-      class Reference < Model
+      class Reference < Base
         ##
         # :attr: ref
         # The name of the referred object.

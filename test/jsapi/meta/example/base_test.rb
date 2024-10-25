@@ -5,18 +5,18 @@ require 'test_helper'
 module Jsapi
   module Meta
     module Example
-      class ModelTest < Minitest::Test
+      class BaseTest < Minitest::Test
         def test_minimal_openapi_example_object
-          example_model = Model.new(value: 'foo')
+          example = Base.new(value: 'foo')
 
           assert_equal(
             { value: 'foo' },
-            example_model.to_openapi
+            example.to_openapi
           )
         end
 
         def test_full_openapi_example_object
-          example_model = Model.new(
+          example = Base.new(
             summary: 'Foo',
             description: 'Lorem ipsum',
             value: 'foo',
@@ -29,18 +29,18 @@ module Jsapi
               value: 'foo',
               'x-foo': 'bar'
             },
-            example_model.to_openapi
+            example.to_openapi
           )
         end
 
         def test_openapi_example_object_on_external
-          example_model = Model.new(
+          example = Base.new(
             value: '/foo/bar',
             external: true
           )
           assert_equal(
             { external_value: '/foo/bar' },
-            example_model.to_openapi
+            example.to_openapi
           )
         end
       end

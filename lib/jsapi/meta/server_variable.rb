@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     # Specifies a server variable object.
-    class ServerVariable < Base::Model
+    class ServerVariable < Model::Base
       include OpenAPI::Extensions
 
       ##

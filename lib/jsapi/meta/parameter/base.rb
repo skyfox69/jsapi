@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module Parameter
       # Specifies a parameter.
-      class Model < Base::Model
+      class Base < Model::Base
         include OpenAPI::Extensions
         include ToOpenAPI
 

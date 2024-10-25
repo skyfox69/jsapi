@@ -4,7 +4,7 @@ require 'test_helper'
 
 module Jsapi
   module Meta
-    module Base
+    module Model
       class ReferenceTest < Minitest::Test
         def test_reference_predicate
           assert_predicate(Reference.new, :reference?)
@@ -16,10 +16,10 @@ module Jsapi
               @args = args.stringify_keys
             end
 
-            def find_base(name)
+            def find_model(name)
               @args[name]
             end
-          end.new(foo: model = Model.new)
+          end.new(foo: model = Base.new)
 
           reference = Reference.new(ref: 'foo')
           assert_equal(model, reference.resolve(definitions))

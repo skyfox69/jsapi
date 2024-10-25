@@ -15,11 +15,11 @@ module Jsapi
           def test_validates_max_length
             max_length = MaxLength.new(3)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(max_length.validate('foo', errors))
             assert_predicate(errors, :empty?)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(!max_length.validate('foo bar', errors))
             assert(errors.added?(:base, 'is too long (maximum is 3 characters)'))
           end

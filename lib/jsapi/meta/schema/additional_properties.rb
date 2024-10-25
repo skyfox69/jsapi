@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Schema
-      class AdditionalProperties < Meta::Base::Model
+      class AdditionalProperties < Model::Base
         delegate_missing_to :schema
 
         ##

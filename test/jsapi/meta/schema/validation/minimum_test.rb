@@ -20,11 +20,11 @@ module Jsapi
           def test_validates_minimum
             minimum = Minimum.new(0)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(minimum.validate(0, errors))
             assert_predicate(errors, :empty?)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(!minimum.validate(-1, errors))
             assert(errors.added?(:base, 'must be greater than or equal to 0'))
           end
@@ -32,11 +32,11 @@ module Jsapi
           def test_validates_exclusive_minimum
             minimum = Minimum.new(0, exclusive: true)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(minimum.validate(1, errors))
             assert_predicate(errors, :empty?)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(!minimum.validate(0, errors))
             assert(errors.added?(:base, 'must be greater than 0'))
           end

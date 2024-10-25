@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module RequestBody
       # Specifies a request body.
-      class Model < Base::Model
+      class Base < Model::Base
         include OpenAPI::Extensions
 
         delegate_missing_to :schema

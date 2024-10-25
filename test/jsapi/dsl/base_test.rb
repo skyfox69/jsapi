@@ -24,7 +24,7 @@ module Jsapi
 
       def test_initialize_raises_an_error_when_ref_and_block_are_specified_together
         meta_model = dummy_model do
-          attribute :foo, Meta::Base::Reference
+          attribute :foo, Meta::Model::Reference
         end
         error = assert_raises(Error) do
           Base.new(meta_model) do
@@ -153,7 +153,7 @@ module Jsapi
       def test_keyword_with_block
         meta_model = dummy_model do
           attribute :foo, (
-            Class.new(Meta::Base::Model) do
+            Class.new(Meta::Model::Base) do
               attribute :bar, String
             end
           )
@@ -168,7 +168,7 @@ module Jsapi
       def test_keyword_with_block_on_array_attribute
         meta_model = dummy_model do
           attribute :foos, [
-            Class.new(Meta::Base::Model) do
+            Class.new(Meta::Model::Base) do
               attribute :bar, String
             end
           ]
@@ -183,7 +183,7 @@ module Jsapi
       def test_keyword_with_block_on_hash_attribute
         meta_model = dummy_model do
           attribute :foos, {
-            String => Class.new(Meta::Base::Model) do
+            String => Class.new(Meta::Model::Base) do
               attribute :bar, String
             end
           }
@@ -219,7 +219,7 @@ module Jsapi
       private
 
       def dummy_model(&block)
-        Class.new(Meta::Base::Model, &block).new
+        Class.new(Meta::Model::Base, &block).new
       end
     end
   end

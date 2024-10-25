@@ -5,9 +5,9 @@ require 'test_helper'
 module Jsapi
   module Meta
     class CallbackTest < Minitest::Test
-      def test_new_model
+      def test_new
         callback = Callback.new
-        assert_kind_of(Callback::Model, callback)
+        assert_kind_of(Callback::Base, callback)
       end
 
       def test_new_reference

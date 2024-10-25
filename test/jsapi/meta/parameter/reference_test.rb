@@ -14,8 +14,8 @@ module Jsapi
           definitions = Definitions.new
 
           parameter = definitions.add_parameter('foo')
-          parameter_reference = Reference.new(ref: 'foo')
-          assert_equal(parameter, parameter_reference.resolve(definitions))
+          reference = Reference.new(ref: 'foo')
+          assert_equal(parameter, reference.resolve(definitions))
         end
 
         # OpenAPI objects
@@ -24,17 +24,17 @@ module Jsapi
           definitions = Definitions.new
 
           definitions.add_parameter('foo', type: 'string')
-          parameter_reference = Reference.new(ref: 'foo')
+          reference = Reference.new(ref: 'foo')
 
           # OpenAPI 2.0
           assert_equal(
             { '$ref': '#/parameters/foo' },
-            parameter_reference.to_openapi('2.0', definitions)
+            reference.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
             { '$ref': '#/components/parameters/foo' },
-            parameter_reference.to_openapi('3.0', definitions)
+            reference.to_openapi('3.0', definitions)
           )
         end
 
@@ -44,7 +44,7 @@ module Jsapi
           parameter = definitions.add_parameter('foo', type: 'object')
           parameter.add_property('bar', type: 'string')
 
-          parameter_reference = Reference.new(ref: 'foo')
+          reference = Reference.new(ref: 'foo')
 
           # OpenAPI 2.0
           assert_equal(
@@ -54,7 +54,7 @@ module Jsapi
               type: 'string',
               allowEmptyValue: true
             },
-            parameter_reference.to_openapi('2.0', definitions)
+            reference.to_openapi('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
@@ -67,7 +67,7 @@ module Jsapi
               },
               allowEmptyValue: true
             },
-            parameter_reference.to_openapi('3.0', definitions)
+            reference.to_openapi('3.0', definitions)
           )
         end
       end

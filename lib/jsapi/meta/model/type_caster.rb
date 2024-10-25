@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    module Base
+    module Model
       class TypeCaster
         STRING_CASTER = ->(arg) { arg&.to_s } # :nodoc:
 

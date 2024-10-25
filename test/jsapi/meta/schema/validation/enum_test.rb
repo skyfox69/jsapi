@@ -15,11 +15,11 @@ module Jsapi
           def test_validates_enum
             enum = Enum.new(%w[A B C])
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(enum.validate('A', errors))
             assert_predicate(errors, :empty?)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(!enum.validate('D', errors))
             assert(errors.added?(:base, 'is not included in the list'))
           end

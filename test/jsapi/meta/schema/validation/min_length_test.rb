@@ -15,11 +15,11 @@ module Jsapi
           def test_validates_min_length
             min_length = MinLength.new(3)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(min_length.validate('foo', errors))
             assert_predicate(errors, :empty?)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(!min_length.validate('fo', errors))
             assert(errors.added?(:base, 'is too short (minimum is 3 characters)'))
           end

@@ -5,13 +5,13 @@ require 'test_helper'
 module Jsapi
   module Meta
     module Link
-      class ModelTest < Minitest::Test
+      class BaseTest < Minitest::Test
         def test_empty_openapi_link_object
-          assert_equal({}, Model.new.to_openapi)
+          assert_equal({}, Base.new.to_openapi)
         end
 
         def test_full_openapi_link_object
-          link_model = Model.new(
+          link = Base.new(
             operation_id: 'foo',
             parameters: {
               'bar' => nil
@@ -36,7 +36,7 @@ module Jsapi
               },
               'x-foo': 'bar'
             },
-            link_model.to_openapi
+            link.to_openapi
           )
         end
       end

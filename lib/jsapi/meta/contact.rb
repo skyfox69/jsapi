@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     # Specifies a contact object.
-    class Contact < Base::Model
+    class Contact < Model::Base
       include OpenAPI::Extensions
 
       ##

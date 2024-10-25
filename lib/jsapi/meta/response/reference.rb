@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module Response
       # Specifies a response reference.
-      class Reference < Base::Reference
+      class Reference < Model::Reference
         # Returns a hash representing the \OpenAPI reference object.
         def to_openapi(version, *)
           version = OpenAPI::Version.from(version)

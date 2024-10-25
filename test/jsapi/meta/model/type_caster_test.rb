@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    module Base
+    module Model
       class TypeCasterTest < Minitest::Test
         def test_string_typecaster
           type_caster = TypeCaster.new(String)

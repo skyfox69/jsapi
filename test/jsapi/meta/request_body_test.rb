@@ -5,9 +5,9 @@ require 'test_helper'
 module Jsapi
   module Meta
     class RequestBodyTest < Minitest::Test
-      def test_new_model
+      def test_new
         request_body = RequestBody.new(type: 'string')
-        assert_kind_of(RequestBody::Model, request_body)
+        assert_kind_of(RequestBody::Base, request_body)
       end
 
       def test_new_reference

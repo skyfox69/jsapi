@@ -15,11 +15,11 @@ module Jsapi
           def test_validates_max_items
             max_items = MaxItems.new(2)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(max_items.validate(%w[foo bar], errors))
             assert_predicate(errors, :none?)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(!max_items.validate(%w[foo bar foo], errors))
             assert(errors.added?(:base, 'is invalid'))
           end

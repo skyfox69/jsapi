@@ -20,11 +20,11 @@ module Jsapi
           def test_validates_maximum
             maximum = Maximum.new(0)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(maximum.validate(0, errors))
             assert_predicate(errors, :none?)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(!maximum.validate(1, errors))
             assert(errors.added?(:base, 'must be less than or equal to 0'))
           end
@@ -32,11 +32,11 @@ module Jsapi
           def test_validates_exclusive_maximum
             exclusive_maximum = Maximum.new(0, exclusive: true)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(exclusive_maximum.validate(-1, errors))
             assert_predicate(errors, :empty?)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(!exclusive_maximum.validate(0, errors))
             assert(errors.added?(:base, 'must be less than 0'))
           end

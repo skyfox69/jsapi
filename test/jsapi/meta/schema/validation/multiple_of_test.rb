@@ -15,11 +15,11 @@ module Jsapi
           def test_validates_multiple_of
             multiple_of = MultipleOf.new(2)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(multiple_of.validate(4, errors))
             assert_predicate(errors, :empty?)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(!multiple_of.validate(3, errors))
             assert(errors.added?(:base, 'is invalid'))
           end

@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module Example
       # Specifies an example object.
-      class Model < Base::Model
+      class Base < Model::Base
         include OpenAPI::Extensions
 
         ##

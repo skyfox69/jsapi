@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     # Specifies an info object.
-    class Info < Base::Model
+    class Info < Model::Base
       include OpenAPI::Extensions
 
       ##

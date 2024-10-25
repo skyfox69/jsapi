@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    class Definitions < Base::Model
+    class Definitions < Model::Base
       include OpenAPI::Extensions
 
       ##

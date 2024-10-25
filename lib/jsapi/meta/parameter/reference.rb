@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module Parameter
       # Specifies a parameter reference.
-      class Reference < Base::Reference
+      class Reference < Model::Reference
         include ToOpenAPI
 
         # Returns an array of hashes. If the type of the referred parameter is

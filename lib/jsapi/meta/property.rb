@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     # Specifies a property
-    class Property < Base::Model
+    class Property < Model::Base
       delegate_missing_to :schema
 
       ##

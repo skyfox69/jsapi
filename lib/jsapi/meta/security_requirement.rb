@@ -3,8 +3,8 @@
 module Jsapi
   module Meta
     # Specifies a security requirement object.
-    class SecurityRequirement < Base::Model
-      class Scheme < Base::Model
+    class SecurityRequirement < Model::Base
+      class Scheme < Model::Base
         ##
         # :attr: scopes
         # The array of scopes.

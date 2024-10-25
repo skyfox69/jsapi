@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module Header
       # Specifies a header reference.
-      class Reference < Base::Reference
+      class Reference < Model::Reference
         # Returns a hash representing the \OpenAPI reference object.
         def to_openapi(*)
           { '$ref': "#/components/headers/#{ref}" }

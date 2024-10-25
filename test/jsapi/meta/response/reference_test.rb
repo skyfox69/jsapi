@@ -14,24 +14,24 @@ module Jsapi
           definitions = Definitions.new
           response = definitions.add_response('foo')
 
-          response_reference = Reference.new(ref: 'foo')
-          assert_equal(response, response_reference.resolve(definitions))
+          reference = Reference.new(ref: 'foo')
+          assert_equal(response, reference.resolve(definitions))
         end
 
         # OpenAPI objects
 
         def test_openapi_reference_object
-          response_reference = Reference.new(ref: 'foo')
+          reference = Reference.new(ref: 'foo')
 
           # OpenAPI 2.0
           assert_equal(
             { '$ref': '#/responses/foo' },
-            response_reference.to_openapi('2.0')
+            reference.to_openapi('2.0')
           )
           # OpenAPI 3.0
           assert_equal(
             { '$ref': '#/components/responses/foo' },
-            response_reference.to_openapi('3.0')
+            reference.to_openapi('3.0')
           )
         end
       end

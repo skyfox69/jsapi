@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     # Maps an error class to a response status.
-    class RescueHandler < Base::Model
+    class RescueHandler < Model::Base
       ##
       # :attr: error_class
       # The error class to be mapped.

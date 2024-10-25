@@ -4,10 +4,10 @@ require 'test_helper'
 
 module Jsapi
   module Meta
-    module Base
-      class ModelTest < Minitest::Test
+    module Model
+      class BaseTest < Minitest::Test
         def test_initialize
-          klass = Class.new(Model) do
+          klass = Class.new(Base) do
             attribute :foo
           end
           model = klass.new(foo: 'bar')
@@ -20,7 +20,7 @@ module Jsapi
         end
 
         def test_merge
-          klass = Class.new(Model) do
+          klass = Class.new(Base) do
             attribute :foo
             attribute :bar
           end
@@ -38,16 +38,16 @@ module Jsapi
         end
 
         def test_reference_predicate
-          assert(!Model.new.reference?)
+          assert(!Base.new.reference?)
         end
 
         def test_resolve
-          model = Model.new
+          model = Base.new
           assert(model.equal?(model.resolve))
         end
 
         def test_inspect
-          klass = Class.new(Model) do
+          klass = Class.new(Base) do
             attribute :foo
             attribute :bar
           end

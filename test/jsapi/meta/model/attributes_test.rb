@@ -1,13 +1,21 @@
 # frozen_string_literal: true
 
-require_relative 'dummy_model'
-
 module Jsapi
   module Meta
-    module Base
+    module Model
       class AttributesTest < Minitest::Test
+        class Dummy < Base
+          attr_reader :last_changed
+
+          protected
+
+          def attribute_changed(name)
+            @last_changed = name
+          end
+        end
+
         def test_attribute_names
-          foo_class = Class.new(DummyModel) do
+          foo_class = Class.new(Dummy) do
             attribute :foo
           end
           assert_equal(%i[foo], foo_class.attribute_names)
@@ -19,7 +27,7 @@ module Jsapi
         end
 
         def test_attribute_reader_and_writer
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foo, Object, values: %w[foo]
           end.new
 
@@ -35,7 +43,7 @@ module Jsapi
         end
 
         def test_default_value
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foo, Object, default: 'bar'
           end.new
 
@@ -43,7 +51,7 @@ module Jsapi
         end
 
         def test_read_only
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foo, Object, read_only: true
           end.new
 
@@ -53,7 +61,7 @@ module Jsapi
         # Boolean attributes
 
         def test_predicate_method_on_boolean
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foo, values: [true, false]
           end.new
 
@@ -64,10 +72,18 @@ module Jsapi
           assert(!model.foo?)
         end
 
+        def test_predicate_method_on_true_by_default
+          model = Class.new(Dummy) do
+            attribute :foo, values: [true, false], default: true
+          end.new
+
+          assert(model.foo?)
+        end
+
         # Array attributes
 
         def test_attribute_reader_and_writer_on_array
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foos, [], values: %w[foo bar]
           end.new
 
@@ -88,7 +104,7 @@ module Jsapi
         end
 
         def test_add_method_on_array
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foos, [], values: %w[foo]
           end.new
 
@@ -105,7 +121,7 @@ module Jsapi
         def test_default_value_on_array
           default_value = %w[foo bar]
 
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foos, [], default: default_value
           end.new
 
@@ -113,7 +129,7 @@ module Jsapi
         end
 
         def test_read_only_on_array
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foos, [String], read_only: true
           end.new
 
@@ -124,7 +140,7 @@ module Jsapi
         # Hash attributes
 
         def test_attribute_reader_and_writer_on_hash
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foos, {}, keys: %w[foo], values: %w[bar]
           end.new
 
@@ -155,7 +171,7 @@ module Jsapi
         end
 
         def test_add_method_on_hash
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foos, {}, keys: %w[foo], values: %w[bar]
           end.new
 
@@ -179,8 +195,17 @@ module Jsapi
           assert_equal('value must be "bar", is "foo"', error.message)
         end
 
+        def test_add_method_on_default_key
+          model = Class.new(Dummy) do
+            attribute :foos, {}, default_key: 'bar'
+          end.new
+
+          model.add_foo('foo')
+          assert_equal({ 'bar' => 'foo' }, model.foos)
+        end
+
         def test_lockup_method_on_hash
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foos, {}
           end.new
 
@@ -193,7 +218,7 @@ module Jsapi
         def test_default_value_on_hash
           default_value = { 'foo' => 'bar' }
 
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foos, {}, default: default_value
           end.new
 
@@ -201,7 +226,7 @@ module Jsapi
         end
 
         def test_read_only_on_hash
-          model = Class.new(DummyModel) do
+          model = Class.new(Dummy) do
             attribute :foos, {}, read_only: true
           end.new
 

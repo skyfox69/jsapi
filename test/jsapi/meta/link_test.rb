@@ -5,9 +5,9 @@ require 'test_helper'
 module Jsapi
   module Meta
     class LinkTest < Minitest::Test
-      def test_new_model
+      def test_new
         link = Link.new
-        assert_kind_of(Link::Model, link)
+        assert_kind_of(Link::Base, link)
       end
 
       def test_new_reference

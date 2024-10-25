@@ -5,9 +5,9 @@ require 'test_helper'
 module Jsapi
   module Meta
     class ExampleTest < Minitest::Test
-      def test_new_example
+      def test_new
         example = Example.new(value: 'foo')
-        assert_kind_of(Example::Model, example)
+        assert_kind_of(Example::Base, example)
       end
 
       def test_new_reference

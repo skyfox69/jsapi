@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     # Holds the default values for a particular Schema type.
-    class Defaults < Base::Model
+    class Defaults < Model::Base
       ##
       # :attr: within_requests
       # The default value of parameters and properties when reading requests.

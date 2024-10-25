@@ -5,29 +5,29 @@ require 'test_helper'
 module Jsapi
   module Meta
     module Callback
-      class ModelTest < Minitest::Test
+      class BaseTest < Minitest::Test
         def test_operations
           expression = '{$request.query.foo}'
 
-          callback_model = Model.new
-          assert_nil(callback_model.operation(expression))
+          callback = Base.new
+          assert_nil(callback.operation(expression))
 
-          operation_model = callback_model.add_operation(expression, path: '/bar')
-          assert(operation_model.equal?(callback_model.operation(expression)))
-          assert_equal('/bar', operation_model.path)
+          operation = callback.add_operation(expression, path: '/bar')
+          assert(operation.equal?(callback.operation(expression)))
+          assert_equal('/bar', operation.path)
 
-          assert_nil(callback_model.operation(nil))
+          assert_nil(callback.operation(nil))
 
           error = assert_raises(ArgumentError) do
-            callback_model.add_operation('', path: '/bar')
+            callback.add_operation('', path: '/bar')
           end
           assert_equal("expression can't be blank", error.message)
         end
 
         def test_openapi_callback_object
           expression = '{$request.query.foo}'
-          callback_model = Model.new
-          callback_model.add_operation(expression)
+          callback = Base.new
+          callback.add_operation(expression)
 
           %w[3.0 3.1].each do |version|
             assert_equal(
@@ -39,7 +39,7 @@ module Jsapi
                   }
                 }
               },
-              callback_model.to_openapi(version, nil)
+              callback.to_openapi(version, nil)
             )
           end
         end

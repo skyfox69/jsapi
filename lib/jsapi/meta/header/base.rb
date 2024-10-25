@@ -4,7 +4,7 @@ module Jsapi
   module Meta
     module Header
       # Specifies a header object.
-      class Model < Base::Model
+      class Base < Model::Base
         include OpenAPI::Extensions
 
         delegate_missing_to :schema

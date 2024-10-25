@@ -24,8 +24,8 @@ module Jsapi
         ##
         # :attr: model
         # The model class to access nested object parameters by. The default
-        # model class is Model::Base.
-        attribute :model, Class, default: Model::Base
+        # model class is Jsapi::Model::Base.
+        attribute :model, Class, default: Jsapi::Model::Base
 
         ##
         # :attr: properties

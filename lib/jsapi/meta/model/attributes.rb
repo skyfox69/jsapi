@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    module Base
+    module Model
       module Attributes
         DEFAULT_ARRAY = [].freeze
         DEFAULT_HASH = {}.freeze

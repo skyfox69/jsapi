@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Schema
-      class Base < Meta::Base::Model
+      class Base < Model::Base
         include OpenAPI::Extensions
 
         ##

@@ -143,7 +143,7 @@ module Jsapi
         assert_equal(
           400,
           definitions.rescue_handler_for(
-            Controller::ParametersInvalid.new(Model::Base.new({}))
+            Controller::ParametersInvalid.new(Jsapi::Model::Base.new({}))
           ).status
         )
         assert_equal(

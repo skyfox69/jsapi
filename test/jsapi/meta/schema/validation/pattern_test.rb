@@ -15,11 +15,11 @@ module Jsapi
           def test_validates_pattern
             pattern = Pattern.new(/fo/)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(pattern.validate('foo', errors))
             assert_predicate(errors, :empty?)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(!pattern.validate('bar', errors))
             assert(errors.added?(:base, 'is invalid'))
           end

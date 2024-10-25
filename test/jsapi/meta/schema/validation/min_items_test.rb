@@ -15,11 +15,11 @@ module Jsapi
           def test_validates_min_items
             min_items = MinItems.new(2)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(min_items.validate(%w[foo bar], errors))
             assert_predicate(errors, :empty?)
 
-            errors = Model::Errors.new
+            errors = Jsapi::Model::Errors.new
             assert(!min_items.validate(%w[foo], errors))
             assert(errors.added?(:base, 'is invalid'))
           end
