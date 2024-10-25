@@ -878,7 +878,7 @@ end
 
 ### Specifying examples
 
-[Specifying examples]: (#specifying-examples)
+[Specifying examples]: #specifying-examples
 
 A single sample value can be specified as below.
 
