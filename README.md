@@ -137,17 +137,17 @@ all top-level directives start with `api_`.
 
 The following top-level directives are provided:
 
-- [api_base_path](#specifying-api-servers)
+- [api_base_path](#specifying-api-locations)
 - [api_callback](#callbacks)
 - [api_default](#specifying-general-default-values)
 - api_definitions
 - [api_example](#specifying-examples)
 - [api_external_docs](#specifying-external-docs)
 - [api_header](#headers)
-- [api_host](#specifying-api-servers)
+- [api_host](#specifying-api-locations)
 - [api_import](#importing-api-definitions)
 - [api_include](#sharing-api-definitions)
-- [api_info](#specifying-general-information)
+- [api_info](#specifying-metadata)
 - [api_link](#links)
 - [api_on_rescue](#specifying-rescue-handlers-and-callbacks)
 - [api_operation](#specifying-operations)
@@ -156,10 +156,10 @@ The following top-level directives are provided:
 - [api_rescue_from](#specifying-rescue-handlers-and-callbacks)
 - [api_response](#specifying-responses)
 - [api_schema](#specifying-schemas)
-- [api_scheme](#specifying-api-servers)
+- [api_scheme](#specifying-api-locations)
 - [api_security_requirement](#specifying-security-schemes-and-requirements)
 - [api_security_scheme](#specifying-security-schemes-and-requirements)
-- [api_server](#specifying-api-servers)
+- [api_server](#specifying-api-locations)
 - [api_tag](#specifying-tags)
 
 When using top-level directives, the example in [Getting started](#getting-started) looks like:
@@ -244,9 +244,9 @@ api_operation 'foo' do
 end
 ```
 
-The one and only positional argument of the `api_operation` directive specifies the name of the
-operation. It can be omitted if the controller handles one operation only. The `api_operation`
-directive takes the following keywords:
+The one and only positional argument specifies the name of the operation. It can be omitted if
+the controller handles one operation only. The `api_operation` directive takes the following
+keywords:
 
 - `:callbacks` - See [Callbacks].
 - `:deprecated` - Specifies whether or not the operation is deprecated.
@@ -261,7 +261,7 @@ directive takes the following keywords:
 - `:responses` - See [Specifying responses].
 - `:schemes` - The transfer protocols supported by the operation.
 - `:security_requirements` - See [Specifying security schemes and requirements].
-- `:servers` - See [Specifying servers].
+- `:servers` - See [Specifying API locations].
 - `:summary` - The short summary of the operation.
 - `:tags` - The tags to group operations in an OpenAPI document.
 
@@ -273,8 +273,8 @@ from the controller name, unless it is explictly specified by the `:path` keywor
 
 [Callbacks]: #callbacks
 
-To describe the callbacks initiated by an operation, each callback can be specified by a nested
-`callback` directive, for example:
+The callbacks that may be initiated by an operation can be described by nested `callback`
+directives, for example:
 
 ```ruby
 api_operation do
@@ -284,9 +284,8 @@ api_operation do
 end
 ```
 
-The one and only positional argument specifies the mandatory name of the callback. A nested
-`operation` directive maps an expression to an operation. See the OpenAPI specification for
-further information.
+The one and only positional argument specifies the mandatory name of the callback. The nested
+`operation` directives maps expressions to operations.
 
 If a callback is associated with multiple operations, it can be specified once by an
 `api_callback` directive, for example:
@@ -297,7 +296,7 @@ api_callback 'foo' do
 end
 ```
 
-A callback specified by `api_callback` can be referred as below.
+A callback specified by an `api_callback` directive can be referred as below.
 
 ```ruby
 api_operation do
@@ -345,10 +344,9 @@ directive, for example:
 api_parameter 'request_id', type: 'string'
 ```
 
-The one and only positional argument of the `api_parameter` directive specifies the mandatory
-name of the reusable parameter.
+The one and only positional argument specifies the mandatory name of the reusable parameter.
 
-A parameter defined by `api_parameter` can be referred as below.
+A reusable parameter can be referred as below.
 
 ```ruby
 api_operation do
@@ -399,10 +397,9 @@ api_request_body 'foo', type: 'object' do
 end
 ```
 
-The one and only positional argument of the `api_request_body` directive specifies the
-mandatory name of the reusable request body.
+The one and only positional argument specifies the mandatory name of the reusable request body.
 
-A request body defined by `api_request_body` can be referred as below.
+A reusable request body can be referred as below.
 
 ```ruby
 api_operation do
@@ -461,10 +458,9 @@ api_response 'error', type: 'object' do
 end
 ```
 
-The one and only positional argument of the `api_response` directive specifies the mandatory
-name of the reusable response.
+The one and only positional argument specifies the mandatory name of the reusable response.
 
-A response defined by `api_response` can be referred as below.
+A reusable response can be referred as below.
 
 ```ruby
 api_operation do
@@ -482,8 +478,8 @@ end
 
 [Headers]: #headers
 
-To describe the HTTP headers a response can have, each header can be specified by a nested
-`header` directive, for example:
+The HTTP headers a response can have can be described by nested `header` directives,
+for example:
 
 ```ruby
 response do
@@ -491,7 +487,7 @@ response do
 end
 ```
 
-If an header belongs to multiple responses, it can be specified once by an `api_header`
+If a header belongs to multiple responses, it can be specified once by an `api_header`
 directive, for example:
 
 ```ruby
@@ -500,10 +496,10 @@ api_header 'foo', type: 'string'
 
 The one and only positional argument specifies the mandatory name of the header. The `header`
 directive takes all keywords described in [Specifying schemas] to define the schema of the
-header. The type of a header must not be `"object"`.
+header.
 
 
-A header specified by `api_header` can be referred as below.
+A header specified by an `api_header` directive can be referred as below.
 
 ```ruby
 response do
@@ -521,8 +517,8 @@ end
 
 [Links]: #links
 
-To describe which operations may follow after a response, an operation can be linked by a nested
-`link` directive, for example:
+The operations that may follow after a response can be described by `link` directives, for
+example:
 
 ```ruby
 response do
@@ -546,7 +542,7 @@ directive, for example:
 api_link 'foo', operation_id: 'bar'
 ```
 
-A link specified by `api_link` can be referred as below.
+A link specified by a `api_link` directive can be referred as below.
 
 ```ruby
 response do
@@ -564,8 +560,8 @@ end
 
 [Specifying properties]: #specifying-properties
 
-A nested parameter or a property of a request body or response is defined by a nested `property`
-directive, for example:
+A property of a parameter, request body or response is defined by a nested `property` directive,
+for example:
 
 ```ruby
 api_operation do
@@ -812,9 +808,9 @@ api_schema 'Bar', type: 'object' do
 end
 ```
 
-### Specifying general information
+### Specifying metadata
 
-The general information about an API is specified by an `api_info` directive, for example:
+Metadata about an API is specified by an `api_info` directive, for example:
 
 ```ruby
 api_info title: 'Foo', version: '1'
@@ -822,30 +818,55 @@ api_info title: 'Foo', version: '1'
 
 The `api_info` directive takes the following keywords:
 
-- `:contact` - The contact.
-    - `:email` - The email address of the contact.
-    - `:name` - The name of the contact.
-    - `:url` - The URL of the contact.
+- `:contact` - See [Contact].
 - `:description` - The description of the API.
-- `:license` - The license.
-    - `:name` - The name of the license.
-    - `:url` - The URL of the license.
+- `:license` - See [License].
 - `:summary` - The short summary of the API.
 - `:terms_of_service` - The URL pointing to the terms of service.
 - `:title` - The mandatory title of the API.
 - `:version` - The mandatory version of the API.
 
-### Specifying API servers
+#### Contact
 
-[Specifying API servers]: #specifying-api-servers
+[Contact]: #contact
 
-OpenAPI 3.0 and higher:
+```ruby
+api_info do
+  contact email: 'bar@foo.com'
+end
+```
+
+The `contact` directive takes the following keywords:
+
+- `:email` - The email address of the contact.
+- `:name` - The name of the contact.
+- `:url` - The URL of the contact.
+
+#### Licence
+
+[License]: #licence
+
+```ruby
+api_info do
+  license name: 'MIT'
+end
+```
+
+The `license` directive takes the following keywords:
+
+- `:name` - The name of the license.
+- `:url` - The URL of the license.
+
+### Specifying API locations
+
+[Specifying API locations]: #specifying-api-locations
+
+The location of an API can either be specified by an `api_server` directive or the `api_scheme`,
+`api_host` and `api_base_path` directives, for example:
 
 ```ruby
 api_server 'https://foo.bar/foo'
 ```
-
-OpenAPI 2.0:
 
 ```ruby
 api_scheme 'https'
@@ -853,21 +874,39 @@ api_host 'foo.bar'
 api_base_path '/foo'
 ```
 
+The `api_server` directive corresponds to the `Server` object introduced with OpenAPI 3.0. The
+positional argument specifies the absolute or relative URI.
+
+The `api_scheme`, `api_host` and `api_base_path` directives correspond to the `scheme`, `host`
+and `basePath` fields in OpenAPI 2.0.
+
 ### Specifying security schemes and requirements
 
 [Specifying security schemes and requirements]: #specifying-security-schemes-and-requirements
 
+A security scheme is described by an `api_scurity_scheme` directive, for example:
+
 ```ruby
 api_security_scheme 'basic_auth', type: 'http', scheme: 'basic'
 ```
+
+The one and only positional argument specifies the name of the security scheme. The `:type`
+keyword specifies the type of the security scheme. Possible types are:
+
+- `"api_key"`
+- `"basic"`
+- `"http"`
+- `"oauth2"`
+- `"open_id_connect"`
+
+Security schemes are linked by `api_security_requirement` or nested `security_requirement`
+directives, for example:
 
 ```ruby
 api_security_requirement 'http_basic' do
   scheme 'basic_auth'
 end
 ```
-
-The alternative security requirements of an operation can be specified as below.
 
 ```ruby
 api_operation do
@@ -919,25 +958,53 @@ api_example 'foo', value: 'bar'
 
 ### Specifying tags
 
+A tag is specified by an `api_tag` directive, for example:
+
 ```ruby
-api_tag name: 'foo', description: 'Description of foo'
+api_tag name: 'foo', description: 'Lorem ipsum'
 ```
+
+The `api_tag` directive takes the following keywords:
+
+- `:external_docs` - See [Specifying external docs].
+- `:description` - The description of the tag.
+- `name` - The name of the tag.
 
 ### Specifying external docs
 
 [Specifying external docs]: #specifying-external-docs
 
+External documentations are described by `api_external_docs` or nested `external_docs`
+directives, for example:
+
 ```ruby
 api_external_docs url: 'https://foo.bar'
 ```
+
+```ruby
+api_operation do
+  external_docs url: 'https://foo.bar'
+end
+```
+
+Both directives take the following keywords:
+
+- `:description` - The description of the external documentation.
+- `:url` - The URI of the external documentation.
 
 ### Specifying OpenAPI extensions
 
 [Specifying OpenAPI extensions]: #specifying-openapi-extensions
 
+OpenAPI extensions are specified by nested `openapi_extension` directives, for example:
+
 ```ruby
 openapi_extension 'foo', 'bar'
 ```
+
+The first argument specifies the name of the extension. The second argument specifies the
+assigned value. Note that the prefix `x-` is added automatically when producing an OpenAPI
+document.
 
 ### Specifying rescue handlers and callbacks
 
