@@ -21,6 +21,27 @@ module Jsapi
         assert_equal([definitions, included2, included1, base2, base1], definitions.ancestors)
       end
 
+      def test_inheritance
+        definitions = Definitions.new(
+          parent: parent = Definitions.new(
+            schemas: {
+              foo: {},
+              bar: {}
+            }
+          ),
+          schemas: {
+            foo: {}
+          }
+        )
+        foo = definitions.find_schema('foo')
+        assert_predicate(foo, :present?)
+        assert(!foo.equal?(parent.find_schema('foo')))
+
+        bar = definitions.find_schema('bar')
+        assert_predicate(bar, :present?)
+        assert(bar.equal?(parent.find_schema('bar')))
+      end
+
       def test_include_raises_an_error_on_circular_dependency
         definitions = (1..3).map { |i| Definitions.new(owner: i) }
 
