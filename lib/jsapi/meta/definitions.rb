@@ -58,12 +58,12 @@ module Jsapi
       ##
       # :attr: operations
       # The Operation objects.
-      attribute :operations, { String => Operation }
+      attribute :operations, { String => Operation }, accessors: %i[reader writer]
 
       ##
       # :attr: parameters
       # The reusable Parameter objects.
-      attribute :parameters, { String => Parameter }
+      attribute :parameters, { String => Parameter }, accessors: %i[reader writer]
 
       ##
       # :attr: rescue_handlers
@@ -137,8 +137,6 @@ module Jsapi
         end
         @parent&.inherited(self)
       end
-
-      undef add_operation, add_parameter
 
       def add_operation(name = nil, keywords = {}) # :nodoc:
         name = name.nil? ? default_operation_name : name.to_s

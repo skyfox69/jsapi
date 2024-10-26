@@ -26,6 +26,29 @@ module Jsapi
           assert_equal(%i[foo bar], bar_class.attribute_names)
         end
 
+        def test_responds_to_accessors
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foo, Object
+            end.new,
+            to: %i[foo foo=]
+          )
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foo, Object, accessors: %i[reader]
+            end.new,
+            to: :foo,
+            not_to: :foo=
+          )
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foo, Object, accessors: %i[writer]
+            end.new,
+            to: :foo=,
+            not_to: :foo
+          )
+        end
+
         def test_attribute_reader_and_writer
           model = Class.new(Dummy) do
             attribute :foo, Object, values: %w[foo]
@@ -50,15 +73,30 @@ module Jsapi
           assert_equal('bar', model.foo)
         end
 
-        def test_read_only
-          model = Class.new(Dummy) do
-            attribute :foo, Object, read_only: true
-          end.new
-
-          assert(!model.respond_to?(:foo=))
-        end
-
         # Boolean attributes
+
+        def test_responds_to_accessors_on_boolean
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foo, values: [true, false]
+            end.new,
+            to: %i[foo foo? foo=]
+          )
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foo, values: [true, false], accessors: %i[reader]
+            end.new,
+            to: %i[foo foo?],
+            not_to: :foo=
+          )
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foo, values: [true, false], accessors: %i[writer]
+            end.new,
+            to: :foo=,
+            not_to: %i[foo foo?]
+          )
+        end
 
         def test_predicate_method_on_boolean
           model = Class.new(Dummy) do
@@ -81,6 +119,36 @@ module Jsapi
         end
 
         # Array attributes
+
+        def test_responds_to_accessors_on_array
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foos, []
+            end.new,
+            to: %i[foos foos= add_foo]
+          )
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foos, [], accessors: %i[reader writer]
+            end.new,
+            to: %i[foos foos=],
+            not_to: :add_foo
+          )
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foos, [], accessors: %i[add reader]
+            end.new,
+            to: %i[foos add_foo],
+            not_to: :foos=
+          )
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foos, [], accessors: %i[add writer]
+            end.new,
+            to: %i[foos= add_foo],
+            not_to: :foos
+          )
+        end
 
         def test_attribute_reader_and_writer_on_array
           model = Class.new(Dummy) do
@@ -130,7 +198,7 @@ module Jsapi
 
         def test_read_only_on_array
           model = Class.new(Dummy) do
-            attribute :foos, [String], read_only: true
+            attribute :foos, [String], accessors: %i[reader]
           end.new
 
           assert(!model.respond_to?(:foos=))
@@ -138,6 +206,36 @@ module Jsapi
         end
 
         # Hash attributes
+
+        def test_responds_to_accessors_on_hash
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foos, {}
+            end.new,
+            to: %i[foo foos foos= add_foo]
+          )
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foos, {}, accessors: %i[reader writer]
+            end.new,
+            to: %i[foo foos foos=],
+            not_to: :add_foo
+          )
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foos, {}, accessors: %i[add reader]
+            end.new,
+            to: %i[foo foos add_foo],
+            not_to: :foos=
+          )
+          assert_responds(
+            Class.new(Dummy) do
+              attribute :foos, {}, accessors: %i[add writer]
+            end.new,
+            to: %i[foos= add_foo],
+            not_to: %i[foo foos]
+          )
+        end
 
         def test_attribute_reader_and_writer_on_hash
           model = Class.new(Dummy) do
@@ -227,11 +325,18 @@ module Jsapi
 
         def test_read_only_on_hash
           model = Class.new(Dummy) do
-            attribute :foos, {}, read_only: true
+            attribute :foos, {}, accessors: %i[reader]
           end.new
 
           assert(!model.respond_to?(:foo=))
           assert(!model.respond_to?(:add_foo))
+        end
+
+        private
+
+        def assert_responds(model, to: [], not_to: [])
+          Array(to).each { |method| assert(model.respond_to?(method)) }
+          Array(not_to).each { |method| assert(!model.respond_to?(method)) }
         end
       end
     end

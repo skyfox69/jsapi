@@ -49,12 +49,12 @@ module Jsapi
       ##
       # :attr_reader: name
       # The name of the operation.
-      attribute :name, read_only: true
+      attribute :name, accessors: %i[reader]
 
       ##
       # :attr: parameters
       # The parameters of the operation.
-      attribute :parameters, { String => Parameter }
+      attribute :parameters, { String => Parameter }, accessors: %i[reader writer]
 
       ##
       # :attr: path
@@ -109,8 +109,6 @@ module Jsapi
         @name = name&.to_s
         super(keywords)
       end
-
-      undef add_parameter
 
       def add_parameter(name, keywords = {}) # :nodoc:
         (@parameters ||= {})[name.to_s] = Parameter.new(name, keywords)

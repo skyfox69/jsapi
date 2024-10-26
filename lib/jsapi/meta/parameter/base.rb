@@ -39,12 +39,12 @@ module Jsapi
         ##
         # :attr_reader: name
         # The name of the parameter.
-        attribute :name, read_only: true
+        attribute :name, accessors: %i[reader]
 
         ##
         # :attr_reader: schema
         # The Schema of the parameter.
-        attribute :schema, read_only: true
+        attribute :schema, accessors: %i[reader]
 
         # Creates a new parameter.
         #

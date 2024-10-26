@@ -9,9 +9,7 @@ module Jsapi
       class Base < Model::Base
         ##
         # :attr: operations
-        attribute :operations, { String => Operation }
-
-        undef add_operation
+        attribute :operations, { String => Operation }, accessors: %i[reader writer]
 
         # Adds a callback operation.
         #

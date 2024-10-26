@@ -9,7 +9,7 @@ module Jsapi
       ##
       # :attr_reader: name
       # The name of the property.
-      attribute :name, read_only: true
+      attribute :name, accessors: %i[reader]
 
       ##
       # :attr: read_only
@@ -18,7 +18,7 @@ module Jsapi
       ##
       # :attr_reader: schema
       # The Schema of the parameter.
-      attribute :schema, read_only: true
+      attribute :schema, accessors: %i[reader]
 
       ##
       # :attr: source

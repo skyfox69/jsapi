@@ -24,7 +24,7 @@ module Jsapi
         ##
         # :attr: enum
         # The allowed values.
-        attribute :enum
+        attribute :enum, accessors: %i[reader]
 
         ##
         # :attr: examples
@@ -52,8 +52,6 @@ module Jsapi
 
         # The validations.
         attr_reader :validations
-
-        undef enum=
 
         # Creates a new schema.
         def initialize(keywords = {})

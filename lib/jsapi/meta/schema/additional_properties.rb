@@ -9,7 +9,7 @@ module Jsapi
         ##
         # :attr: schema
         # The Schema of additional properties.
-        attribute :schema, read_only: true
+        attribute :schema, accessors: %i[reader]
 
         ##
         # :attr: source

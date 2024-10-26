@@ -42,7 +42,7 @@ module Jsapi
         ##
         # :attr_reader: schema
         # The Schema of the response.
-        attribute :schema, read_only: true
+        attribute :schema, accessors: %i[reader]
 
         def initialize(keywords = {})
           keywords = keywords.dup

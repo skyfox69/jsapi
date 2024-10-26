@@ -30,9 +30,7 @@ module Jsapi
         ##
         # :attr: properties
         # The properties.
-        attribute :properties, { String => Property }
-
-        undef add_property
+        attribute :properties, { String => Property }, accessors: %i[reader writer]
 
         def add_property(name, keywords = {}) # :nodoc:
           (@properties ||= {})[name.to_s] = Property.new(name, **keywords)
