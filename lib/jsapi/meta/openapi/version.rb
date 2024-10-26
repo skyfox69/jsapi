@@ -4,6 +4,8 @@ module Jsapi
   module Meta
     module OpenAPI
       class Version
+        include Comparable
+
         # Creates an \OpenAPI version from +version+.
         #
         # Raises an +ArgumentError+ if +version+ isn`t supported.
@@ -33,6 +35,15 @@ module Jsapi
           other.is_a?(self.class) &&
             @major == other.major &&
             @minor == other.minor
+        end
+
+        def <=>(other)
+          return unless other.is_a?(Version)
+
+          result = major <=> other.major
+          return result unless result.zero?
+
+          minor <=> other.minor
         end
 
         def to_s # :nodoc:

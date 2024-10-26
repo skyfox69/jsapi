@@ -22,6 +22,11 @@ module Jsapi
       attribute :license, License
 
       ##
+      # :attr: summary
+      # The short summary of the API. Applies to \OpenAPI 3.1 and higher.
+      attribute :summary, String
+
+      ##
       # :attr: terms_of_service
       # The URL pointing to the terms of service.
       attribute :terms_of_service, String
@@ -37,14 +42,17 @@ module Jsapi
       attribute :version, String
 
       # Returns a hash representing the \OpenAPI info object.
-      def to_openapi(*)
+      def to_openapi(version, *)
+        version = OpenAPI::Version.from(version)
+
         with_openapi_extensions(
           title: title,
-          version: version,
+          summary: (summary if version >= OpenAPI::V3_1),
           description: description,
           termsOfService: terms_of_service,
           contact: contact&.to_openapi,
-          license: license&.to_openapi
+          license: license&.to_openapi,
+          version: self.version
         )
       end
     end

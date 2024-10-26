@@ -26,6 +26,13 @@ module Jsapi
           assert(Version.new(3, 0) != Version.new(3, 1))
         end
 
+        def test_comparison_operator
+          assert(Version.new(2, 0) < Version.new(3, 0))
+          assert(Version.new(3, 0) < Version.new(3, 1))
+
+          assert_raises(ArgumentError) { assert_nil(Version.new(2, 0) < 3) }
+        end
+
         def test_to_s
           assert_equal('2.0', Version.new(2, 0).to_s)
         end

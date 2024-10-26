@@ -830,6 +830,7 @@ The `api_info` directive takes the following keywords:
 - `:license` - The license.
     - `:name` - The name of the license.
     - `:url` - The URL of the license.
+- `:summary` - The short summary of the API.
 - `:terms_of_service` - The URL pointing to the terms of service.
 - `:title` - The mandatory title of the API.
 - `:version` - The mandatory version of the API.
