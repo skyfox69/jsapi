@@ -133,9 +133,7 @@ The sources and OpenAPI documents of this example are [here](examples/echo).
 Everything needed to build an API is defined by a DSL whose vocabulary bases on OpenAPI and
 JSON Schema. This DSL can be used in any controller inheriting from `Jsapi::Controller::Base`
 as well as any class extending `Jsapi::DSL`. To avoid naming conflicts with other libraries,
-all top-level directives start with `api_`.
-
-The following top-level directives are provided:
+all top-level directives start with `api_`. These are:
 
 - [api_base_path](#specifying-api-locations)
 - [api_callback](#callbacks)
@@ -440,8 +438,9 @@ define the schema of the response. Additionally, the following keywords may be s
 - `:openapi_extensions` - See [Specifying OpenAPI extensions].
 - `:ref` - Refers a reusable response.
 
-The `:locale` keyword allows to produce responses in different languages depending on
-status code.
+The `:locale` keyword allows to produce responses in different languages depending on status
+code.  This can especially be used to return error responses in English regardless of the
+language of regular responses.
 
 The `:example`, `:examples`, `:headers`, `:links` and `:openapi_extensions` keywords are only
 used to describe a response in an OpenAPI document.
@@ -1053,34 +1052,6 @@ api_default 'array', within_requests: [], within_responses: []
 - `:within_requests` - The general default value of parameters when consuming requests.
 - `:within_responses` - The general default value of properties when producing responses.
 
-### Sharing API definitions
-
-API components can be used in multiple classes by inheritance or inclusion. A controller
-class inherits all API components from the parent class, for example:
-
-```ruby
-class FooController < Jsapi::Controller::Base
-  api_schema 'Foo'
-end
-
-class BarController < FooController
-  api_response 'Bar', schema: 'Foo'
-end
-```
-
-In addition, API components from other classes can be included as below.
-
-```ruby
-class FooController < Jsapi::Controller::Base
-  api_schema 'Foo'
-end
-
-class BarController < Jsapi::Controller::Base
-  api_include FooController
-  api_response 'Bar', schema: 'Foo'
-end
-```
-
 ### Importing API definitions
 
 API definitions can also be specified in separate files located in `apps/api_defs`. Directives
@@ -1124,6 +1095,34 @@ The location of API definitions can be changed by an initializer:
 # config/initializers/jsapi.rb
 
 Jsapi.configuration.api_defs_path = 'app/foo'
+```
+
+### Sharing API definitions
+
+API components can be used in multiple classes by inheritance or inclusion. A controller
+class inherits all API components from the parent class, for example:
+
+```ruby
+class FooController < Jsapi::Controller::Base
+  api_schema 'Foo'
+end
+
+class BarController < FooController
+  api_response 'Bar', schema: 'Foo'
+end
+```
+
+In addition, API components from other classes can be included as below.
+
+```ruby
+class FooController < Jsapi::Controller::Base
+  api_schema 'Foo'
+end
+
+class BarController < Jsapi::Controller::Base
+  api_include FooController
+  api_response 'Bar', schema: 'Foo'
+end
 ```
 
 ## API controllers
