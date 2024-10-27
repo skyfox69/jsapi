@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    # Specifies an external documentation object.
+    # Specifies an external documentation.
     class ExternalDocumentation < Model::Base
       include OpenAPI::Extensions
 

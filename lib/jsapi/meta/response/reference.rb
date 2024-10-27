@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Response
-      # Specifies a response reference.
+      # Refers a reusable response.
       class Reference < Model::Reference
         # Returns a hash representing the \OpenAPI reference object.
         def to_openapi(version, *)

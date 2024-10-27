@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Parameter
-      # Specifies a parameter reference.
+      # Refers a reusable parameter.
       class Reference < Model::Reference
         include ToOpenAPI
 

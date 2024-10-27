@@ -3,6 +3,7 @@
 module Jsapi
   module Meta
     module Schema
+      # Refers a reusable schema.
       class Reference < Model::Reference
         ##
         # :attr: existence

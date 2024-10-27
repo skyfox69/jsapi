@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Link
-      # Specifies a link object.
+      # Specifies a link.
       class Base < Model::Base
         include OpenAPI::Extensions
 

@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    # Specifies a license object.
+    # Specifies a license.
     class License < Model::Base
       include OpenAPI::Extensions
 

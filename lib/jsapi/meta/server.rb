@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    # Specifiess a server object.
+    # Specifies a server.
     class Server < Model::Base
       include OpenAPI::Extensions
 

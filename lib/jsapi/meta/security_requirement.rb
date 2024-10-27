@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    # Specifies a security requirement object.
+    # Specifies a security requirement.
     class SecurityRequirement < Model::Base
       class Scheme < Model::Base
         ##

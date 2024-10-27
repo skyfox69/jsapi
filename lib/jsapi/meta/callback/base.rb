@@ -5,7 +5,7 @@ module Jsapi
     class Operation < Model::Base; end
 
     module Callback
-      # Specifies a callback object. Applies to \OpenAPI 3.0 and higher.
+      # Specifies a callback. Applies to \OpenAPI 3.0 and higher.
       class Base < Model::Base
         ##
         # :attr: operations

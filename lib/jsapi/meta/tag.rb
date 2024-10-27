@@ -2,7 +2,7 @@
 
 module Jsapi
   module Meta
-    # Specifies a tag object.
+    # Specifies a tag.
     class Tag < Model::Base
       include OpenAPI::Extensions
 

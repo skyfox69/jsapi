@@ -2,13 +2,13 @@
 
 module Jsapi
   module Meta
-    # Specifies an info object.
+    # Specifies metadata about an API.
     class Info < Model::Base
       include OpenAPI::Extensions
 
       ##
       # :attr: contact
-      # The Contact object.
+      # The Contact.
       attribute :contact, Contact
 
       ##
@@ -18,7 +18,7 @@ module Jsapi
 
       ##
       # :attr: license
-      # The License object.
+      # The License.
       attribute :license, License
 
       ##

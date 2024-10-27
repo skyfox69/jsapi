@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Example
-      # Specifies an example reference.
+      # Refers a reusable example.
       class Reference < Model::Reference
         # Returns a hash representing the \OpenAPI reference object.
         def to_openapi(*)

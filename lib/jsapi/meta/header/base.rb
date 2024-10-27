@@ -3,7 +3,7 @@
 module Jsapi
   module Meta
     module Header
-      # Specifies a header object.
+      # Specifies an HTTP header.
       class Base < Model::Base
         include OpenAPI::Extensions
 
