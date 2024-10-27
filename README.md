@@ -830,6 +830,8 @@ The `api_info` directive takes the following keywords:
 
 [Contact]: #contact
 
+The contact information are described by a nested `contact` directive, for example:
+
 ```ruby
 api_info do
   contact email: 'bar@foo.com'
@@ -846,16 +848,21 @@ The `contact` directive takes the following keywords:
 
 [License]: #licence
 
+The license of an API is described by a nested `license` directive, for example:
+
 ```ruby
 api_info do
-  license name: 'MIT'
+  license name: 'MIT License', identifier: 'MIT'
 end
 ```
 
 The `license` directive takes the following keywords:
 
+- `:identifier` - The [SPDX](https://spdx.org/licenses/) identifier of the license.
 - `:name` - The name of the license.
 - `:url` - The URL of the license.
+
+Note that `:identifier` and `:url` are mutually exlusive.
 
 ### Specifying API locations
 

@@ -51,7 +51,7 @@ module Jsapi
           description: description,
           termsOfService: terms_of_service,
           contact: contact&.to_openapi,
-          license: license&.to_openapi,
+          license: license&.to_openapi(version),
           version: self.version
         )
       end
