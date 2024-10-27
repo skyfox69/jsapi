@@ -47,12 +47,14 @@ module Jsapi
 
         # Returns a hash representing the \OpenAPI 2.0 parameter object.
         def to_openapi_parameter
-          {
-            name: 'body',
-            in: 'body',
-            description: description,
-            required: required?
-          }.merge(schema.to_openapi('2.0')).merge(openapi_extensions).compact
+          with_openapi_extensions(
+            {
+              name: 'body',
+              in: 'body',
+              description: description,
+              required: required?
+            }.merge(schema.to_openapi(OpenAPI::V2_0))
+          )
         end
 
         # Returns a hash representing the \OpenAPI 3.x request body object.

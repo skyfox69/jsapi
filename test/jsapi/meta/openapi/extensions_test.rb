@@ -6,19 +6,19 @@ module Jsapi
   module Meta
     module OpenAPI
       class ExtensionsTest < Minitest::Test
+        extend Model::Attributes
         include Extensions
 
-        def test_add_openapi_extension
+        def test_with_openapi_extensions
+          assert_equal({}, with_openapi_extensions)
+
           add_openapi_extension('foo', 'bar')
-          assert_equal('bar', openapi_extensions[:'x-foo'])
+          assert_equal({ 'x-foo': 'bar' }, with_openapi_extensions)
         end
 
-        def test_add_openapi_extension_raises_an_error_when_name_is_blank
-          error = assert_raises(ArgumentError) do
-            add_openapi_extension('')
-          end
-          assert_equal("name can't be blank", error.message)
-        end
+        private
+
+        def attribute_changed(*); end
       end
     end
   end

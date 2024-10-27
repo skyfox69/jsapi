@@ -6,8 +6,8 @@ module Jsapi
   module Meta
     module Schema
       module Conversion
-        def self.included(mod)
-          mod.attr_accessor :conversion
+        def self.included(base) # :nodoc:
+          base.attr_accessor :conversion
         end
 
         def convert(object)
