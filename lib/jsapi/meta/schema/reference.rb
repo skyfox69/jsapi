@@ -22,12 +22,11 @@ module Jsapi
           { '$ref': "#/definitions/#{ref}" }
         end
 
-        # Returns a hash representing the \OpenAPI reference object.
-        def to_openapi(version, *)
-          version = OpenAPI::Version.from(version)
-          path = version.major == 2 ? 'definitions' : 'components/schemas'
+        private
 
-          { '$ref': "#/#{path}/#{ref}" }
+        # Overrides Model::Reference#openapi_components_path.
+        def openapi_components_path(version)
+          version.major == 2 ? 'definitions' : super
         end
       end
     end

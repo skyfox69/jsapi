@@ -22,9 +22,7 @@ module Jsapi
             parameter.to_openapi_parameters(version, definitions)
           else
             # Return an array containing the reference object
-            path = version.major == 2 ? 'parameters' : 'components/parameters'
-
-            [{ '$ref': "#/#{path}/#{ref}" }]
+            [{ '$ref': "#/#{openapi_components_path(version)}/#{ref}" }]
           end
         end
       end
