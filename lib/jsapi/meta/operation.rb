@@ -138,36 +138,36 @@ module Jsapi
           externalDocs: external_docs&.to_openapi,
           deprecated: deprecated?.presence,
           security: security_requirements.map(&:to_openapi).presence
-        ).tap do |hash|
+        ).tap do |result|
           if version.major == 2
             if (consumes = consumes(definitions)).present?
-              hash[:consumes] = [consumes]
+              result[:consumes] = [consumes]
             end
             if (produces = produces(definitions)).present?
-              hash[:produces] = produces
+              result[:produces] = produces
             end
-            hash[:schemes] = schemes if schemes.present?
+            result[:schemes] = schemes if schemes.present?
           elsif servers.present?
-            hash[:servers] = servers.map(&:to_openapi)
+            result[:servers] = servers.map(&:to_openapi)
           end
           # Parameters (and request body)
-          hash[:parameters] = parameters.values.flat_map do |parameter|
+          result[:parameters] = parameters.values.flat_map do |parameter|
             parameter.to_openapi_parameters(version, definitions)
           end
           if request_body
             if version.major == 2
-              hash[:parameters] << request_body.resolve(definitions).to_openapi_parameter
+              result[:parameters] << request_body.resolve(definitions).to_openapi_parameter
             else
-              hash[:request_body] = request_body.to_openapi(version)
+              result[:request_body] = request_body.to_openapi(version)
             end
           end
           # Responses
-          hash[:responses] = responses.transform_values do |response|
+          result[:responses] = responses.transform_values do |response|
             response.to_openapi(version, definitions)
           end
           # Callbacks
           if callbacks.present? && version.major > 2
-            hash[:callbacks] = callbacks.transform_values do |callback|
+            result[:callbacks] = callbacks.transform_values do |callback|
               callback.to_openapi(version, definitions)
             end
           end

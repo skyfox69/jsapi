@@ -60,9 +60,9 @@ module Jsapi
       def to_openapi(version, *)
         version = OpenAPI::Version.from(version)
 
-        schema.to_openapi(version).tap do |hash|
-          hash[:readOnly] = true if read_only?
-          hash[:writeOnly] = true if write_only? && version.major > 2
+        schema.to_openapi(version).tap do |result|
+          result[:readOnly] = true if read_only?
+          result[:writeOnly] = true if write_only? && version.major > 2
         end
       end
     end

@@ -29,11 +29,11 @@ module Jsapi
 
         # Returns a hash representing the \OpenAPI example object.
         def to_openapi(*)
-          with_openapi_extensions(summary: summary, description: description).tap do |hash|
+          with_openapi_extensions(summary: summary, description: description).tap do |result|
             if external?
-              hash[:external_value] = value
+              result[:external_value] = value
             else
-              hash[:value] = value
+              result[:value] = value
             end
           end
         end

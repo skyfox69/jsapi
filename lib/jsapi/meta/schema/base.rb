@@ -94,9 +94,9 @@ module Jsapi
             default: default,
             examples: examples.presence,
             deprecated: deprecated?.presence
-          }.tap do |hash|
+          }.tap do |result|
             validations.each_value do |validation|
-              hash.merge!(validation.to_json_schema_validation)
+              result.merge!(validation.to_json_schema_validation)
             end
           end.compact
         end
@@ -127,14 +127,14 @@ module Jsapi
                 examples: examples.presence,
                 deprecated: deprecated?.presence
               }
-            end.tap do |hash|
-              hash[:title] = title
-              hash[:description] = description
-              hash[:default] = default
-              hash[:externalDocs] = external_docs&.to_openapi
+            end.tap do |result|
+              result[:title] = title
+              result[:description] = description
+              result[:default] = default
+              result[:externalDocs] = external_docs&.to_openapi
 
               validations.each_value do |validation|
-                hash.merge!(validation.to_openapi_validation(version))
+                result.merge!(validation.to_openapi_validation(version))
               end
             end
           )
