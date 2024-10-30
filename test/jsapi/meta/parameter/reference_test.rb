@@ -6,68 +6,71 @@ module Jsapi
   module Meta
     module Parameter
       class ReferenceTest < Minitest::Test
-        def test_component_type
-          assert_equal('parameter', Reference.component_type)
-        end
+        # #openapi_parameters
 
-        def test_resolve
-          definitions = Definitions.new
-
-          parameter = definitions.add_parameter('foo')
-          reference = Reference.new(ref: 'foo')
-          assert_equal(parameter, reference.resolve(definitions))
-        end
-
-        # OpenAPI objects
-
-        def test_openapi_reference_object
-          definitions = Definitions.new
-
-          definitions.add_parameter('foo', type: 'string')
+        def test_openapi_parameters
+          definitions = Definitions.new(
+            parameters: {
+              'foo' => { type: 'string' }
+            }
+          )
           reference = Reference.new(ref: 'foo')
 
           # OpenAPI 2.0
           assert_equal(
-            { '$ref': '#/parameters/foo' },
-            reference.to_openapi('2.0', definitions)
+            [
+              { '$ref': '#/parameters/foo' }
+            ],
+            reference.to_openapi_parameters('2.0', definitions)
           )
           # OpenAPI 3.0
           assert_equal(
-            { '$ref': '#/components/parameters/foo' },
-            reference.to_openapi('3.0', definitions)
+            [
+              { '$ref': '#/components/parameters/foo' }
+            ],
+            reference.to_openapi_parameters('3.0', definitions)
           )
         end
 
-        def test_openapi_reference_object_on_nested_parameters
-          definitions = Definitions.new
-
-          parameter = definitions.add_parameter('foo', type: 'object')
-          parameter.add_property('bar', type: 'string')
-
+        def test_openapi_parameters_on_object
+          definitions = Definitions.new(
+            parameters: {
+              'foo' => {
+                type: 'object',
+                properties: {
+                  'bar' => { type: 'string' }
+                }
+              }
+            }
+          )
           reference = Reference.new(ref: 'foo')
 
           # OpenAPI 2.0
           assert_equal(
-            {
-              name: 'foo[bar]',
-              in: 'query',
-              type: 'string',
-              allowEmptyValue: true
-            },
-            reference.to_openapi('2.0', definitions)
-          )
-          # OpenAPI 3.0
-          assert_equal(
-            {
-              name: 'foo[bar]',
-              in: 'query',
-              schema: {
+            [
+              {
+                name: 'foo[bar]',
+                in: 'query',
                 type: 'string',
-                nullable: true
-              },
-              allowEmptyValue: true
-            },
-            reference.to_openapi('3.0', definitions)
+                allowEmptyValue: true
+              }
+            ],
+            reference.to_openapi_parameters('2.0', definitions)
+          )
+          # OpenAPI 3.0
+          assert_equal(
+            [
+              {
+                name: 'foo[bar]',
+                in: 'query',
+                schema: {
+                  type: 'string',
+                  nullable: true
+                },
+                allowEmptyValue: true
+              }
+            ],
+            reference.to_openapi_parameters('3.0', definitions)
           )
         end
       end

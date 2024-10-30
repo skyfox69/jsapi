@@ -6,7 +6,6 @@ module Jsapi
       # Specifies a parameter.
       class Base < Model::Base
         include OpenAPI::Extensions
-        include ToOpenAPI
 
         delegate_missing_to :schema
 
@@ -63,16 +62,31 @@ module Jsapi
           @schema = Schema.new(keywords)
         end
 
-        # Returns true if empty values are allowed as specified by \OpenAPI,
-        # false otherwise.
+        # Returns true if empty values are allowed as specified by \OpenAPI, false otherwise.
         def allow_empty_value?
-          schema.existence <= Existence::ALLOW_EMPTY && self.in != 'path'
+          schema.existence <= Existence::ALLOW_EMPTY && self.in == 'query'
         end
 
-        # Returns true if it is required as specified by \JSON \Schema,
-        # false otherwise.
+        # Returns true if it is required as specified by \JSON \Schema, false otherwise.
         def required?
           schema.existence > Existence::ALLOW_OMITTED || self.in == 'path'
+        end
+
+        # Returns a hash representing the \OpenAPI parameter object.
+        def to_openapi(version, definitions)
+          version = OpenAPI::Version.from(version)
+          schema = self.schema.resolve(definitions)
+
+          openapi_parameter(
+            name,
+            schema,
+            version,
+            description: description,
+            required: required?,
+            deprecated: deprecated?,
+            allow_empty_value: allow_empty_value?,
+            examples: examples
+          )
         end
 
         # Returns an array of hashes representing the \OpenAPI parameter objects.
@@ -81,7 +95,7 @@ module Jsapi
           schema = self.schema.resolve(definitions)
 
           if schema.object?
-            explode_object_parameter(
+            explode_parameter(
               name,
               schema,
               version,
@@ -90,35 +104,16 @@ module Jsapi
               deprecated: deprecated?
             )
           else
-            parameter_name = schema.array? ? "#{name}[]" : name
             [
-              with_openapi_extensions(
-                if version.major == 2
-                  {
-                    name: parameter_name,
-                    in: self.in,
-                    description: description,
-                    required: required?.presence,
-                    allowEmptyValue: allow_empty_value?.presence,
-                    collectionFormat: ('multi' if schema.array?)
-                  }.merge(schema.to_openapi(version))
-                else
-                  {
-                    name: parameter_name,
-                    in: self.in,
-                    description: description,
-                    required: required?.presence,
-                    allowEmptyValue: allow_empty_value?.presence,
-                    deprecated: deprecated?.presence,
-                    schema: schema.to_openapi(version),
-                    examples: examples.transform_values(&:to_openapi).presence
-
-                    # NOTE: collectionFormat is replaced by style and explode.
-                    #       The default values for query parameters are:
-                    #       - style: 'form'
-                    #       - explode: true
-                  }
-                end
+              openapi_parameter(
+                name,
+                schema,
+                version,
+                description: description,
+                required: required?,
+                deprecated: deprecated?,
+                allow_empty_value: allow_empty_value?,
+                examples: examples
               )
             ]
           end
@@ -126,16 +121,15 @@ module Jsapi
 
         private
 
-        def explode_object_parameter(name, schema, version, definitions, **options)
+        def explode_parameter(name, schema, version, definitions, required:, deprecated:)
           schema.resolve_properties(definitions, context: :request).values.flat_map do |property|
             property_schema = property.schema.resolve(definitions)
             parameter_name = "#{name}[#{property.name}]"
-
-            required = (property.required? && options[:required]).presence
-            deprecated = (property.deprecated? || options[:deprecated]).presence
+            required = (required && property.required?).presence
+            deprecated = (deprecated || property.deprecated?).presence
 
             if property_schema.object?
-              explode_object_parameter(
+              explode_parameter(
                 parameter_name,
                 property_schema,
                 version,
@@ -144,36 +138,59 @@ module Jsapi
                 deprecated: deprecated
               )
             else
-              parameter_name = "#{parameter_name}[]" if property_schema.array?
-              description = property_schema.description
-              allow_empty_value = property.schema.existence <= Existence::ALLOW_EMPTY
               [
-                with_openapi_extensions(
-                  if version.major == 2
-                    {
-                      name: parameter_name,
-                      in: self.in,
-                      description: description,
-                      required: required,
-                      allowEmptyValue: allow_empty_value.presence,
-                      collectionFormat: ('multi' if property_schema.array?)
-                    }.merge(property_schema.to_openapi(version))
-                  else
-                    {
-                      name: parameter_name,
-                      in: self.in,
-                      description: description,
-                      required: required,
-                      allowEmptyValue: allow_empty_value.presence,
-                      deprecated: deprecated,
-                      schema: property_schema.to_openapi(version).except(:deprecated),
-                      examples: examples.transform_values(&:to_openapi).presence
-                    }
-                  end
+                openapi_parameter(
+                  parameter_name,
+                  property_schema,
+                  version,
+                  description: property_schema.description,
+                  required: required,
+                  deprecated: deprecated,
+                  allow_empty_value: property.schema.existence <= Existence::ALLOW_EMPTY
                 )
               ]
             end
           end
+        end
+
+        def openapi_parameter(name, schema, version,
+                              allow_empty_value:,
+                              deprecated:,
+                              description:,
+                              required:,
+                              examples: nil)
+
+          name = schema.array? ? "#{name}[]" : name
+
+          with_openapi_extensions(
+            if version.major == 2
+              raise "OpenAPI 2.0 doesn't allow object parameters " \
+                    "in #{self.in}" if schema.object?
+
+              {
+                name: name,
+                in: self.in,
+                description: description,
+                required: required.presence,
+                allowEmptyValue: allow_empty_value.presence,
+                collectionFormat: ('multi' if schema.array?)
+              }.merge(schema.to_openapi(version))
+            else
+              {
+                name: name,
+                in: self.in,
+                description: description,
+                required: required.presence,
+                allowEmptyValue: allow_empty_value.presence,
+                deprecated: deprecated.presence,
+                schema: schema.to_openapi(version).except(:deprecated),
+                examples: examples&.transform_values(&:to_openapi).presence
+
+                # NOTE: collectionFormat is replaced by 'style' and 'explode'.
+                #       The default values are equal to 'multi'.
+              }
+            end
+          )
         end
       end
     end

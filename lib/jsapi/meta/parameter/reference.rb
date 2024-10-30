@@ -5,12 +5,7 @@ module Jsapi
     module Parameter
       # Refers a reusable parameter.
       class Reference < Model::Reference
-        include ToOpenAPI
-
-        # Returns an array of hashes. If the type of the referred parameter is
-        # <code>"object"</code>, each hash represents an \OpenAPI parameter object.
-        # Otherwise the array contains a single hash representing the \OpenAPI
-        # reference object.
+        # Returns an array of hashes representing the \OpenAPI parameter or reference objects.
         #
         # Raises a ReferenceError when the reference could not be resolved.
         def to_openapi_parameters(version, definitions)
@@ -22,7 +17,7 @@ module Jsapi
             parameter.to_openapi_parameters(version, definitions)
           else
             # Return an array containing the reference object
-            [{ '$ref': "#/#{openapi_components_path(version)}/#{ref}" }]
+            [to_openapi(version)]
           end
         end
       end
