@@ -881,7 +881,7 @@ api_base_path '/foo'
 ```
 
 The `api_server` directive corresponds to the `Server` object introduced with OpenAPI 3.0. The
-positional argument specifies the absolute or relative URI.
+positional argument must be an absolute or relative URI.
 
 The `api_scheme`, `api_host` and `api_base_path` directives correspond to the `scheme`, `host`
 and `basePath` fields in OpenAPI 2.0.
@@ -926,7 +926,7 @@ end
 
 [Specifying examples]: #specifying-examples
 
-A single sample value can be specified as below.
+A single sample value can be specified by an `example` keyword, for example:
 
 ```ruby
 property 'foo', type: 'string', example: 'bar'
@@ -938,7 +938,7 @@ property 'foo', type: 'string' do
 end
 ```
 
-A named sample value can be specified as below.
+Named sample values are specified by nested `example`  directives, for example:
 
 ```ruby
 property 'foo', type: 'string' do
@@ -962,6 +962,14 @@ by an `api_example` directive, for example:
 api_example 'foo', value: 'bar'
 ```
 
+An example specified by a `api_example` directive can be referred as below.
+
+```ruby
+property 'foo', type: 'string' do
+  example ref: 'foo'
+end
+```
+
 ### Specifying tags
 
 A tag is specified by an `api_tag` directive, for example:
@@ -974,7 +982,7 @@ The `api_tag` directive takes the following keywords:
 
 - `:external_docs` - See [Specifying external docs].
 - `:description` - The description of the tag.
-- `name` - The name of the tag.
+- `:name` - The name of the tag.
 
 ### Specifying external docs
 

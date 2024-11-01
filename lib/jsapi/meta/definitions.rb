@@ -271,7 +271,7 @@ module Jsapi
           else
             {
               # Order according to the OpenAPI specification 3.x
-              openapi: version.minor.zero? ? '3.0.3' : '3.1.0',
+              openapi: version.minor.zero? ? '3.0.3' : '3.1.1',
               info: openapi_objects[:info],
               servers: openapi_objects[:servers] ||
                 [default_server&.to_openapi].compact.presence,

@@ -299,7 +299,7 @@ module Jsapi
           definitions.openapi_document('3.0')
         )
         assert_equal(
-          { openapi: '3.1.0' },
+          { openapi: '3.1.1' },
           definitions.openapi_document('3.1')
         )
       end

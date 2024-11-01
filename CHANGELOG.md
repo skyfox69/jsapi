@@ -1,6 +1,15 @@
 # Change log
 
-## 0.9.2 (2024-1024)
+## 1.0 ()
+
+### Changes
+
+- Updated OpenAPI 3.1.0 to 3.1.1.
+
+- `openapi_document` raises an exception when trying to produce an OpenAPI 2.0 document
+  containing a reusable object parameter.
+
+## 0.9.2 (2024-10-24)
 
 ### Changes
 
